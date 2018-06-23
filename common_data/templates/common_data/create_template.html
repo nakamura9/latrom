@@ -1,0 +1,86 @@
+{% extends "window.html" %} {% load static %} {% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">{{title}}</h1>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            {% block other %}{% endblock %}
+        </div>
+        <div class="col-sm-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table class="table">
+                            {{form.as_table}}
+                        </table>
+                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            {% if modals %}
+            <div class="card">
+                <div class="card-body">
+                    {% for modal in modals %}
+                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#{{modal.link}}">
+                        {{modal.title}}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+
+
+
+{% if modals %} {% for modal in modals %}
+<div class="modal fade" id="{{modal.link}}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modelTitleId">{{modal.title}}</h4>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{modal.action}}" id="{{modal.link}}_form">
+                    {% csrf_token %}
+                    {{modal.form.as_p}}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Save">
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %} 
+{% endif %} 
+<script>
+    $(document).ready(function(){
+        {% for modal in modals %}
+        $('#{{modal.link}}_form').ajaxForm(
+            function(){
+                alert('created successfully');
+            }
+        );
+    {% endfor %}
+    });
+</script>
+{% endblock %}

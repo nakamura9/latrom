@@ -1,0 +1,28 @@
+{% extends "common_data/list_template.html" %}
+
+
+
+{% block list_headings %}
+    <tr>
+        <td class="info">Full Name</td>
+        <td class="info">Address</td>
+        <td class="info">Phone #</td>
+        <td class="info">Actions</td>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for customer in object_list %}
+    <tr>
+        <td>{{customer.first_name}} {{customer.last_name}}</td>
+        <td>{{customer.address}}</td>
+        <td>{{customer.phone}}</td>
+        <td>
+        
+        <a href="{% url 'invoicing:update-customer' pk=customer.pk %}" class="btn btn-default">
+                <i class="fas fa-file"></i>
+        </a>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock %}

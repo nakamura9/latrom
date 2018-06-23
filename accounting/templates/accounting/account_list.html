@@ -1,0 +1,17 @@
+{% extends "common_data/list_template.html" %}
+{% block list_headings %}
+<tr class="bbg-info">
+    <td>Name</td>
+    <td>Balance</td>
+    <td>Type</td>
+</tr>
+{% endblock %}
+{% block list_content %}
+{% for item in object_list %}
+<tr>
+    <td><a href="{% url 'accounting:account-detail' pk=item.pk %}" >{{item.name}}</a></td>
+    <td>{{item.balance}}</td>
+    <td>{{item.type}}</td>
+</tr>
+{% endfor %}
+{% endblock %}

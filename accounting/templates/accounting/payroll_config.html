@@ -1,0 +1,70 @@
+{% extends "window.html" %} {% load render_bundle from webpack_loader %} {% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Configuration for Payroll</h1>
+    <p class="lead">Lists all employees and their payroll configuration status</p>
+    <hr class="my-2">
+    <p>Create payroll and payslips for all employees using common_data</p>
+
+
+</div>
+{% csrf_token %}
+
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-sm-3">
+                <div class="card bg-primary text-white">
+                        <div class="card-header">
+                            <h4 class="card-title">Payroll Forms</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item ">
+                                    <a href="{% url 'accounting:create-deduction' %}">Add Deduction</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'accounting:create-allowance' %}">Add Allowance</a>
+                                </li>
+                                <li class="list-group-item disabled">
+                                    <a href="{% url 'accounting:create-commission' %}">Add Commission</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'accounting:create-pay-grade' %}" >Add Pay Grade</a>
+                                </li>
+                                <li class="list-group-item">
+                                        <a href="{% url 'accounting:list-pay-grades' %}" >List Pay Grades</a>
+                                    </li>
+                                <li class="list-group-item">
+                                        <a href="{% url 'accounting:create-pay-grade' %}" >Add Pay Grade</a>
+                                    </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'accounting:list-pay-slips' %}" >View Pay Slips</a>          
+                                </li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="card">
+                <div class="card-body" id="payroll-table">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% render_bundle 'payroll' %}
+
+<script>
+    $(document).ready(() => {
+        $('#id_start_date').datepicker();
+        $('#id_end_date').datepicker();
+    });
+</script>
+
+{% endblock content %}

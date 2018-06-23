@@ -1,0 +1,24 @@
+{% extends "common_data/list_template.html" %}
+{% block list_headings %}
+<tr class="bbg-info">
+    <td>Number</td>
+    <td>Full Name</td>
+    <td>Title</td>
+    <td>Grade</td>
+    <td>Actions</td>
+</tr>
+{% endblock %}
+{% block list_content %}
+{% for item in object_list %}
+<tr>
+    <td>{{item.employee_number}}</td>
+    <td>{{item.first_name}} {{item.last_name}}</td>
+    <td>{{item.title}}</td>
+    <td>{{item.pay_grade}}</td>
+    <td>
+        <a class="btn btn-primary" href="{% url 'accounting:employee-detail' pk=item.pk %}">Details</a>
+        <a class="btn btn-success" href="{% url 'accounting:employee-update' pk=item.pk %}">Update</a>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}

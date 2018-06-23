@@ -1,0 +1,35 @@
+{% extends "common_data/list_template.html" %}
+
+{% block list_headings %}
+    <tr>
+        <td class="info">Quote #</td>
+        <td class="info">Customer</td>
+        <td class="info">Date</td>
+        <td class="info">Items</td>
+        <td class="info">Actions</td>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for quote in object_list %}
+    <tr>
+        <td>{{quote.pk}}</td>
+        <td>{{quote.customer}}</td>
+        <td>{{quote.date}}</td>
+        <td>{{quote.quoteitem_set.all.count}}</td>
+        <td>
+            <a href="{% url 'invoicing:invoice-from-quote' pk=quote.pk %}" class="btn btn-default">
+                <i class="fas fa-share-square"></i>
+        <a href="{% url 'invoicing:quote-update' pk=quote.pk %}" class="btn btn-default">
+                <i class="fas fa-file"></i>
+        </a>
+        <a href="{% url 'invoicing:quote-detail' pk=quote.pk %}" class="btn btn-primary">
+                <i class="fas fa-eye"></i>
+            </a>
+        <a href="{% url 'invoicing:delete-quote' pk=quote.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i>
+        </a>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock %}

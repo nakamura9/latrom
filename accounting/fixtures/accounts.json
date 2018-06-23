@@ -1,0 +1,62 @@
+[
+    {
+        "model": "accounting.account",
+        "pk": 4,
+        "fields": {
+            "name": "Liabilities",
+            "balance": 0,
+            "description": "Summary of money to be paid out.",
+            "type": "liability"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5,
+        "fields": {
+            "name": "Petty Cash",
+            "balance": 0,
+            "description": "money for daily expenses.",
+            "type": "asset"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 6,
+        "fields": {
+            "name": "General Sales",
+            "balance": 0,
+            "description": "Money collected from customers.",
+            "type": "asset"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 7,
+        "fields": {
+            "name": "Accounts Receivable",
+            "balance": 0,
+            "description": "money owed by customers.",
+            "type": "asset"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 8,
+        "fields": {
+            "name": "Current Account",
+            "balance": 0,
+            "description": "account into which all payments are made.",
+            "type": "asset"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 9,
+        "fields": {
+            "name": "Inventory",
+            "balance": 0,
+            "description": "represents the value of stock.",
+            "type": "asset"
+        }
+    }
+]

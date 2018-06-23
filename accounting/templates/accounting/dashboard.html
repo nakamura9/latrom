@@ -1,0 +1,153 @@
+{% extends 'window.html' %} {% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Accounting</h1>
+        <p>Manage accounts, generate reports, and initiate transactions</p>
+        <hr class="my-2">
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" role="button" href="{% url 'accounting:create-transaction' %}">Create New transaction</a>
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Journal</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:create-transaction' %}">Manual Journal entry</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:journal-list' %}">View Journals</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Expenses</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="#">Create Direct Purchase</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="#">List Direct Purchases</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:order-create' %}">Create Purchase Order</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:order-list' %}">List Orders</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Sales</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:non-invoiced-cash-sale' %}">Make Non Invoiced Cash Sale</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'invoicing:create-invoice' %}">Create Invoice</a>
+                            </li>
+                            <li class="list-group-item">
+                                    <a href="{% url  'invoicing:create-payment' %}">Apply Payment</a>
+                                </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Reports</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="">Balance Sheet</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="">Income Statement</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Accounts</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Payroll</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:create-employee' %}">Add Employee</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:list-employees' %}">List Employees</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:payroll-config' %}">Configure Payroll</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Configuration</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="">Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

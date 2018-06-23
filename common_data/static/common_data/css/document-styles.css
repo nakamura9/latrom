@@ -1,0 +1,161 @@
+.item-table {
+    border: 1px solid black;
+    min-width: 400px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.blue-content thead td {
+    padding: 10px;
+    border-right: 1px solid white;
+    color: white;
+    background-color: steelblue;
+}
+
+.blue-content tbody td {
+    border-right: 1px solid black;
+    padding: 10px;
+}
+
+.blue-content tfoot td {
+    text-align: right;
+}
+
+.blue-head-cell {
+    border: 3px solid steelblue; 
+    padding: 10px; 
+    border-radius:5px;
+}
+
+.simple-content thead td {
+    padding: 10px;
+    border-right: 1px solid white;
+    color: white;
+    background-color: black;
+}
+
+.simple-content tbody td {
+    border-right: 1px solid black;
+    padding: 10px;
+}
+
+.simple-content tfoot td {
+    text-align: right;
+}
+
+.simple-head-cell {
+    padding: 10px; 
+    
+}
+
+.steel-content thead td {
+    padding: 10px;
+    border-right: 1px solid white;
+    color: white;
+    background-color: slategrey;
+}
+
+.steel-content tbody td {
+    padding: 10px;
+}
+
+.steel-content tbody tr:nth-child(even) {
+    background-color: #ddd;
+}
+
+.steel-content tbody tr:last-child {
+    background-color: white;
+}
+
+.steel-content tfoot td {
+    text-align: right;
+}
+
+.steel-head-cell {
+    padding: 10px; 
+    
+}
+
+.steel-top-trim-large, .steel-bottom-trim-large {
+    background-color: slategray;
+    min-height: 0.5cm;
+    width: 100%;
+    margin-bottom: 0.25cm;
+}
+
+.steel-top-trim-small, .steel-bottom-trim-small {
+    background-color: #ddd;
+    min-height: 0.25cm;
+    width: 100%;
+    margin-bottom: 0.25cm;
+    margin-top: 0.25cm;
+}
+
+.verdant-top-trim-large, .verdant-bottom-trim-large {
+    background-color: rgb(53, 226, 5);
+    min-height: 0.5cm;
+    width: 100%;
+    margin-bottom: 0.25cm;
+}
+
+.verdant-top-trim-small, .verdant-bottom-trim-small {
+    background-color: rgb(77, 255, 0);
+    min-height: 0.25cm;
+    width: 100%;
+    margin-bottom: 0.25cm;
+    margin-top: 0.25cm;
+}
+
+.verdant-content thead td {
+    padding: 10px;
+    border: 1px solid black;
+    color: white;
+    background-color: rgb(100, 206, 91);
+}
+
+.verdant-content tbody td {
+    padding: 10px;
+    border-right: 1px solid black;
+}
+
+
+.verdant-content tfoot td {
+    text-align: right;
+}
+
+.verdant-head-cell {
+    padding: 10px;
+    border-top: 20px solid rgb(10, 193, 10) 
+    
+}
+
+.warm-top-trim-large, .warm-bottom-trim-large {
+    background-color: orange;
+    min-height: 0.7cm;
+    width: 100%;
+    margin-bottom: 0.3cm;
+}
+
+
+.warm-content thead td {
+    padding: 10px;
+    border: 1px solid black;
+    color: orangered;
+}
+
+.warm-content tbody td {
+    padding: 10px;
+    border-right: 1px solid black;
+}
+
+
+.warm-content tfoot td {
+    text-align: right;
+}
+
+.warm-head-cell {
+    padding: 10px;
+    background-color: rgb(238, 156, 48); 
+}

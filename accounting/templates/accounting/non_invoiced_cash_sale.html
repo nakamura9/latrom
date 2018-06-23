@@ -1,0 +1,35 @@
+{% extends 'window.html' %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Non Invoiced Cash Sale</h1>
+    <p class="lead">Quickly process a sale without generating an Invoice</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                        <h4 class="card-title">Details</h4>
+                </div>
+                <div class="card-body">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <table class="table">
+                            <tbody>
+                                {{form.as_table}}
+                            </tbody>
+                        </table>
+                        <button class="btn btn-default" type="submit" >Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8" id="item-table">
+
+        </div>
+    </div>
+</div>
+{% render_bundle 'invoicing' %}
+{% endblock  %}}

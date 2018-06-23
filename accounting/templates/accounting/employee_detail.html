@@ -1,0 +1,56 @@
+{% extends 'window.html' %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Employee Details</h1>
+    <p class="lead">Personal, Salary and Employee Details</p>
+    <hr class="my-2">
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'accounting:employee-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                            <h4 class="card-title">Personal Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">First name: {{object.first_name}}</p>
+                        <p class="card-text">Last name: {{object.last_name}}</p>
+                        <p class="card-text">Email: {{object.email}}</p>
+                        <p class="card-text">Phone #: {{object.phone}}</p>
+                        <p class="card-text">Address: {{object.address}}</p>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                        <div class="card-header">
+                                <h4 class="card-title">Employee Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Employee Number: {{object.employee_number}}</p>
+                            <p class="card-text">Title: {{object.title}}</p>
+                            <p class="card-text">Hire Date: {{object.hire_date}}</p>
+                            <p class="card-text">Phone #: {{object.phone}}</p>
+                            <p class="card-text">Address: {{object.address}}</p>
+                        </div>
+                </div>
+                <div class="card bg-primary text-white">
+                        <div class="card-header">
+                                <h4 class="card-title">Pay Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Hourly Rate: {{object.hourly_rate}}</p>
+                            <p class="card-text">Over time rate(1): {{object.overtime_rate}}</p>
+                            <p class="card-text">Over time rate(2): {{object.overtime_two_rate}}</p>
+                            <p class="card-text">Salary: {{object.monthly_salary}}</p>
+                            <p class="card-text">Leave Days: {{object.monthly_leave_days}}</p>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

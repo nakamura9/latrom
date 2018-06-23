@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block window %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white " style="margin-top:20%;">
+                <div class="card-header">
+                    <h4 class="card-title">Please sign in</h4>
+                </div>
+                <div class="card-body">
+                    <form action="" method="POST">
+                        {% csrf_token %} 
+                        {{form.as_p}}
+                        <button class="btn btn-lg btn-default btn-block" type="submit">Sign in</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+<script>
+    $('input').addClass('form-control');
+</script>
+
+{% endblock %}

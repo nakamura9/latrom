@@ -1,0 +1,41 @@
+{% extends "window.html" %}
+{% block content %}
+{% load render_bundle from webpack_loader %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Update Existing Invoice</h1>
+        <p>Add models(replace with modals) use API</p>
+        <p>
+            <a href="{% url 'invoicing:create-customer' %}" class="btn btn-primary btn-lg">Create Customer</a>
+            <a href="{% url 'inventory:item-create' %}" class="btn btn-primary btn-lg">Create Item</a>
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+                <form method="POST" action="">
+                        {% csrf_token %}
+                        <table class="table">
+                            <tr>
+                                <td><label>Customer:</label></td>
+                                <td><div id="customer-search"></div></td>
+                            </tr>
+                            {{form.as_table}}
+                        </table>
+                        <button type="submit" class="btn btn-primary pull-right">Submit</button> 
+                    </form>
+        </div>
+        <!-- id of the root of the template differentiates between populated and empty tables -->
+        <div class="col-sm-8" id="populated-item-table">
+
+        </div>
+    </div>
+    
+</div>
+
+
+{% render_bundle 'invoicing' %}
+{% endblock %}

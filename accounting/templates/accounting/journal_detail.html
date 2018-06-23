@@ -1,0 +1,56 @@
+{% extends "window.html" %}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-3">Journal Detail</h1>
+        <hr class="my-2">
+        <p class="lead">Journal Details and Entries</p>
+        
+        
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                            <h4 class="card-title">Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Name: {{object.name}}</p>
+                        <p class="lead"> Start Period: {{object.start_period}}</p>
+                        <p class="lead"> End Period: {{object.end_period}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8" style="max-height:400px; overflow:auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>REF</th>
+                            <th>Amount</th>
+                            <th>Debit </th>
+                            <th>Credit </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in object.transaction_set.all %}
+                        <tr>
+                            <td scope="row">{{t.date}}</td>
+                            <td>{{t.reference}}</td>
+                            <td>{{t.amount}}</td>
+                            <td>{{t.debit}}</td>
+                            <td>{{t.credit}}</td>
+                            <td>
+                                <a class="btn btn-success" href="{% url 'accounting:transaction-detail' pk=t.pk %}">View</a>  
+                                <!--
+                                <a class="btn btn-danger" href="#">Delete</a> -->
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>    
+    </div>
+    
+{% endblock  %}

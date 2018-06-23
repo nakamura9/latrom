@@ -1,0 +1,17 @@
+{% extends 'common_data/list_template.html' %}
+{% block list_headings %}
+<tr>
+    <td>Date</td>
+    <td>Amount </td>
+    <td>Comments</td>
+</tr>
+{% endblock %}
+{% block list_content %}
+{% for p in object_list %}
+    <tr>
+        <td>{{p.date}}</td>
+        <td>{{p.total}}</td>
+        <td>{{p.comments}}</td>
+    </tr>
+{% endfor %}
+{% endblock %}

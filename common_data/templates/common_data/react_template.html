@@ -1,0 +1,22 @@
+{% extends "window.html" %}
+{% block content %}
+{% load render_bundle from webpack_loader %}
+<input id="page-token" value="{{csrf_token}}" type="hidden"/>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>{{title}}</h3>
+        </div>
+    </div>
+    <div id="root" class="row">
+        
+    </div>
+    
+</div>
+
+
+{% render_bundle 'invoicing' %}
+<script type="text/javascript">
+    $("#id-datepicker").datepicker();
+</script>
+{% endblock %}

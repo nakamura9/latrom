@@ -1,0 +1,41 @@
+{% extends "common_data/list_template.html" %}
+
+
+{% block list_headings %}
+    <tr>
+        <td class="info">Order #</td>
+        <td class="info">Issue Date</td>
+        <td class="info">Status</td>
+        <td class="info">Supplier</td>
+        <td class="info"># of Items</td>
+        <td class="info">Total Cost</td>
+        <td class="info">Actions</td>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for order in object_list %}
+    <tr>
+        <td>{{order.pk}}</td>
+        <td>{{order.issue_date}}</td>
+        <td>{{order.status}}</td>
+        <td>{{order.supplier}}</td>
+        <td>{{order.orderitem_set.all.count}}</td>
+        <td>{{order.total}}</td>
+        <td>
+                <a href="{% url 'inventory:receive-from-order' pk=order.pk %}" class="btn btn-default">
+                        <i class="fas fa-share-square"></i>
+                </a>
+        <a href="{% url 'inventory:order-update' pk=order.pk %}" class="btn btn-default">
+                <i class="fas fa-file"></i>
+        </a>
+        <a href="{% url 'inventory:order-detail' pk=order.pk %}" class="btn btn-primary">
+            <i class="fas fa-eye"></i>
+    </a>
+        <a href="{% url 'inventory:order-delete' pk=order.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+    </a>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock %}

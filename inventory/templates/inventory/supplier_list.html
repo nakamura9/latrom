@@ -1,0 +1,28 @@
+{% extends "common_data/list_template.html" %}
+
+{% block list_headings %}
+    <tr>
+        <td class="info">Name</td>
+        <td class="info">Contact Person</td>
+        <td class="info">Phone</td>
+        <td class="info">Email</td>
+        <td class="info">Actions</td>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for supplier in object_list %}
+    <tr>
+        <td>{{supplier.name}}</td>
+        <td>{{supplier.contact_person}}</td>
+        <td>{{supplier.phone}}</td>
+        <td>{{supplier.email}}</td>
+        <td>
+        
+        <a href="{% url 'inventory:supplier-update' pk=supplier.pk %}" class="btn btn-default">
+                <i class="fas fa-file"></i>
+        </a>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "common_data/list_template.html" %}
+
+{% block list_headings %}
+    <tr>
+        <td class="info">Receipt #</td>
+        <td class="info">Customer</td>
+        <td class="info">Date</td>
+        <td class="info">Payment Method</td>
+        <td class="info">Total</td>
+        <td class="info">Actions</td>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for receipt in object_list %}
+    <tr>
+        <td>{{receipt.pk}}</td>
+        <td>{{receipt.payment.invoice.customer}}</td>
+        <td>{{receipt.payment.date}}</td>
+        <td>{{receipt.payment.method}}</td>
+        <td>{{receipt.payment.amount}}</td>
+        <td>
+        
+        <a href="{% url 'invoicing:receipt-update' pk=receipt.pk %}" class="btn btn-default">
+                <i class="fas fa-file"></i>
+        </a>
+        <a href="{% url 'invoicing:receipt-detail' pk=receipt.pk %}" class="btn btn-primary">
+                <i class="fas fa-eye"></i>
+            </a>
+        <a href="{% url 'invoicing:delete-receipt' pk=receipt.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i>
+        </a>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock %}

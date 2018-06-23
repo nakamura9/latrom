@@ -1,0 +1,21 @@
+{% extends "common_data/list_template.html" %}
+{% block list_headings %}
+<tr class="bbg-info">
+    <td>Name</td>
+    <td>Start Period</td>
+    <td>End Period</td>
+    <td>Number of Transactions</td>
+    <td>Actions</td>
+</tr>
+{% endblock %}
+{% block list_content %}
+{% for item in object_list %}
+<tr>
+    <td>{{item.name}}</td>
+    <td>{{item.start_period}}</td>
+    <td>{{item.end_period}}</td>
+    <td>{{item.transaction_set.all.count}}</td>
+    <td><a class="btn btn-success" href="{% url 'accounting:journal-detail' pk=item.pk %}">View</a></td>
+</tr>
+{% endfor %}
+{% endblock %}

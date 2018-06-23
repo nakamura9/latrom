@@ -1,0 +1,48 @@
+{% extends 'window.html' %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Transaction Details</h1>
+    <p class="lead">Transaction Date: {{object.date}}</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <td>{{object.id}}</td>
+                            </tr>
+                            <tr>
+                                <th>Reference</th>
+                                <td>{{object.reference}}</td>
+                            </tr>
+                            <tr>
+                                <th>Amount</th>
+                                <td>{{object.amount}}</td>
+                            </tr>
+                            <tr>
+                                <th>Credit Account</th>
+                                <td>{{object.credit}}</td>
+                            </tr>
+                            <tr>
+                                <th>Debit Account</th>
+                                <td>{{object.debit}}</td>
+                            </tr>
+                            <tr>
+                                <th>Memo</th>
+                                <td>{{object.memo}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+
+    </div>
+</div>
+{% endblock content %}

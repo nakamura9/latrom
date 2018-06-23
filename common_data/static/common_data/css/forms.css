@@ -1,0 +1,11 @@
+.bg-primary th {
+    color:white;
+}
+
+.bg-primary .nav-link {
+    color: white;
+}
+
+.bg-primary .nav-link.active {
+    color: blue;
+}
