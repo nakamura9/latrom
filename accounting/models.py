@@ -26,14 +26,16 @@ class Transaction(models.Model):
 
     def save(self, *args, **kwargs):
         super(Transaction, self).save(*args, **kwargs)
-        # flawed, will result in erroneous transaction updates.
+        #cannot allow updates to transactions,
+        # rather adjustments will be made to reflect corrections
         self.credit.balance += self.amount
         self.credit.save()
         self.debit.balance -= self.amount
         self.debit.save()
 
 #implement forms as wrappers for transactions
-
+#should i allow users to delete accounts?
+#maybe control by ensuring the last transaction is a certain age
 class Account(models.Model):
     name = models.CharField(max_length=64)
     balance = models.FloatField()
@@ -78,7 +80,6 @@ class Adjustmet(models.Model):
     transaction = models.ForeignKey('accounting.Transaction', null=True)
     workbook = models.ForeignKey('accounting.WorkBook', null=True)
     description = models.TextField()
-    # add fields for amounts adjusted etc
 
 #payroll models 
 class Employee(Person):
@@ -89,9 +90,6 @@ class Employee(Person):
     
     def __str__(self):
         return self.first_name + " " + self.last_name
-    @property
-    def configured(self):
-        return self.pay_set.all().count() > 0
     
     
 class Allowance(models.Model):
@@ -101,7 +99,7 @@ class Allowance(models.Model):
     def __str__(self):
         return self.name
     
-class Deductions(models.Model):
+class Deduction(models.Model):
     name = models.CharField(max_length=32)
     method = models.IntegerField(choices=((0, 'Rated'), (1, 'Fixed')))
     rate = models.FloatField(default=0)
@@ -112,7 +110,7 @@ class Deductions(models.Model):
     
     def deduct(self, salary=0):
         if self.method == 0:
-            return self.rate * salary
+            return (self.rate / 100) * salary
         else:
             return self.amount
 
@@ -134,7 +132,7 @@ class PayGrade(models.Model):
     overtime_two_rate = models.FloatField(default=0)
     commission = models.ForeignKey('accounting.CommissionRule', null=True, blank=True)
     allowances = models.ManyToManyField('accounting.Allowance', blank=True)
-    deductions = models.ManyToManyField('accounting.Deductions', blank=True)
+    deductions = models.ManyToManyField('accounting.Deduction', blank=True)
 
     def __str__(self):
         return self.name
@@ -146,7 +144,10 @@ class PayGrade(models.Model):
 
     @property
     def total_deductions(self):
-        return reduce((lambda x, y: x + y), [d.amount for d in self.deductions.all()], 0)
+        return reduce((lambda x, y: x + y), [d.amount \
+            for d in self.deductions.all() if d.method == 1] + \
+            [d.deduct(self.monthly_salary) \
+             for d in self.deductions.all() if d.method ==0] , 0)
     
 class Payslip(models.Model):
     start_period = models.DateField()
@@ -164,7 +165,10 @@ class Payslip(models.Model):
     
     @property
     def commission_pay(self):
-        return self.commision_rate * self.employee.sales(self.start_period, self.end_period)
+        raise NotImplementedError()
+        if not self.employee.pay_grade.commission:
+            return 0
+        return self.employee.pay_grade.commission * self.employee.sales(self.start_period, self.end_period)
 
     @property 
     def normal_pay(self):

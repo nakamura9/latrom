@@ -65,7 +65,13 @@ class CustomerListView(ExtraContext, FilterView):
     template_name = os.path.join("invoicing", "customer_list.html")
     filterset_class = filters.CustomerFilter
     paginate_by = 2
-    
+
+
+class CustomerDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = Customer
+    success_url = reverse_lazy('invoicing:customer-list')
+
 #########################################
 #               Payment Views           #
 #########################################

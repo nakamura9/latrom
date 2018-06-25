@@ -4,14 +4,16 @@
     <td>Name</td>
     <td>Balance</td>
     <td>Type</td>
+    <td>Actions</td>
 </tr>
 {% endblock %}
 {% block list_content %}
 {% for item in object_list %}
 <tr>
-    <td><a href="{% url 'accounting:account-detail' pk=item.pk %}" >{{item.name}}</a></td>
+    <td>{{item.name}}</td>
     <td>{{item.balance}}</td>
     <td>{{item.type}}</td>
+    <td><a class="btn btn-success" href="{% url 'accounting:account-detail' pk=item.pk %}" >View</a></td>
 </tr>
 {% endfor %}
 {% endblock %}

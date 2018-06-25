@@ -23,18 +23,29 @@
         <td>{{order.orderitem_set.all.count}}</td>
         <td>{{order.total}}</td>
         <td>
-                <a href="{% url 'inventory:receive-from-order' pk=order.pk %}" class="btn btn-default">
-                        <i class="fas fa-share-square"></i>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                        
+                <a href="{% url 'inventory:order-update' pk=order.pk %}" class="dropdown-item">
+                        <i class="fas fa-file"></i> Update
                 </a>
-        <a href="{% url 'inventory:order-update' pk=order.pk %}" class="btn btn-default">
-                <i class="fas fa-file"></i>
-        </a>
-        <a href="{% url 'inventory:order-detail' pk=order.pk %}" class="btn btn-primary">
-            <i class="fas fa-eye"></i>
-    </a>
-        <a href="{% url 'inventory:order-delete' pk=order.pk %}" class="btn btn-danger">
-            <i class="fas fa-trash"></i>
-    </a>
+                <a href="{% url 'inventory:order-detail' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> Detail
+            </a>
+                <a href="{% url 'inventory:order-delete' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-trash"></i> Delete
+            </a>    
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'inventory:receive-from-order' pk=order.pk %}" class="dropdown-item">
+                            <i class="fas fa-share-square"></i> Create Derived Stock Receipt
+                    </a>
+                </div>
+            </div>
+                
         </td>
     </tr>
     {% endfor %}

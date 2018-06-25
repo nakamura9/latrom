@@ -18,15 +18,25 @@
         <td>{{item.amount}}</td>
         <td>{{item.method}}</td>
         <td>
-            <a href="{% url 'invoicing:receipt-from-payment' pk=item.pk %}" class="btn btn-default">
-                <i class="fas fa-share-square"></i>
+                <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            
+        <a href="{% url 'invoicing:update-payment' pk=item.pk %}" class="dropdown-item">
+                <i class="fas fa-file"></i> Update
         </a>
-        <a href="{% url 'invoicing:update-payment' pk=item.pk %}" class="btn btn-default">
-                <i class="fas fa-file"></i>
-        </a>
-        <a href="{% url 'invoicing:delete-payment' pk=item.pk %}" class="btn btn-danger">
-                <i class="fas fa-trash"></i>
+        <a href="{% url 'invoicing:delete-payment' pk=item.pk %}" class="dropdown-item">
+                <i class="fas fa-trash"></i> Delete
             </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'invoicing:receipt-from-payment' pk=item.pk %}" class="dropdown-item">
+                                    <i class="fas fa-share-square"></i> Create Receipt From Payment
+                            </a>
+                        </div>
+                    </div>
         </td>
     </tr>
     {% endfor %}

@@ -59,7 +59,7 @@ class CommissionForm(forms.ModelForm, BootstrapMixin):
 class DeductionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
-        model = models.Deductions
+        model = models.Deduction
 
 
 class PayGradeForm(forms.ModelForm, BootstrapMixin):

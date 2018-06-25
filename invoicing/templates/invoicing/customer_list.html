@@ -1,28 +1,31 @@
-{% extends "common_data/list_template.html" %}
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info">Full Name</td>
+    <td class="info">Address</td>
+    <td class="info">Phone #</td>
+    <td class="info">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} {% for customer in object_list %}
+<tr>
+    <td>{{customer.first_name}} {{customer.last_name}}</td>
+    <td>{{customer.address}}</td>
+    <td>{{customer.phone}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="{% url 'invoicing:update-customer' pk=customer.pk %}" class="dropdown-item">
+                    <i class="fas fa-file"></i> Update
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:delete-customer' pk=customer.pk %}">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+        </div>
 
-
-
-{% block list_headings %}
-    <tr>
-        <td class="info">Full Name</td>
-        <td class="info">Address</td>
-        <td class="info">Phone #</td>
-        <td class="info">Actions</td>
-    </tr>
-{% endblock %}
-
-{% block list_content %}
-    {% for customer in object_list %}
-    <tr>
-        <td>{{customer.first_name}} {{customer.last_name}}</td>
-        <td>{{customer.address}}</td>
-        <td>{{customer.phone}}</td>
-        <td>
-        
-        <a href="{% url 'invoicing:update-customer' pk=customer.pk %}" class="btn btn-default">
-                <i class="fas fa-file"></i>
-        </a>
-        </td>
-    </tr>
-    {% endfor %}
-{% endblock %}
+    </td>
+</tr>
+{% endfor %} {% endblock %}

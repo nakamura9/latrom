@@ -1,0 +1,192 @@
+{% extends "window.html" %} {% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Accounting Utility Object Lists</h1>
+    <p class="lead">Lists all Taxes, Deductions, Commissions and Allowances</p>
+    <hr class="my-2">
+    <p>Allows users to update and delete each object</p>
+</div>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item active">
+        <a class="nav-link " data-toggle='tab' href="#taxes">Tax Objects</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle='tab' href="#allowances">Allowances</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link " data-toggle='tab' href="#deductions">Deductions</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link " data-toggle='tab' href="#commissions">Commission Rules</a>
+    </li>
+</ul>
+<hr />
+<div class="tab-content">
+    <div class="tab-pane fade show active" id='taxes'>
+        <a class="btn btn-primary" href="{% url 'accounting:create-tax' %}">Create New Tax Object</a>
+        <hr />
+        <div style="margin:1cm;">
+                <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Rate</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tax in taxes %}
+                            <tr>
+                                <td>{{tax.name}}</td>
+                                <td>{{tax.rate}}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="tax-trigger" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                        <div class="dropdown-menu" aria-labelledby="tax-trigger">
+                                            <a class="dropdown-item" href="{% url 'accounting:update-tax' pk=tax.pk %}">
+                                                <i class="fas fa-file"></i>
+                                                Update</a>
+                                            <a class="dropdown-item" href="{% url 'accounting:delete-tax' pk=tax.pk %}">
+                                                <i class="fas fa-trash"></i>
+                                                Delete</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+        </div>
+        
+    </div>
+    <div class="tab-pane fade" id='allowances'>
+        <a href="{% url 'accounting:create-allowance' %}" class="btn btn-primary">Create New Allowance</a>
+        <hr>
+        <div style="margin:1cm;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for allowance in allowances %}
+                    <tr>
+                        <td>{{allowance.name}}</td>
+                        <td>{{allowance.amount}}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                            Actions
+                                        </button>
+                                <div class="dropdown-menu" aria-labelledby="triggerId">
+                                    <a class="dropdown-item" href="{% url 'accounting:update-allowance' pk=allowance.pk %}">
+                                        <i class="fas fa-file"></i>
+                                        Update</a>
+                                    <a class="dropdown-item " href="{% url 'accounting:delete-allowance' pk=allowance.pk %}">
+                                        <i class="fas fa-trash"></i>
+                                        Delete </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id='deductions'>
+            <a href="{% url 'accounting:create-deduction' %}" class="btn btn-primary">Create New Deduction</a>
+            <hr>
+            <div style="margin:1cm;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Method</th>
+                            <th>Rate (%) </th>    
+                            <th>Amount ($)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for deduction in deductions %}
+                        <tr>
+                            <td>{{deduction.name}}</td>
+                            <td>{{deduction.method}}</td>
+                            <td>{{deduction.rate}}</td>
+                            <td>{{deduction.amount}}</td>  
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                                Actions
+                                            </button>
+                                    <div class="dropdown-menu" aria-labelledby="triggerId">
+                                        <a class="dropdown-item" href="{% url 'accounting:update-deduction' pk=deduction.pk %}">
+                                            <i class="fas fa-file"></i>
+                                            Update</a>
+                                        <a class="dropdown-item " href="{% url 'accounting:delete-deduction' pk=deduction.pk %}">
+                                            <i class="fas fa-trash"></i>
+                                            Delete </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+    <div class="tab-pane fade" id='commissions'>
+            <a href="{% url 'accounting:create-commission' %}" class="btn btn-primary">Create New Commission Rule</a>
+            <hr>
+            <div style="margin:1cm;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Minimum Sales ($)</th>
+                            <th>Commission Rate (%)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commission in commissions %}
+                        <tr>
+                            <td>{{commission.name}}</td>
+                            <td>{{commission.min_sales}}</td>
+                            <td>{{commission.rate}}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                                Actions
+                                            </button>
+                                    <div class="dropdown-menu" aria-labelledby="triggerId">
+                                        <a class="dropdown-item" href="{% url 'accounting:update-commission' pk=commission.pk %}">
+                                            <i class="fas fas-file"></i>
+                                            Update</a>
+                                        <a class="dropdown-item " href="{% url 'accounting:delete-commission' pk=commission.pk %}">
+                                            <i class="fas fas-trash"></i>
+                                            Delete </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+</div>
+
+{% endblock content %}

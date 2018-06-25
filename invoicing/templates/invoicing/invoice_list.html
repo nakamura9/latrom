@@ -1,36 +1,41 @@
-{% extends "common_data/list_template.html" %}
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info">Invoice #</td>
+    <td class="info">Customer</td>
+    <td class="info">Date</td>
+    <td class="info">Items</td>
+    <td class="info">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} {% for invoice in object_list %}
+<tr>
+    <td>{{invoice.pk}}</td>
+    <td>{{invoice.customer}}</td>
+    <td>{{invoice.date_issued}}</td>
+    <td>{{invoice.invoiceitem_set.all.count}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
 
-{% block list_headings %}
-    <tr>
-        <td class="info">Invoice #</td>
-        <td class="info">Customer</td>
-        <td class="info">Date</td>
-        <td class="info">Items</td>
-        <td class="info">Actions</td>
-    </tr>
-{% endblock %}
+                <a href="{% url 'invoicing:update-invoice' invoice.pk %}" class="dropdown-item">
+                    <i class="fas fa-file"></i> Update
+                </a>
+                <a href="{% url 'invoicing:invoice-details' invoice.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                <a href="{% url 'invoicing:delete-invoice' invoice.pk %}" class="dropdown-item">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'invoicing:payment-from-invoice' invoice.pk %}" class="dropdown-item">
+                    <i class="fas fa-share-square"></i> Create Payment From Invoice
+                </a>
+            </div>
+        </div>
 
-{% block list_content %}
-    {% for invoice in object_list %}
-    <tr>
-        <td>{{invoice.pk}}</td>
-        <td>{{invoice.customer}}</td>
-        <td>{{invoice.date_issued}}</td>
-        <td>{{invoice.invoiceitem_set.all.count}}</td>
-        <td>
-            <a href="{% url 'invoicing:payment-from-invoice' invoice.pk %}" class="btn btn-default">
-                <i class="fas fa-share-square"></i>
-        </a>
-        <a href="{% url 'invoicing:update-invoice' invoice.pk %}" class="btn btn-default">
-                <i class="fas fa-file"></i>
-        </a>
-        <a href="{% url 'invoicing:invoice-details' invoice.pk %}" class="btn btn-primary">
-                <i class="fas fa-eye"></i>
-            </a>
-        <a href="{% url 'invoicing:delete-invoice' invoice.pk %}" class="btn btn-danger">
-                <i class="fas fa-trash"></i>
-        </a>
-        </td>
-    </tr>
-    {% endfor %}
-{% endblock %}
+    </td>
+</tr>
+{% endfor %} {% endblock %}

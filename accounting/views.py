@@ -73,7 +73,8 @@ class EmployeeListView(ExtraContext, FilterView):
     template_name = os.path.join('accounting', 'employee_list.html')
     filterset_class = filters.EmployeeFilter
     extra_context = {
-        'title': 'Add Employee to payroll system'
+        'title': 'List of Employees',
+        'new_link': reverse_lazy('accounting:create-employee')
     }
 
 class EmployeeDetailView(DetailView):
@@ -82,7 +83,8 @@ class EmployeeDetailView(DetailView):
 
 class EmployeeDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
+    success_url = reverse_lazy('accounting:list-employees')
+    model = models.Employee
 
 
 
@@ -141,6 +143,28 @@ class TaxViewset(viewsets.ModelViewSet):
     queryset = models.Tax.objects.all()
     serializer_class = serializers.TaxSerializer
 
+class TaxUpdateView(ExtraContext, UpdateView):
+    form_class = forms.TaxForm
+    model= models.Tax
+    template_name = os.path.join('common_data','create_template.html')
+    success_url = reverse_lazy('accounting:dashboard')
+    extra_context = {
+        'title': 'Editing Existing Tax'
+    }
+
+class TaxCreateView(ExtraContext, CreateView):
+    form_class = forms.TaxForm
+    template_name = os.path.join('common_data','create_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    extra_context = {
+        'title': 'Add Taxes For Invoices'
+    }
+
+class TaxDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    model = models.Tax
+
 class DeductionCreateView(ExtraContext, CreateView):
     form_class = forms.DeductionForm
     template_name = os.path.join('common_data','create_template.html')
@@ -149,14 +173,53 @@ class DeductionCreateView(ExtraContext, CreateView):
         'title': 'Add Deductions For Payroll'
     }
 
+class DeductionUpdateView(ExtraContext, UpdateView):
+    form_class = forms.DeductionForm
+    model = models.Deduction
+    template_name = os.path.join('common_data','create_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    extra_context = {
+        'title': 'Update existing deduction'
+    }
+
+class DeductionDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    model = models.Deduction
+
+class UtilsListView(TemplateView):
+    template_name = os.path.join('accounting', 'utils_list.html')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UtilsListView, self).get_context_data(*args, **kwargs)
+        context['allowances'] = models.Allowance.objects.all()
+        context['deductions'] = models.Deduction.objects.all()
+        context['commissions'] = models.CommissionRule.objects.all()
+        context['taxes'] = models.Tax.objects.all()
+        return context
+
+
 class AllowanceCreateView(ExtraContext, CreateView):
     form_class = forms.AllowanceForm
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {
-        'title': 'Add Allowance For Payroll'
+        'title': 'Create New Allowance '
     }
 
+class AllowanceUpdateView(ExtraContext, UpdateView):
+    form_class = forms.AllowanceForm
+    model = models.Allowance
+    template_name = os.path.join('common_data','create_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    extra_context = {
+        'title': 'Edit Existing Allowance '
+    }
+
+class AllowanceDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    model = models.Allowance
 
 class CommissionCreateView(ExtraContext, CreateView):
     form_class = forms.CommissionForm
@@ -166,6 +229,24 @@ class CommissionCreateView(ExtraContext, CreateView):
         'title': 'Add Commission Rule for pay grades'
     }
 
+class CommissionUpdateView(ExtraContext, UpdateView):
+    form_class = forms.CommissionForm
+    model = models.CommissionRule
+    template_name = os.path.join('common_data','create_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    extra_context = {
+        'title': 'Edit Existing Commission Rule'
+    }
+
+class CommissionDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('accounting:util-list')
+    model = models.CommissionRule
+
+###################################################
+#                 Pay Grade Views                 #
+###################################################
+
 class PayGradeCreateView(ExtraContext, CreateView):
     form_class = forms.PayGradeForm
     template_name =CREATE_TEMPLATE
@@ -173,6 +254,26 @@ class PayGradeCreateView(ExtraContext, CreateView):
     extra_context = {
         'title': 'Add pay grades for payroll'
     }
+
+class PayGradeUpdateView(ExtraContext, UpdateView):
+    form_class = forms.PayGradeForm
+    template_name =CREATE_TEMPLATE
+    success_url = reverse_lazy('accounting:dashboard')
+    extra_context = {
+        'title': 'Edit existing Pay Grade'
+    }
+
+class PayGradeListView(ListView):
+    template_name = os.path.join('accounting', 'pay_grade_list.html')
+    paginate_by = 10
+    extra_context = {
+        'title': 'List of Payslips'
+    }
+
+class PayGradeDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template')
+    success_url = reverse_lazy('accounting:list-pay-grades')
+    model = models.PayGrade
 
 class NonInvoicedCashSale(FormView):
     form_class = forms.NonInvoicedSaleForm

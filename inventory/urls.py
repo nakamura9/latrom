@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^category-create/?$', views.CategoryCreateView.as_view(), name="category-create"),
     url(r'^supplier-list/?$', views.SupplierListView.as_view(), name="supplier-list"),
     url(r'^supplier-update/(?P<pk>[\w]+)/?$', views.SupplierUpdateView.as_view(), name="supplier-update"),
+    url(r'^supplier-delete/(?P<pk>[\w]+)/?$', views.SupplierDeleteView.as_view(), name="supplier-delete"),
     url(r'^item-create/?$', views.ItemCreateView.as_view(), name="item-create"),
     url(r'^quick-item/?$', views.QuickItemCreateView.as_view(), name="quick-item"),
     url(r'^item-list/?$', views.ItemListView.as_view(), name="item-list"),

@@ -66,3 +66,5 @@ extra_context = {
         self.form = form
 
     
+class ModelTestTools(object):
+    pass

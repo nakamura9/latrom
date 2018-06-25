@@ -46,22 +46,32 @@
                         </td>
                     </tr>
                 </tbody>            
-            </table>        
-<p>Employee Full Name: {{object.employee}}</p>
-<p>Employee Number: {{object.employee.employee_number}}</p>
-<p>Employee Grade: {{object.employee.pay_grade}}</p>
-<p>Income YTD: </p>
-<p>Deductions YTD: </p>
-        <table class="" >
+            </table>   
+<div>
+        <p>Employee Full Name: {{object.employee}}</p>
+        <p>Employee Number: {{object.employee.employee_number}}</p>
+        <p>Employee Grade: {{object.employee.pay_grade}}</p>
+        <p>Income YTD: $</p>
+        <p>Deductions YTD: $</p>
+</div>     
+
+        <table style="width:100%;" >
               <thead>
-                  <th>Item</th>
-                  <th>Amount</th>
+                <tr class="text-white" style="background-color:black;">
+                        <th style="padding:20px;">Item</th>
+                        <th style="padding:20px;">Amount</th>
+                </tr>  
+                
               </thead>
-                <tbody class="item-table">
+                <tbody>
                     <tr>
                         <th>Basic Pay</th>
                         <td>{{object.employee.pay_grade.monthly_salary}}</td>
                     </tr>
+                    <tr>
+                            <th>Hourly Income</th>
+                            <td>{{object.employee.pay_grade.monthly_salary}}</td>
+                        </tr>
                     <tr>
                         <th>Total Allowances(breakdown below)</th>
                         <td>{{object.employee.pay_grade.total_allowances}}</td>
@@ -74,7 +84,7 @@
                     {% endfor %}
                     <tr>
                         <th>Commission</th>
-                        <td>#calculate</td>
+                        <td>$</td>
                     </tr>
                     <tr>
                         <th>Gross Income:</th>

@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^create-customer$', views.CustomerCreateView.as_view(), name='create-customer'),
     url(r'^quick-customer$', views.QuickCustomerCreateView.as_view(), name='quick-customer'),
     url(r'^update-customer/(?P<pk>[\w]+)$', views.CustomerUpdateView.as_view(), name='update-customer'),
+    url(r'^delete-customer/(?P<pk>[\w]+)$', views.CustomerDeleteView.as_view(), name='delete-customer'),
     url(r'^payments-list$', views.PaymentListView.as_view(), name='payments-list'),
     url(r'^create-payment$', views.PaymentCreateView.as_view(), name='create-payment'),
     url(r'^update-payment/(?P<pk>[\w]+)$', views.PaymentUpdateView.as_view(), name='update-payment'),

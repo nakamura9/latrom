@@ -20,16 +20,25 @@
         <td>{{receipt.payment.method}}</td>
         <td>{{receipt.payment.amount}}</td>
         <td>
+                <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            
+                                <a href="{% url 'invoicing:receipt-update' pk=receipt.pk %}" class="dropdown-item">
+                                        <i class="fas fa-file"></i> Update
+                                </a>
+                                <a href="{% url 'invoicing:receipt-detail' pk=receipt.pk %}" class="dropdown-item">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </a>
+                                <a href="{% url 'invoicing:delete-receipt' pk=receipt.pk %}" class="dropdown-item">
+                                        <i class="fas fa-trash"></i> Delete
+                                </a>
+                        </div>
+                    </div>
         
-        <a href="{% url 'invoicing:receipt-update' pk=receipt.pk %}" class="btn btn-default">
-                <i class="fas fa-file"></i>
-        </a>
-        <a href="{% url 'invoicing:receipt-detail' pk=receipt.pk %}" class="btn btn-primary">
-                <i class="fas fa-eye"></i>
-            </a>
-        <a href="{% url 'invoicing:delete-receipt' pk=receipt.pk %}" class="btn btn-danger">
-                <i class="fas fa-trash"></i>
-        </a>
         </td>
     </tr>
     {% endfor %}

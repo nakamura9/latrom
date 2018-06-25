@@ -213,6 +213,10 @@ class SupplierListView(ExtraContext, FilterView):
                     "new_link": reverse_lazy("inventory:supplier-create")}
 
                     
+class SupplierDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url=reverse_lazy('inventory:supplier-list')
+    model = models.Supplier
 
 ################################################
 #                  Misc views                  #
