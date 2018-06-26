@@ -97,7 +97,7 @@
                 <a class="dropdown-item" href="{% url 'inventory:item-update'  pk=item.pk  %}">
                     <i class="fas fa-file"></i> Update
                 </a>
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{% url 'inventory:item-delete' pk=item.pk %}">
                     <i class="fas fa-trash"></i> Delete
                 </a>
 

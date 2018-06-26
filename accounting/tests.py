@@ -173,8 +173,6 @@ class ModelTests(TestCase):
         paygrade = PayGrade.objects.get(name='Test Paygrade')
         self.assertTrue(isinstance(
             paygrade, PayGrade))
-
-        print 
         self.assertEqual(paygrade.total_allowances, 50)
 
 
@@ -275,6 +273,16 @@ class ViewTests(TestCase):
             'deductions': cls.deduction.pk
         }
 
+        cls.TRANSACTION_DATA = {\
+            'reference': 'some test ref',
+            'memo':'record of test transaction',
+            'date':TODAY,
+            'time': '00:00',
+            'amount':10,
+            'credit': cls.account_c.pk,
+            'debit' : cls.account_d.pk,
+            'Journal' :cls.journal.pk
+        }
     def test_get_dashboard(self):
         resp = self.client.get(reverse('accounting:dashboard'))
         self.assertTrue(resp.status_code==200)
@@ -329,6 +337,29 @@ class ViewTests(TestCase):
     def test_get_transaction_form(self):
         resp = self.client.get(reverse('accounting:create-transaction'))
         self.assertTrue(resp.status_code==200)
+
+    def test_get_compound_transaction_form(self):
+        resp = self.client.get(reverse('accounting:compound-transaction'))
+        self.assertTrue(resp.status_code==200)
+
+    def test_post_compound_transaction_form(self):
+        COMPOUND_DATA = dict(self.TRANSACTION_DATA)
+        del COMPOUND_DATA['amount']
+        del COMPOUND_DATA['debit']
+        del COMPOUND_DATA['credit']
+        COMPOUND_DATA['items[]'] = urllib.quote(json.dumps({
+            'debit': 1,
+            'amount':100,
+            'account': self.account_c.pk
+            }))
+        resp = self.client.post(reverse('accounting:compound-transaction'),
+            data=COMPOUND_DATA)
+        self.assertTrue(resp.status_code==302)
+
+    def test_post_transaction_form(self):
+        resp = self.client.post(reverse('accounting:create-transaction'),
+            data=self.TRANSACTION_DATA)
+        self.assertTrue(resp.status_code==302)
         
     def test_get_transaction_detail(self):
         resp = self.client.get(reverse('accounting:transaction-detail', 
@@ -595,10 +626,3 @@ class ViewTests(TestCase):
 
         self.assertTrue(resp.status_code == 302)
 
-
-class APITests(TestCase):
-    pass
-
-class FilterFormTests(TestCase):
-    #GET
-    pass

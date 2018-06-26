@@ -3,3 +3,4 @@ db.sqlite3
 /assets/node_modules/
 .coverage
 htmlcov/
+env/

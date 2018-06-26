@@ -57,7 +57,7 @@ class CompoundTransactionView(ExtraContext, CreateView):
                 date = request.POST['date'],
                 Journal = models.Journal.objects.get(
                     pk=request.POST['Journal']),
-                amount = item_data['amount'],
+                amount = float(item_data['amount']),
             )
 
             if item_data['debit'] == '1':
@@ -105,6 +105,8 @@ class EmployeeListView(ExtraContext, FilterView):
         'title': 'List of Employees',
         'new_link': reverse_lazy('accounting:create-employee')
     }
+    def get_queryset(self):
+        return models.Employee.objects.all().order_by('first_name')
 
 class EmployeeDetailView(DetailView):
     template_name = os.path.join('accounting', 'employee_detail.html')
@@ -167,7 +169,8 @@ class AccountListView(ExtraContext, FilterView):
         "title": "Chart of Accounts",
         'new_link': reverse_lazy('accounting:create-account')
                 }
-
+    def get_queryset(self):
+        return models.Account.objects.all().order_by('pk')
 #############################################################
 #                        Misc Views                         #
 #############################################################
@@ -225,10 +228,10 @@ class UtilsListView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(UtilsListView, self).get_context_data(*args, **kwargs)
-        context['allowances'] = models.Allowance.objects.all()
-        context['deductions'] = models.Deduction.objects.all()
-        context['commissions'] = models.CommissionRule.objects.all()
-        context['taxes'] = models.Tax.objects.all()
+        context['allowances'] = models.Allowance.objects.all().order_by('name')
+        context['deductions'] = models.Deduction.objects.all().order_by('name')
+        context['commissions'] = models.CommissionRule.objects.all().order_by('name')
+        context['taxes'] = models.Tax.objects.all().order_by('name')
         return context
 
 
@@ -313,17 +316,11 @@ class NonInvoicedCashSale(FormView):
     template_name = os.path.join('accounting', 'non_invoiced_cash_sale.html')
     success_url = reverse_lazy('accounting:dashboard')
 
-    def get(self, request):
-        resp = super(NonInvoicedCashSale, self).get(request)
-        print self.get_context_data()
-        return resp
-
     def post(self, request, *args, **kwargs):
         resp = super(NonInvoicedCashSale, self).post(request, *args, **kwargs)
         total = 0
         for item in request.POST.getlist('items[]'):
             data = json.loads(urllib.unquote(item))
-            print data
             quantity = float(data['quantity'])
             item = Item.objects.get(pk=data['code'])
             item.quantity -= quantity
@@ -369,6 +366,10 @@ class PayslipListView(ExtraContext, FilterView):
         'title': 'List of Payslips'
     }
 
+    def get_queryset(self):
+        return models.Payslip.objects.all().order_by('start_period')
+        
+
 class PayslipViewset(viewsets.ModelViewSet):
     queryset = models.Payslip.objects.all()
     serializer_class = serializers.PayslipSerializer
@@ -396,6 +397,9 @@ class JournalListView(ExtraContext, FilterView):
         "title": "Accounting Journals",
         'new_link': reverse_lazy('accounting:create-journal')
                 }
+
+    def get_queryset(self):
+        return models.Journal.objects.all().order_by('name')
 
 
 #############################################################
