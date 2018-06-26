@@ -28,10 +28,12 @@ class Transaction(models.Model):
         super(Transaction, self).save(*args, **kwargs)
         #cannot allow updates to transactions,
         # rather adjustments will be made to reflect corrections
-        self.credit.balance += self.amount
-        self.credit.save()
-        self.debit.balance -= self.amount
-        self.debit.save()
+        if self.credit:
+            self.credit.balance += self.amount
+            self.credit.save()
+        if self.debit:
+            self.debit.balance -= self.amount
+            self.debit.save()
 
 #implement forms as wrappers for transactions
 #should i allow users to delete accounts?

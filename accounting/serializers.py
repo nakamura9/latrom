@@ -16,4 +16,10 @@ class PayslipSerializer(serializers.ModelSerializer):
         model = models.Payslip
         fields = "__all__"
 
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Account
+        fields = "__all__"
+
         

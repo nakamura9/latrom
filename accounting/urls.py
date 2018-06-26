@@ -8,6 +8,10 @@ tax_router.register(r'^api/tax', views.TaxViewset)
 employee_router = routers.DefaultRouter()
 employee_router.register(r'^api/employee', views.EmployeeViewSet)
 
+account_router = routers.DefaultRouter()
+account_router.register(r'^api/account', views.AccountViewSet)
+
+
 payslip_router = routers.DefaultRouter()
 payslip_router.register(r'^api/payslip', views.PayslipViewset)
 
@@ -22,6 +26,8 @@ pay_urls = [
 transaction_urls = [
     url(r'^create-transaction/?$', views.TransactionCreateView.as_view(), 
     name='create-transaction'),
+    url(r'^compound-transaction/?$', views.CompoundTransactionView.as_view(), 
+    name='compound-transaction'),
     url(r'^transaction-detail/(?P<pk>[\w]+)/?$', views.TransactionDetailView.as_view(), 
     name='transaction-detail'),
 ]
@@ -40,6 +46,7 @@ employee_urls = [
 account_urls = [
     url(r'^create-account/?$', views.AccountCreateView.as_view(), 
         name='create-account'),
+    
     url(r'^account-detail/(?P<pk>[\w]+)/?$', views.AccountDetailView.as_view(), 
         name='account-detail'),
     url(r'^account-update/(?P<pk>[\w]+)/?$', views.AccountUpdateView.as_view(), 
@@ -80,4 +87,4 @@ urlpatterns =[
     url(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls + employee_router.urls + payslip_router.urls + \
     misc_urls + account_urls + employee_urls + journal_urls + \
-    transaction_urls + pay_urls
+    transaction_urls + pay_urls + account_router.urls

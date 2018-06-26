@@ -7,6 +7,7 @@ import datetime
 
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView,  FormView
+from django.http import HttpResponseRedirect
 from django_filters.views import FilterView
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -39,6 +40,34 @@ class TransactionCreateView(ExtraContext, CreateView):
     form_class = forms.TransactionForm
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {"title": "Create New Transaction"}
+
+class CompoundTransactionView(ExtraContext, CreateView):
+    template_name = os.path.join('accounting', 'compound_transaction.html')
+    form_class= forms.CompoundTransactionForm
+
+
+    def post(self, request, *args, **kwargs):
+        
+        for item in request.POST.getlist('items[]'):
+            item_data = json.loads(urllib.unquote(item))
+            
+            trans = models.Transaction(
+                reference = request.POST['reference'],
+                memo = request.POST['memo'],
+                date = request.POST['date'],
+                Journal = models.Journal.objects.get(
+                    pk=request.POST['Journal']),
+                amount = item_data['amount'],
+            )
+
+            if item_data['debit'] == '1':
+                trans.debit = models.Account.objects.get(
+                    pk=int(item_data['account']))
+            else:
+                trans.credit = models.Account.objects.get(
+                    pk=int(item_data['account']))
+            trans.save()
+        return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
 
 class TransactionDetailView(DeleteView):
     template_name = os.path.join('accounting', 'transaction_detail.html')
@@ -91,6 +120,10 @@ class EmployeeDeleteView(DeleteView):
 #############################################################
 #                 Account  Views                            #
 #############################################################
+class AccountViewSet(viewsets.ModelViewSet):
+    queryset = models.Account.objects.all()
+    serializer_class = serializers.AccountSerializer
+
 
 class AccountTransferPage(ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE

@@ -1,0 +1,28 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+              <div class="card-body">
+                <h4 class="card-title">Common Features</h4>
+                <form action="" method="POST">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <input type="submit" value="Submit" class="btn btn-default">
+                    </form>    
+              </div>
+            </div>
+            
+        </div>
+        <div class="col-sm-8">
+            <h3>Transaction Breakdown</h3>
+            <div id="transaction-table">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% render_bundle 'compound_transaction' %}
+{% endblock content %}

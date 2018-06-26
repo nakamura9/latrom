@@ -10,6 +10,7 @@ module.exports = {
         orders: './js/orders',
         payroll: './js/payroll',
         direct_purchase: './js/direct_purchase',
+        compound_transaction: './js/compound_transaction',
     },
     output: {
         path: path.resolve('./bundles/'),

@@ -17,6 +17,11 @@ class TransactionForm(forms.ModelForm, BootstrapMixin):
         model = models.Transaction
 
 
+class CompoundTransactionForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude=['amount', 'debit', 'credit']
+        model = models.Transaction
+
 class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields="__all__"
