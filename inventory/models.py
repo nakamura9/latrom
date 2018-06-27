@@ -118,8 +118,15 @@ class OrderItem(models.Model):
     #change and move this to the item
     #make changes to the react app as well
     order_price = models.FloatField()
-    received = models.BooleanField(default=False)
+    received = models.FloatField(default=0.0)
 
+    @property
+    def fully_received(self):
+        if self.received < self.quantity:
+            return False
+        return True
+
+        
     def __str__(self):
         return str(self.item) + ' -' + str(self.order_price)
 
