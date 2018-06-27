@@ -29,10 +29,12 @@
                 <a href="{% url 'invoicing:delete-invoice' invoice.pk %}" class="dropdown-item">
                     <i class="fas fa-trash"></i> Delete
                 </a>
+                {% if invoice.type_of_invoice == 'credit' %}
                 <div class="dropdown-divider"></div>
                 <a href="{% url 'invoicing:payment-from-invoice' invoice.pk %}" class="dropdown-item">
                     <i class="fas fa-share-square"></i> Create Payment From Invoice
                 </a>
+                {% endif %}
             </div>
         </div>
 

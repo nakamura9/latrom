@@ -1,11 +1,13 @@
 
 from django import forms
 from common_data.forms import BootstrapMixin
+from accounting.models import Account, Journal
 import models
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
+
 
 
 class ConfigForm(forms.Form):
@@ -15,6 +17,9 @@ class ConfigForm(forms.Form):
     currency = forms.ChoiceField(choices=[("dollars", "Dollars")])
     paper_size = forms.ChoiceField(choices=[(".page-a4", "A4"),(".page-a5", "A5"),(".page-a6", "A6")])
     margin_right = forms.CharField(widget=forms.NumberInput)
+    invoice_account = forms.ModelChoiceField(Account.objects.all())
+    sales_account = forms.ModelChoiceField(Account.objects.all())
+    journal = forms.ModelChoiceField(Journal.objects.all())
     margin_left = forms.CharField(widget=forms.NumberInput)
     margin_top = forms.CharField(widget=forms.NumberInput)
     margin_bottom = forms.CharField(widget=forms.NumberInput)
@@ -50,6 +55,8 @@ class SalesRepForm(forms.ModelForm, BootstrapMixin):
         model = models.SalesRepresentative
 
 class PaymentForm(forms.ModelForm, BootstrapMixin):
+    invoice = forms.ModelChoiceField(
+        models.Invoice.objects.filter(type_of_invoice ='credit'))
     class Meta:
         fields = '__all__'
         model = models.Payment

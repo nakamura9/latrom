@@ -223,17 +223,12 @@ class InvoiceCreateView(ExtraContext, CreateView):
                             discount=data['discount'],
                             item=Item.objects.get(pk=data['code']))
         
-        if request.POST.get('create_transaction', False):
-            Transaction(
-                date=inv.date,
-                amount = inv.total,
-                memo = "transaction concluded from invoice number: " + str(inv.pk),
-                reference = "transaction concluded from invoice number: " + str(inv.pk),
-                credit=Account.objects.get(name="Accounts Receivable"),
-                debit=Account.objects.get(name="General Sales"),
-                Journal=Journal.objects.first()# change this!
-            ).save()
-        
+        # moved here because the invoice item data must first be 
+        # saved in the database before inventory and transactions 
+        # can be created
+        inv.create_transaction()
+        inv.update_inventory()
+
         return resp
 
 class InvoiceUpdateView(ExtraContext, UpdateView):
@@ -255,17 +250,6 @@ class InvoiceUpdateView(ExtraContext, UpdateView):
         for pk in request.POST.getlist("removed_items[]"):
             InvoiceItem.objects.get(pk=pk).delete()
         
-        if request.POST.get('create_transaction', False):
-            Transaction(
-                date=inv.date,
-                amount = inv.total,
-                memo = "transaction concluded from invoice number: " + str(inv.pk),
-                reference = "transaction concluded from invoice number: " + str(inv.pk),
-                credit=Account.objects.get(name="Accounts Receivable"),
-                debit=Account.objects.get(name="General Sales"),
-                Journal=Journal.objects.first()# change this!
-            ).save()
-
         return resp
 
 #########################################

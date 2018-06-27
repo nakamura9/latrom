@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 
 from common_data.models import Person
+from accounting.models import Account, Journal
+from common_data.utilities import load_config
 from accounting.models import Employee, Transaction, Tax
 
 
@@ -37,7 +39,7 @@ class Invoice(models.Model):
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
-    account = models.ForeignKey("accounting.Account", null=True)#provide a default
+    account = models.ForeignKey("accounting.Account", null=True, blank=True)#provide a default
 
     @property
     def subtotal(self):
@@ -67,12 +69,28 @@ class Invoice(models.Model):
             date=self.date_issued,
             sales_rep = self.salesperson,
             ).save()
+    
+    def create_transaction(self):
+        config = load_config()
+        if self.type_of_invoice == "cash":
+            Transaction.objects.create(
+                reference='INV' + str(self.pk),
+                memo= 'Auto generated transaction from cash invoice.',
+                date=self.date_issued,
+                time='00:00',
+                amount = self.subtotal, #might change to total
+                credit = self.account if self.account else \
+                    Account.objects.get(pk=config['invoice_account']),
+                debit=self.customer.account \
+                    if self.customer.account else \
+                        Account.objects.get(pk=config['sales_account']),
+                Journal =Journal.objects.get(pk=config['journal'])
+            )
 
-    def save(self, *args, **kwargs):
-        super(Invoice, self).save(*args, **kwargs)
-        #make sure updates dont do this again
+    def update_inventory(self):
         for item in self.invoiceitem_set.all():
             item.item.quantity -= item.quantity
+        
         
 
 class InvoiceItem(models.Model):
@@ -126,8 +144,7 @@ class Payment(models.Model):
                                         default='transfer')
     reference_number = models.AutoField(primary_key=True)
     sales_rep = models.ForeignKey("invoicing.SalesRepresentative", null=True)
-    account = models.ForeignKey("accounting.Account", null=True)
-
+    
     def __str__(self):
         return 'PMT' + str(self.pk)
 
@@ -138,6 +155,26 @@ class Payment(models.Model):
     def create_receipt(self):
         Receipt(payment=self,
             comments='Auto generated receipt from a payment object').save()
+
+    def save(self, *args, **kwargs):
+        if self.invoice.type_of_invoice == "cash":
+            raise ValueError('Only Credit Invoices can create payments')
+        else:
+            super(Payment, self).save(*args, **kwargs)
+            Transaction.objects.create(
+                reference='PAY' + str(self.pk),
+                memo= 'Auto generated transaction from payment.',
+                date=self.date,
+                amount = self.amount, #might change to total
+                credit = Account.objects.get(
+                    pk=load_config()['invoice_account']),
+                debit=self.invoice.customer.account \
+                    if self.invoice.customer.account else \
+                        Account.objects.get(pk=config['sales_account']),
+                Journal =Journal.objects.get(pk=load_config()['journal'])
+            )
+        
+
 
 class Quote(models.Model):
     date = models.DateField(default=datetime.date.today)
@@ -167,13 +204,13 @@ class Quote(models.Model):
 
     def create_invoice(self):
         if not self.invoiced:
-            Invoice(
+            Invoice.objects.create(
                 customer=self.customer,
                 date_issued=self.date,
                 comments = self.comments,
                 tax=self.tax,
                 salesperson=self.salesperson
-            ).save()
+            )
             inv = Invoice.objects.latest('pk')
             for item in self.quoteitem_set.all():
                 inv.invoiceitem_set.create(

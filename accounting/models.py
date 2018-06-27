@@ -17,7 +17,7 @@ class Transaction(models.Model):
     credit = models.ForeignKey('accounting.Account', related_name="credit", null=True)
     debit = models.ForeignKey('accounting.Account', null=True)
     Journal = models.ForeignKey('accounting.Journal',null=True, blank=True)
-    #signal transactions 
+    
     def __str__(self):
         if self.reference:
             return str(self.id) + " " + self.reference
@@ -203,3 +203,7 @@ class Payslip(models.Model):
     def net_pay(self):
         return self.gross_pay - self.income_tax - \
             self.employee.pay_grade.total_deductions
+
+
+#direct payment model
+#accounts payable model
