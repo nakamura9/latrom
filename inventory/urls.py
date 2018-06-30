@@ -27,7 +27,9 @@ urlpatterns = [
     url(r'^order-list/?$', views.OrderListView.as_view(), name="order-list"),
     url(r'^order-update/(?P<pk>[\w]+)/?$', views.OrderUpdateView.as_view(), name="order-update"),
     url(r'^order-delete/(?P<pk>[\w]+)/?$', views.OrderDeleteView.as_view(), name="order-delete"),
+    url(r'^order-status/(?P<pk>[\w]+)/?$', views.OrderStatusView.as_view(), name="order-status"),
     url(r'^order-detail/(?P<pk>[\w]+)/?$', views.OrderDetailView.as_view(), name="order-detail"),
     url(r'^stock-receipt-create/?$', views.StockReceiptCreateView.as_view(), name="stock-receipt-create"),
     url(r'^receive-from-order/(?P<pk>[\w]+)/?$', views.create_stock_receipt_from_order, name="receive-from-order"),
+    url(r'^config/?$', views.ConfigView.as_view(), name="config"),
 ] + item_router.urls + order_router.urls + order_item_router.urls

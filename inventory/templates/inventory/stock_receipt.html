@@ -1,0 +1,43 @@
+{% extends "window.html" %} 
+{% load static %} 
+{% load render_bundle from webpack_loader %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> 
+{% endblock %} 
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Order Receipt Form</h1>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <form method="POST" action="" 
+                        enctype="multipart/form-data"
+                        id="form">
+                        {% csrf_token %}
+                        <table class="table">
+                            {{form.as_table}}
+                        </table>
+                        <button id="submit-button" class="btn btn-default pull-right" type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="item-table" class="col-sm-6">
+            
+        </div>
+    </div>
+
+</div>
+
+
+{% render_bundle 'stock_receipt' %}
+
+{% endblock %}

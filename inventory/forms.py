@@ -1,12 +1,17 @@
 
 from django import forms
-import models 
+import models
+from accounting.models import Account
 from common_data.forms import BootstrapMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 
 #models ommitted UnitOfMeasure OrderItem Category
+
+class ConfigForm(BootstrapMixin, forms.Form):
+    inventory_account= forms.ModelChoiceField(Account.objects.all())
+    order_account= forms.ModelChoiceField(Account.objects.all())
 
 class SupplierForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -55,6 +60,9 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     'supplier',
                     'status'
                     ),
+                Tab('Payment', 
+                'type_of_order',
+                'deferred_date'),
                 Tab('Shipping and Notes', 
                     'bill_to', 
                     'ship_to',
@@ -70,7 +78,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         
 class StockReceiptForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = 'received_items',
+        exclude = 'fully_received',
         model= models.StockReceipt
         
 

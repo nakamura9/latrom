@@ -1,0 +1,8 @@
+{
+    "invoice_account": "1",
+    "journal": "1",
+    "default_terms": "Pay strictly in 7 days", 
+    "default_invoice_comments": "Thank you for your business",
+    "invoice_template": "1",
+    "sales_account": "1"
+}

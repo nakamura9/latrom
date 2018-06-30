@@ -29,6 +29,8 @@ class ConfigForm(forms.Form):
     tax_column = forms.BooleanField(required=False)
     invoice_template = forms.ChoiceField(choices=[("1", "Simple"),("2", "Blue"),("3", "Steel"),("4", "Verdant"),("5", "Warm"),])
     registration_number = forms.CharField()
+    default_terms = forms.CharField()
+    default_invoice_comments = forms.CharField(widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)

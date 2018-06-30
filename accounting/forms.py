@@ -2,9 +2,33 @@
 from django import forms
 from common_data.forms import BootstrapMixin
 import models
+from inventory.models import Supplier
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
+
+class ConfigForm(BootstrapMixin, forms.Form):
+    start_of_financial_year = forms.DateField()
+    use_default_account_names = forms.BooleanField()
+    direct_payment_journal = forms.ModelChoiceField(models.Journal.objects.all())
+    cash_sale_account = forms.ModelChoiceField(
+        models.Account.objects.all())
+    direct_payment_account = forms.ModelChoiceField(
+        models.Account.objects.all())
+
+class DirectPaymentForm(BootstrapMixin, forms.Form):
+    date = forms.DateField()
+    paid_to = forms.ModelChoiceField(Supplier.objects.all())
+    account_paid_from = forms.ModelChoiceField(models.Account.objects.all())
+    account_paid_to = forms.ModelChoiceField(models.Account.objects.all())
+    method = forms.ChoiceField(choices=[
+        ('cash', 'Cash'),
+        ('transfer', 'Transfer'),
+        ('ecocash', 'Ecocash')])
+    amount = forms.CharField(widget=forms.NumberInput)
+    reference = forms.CharField()
+    notes = forms.CharField(widget=forms.Textarea)
+    
 
 class TaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:

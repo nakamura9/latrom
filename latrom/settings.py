@@ -143,3 +143,7 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'assets', 'webpack-stats.json'),
     }
 }
+
+CONFIG_FILE = 'config.json'
+TEST_CONFIG_FILE = 'test.json'
+TEST_RUN_MODE = False 

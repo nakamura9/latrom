@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from rest_framework.viewsets import ModelViewSet
 from django_filters.views import FilterView
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 import forms
 import models
@@ -30,7 +30,9 @@ class InventoryHome(ExtraContext, FilterView):
     filterset_class = filters.ItemFilter
     template_name = os.path.join("inventory", "inventory_list.html")
 
-
+    def get_queryset(self):
+        return models.Item.objects.all().order_by('pk')
+        
 ################################################
 #              Item views                      #
 ################################################
@@ -42,7 +44,7 @@ class ItemAPIView(ModelViewSet):
 class ItemDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.Item
-    success_url = reverse_lazy('invoicing.item-list')
+    success_url = reverse_lazy('inventory:item-list')
 
 class ItemUpdateView(ExtraContext, UpdateView):
     form_class = forms.ItemForm
@@ -64,6 +66,10 @@ class ItemListView(ExtraContext, FilterView):
         'title': 'Item List',
         "new_link": reverse_lazy("inventory:item-create")
     }
+
+    def get_queryset(self):
+        return models.Item.objects.all().order_by('pk')
+
 
 class ItemCreateView(ExtraContext, CreateView):
     form_class = forms.ItemForm
@@ -129,7 +135,6 @@ class OrderCreateView(ExtraContext, CreateView):
         
         for item in items:
             data = json.loads(urllib.unquote(item))
-            print data
             order.orderitem_set.create(
                 item=models.Item.objects.get(
                     pk=data['item_name']),
@@ -150,12 +155,12 @@ class OrderUpdateView(ExtraContext, UpdateView):
         order = self.get_object()
 
         for item in items:
-            data = json(urllib.unquote(item))
+            data = json.loads(urllib.unquote(item))
             order.orderitem_set.create(
                 item=models.Item.objects.get(
-                    pk=data['code']),
+                    pk=data['item_name']),
                     quantity=data['quantity'],
-                    order_price=data['price'])
+                    order_price=data['order_price'])
 
         for pk in request.POST.getlist("removed_items[]"):
             models.OrderItem.objects.get(pk=pk).delete()
@@ -168,6 +173,13 @@ class OrderListView(ExtraContext, FilterView):
     template_name = os.path.join("inventory", "order_list.html")
     extra_context = {"title": "Order List",
                     "new_link": reverse_lazy("inventory:order-create")}
+
+    def get_queryset(self):
+        return models.Order.objects.all().order_by('pk')
+
+class OrderStatusView(ExtraContext, DetailView):
+    template_name = os.path.join('inventory', 'order_status.html')
+    model = models.Order
 
 class OrderDeleteView(DeleteView):
     model = models.Order
@@ -212,6 +224,8 @@ class SupplierListView(ExtraContext, FilterView):
     extra_context = {"title": "Supplier List",
                     "new_link": reverse_lazy("inventory:supplier-create")}
 
+    def get_queryset(self):
+        return models.Supplier.objects.all().order_by('pk')
                     
 class SupplierDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
@@ -236,8 +250,17 @@ class StockReceiptCreateView(CreateView):
     form_class = forms.StockReceiptForm
     model = models.StockReceipt
     success_url = reverse_lazy('inventory:home')
-    template_name = os.path.join("common_data", "create_template.html")
+    template_name = os.path.join("inventory", "stock_receipt.html")
     extra_context = {"title": "Receive Ordered goods"}
+
+    def post(self, request, *args, **kwargs):
+        resp = super(StockReceiptCreateView, self).post(request, *args, **kwargs)
+        data = json.loads(urllib.unquote(request.POST['received-items']))
+        for key in data.keys():
+            _ , pk = key.split('-')
+            models.OrderItem.objects.get(pk=pk).receive(data[key])
+            
+        return resp 
 
 class CategoryCreateView(CreateView):
     form_class = forms.CategoryForm
@@ -251,8 +274,25 @@ class UnitDeleteView(DeleteView):
     model = models.UnitOfMeasure
     success_url = reverse_lazy('invoicing.item-list')
 
+class ConfigView(FormView):
+    template_name = os.path.join('inventory', 'config.html')
+    form_class = forms.ConfigForm
+    success_url = reverse_lazy('inventory:home')
+    
+    def get_initial(self):
+        return load_config()
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            config = load_config()
+            new_config = dict(config)
+            new_config.update(request.POST.dict())
+            json.dump(new_config, open('config.json', 'w'))
+        return super(ConfigView, self).post(request)
+
 
 def create_stock_receipt_from_order(request, pk):
     order = get_object_or_404(models.Order, pk=pk)
     order.receive()
-    return HttpResponseRedirect(reverse_lazy('inventory:dashboard'))
+    return HttpResponseRedirect(reverse_lazy('inventory:home'))

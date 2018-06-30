@@ -232,6 +232,10 @@ class ModelTests(TestCase):
         self.assertEqual(self.account_c.balance, 120)
         self.assertEqual(self.account_d.balance, 80)
 
+    def test_increment_decrement_account(self):
+        self.assertEqual(self.account_c.increment(10), 130)
+        self.assertEqual(self.account_c.decrement(10), 120)
+
 
 class ViewTests(TestCase):
     
@@ -252,7 +256,8 @@ class ViewTests(TestCase):
                 'phone': '123456789',
                 'title': 'manager',
                 'pay_grade': cls.grade.pk,
-                'hire_date': TODAY
+                'hire_date': TODAY,
+                'leave_days': 0
                 }
         cls.ACCOUNT_DATA = {
                 'name': 'Other Test Account',
@@ -332,6 +337,14 @@ class ViewTests(TestCase):
         resp = self.client.get(reverse('accounting:employee-delete', 
             kwargs={'pk': self.employee.pk}))
         self.assertTrue(resp.status_code==200)
+
+    def test_post_employee_delete_form(self):
+
+        resp = self.client.post(reverse('accounting:employee-delete', 
+            kwargs={
+                'pk': Employee.objects.latest('pk').pk
+            }))
+        self.assertTrue(resp.status_code==302)
 
     #TRANSACTIONS
     def test_get_transaction_form(self):
@@ -446,6 +459,12 @@ class ViewTests(TestCase):
                 'pk': self.allowance.pk
             }))
 
+    def test_post_allowance_delete(self):
+        resp = self.client.post(reverse('accounting:delete-allowance',
+            kwargs={
+                'pk': Allowance.objects.latest('pk').pk
+            }))
+
     def test_get_transfer_form(self):
         resp = self.client.get(reverse('accounting:transfer'))
         self.assertTrue(resp.status_code == 200)
@@ -499,6 +518,12 @@ class ViewTests(TestCase):
                 'pk': self.commission.pk
             }))
 
+    def test_post_commission_delete(self):
+        resp = self.client.post(reverse('accounting:delete-commission',
+            kwargs={
+                'pk': CommissionRule.objects.latest('pk').pk
+            }))
+
     def test_get_deduction_form(self):
         resp = self.client.get(reverse('accounting:create-deduction'))
         self.assertTrue(resp.status_code == 200)
@@ -544,6 +569,12 @@ class ViewTests(TestCase):
         resp = self.client.get(reverse('accounting:delete-deduction',
             kwargs={
                 'pk': self.deduction.pk
+            }))
+
+    def test_post_deduction_delete(self):
+        resp = self.client.post(reverse('accounting:delete-deduction',
+            kwargs={
+                'pk': Deduction.objects.latest('pk').pk
             }))
 
     def test_get_cash_sale(self):
@@ -626,3 +657,18 @@ class ViewTests(TestCase):
 
         self.assertTrue(resp.status_code == 302)
 
+    #CONFIG 
+    def test_get_config_form(self):
+        resp = self.client.get(reverse('accounting:config'))
+        self.assertTrue(resp.status_code == 200)
+
+    def test_post_config_form(self):
+        resp = self.client.post(reverse('accounting:config'),
+            data={
+                'start_of_financial_year': '06/01/2018',
+                'use_default_account_names': True,
+                'direct_payment_journal': self.journal.pk,
+                'cash_sale_account': self.account_c.pk,
+                'direct_payment_account': self.account_c.pk})
+
+        self.assertTrue(resp.status_code == 302)

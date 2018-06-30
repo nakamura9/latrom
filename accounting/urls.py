@@ -70,7 +70,9 @@ misc_urls = [
     url(r'^create-tax/?$', views.TaxCreateView.as_view(), name='create-tax'),
     url(r'^delete-tax/(?P<pk>[\w]+)/?$', views.TaxDeleteView.as_view(), name='delete-tax'),
     url(r'^update-tax/(?P<pk>[\w]+)/?$', views.TaxUpdateView.as_view(), name='update-tax'),
-    url(r'^util-list/?$', views.UtilsListView.as_view(), name='util-list')]
+    url(r'^util-list/?$', views.UtilsListView.as_view(), name='util-list'),
+    url(r'^config/?$', views.AccountConfigView.as_view(), name='config'),
+    url(r'^direct-payment/?$', views.DirectPaymentFormView.as_view(), name='direct-payment')]
 
 
 journal_urls = [

@@ -1,0 +1,52 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Order Status Page</h1>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="card-deck">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Order Details</h4>
+                    <p class="card-text">Order ID: ORD{{object.id}} </p>
+                    <p class="card-text">Order Date: {{object.issue_date}} </p>
+                    <p class="card-text">Expected Receipt Date: {{object.expected_receipt_date}} </p>
+                    <p class="card-text">Supplier: {{object.supplier}}</p>
+                    <p class="card-text">Number of items ordered: {{object.orderitem_set.all.count}}</p>
+                    <p class="card-text">Status: {{object.status}} </p>
+                    <p class="card-text">Fully Received: {{object.fully_received}} </p>
+                    <p class="card-text">% Items received: {{object.percent_received}} </p>
+
+                </div>
+            </div>
+            <div class="card bg-primary text-white">
+                <div class="card-body ">
+                    <h4 class="card-title">Order Items</h4>
+                    <table class="table table-striped">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Ordered Quantity</th>
+                                <th>Quantity Received</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in object.orderitem_set.all %}
+                            <tr>
+                                <td>{{item.item.item_name}}</td>
+                                <td>{{item.quantity}}</td>
+                                <td>{{item.received}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

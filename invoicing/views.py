@@ -34,6 +34,7 @@ class CustomerAPIViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = serializers.CustomerSerializer
 
+#No customer list, overlooked!
 
 class CustomerCreateView(ExtraContext, CreateView):
     extra_context = {"title": "Create New Customer"}
@@ -65,6 +66,10 @@ class CustomerListView(ExtraContext, FilterView):
     template_name = os.path.join("invoicing", "customer_list.html")
     filterset_class = filters.CustomerFilter
     paginate_by = 2
+
+    def get_queryset(self):
+        return Customer.objects.all().order_by('last_name')
+
 
 
 class CustomerDeleteView(DeleteView):
@@ -116,6 +121,10 @@ class PaymentUpdateView(ExtraContext, UpdateView):
     form_class = forms.PaymentForm
     success_url = reverse_lazy("invoicing:home")
 
+class SalesRepDeleteView(DeleteView):
+    template_name = os.path.join("common_data", "delete_template.html")
+    model = SalesRepresentative
+    success_url = reverse_lazy("invoicing:invoices-list")
 
 class PaymentListView(ExtraContext, FilterView):
     extra_context = {"title": "List of Payments",
@@ -124,6 +133,9 @@ class PaymentListView(ExtraContext, FilterView):
     filterset_class = filters.PaymentFilter
     paginate_by = 2
     
+    def get_queryset(self):
+        return Payment.objects.all().order_by('date')
+
 
 #########################################
 #           Sales Rep Views             #
@@ -152,6 +164,8 @@ class SalesRepListView(ExtraContext, FilterView):
     filterset_class = filters.SalesRepFilter
     paginate_by = 2
 
+    def get_queryset(self):
+        return SalesRepresentative.objects.all().order_by('pk')
 
 class SalesRepsAPIViewSet(viewsets.ModelViewSet):
     queryset = SalesRepresentative.objects.all()
@@ -182,6 +196,9 @@ class InvoiceListView(ExtraContext, FilterView):
     template_name = os.path.join("invoicing", "invoice_list.html")
     filterset_class = filters.InvoiceFilter
     paginate_by = 5
+
+    def get_queryset(self):
+        return Invoice.objects.all().order_by('date_issued')
     
 
 class InvoiceDetailView(DetailView):
@@ -338,6 +355,9 @@ class QuoteListView(ExtraContext, FilterView):
     template_name = os.path.join("invoicing", "quote_list.html")
     filterset_class = filters.QuoteFilter
     paginate_by = 5
+
+    def get_queryset(self):
+        return Quote.objects.all().order_by('date')
     
 class QuoteDeleteView(DeleteView):
     template_name = os.path.join("common_data", "delete_template.html")
@@ -376,7 +396,8 @@ class ReceiptListView(ExtraContext, FilterView):
     filterset_class = filters.ReceiptFilter
     paginate_by = 5
     
-
+    def get_queryset(self):
+        return Receipt.objects.all().order_by('pk')
 
 class ReceiptDetailView(DetailView):
     model = Receipt
@@ -412,10 +433,10 @@ class ConfigView(FormView):
     
     
     def get_context_data(self):
-        
         context = super(ConfigView, self).get_context_data()
-        context['logo']='/media/logo/' + load_config()['logo']
-        context['taxes'] = Tax.objects.all()
+        config = load_config() 
+        if config.get('logo', None):
+            context['logo']='/media/logo/' + config['logo']
         return context
 
 
@@ -434,9 +455,6 @@ class ConfigView(FormView):
             with open(path, 'wb+') as img:
                 for chunk in file.chunks():
                     img.write(chunk)
-        else:
-            # keep the existing logo if no changes have been made
-            data['logo'] = load_config()['logo']
             
         json.dump(data, open("config.json", 'w'))
         return HttpResponseRedirect(reverse_lazy("invoicing:home"))

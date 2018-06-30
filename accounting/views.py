@@ -279,6 +279,53 @@ class CommissionDeleteView(DeleteView):
     success_url = reverse_lazy('accounting:util-list')
     model = models.CommissionRule
 
+class DirectPaymentFormView(ExtraContext, FormView):
+    form_class = forms.DirectPaymentForm
+    template_name = CREATE_TEMPLATE
+    success_url = reverse_lazy('accounting:dashboard')
+    extra_context = {'title': 'Create Direct Payment Transaction'}
+    def post(self, request):
+        
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            notes_string = """
+                This payment was made out to: %s.
+                the payment method used: %s \n """ % \
+                (form.cleaned_data['paid_to'],
+                    form.cleaned_data['method'])
+            journal = models.Journal.objects.get(
+                pk=load_config()['direct_payment_journal'])
+            models.Transaction.objects.create(
+                reference = 'DPMT:' + form.cleaned_data['reference'],
+                memo=notes_string + form.cleaned_data['notes'],
+                date=form.cleaned_data['date'],
+                amount=form.cleaned_data['amount'],
+                credit=form.cleaned_data['account_paid_to'],
+                debit=form.cleaned_data['account_paid_from'],
+                Journal = journal
+        )
+        return super(DirectPaymentFormView, self).post(request)
+
+class AccountConfigView(FormView):
+    form_class = forms.ConfigForm
+    template_name = os.path.join('accounting', 'config.html')
+    success_url = reverse_lazy('accounting:dashboard')
+    
+
+    def get_initial(self):
+        return load_config()
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            config = load_config()
+            new_config = dict(config)
+            new_config.update(request.POST.dict())
+            json.dump(new_config, open('config.json', 'w'))
+
+        return super(AccountConfigView, self).post(request)
+
 ###################################################
 #                 Pay Grade Views                 #
 ###################################################
@@ -346,8 +393,6 @@ class NonInvoicedCashSale(FormView):
 #############################################################
 
 class PayslipView( DetailView):
-    
-    
     template_name = os.path.join('accounting', 'payslip.html')
     model= models.Payslip
 
@@ -356,7 +401,6 @@ class PayslipView( DetailView):
         context['title'] = 'Pay Slip'
         context.update(load_config())
         return context
-
 
 class PayslipListView(ExtraContext, FilterView):
     filterset_class = filters.PayslipFilter
@@ -428,7 +472,3 @@ class PayrollConfigView(ExtraContext, TemplateView):
     extra_context = {
         'employees': models.Employee.objects.all()
     }
-
-
-
-

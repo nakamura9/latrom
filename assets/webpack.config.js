@@ -11,6 +11,7 @@ module.exports = {
         payroll: './js/payroll',
         direct_purchase: './js/direct_purchase',
         compound_transaction: './js/compound_transaction',
+        stock_receipt: './js/stock_receipt',
     },
     output: {
         path: path.resolve('./bundles/'),

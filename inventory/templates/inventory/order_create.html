@@ -83,6 +83,14 @@
             );
         {% endfor %}
         });
+                $("#id_deferred_date").hide();
+                $('#id_type_of_order').change(function(evt){
+                    if(evt.target.value === "1"){
+                        $("#id_deferred_date").show();
+                    }else{
+                        $("#id_deferred_date").hide();
+                    }
+                })
     </script>
 {% render_bundle 'orders' %}
 {% endblock %}

@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^customer-list$', views.CustomerListView.as_view(), name='customers-list'),
     url(r'^create-sales-rep$', views.SalesRepCreateView.as_view(), name='create-sales-rep'),
     url(r'^update-sales-rep/(?P<pk>[\w]+)$', views.SalesRepUpdateView.as_view(), name='update-sales-rep'),
+    url(r'^delete-sales-rep/(?P<pk>[\w]+)$', views.SalesRepDeleteView.as_view(), name='delete-sales-rep'),
     url(r'^sales-reps-list$', views.SalesRepListView.as_view(), name='sales-reps-list'),
     url(r'^invoices-list$', views.InvoiceListView.as_view(), name='invoices-list'),
     url(r'^create-invoice$', views.InvoiceCreateView.as_view(), name='create-invoice'),

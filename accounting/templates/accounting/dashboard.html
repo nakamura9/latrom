@@ -42,10 +42,10 @@
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="#">Create Direct Purchase</a>
+                                <a href="{% url 'accounting:direct-payment' %}">Create Direct Payment</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="#">List Direct Purchases</a>
+                                <a href="#">List Direct Payments</a>
                             </li>
                             <li class="list-group-item">
                                 <a href="{% url 'inventory:order-create' %}">Create Purchase Order</a>
@@ -144,7 +144,7 @@
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="">Settings</a>
+                                <a href="{% url 'accounting:config' %}">Settings</a>
                             </li>
                         </ul>
                     </div>

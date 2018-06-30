@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import Q
 import datetime
 from common_data.models import Person
 from django.utils import timezone
@@ -29,11 +30,9 @@ class Transaction(models.Model):
         #cannot allow updates to transactions,
         # rather adjustments will be made to reflect corrections
         if self.credit:
-            self.credit.balance += self.amount
-            self.credit.save()
+            self.credit.increment(self.amount)
         if self.debit:
-            self.debit.balance -= self.amount
-            self.debit.save()
+            self.debit.decrement(self.amount)
 
 #implement forms as wrappers for transactions
 #should i allow users to delete accounts?
@@ -46,9 +45,20 @@ class Account(models.Model):
         ('asset', 'Asset'), 
         ('liability', 'Liability')])
     description = models.TextField()
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+
+    def increment(self, amount):
+        self.balance += float(amount)
+        self.save()
+        return self.balance
+
+    def decrement(self, amount):
+        self.balance -= float(amount)
+        self.save()
+        return self.balance
     
     
 class Ledger(models.Model):
@@ -62,6 +72,10 @@ class Journal(models.Model):
     name = models.CharField(max_length=64)
     start_period = models.DateField()
     end_period = models.DateField()
+    
+    @property
+    def is_open(self):
+        return datetime.date.today() < self.end_period
 
     def __str__(self):
         return self.name 
@@ -89,15 +103,38 @@ class Employee(Person):
     hire_date = models.DateField()
     title = models.CharField(max_length=32)
     pay_grade = models.ForeignKey('accounting.PayGrade', null=True)
+    leave_days = models.FloatField(default=0)
+    active = models.BooleanField(default=True)
     
     def __str__(self):
         return self.first_name + " " + self.last_name
+
+    def payslips_YTD(self):
+        curr_year = datetime.date.today().year
+        start = datetime.date(curr_year, 1, 1)
+        end = datetime.date(curr_year,12,31)
+        
+        return Payslip.objects.filter(Q(employee=self) \
+            & Q(start_period__gte=start) \
+            & Q(end_period__lte=end)) 
+    
+    @property
+    def deductions_YTD(self):
+        slips = self.payslips_YTD()
+        return reduce(lambda x, y: x + y, [i.total_deductions \
+             for i in slips], 0)
+
+    @property
+    def earnings_YTD(self):
+        slips = self.payslips_YTD()
+        return reduce(lambda x, y: x + y, [i.gross_pay \
+             for i in slips], 0)    
     
     
 class Allowance(models.Model):
     name = models.CharField(max_length = 32)
     amount = models.FloatField()
-
+    active = models.BooleanField(default=True)
     def __str__(self):
         return self.name
     
@@ -106,6 +143,7 @@ class Deduction(models.Model):
     method = models.IntegerField(choices=((0, 'Rated'), (1, 'Fixed')))
     rate = models.FloatField(default=0)
     amount = models.FloatField(default=0)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -120,6 +158,7 @@ class CommissionRule(models.Model):
     name = models.CharField(max_length=32)
     min_sales = models.FloatField()
     rate = models.FloatField()
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -164,13 +203,27 @@ class Payslip(models.Model):
     def __str__(self):
         return str(self.employee) 
     
-    
+    def save(self, *args, **kwargs):
+        super(Payslip, self).save(*args, **kwargs)
+        #add leave for each month fix this
+        self.employee.leave_days += self.employee.pay_grade.monthly_leave_days
+        self.employee.save()
+
     @property
     def commission_pay(self):
-        raise NotImplementedError()
         if not self.employee.pay_grade.commission:
             return 0
-        return self.employee.pay_grade.commission * self.employee.sales(self.start_period, self.end_period)
+        
+        elif not hasattr(self.employee, 'salesrepresentative'):
+            return 0
+        else:
+            print 'sales!'
+            total_sales = \
+                self.employee.salesrepresentative.sales(self.start_period, 
+                    self.end_period)
+            commissionable_sales = total_sales - self.commission.min_sales
+            return self.employee.pay_grade.commission.rate * \
+                commissionable_sales
 
     @property 
     def normal_pay(self):
@@ -197,13 +250,13 @@ class Payslip(models.Model):
         gross += self.overtime_one_pay
         gross += self.overtime_two_pay
         gross += self.employee.pay_grade.total_allowances
+        gross += self.commission_pay
         return gross
 
     @property
+    def total_deductions(self):
+        return self.income_tax + self.employee.pay_grade.total_deductions
+
+    @property
     def net_pay(self):
-        return self.gross_pay - self.income_tax - \
-            self.employee.pay_grade.total_deductions
-
-
-#direct payment model
-#accounts payable model
+        return self.gross_pay - self.total_deductions
