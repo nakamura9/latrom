@@ -65,19 +65,9 @@ if(populated){
         removeHandler={removeHandler}
         url="/invoicing/api/invoice/" />, 
         document.getElementById('populated-item-table'));
-    /*
-    ReactDOM.render(<SearchWidget populated={true} 
-        populatedHandler={populatedHandler} 
-        url="/invoicing/api/customer/" 
-        handler={searchHandler} />, 
-        document.getElementById('customer-search')); */
 }else{
     ReactDOM.render(<InvoiceTable populated={false} 
         addHandler={addHandler} 
         removeHandler={removeHandler}
         url="/invoicing/api/invoice/" />, document.getElementById('item-table'));
-    /**
-    ReactDOM.render(<SearchWidget  url="/invoicing/api/customer/" 
-        handler={searchHandler} />, 
-        document.getElementById('customer-search')); */
 }

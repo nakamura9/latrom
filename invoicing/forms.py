@@ -8,8 +8,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 
-
-
 class ConfigForm(forms.Form):
     business_name = forms.CharField()
     business_address = forms.CharField(widget=forms.Textarea)
@@ -18,6 +16,7 @@ class ConfigForm(forms.Form):
     paper_size = forms.ChoiceField(choices=[(".page-a4", "A4"),(".page-a5", "A5"),(".page-a6", "A6")])
     margin_right = forms.CharField(widget=forms.NumberInput)
     invoice_account = forms.ModelChoiceField(Account.objects.all())
+    invoice_credit_account = forms.ModelChoiceField(Account.objects.all())
     sales_account = forms.ModelChoiceField(Account.objects.all())
     journal = forms.ModelChoiceField(Journal.objects.all())
     margin_left = forms.CharField(widget=forms.NumberInput)

@@ -387,6 +387,14 @@ class NonInvoicedCashSale(FormView):
             ).save()
         return resp
 
+class DirectPaymentList(ExtraContext, TemplateView):
+    template_name = os.path.join('accounting', 'direct_payment_list.html')
+    extra_context = {
+        'transactions': lambda : models.Transaction.objects.filter(
+           Journal = models.Journal.objects.get(
+                pk=load_config()['direct_payment_journal']) 
+        ) 
+    }
 
 #############################################################
 #                     Payslip Views                         #

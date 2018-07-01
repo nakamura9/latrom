@@ -97,23 +97,6 @@ class PaymentCreateView(ExtraContext, CreateView):
     success_url = reverse_lazy("invoicing:home")
     form_class = forms.PaymentForm
 
-    def post(self,request, *args, **kwargs):
-        resp = super(PaymentCreateView, self).post(request, *args, **kwargs)
-        p = Payment.objects.latest('pk')
-        Transaction(
-                date=p.date,
-                amount = p.invoice.total,
-                memo = "transaction concluded from payment number: " + 
-                    str(p.pk),
-                reference = "transaction concluded from payment number: " + 
-                    str(p.pk),
-                credit=Account.objects.get(name="Current Account"),
-                debit=Account.objects.get(name="Accounts Receivable"),
-                Journal=Journal.objects.first()# change this!
-            ).save()
-
-        return resp
-
 class PaymentUpdateView(ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Payment"}
     template_name = os.path.join("common_data", "create_template.html")
@@ -384,7 +367,6 @@ class ReceiptCreateView(ExtraContext, CreateView):
     model = Receipt
     success_url = reverse_lazy('invoicing:home')
 
-    
 
 class ReceiptListView(ExtraContext, FilterView):
     extra_context = {

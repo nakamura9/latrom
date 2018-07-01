@@ -8,7 +8,8 @@ import os
 import urllib
 from models import *
 import datetime
-
+from latrom import settings
+settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
 def create_account_models(cls):
@@ -672,3 +673,7 @@ class ViewTests(TestCase):
                 'direct_payment_account': self.account_c.pk})
 
         self.assertTrue(resp.status_code == 302)
+
+    def test_get_direct_payment_list(self):
+        resp = self.client.get(reverse('accounting:direct-payment-list'))
+        self.assertEqual(resp.status_code, 200)

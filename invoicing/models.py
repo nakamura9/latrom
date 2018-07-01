@@ -26,6 +26,10 @@ class Customer(Person):
     account = models.ForeignKey('accounting.Account', null=True, blank=True)
     active = models.BooleanField(default=True)
 
+    def delete(self):
+        self.active = False
+        self.save()
+
     def __str__(self):
         return self.first_name + " " + self.last_name
 
@@ -184,8 +188,11 @@ class Payment(models.Model):
     def create_receipt(self):
         r = Receipt.objects.create(payment=self,
             comments='Auto generated receipt from a payment object')
-
         return r
+
+    def delete(self):
+        self.active = False
+        self.save()
 
     def save(self, *args, **kwargs):
         if self.invoice.type_of_invoice == "cash":
@@ -281,8 +288,8 @@ class QuoteItem(models.Model):
         self.price = self.item.unit_sales_price
         self.save()
 
+#do i need this model?
 class Receipt(models.Model):
-    #make sure one of the two options is selected
     payment = models.OneToOneField('invoicing.Payment', null=True)
     comments = models.TextField()
     

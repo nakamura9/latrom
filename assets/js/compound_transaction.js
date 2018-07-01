@@ -21,8 +21,6 @@ class TransactionTable extends Component{
                 debit = debit + parseFloat(transactions[i].amount);
             }
         }
-        console.log('credit: ' + credit);
-        console.log('debit: ' + debit);
         if(credit === debit){
             this.setState({balanced: 1});
         }else{
@@ -132,7 +130,6 @@ class EntryRow extends Component {
             $('select[name=account]').prop('selectedIndex', 0);
             $('select[name=debit]').prop('selectedIndex', 0);
             $('input[name=amount]').val("");
-        
         }
         
     }

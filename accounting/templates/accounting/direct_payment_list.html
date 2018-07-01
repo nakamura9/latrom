@@ -1,0 +1,42 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">List of Direct Payments</h1>
+    <p class="lead">Transactions are all stored in the direct payment journal</p>
+    <hr class="my-2">
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'accounting:direct-payment' %}" role="button">Create New</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <table class="table table-striped" style="max-height: 400px;overflow-y:auto;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Paid To</th>
+                    <th>Paid From</th>
+                    <th>Comments</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr>
+                    <td>{{t.date}}</td>
+                    <td>{{t.credit}}</td>
+                    <td>{{t.debit}}</td>
+                    <td>{{t.memo}}</td>
+                    <td>
+                        <a href="{% url 'accounting:transaction-detail' pk=t.pk %}" class="btn btn-success">Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}
