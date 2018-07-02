@@ -47,7 +47,7 @@
     <td >{{item.item.description}}</td>
     <td >{{item.price}}</td>
     <td>{{item.discount}}</td>
-    <td >{{item.subtotal}}</td>
+    <td >{{item.subtotal | floatformat:2 }}</td>
 </tr>
 {% endfor %}
 <tr style="height:100%">
@@ -63,15 +63,15 @@
 {% block content_footer %}
 <tr>
     <td colspan="5"><b>SubTotal:</b></td>
-    <td>{{object.subtotal}}</td>
+    <td>{{object.subtotal | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="5"><b>Tax:</b></td>
-    <td>{{object.tax_amount}}</td>
+    <td>{{object.tax_amount | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="5"><b>Total:</b></td>
-    <td>{{object.total}}</td>
+    <td>{{object.total | floatformat:2 }}</td>
 </tr>
 {% endblock content_footer %}
 {% block footer_statements %}

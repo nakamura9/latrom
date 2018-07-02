@@ -47,7 +47,7 @@ class Invoice(models.Model):
     terms = models.CharField(max_length = 64, 
         default=load_config()['default_terms'])# give finite choices
     comments = models.TextField(blank=True, 
-        default=load_config()['default_invoice_comments'])
+        default=load_config().get('default_invoice_comments', ""))
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)

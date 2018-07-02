@@ -1,1 +1,16 @@
-{"currency": "dollars", "business_name": "test name", "contact_details": "test details", "invoice_account": "9", "margin_right": "1", "journal": "1", "sales_account": "9", "default_terms": "some terms", "tax_column": "True", "business_address": "some test place", "paper_size": ".page-a4", "tax_inclusive": "True", "margin_top": "1", "margin_left": "1", "margin_bottom": "1", "tax_rate": "15", "invoice_template": "1", "registration_number": "123", "logo": "code.jpg"}
+{
+    "currency": "dollars",
+    "business_name": "test name",
+    "contact_details": "test details",
+    "invoice_account": "9",
+    "margin_right": "1",
+    "journal": "1",
+    "sales_account": "9",
+    "default_terms": "some terms",
+    "tax_column": "True",
+    "business_address": "some test place",
+    "paper_size": ".page-a4",
+    "invoice_template": "1",
+    "registration_number": "123",
+    "logo": "code.jpg"
+}
