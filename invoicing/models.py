@@ -13,13 +13,32 @@ from accounting.models import Account, Journal
 from common_data.utilities import load_config
 from accounting.models import Employee, JournalEntry, Tax, Debit, Credit
 
+class BusinessCustomer(models.Model):
+    name = models.CharField(max_length=64)
+    tax_clearance = models.CharField(max_length=64)
+    business_address = models.TextField()
+    billing_address = models.TextField()
+    contact_person = models.CharField(max_length=64)
+    active = models.BooleanField(default=True)
+    website = models.CharField(max_length=64)
+    email=models.CharField(max_length=64)
+    phone = models.CharField(max_length=64)
+
+    def delete(self):
+        self.active = False
+        self.save()
+
+    def __str__(self):
+        return self.name    
 
 class Customer(Person):
     '''inherits from the base person class in common data
     represents clients of the business with entry specific details.
     the customer can also have an account with the business for credit 
-    purposes'''
-
+    purposes
+    A customer may be a stand alone individual or part of a business organization.
+    '''
+    business = models.ForeignKey('invoicing.BusinessCustomer', null=True, blank=True)
     billing_address = models.CharField(max_length =128,blank=True , default="")
     phone_two = models.CharField(max_length = 16,blank=True , default="")
     account_number = models.CharField(max_length= 16,blank=True , default="") #change
@@ -48,11 +67,13 @@ class Invoice(models.Model):
         default=load_config()['default_terms'])# give finite choices
     comments = models.TextField(blank=True, 
         default=load_config().get('default_invoice_comments', ""))
+
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
     account = models.ForeignKey("accounting.Account", null=True, blank=True)
     active = models.BooleanField(default=True)
+    purchase_order_number = models.CharField(blank=True, max_length=32)
     
     def delete(self):
         self.active = False
@@ -180,6 +201,7 @@ class SalesRepresentative(models.Model):
 
         return reduce(lambda x, y: x + y, [i.subtotal for i in invoices], 0)
 
+
 class Payment(models.Model):
     invoice = models.OneToOneField("invoicing.Invoice", null=True)
     amount = models.DecimalField(max_digits=6,decimal_places=2)
@@ -229,7 +251,6 @@ class Payment(models.Model):
                     if self.invoice.customer.account else \
                         Account.objects.get(pk=config['sales_account'])
             )
-
 
 class Quote(models.Model):
     date = models.DateField(default=datetime.date.today)

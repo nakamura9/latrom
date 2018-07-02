@@ -1,11 +1,12 @@
 {
     "invoice_account": "1",
     "invoice_credit_account": "2",
-    "journal": "1",
+    "invoice_journal": "1",
     "default_terms": "Pay strictly in 7 days", 
     "default_invoice_comments": "Thank you for your business",
     "invoice_template": "1",
     "sales_account": "1",
     "direct_payment_journal": "1",
-    "tax_account": "1"
+    "payment_journal": "1",
+    "logo": ""
 }

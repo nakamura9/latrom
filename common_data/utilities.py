@@ -25,6 +25,7 @@ def load_config():
         file_name = settings.TEST_CONFIG_FILE
     else:
         file_name = settings.CONFIG_FILE
+   
 
     if not os.path.exists(file_name):
         f = open(file_name, 'w')
@@ -32,10 +33,11 @@ def load_config():
     config_file = open(file_name, 'r')
     try:
         CONFIG = json.load(config_file)
-    except:
+    except Exception as e:
+        print e.message
         CONFIG = {}
     config_file.close()
-    
+
     return CONFIG
 
 def income_tax_calculator(gross):

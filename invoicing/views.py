@@ -190,7 +190,7 @@ class InvoiceDetailView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(InvoiceDetailView, self).get_context_data(*args, **kwargs)
         context.update(load_config())
-        context['title'] = 'Invoice'
+        context['title'] = context.get('invoice_title', "Invoice")
         return apply_style(context)
 
         
@@ -265,7 +265,7 @@ class QuoteItemAPIViewSet(viewsets.ModelViewSet):
 
 class QuoteCreateView(ExtraContext, CreateView):
     extra_context = {
-        "title": "Create a New Quote",
+        "title": "Create a New Quotation",
         'modals': [
             Modal('Quick Tax', 
                 '/accounting/api/tax/',
@@ -427,10 +427,12 @@ class ConfigView(FormView):
     def post(self, request):
         data = request.POST.dict()
         del data["csrfmiddlewaretoken"]
+        config = load_config()
+        if config.get('logo', '') != "" and data.get('logo', '') == "":
+            data['logo'] = config['logo']
         if  request.FILES.get('logo', None):
             file = request.FILES['logo']
             filename = file.name
-            print dir(file)
             path = os.path.join(settings.MEDIA_ROOT, 'logo', filename)
             data['logo'] = filename
             with open(path, 'wb+') as img:
