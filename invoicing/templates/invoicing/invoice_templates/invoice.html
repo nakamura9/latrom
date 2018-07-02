@@ -10,7 +10,7 @@
         </tr>
         <tr>
             <td>Invoice Number:</td>
-            <td>{{object.number}}</td>
+            <td>{{object.number | stringformat:"06d"}}</td>
         </tr>
         <tr>
             <td>Due Date:</td>
@@ -74,11 +74,11 @@
 {% block content_footer %}
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>SubTotal:</b></td>
-    <td>{{object.subtotal}}</td>
+    <td>{{object.subtotal | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Taxable Amount:</b></td>
-    <td>{{object.subtotal}}</td>
+    <td>{{object.subtotal | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Tax Rate:</b></td>
@@ -86,11 +86,11 @@
 </tr>
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Tax Due:</b></td>
-    <td>{{object.tax_amount}}</td>
+    <td>{{object.tax_amount | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Total:</b></td>
-    <td>{{object.total}}</td>
+    <td>{{object.total | floatformat:2 }}</td>
 </tr>
 {% endblock content_footer %}
 {% block footer_statements %}

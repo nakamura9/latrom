@@ -10,24 +10,36 @@
         </tr>
         <tr>
             <td>Receipt Number:</td>
-            <td>{{object.pk}}</td>
+            <td>{{object.pk | stringformat:"06d"}}</td>
         </tr>
         <tr>
             <td>Payment Method:</td>
             <td>{{object.payment.method}}</td>
         </tr>
         <tr>
-            <td>Customer PO No:</td>
-            <td>#</td>
+            <td>Payment Reference Number:</td>
+            <td> {{object.payment.pk | stringformat:"06d"}}</td>
         </tr>
+        <tr>
+            <td>Customer PO No:</td>
+            <td>{{object.payement.invoice.purchase_order_number | stringformat:"06d"}}</td>
+        </tr>
+        
     </tbody>
 </table>
 {% endblock %}
 {% block head_cell %}
 <td class="{{style}}-head-cell">
     <p><b>Prepared For:</b></p>
-    <p>{{object.payment.customer}}</p>
-    <p>Payment Reference Number: {{object.payment.pk}}</p>
+    <p>{{object.payment.invoice.customer}}</p>
+    {% if include_shipping %}
+    {% if object.payment.invoice.customer.business %}
+    {{object.payment.invoice.customer.business.business_address | linebreaks}}
+    {% else %}
+    {{object.payment.invoice.customer.billing_address | linebreaks }}
+    {% endif %}
+    {% endif %}
+    
 </td>
 {% endblock %}                        
 {% block content_headings %}
@@ -46,7 +58,7 @@
     <td >{{item.quantity}}</td>
     <td >{{item.item.description}}</td>
     <td >{{item.price}}</td>
-    <td >{{item.subtotal}}</td>
+    <td >{{item.subtotal | floatformat:2 }}</td>
 </tr>
 {% endfor %}
 <tr style="height:100%">
@@ -61,15 +73,15 @@
 {% block content_footer %}
 <tr>
     <td colspan="4"><b>Total:</b></td>
-    <td>{{object.payment.invoice.total}}</td>
+    <td>{{object.payment.invoice.total | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="4"><b>Amount Paid:</b></td>
-    <td>{{object.payment.amount}}</td>
+    <td>{{object.payment.amount | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="4"><b>Balance Due:</b></td>
-    <td>{{object.payment.due}}</td>
+    <td>{{object.payment.due | floatformat:2 }}</td>
 </tr>
 {% endblock content_footer %}
 {% block footer_statements %}

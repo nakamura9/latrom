@@ -10,11 +10,7 @@
         </tr>
         <tr>
             <td>Quotation Number:</td>
-            <td>{{object.number}}</td>
-        </tr>
-        <tr>
-            <td>Customer PO No:</td>
-            <td>#</td>
+            <td>{{object.number | stringformat:"06d"}}</td>
         </tr>
     </tbody>
 </table>
@@ -48,7 +44,7 @@
     <td >{{item.item.item_name}}</td>
     <td >{{item.price}}</td>
     <td>{{item.discount}}</td>
-    <td >{{item.subtotal}}</td>
+    <td >{{item.subtotal | floatformat:2 }}</td>
 </tr>
 {% endfor %}
 <tr style="height:100%">
@@ -63,7 +59,7 @@
 {% block content_footer %}
 <tr>
     <td colspan="4"><b>SubTotal:</b></td>
-    <td>{{object.subtotal}}</td>
+    <td>{{object.subtotal | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="4"><b>Tax Rate:</b></td>
@@ -72,11 +68,11 @@
 
 <tr>
     <td colspan="4"><b>Tax Due:</b></td>
-    <td>{{object.tax_amount}}</td>
+    <td>{{object.tax_amount | floatformat:2 }}</td>
 </tr>
 <tr>
     <td colspan="4"><b>Total:</b></td>
-    <td>{{object.total}}</td>
+    <td>{{object.total | floatformat:2 }}</td>
 </tr>
 <tr>
     

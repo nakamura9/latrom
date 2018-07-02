@@ -58,12 +58,23 @@ class Account(models.Model):
     type = models.CharField(max_length=32, choices=[
         ('expense', 'Expense'), 
         ('asset', 'Asset'), 
-        ('liability', 'Liability')])
+        ('liability', 'Liability'), 
+        ('equity', 'Equity'), 
+        ('revenue', 'Revenue'),
+        ('cost-of-sales', 'Cost of Sales')])
     description = models.TextField()
+    balance_sheet_category = models.CharField(max_length=16, choices=[
+        ('current-assets', 'Current Assets'),
+        ('long-term-assets', 'Long Term Assets'),
+        ('current-liabilites', 'Current Liabilites'),
+        ('expense', 'Expense'),
+        ('current-assets', 'Current Assets'),\
+        ("not-included", "Not Included")
+    ], default='current-assets')
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return str(self.pk) + "-" + self.name
 
     def increment(self, amount):
         self.balance += float(amount)

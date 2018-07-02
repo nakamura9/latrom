@@ -1,62 +1,597 @@
 [
     {
         "model": "accounting.account",
-        "pk": 4,
+        "pk": 1000,
         "fields": {
-            "name": "Liabilities",
+            "name": "Cash in Checking",
             "balance": 0,
-            "description": "Summary of money to be paid out.",
-            "type": "liability"
+            "description": "The primary account for operating activites. Used to deposit revenue and pay expenses",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
         }
     },
     {
         "model": "accounting.account",
-        "pk": 5,
+        "pk": 1001,
         "fields": {
-            "name": "Petty Cash",
+            "name": "Cash in Savings",
             "balance": 0,
-            "description": "money for daily expenses.",
-            "type": "asset"
+            "description": "The account for surplus cash, that is cash with no immediate plans in an account that can accrue interest.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
         }
     },
     {
         "model": "accounting.account",
-        "pk": 6,
+        "pk": 1002,
         "fields": {
-            "name": "General Sales",
+            "name": "Cash on Hand",
             "balance": 0,
-            "description": "Money collected from customers.",
-            "type": "asset"
+            "description": "Tracks cash stored at the location of business such as petty cash and in cash registers.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
         }
     },
     {
         "model": "accounting.account",
-        "pk": 7,
+        "pk": 1003,
         "fields": {
             "name": "Accounts Receivable",
             "balance": 0,
-            "description": "money owed by customers.",
-            "type": "asset"
+            "description": "Tracks purchases made by customers on store credit, not purchases made with credit cards.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
         }
     },
     {
         "model": "accounting.account",
-        "pk": 8,
-        "fields": {
-            "name": "Current Account",
-            "balance": 0,
-            "description": "account into which all payments are made.",
-            "type": "asset"
-        }
-    },
-    {
-        "model": "accounting.account",
-        "pk": 9,
+        "pk": 1004,
         "fields": {
             "name": "Inventory",
             "balance": 0,
-            "description": "represents the value of stock.",
-            "type": "asset"
+            "description": "All products on hand for sale to customers.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1005,
+        "fields": {
+            "name": "Land",
+            "balance": 0,
+            "description": "Tracks the land owned by the organization, bsaed on the cost of purchase.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1006,
+        "fields": {
+            "name": "Buildings",
+            "balance": 0,
+            "description": "Tracks any buildings owned by the business based on cost of purchase.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1007,
+        "fields": {
+            "name": "Accumulated Depreciation - Buildings",
+            "balance": 0,
+            "description": "Tracks the accumulated depreciation of a building over its lifespan",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1008,
+        "fields": {
+            "name": "Leasehold Improvements",
+            "balance": 0,
+            "description": "Tracks the value of improvements made on a facility that a business leases instead of purchases.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1009,
+        "fields": {
+            "name": "Vehicles",
+            "balance": 0,
+            "description": "Any Vehicles owned by the business. Initial value listed on the this account",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1010,
+        "fields": {
+            "name": "Accumulated Depreciation - Vehicles",
+            "balance": 0,
+            "description": "Depreciation of any vehicles owned by the organization.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1011,
+        "fields": {
+            "name": "Furniture and Fixtures",
+            "balance": 0,
+            "description": "Tracks any furniture and fixtures purchased for use by the business.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1012,
+        "fields": {
+            "name": "Accumulated Depreciation - Furniture and Fixtures",
+            "balance": 0,
+            "description": "Tracks any Depreciation on furniture and fixtures",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1013,
+        "fields": {
+            "name": "Equipment",
+            "balance": 0,
+            "description": "Equipment Purchased for the business for use of more than one year, such as computers tools and cash registers. Value determined by the cost of purchase.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1014,
+        "fields": {
+            "name": "Accumulated Depreciation - Equipment",
+            "balance": 0,
+            "description": "Tracks any buildings owned by the business based on cost of purchase.",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+        },
+    {
+        "model": "accounting.account",
+        "pk": 1015,
+        "fields": {
+            "name": "Other Assets",
+            "balance": 0,
+            "description": "Any other assets of small financial value that do not fall in the categories enumerated",
+            "type": "asset",
+            "balance_sheet_category": "long-term-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2000,
+        "fields": {
+            "name": "Accounts Payable",
+            "balance": 0,
+            "description": "Tracks the money the organization owes its vendors, suppliers consultants and the like. The payments must be made in less than a year.",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2001,
+        "fields": {
+            "name": "Sales Tax Collected",
+            "balance": 0,
+            "description": "Taxes paid to the government on sales made.",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2002,
+        "fields": {
+            "name": "Accrued Payroll Taxes",
+            "balance": 0,
+            "description": "Payroll taxes paid to the government such as PAYE and NSSA.",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2003,
+        "fields": {
+            "name": "Short Term Credit Payable",
+            "balance": 0,
+            "description": "Tracks all short term credit(less than one year) the business is liable for.",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2004,
+        "fields": {
+            "name": "Loans Payable",
+            "balance": 0,
+            "description": "Tracks any long term loans taken out by the organization such as mortgages",
+            "type": "liability",
+            "balance_sheet_category": "long-term-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2005,
+        "fields": {
+            "name": "Notes Payable",
+            "balance": 0,
+            "description": "Tracks money borrowed from other businesses in the form of notes, which are lines of credit that are extended without collateral",
+            "type": "liability",
+            "balance_sheet_category": "long-term-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2006,
+        "fields": {
+            "name": "Other Liabilities",
+            "balance": 0,
+            "description": "Tracks liabilities not covered by the categories provided",
+            "type": "liability",
+            "balance_sheet_category": "long-term-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 3000,
+        "fields": {
+            "name": "Common Stock",
+            "balance": 0,
+            "description": "Tracks the value of the outstanding shares of stock sold to investors. Used by corporations only.",
+            "type": "equity",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 3001,
+        "fields": {
+            "name": "Retained Earnings",
+            "balance": 0,
+            "description": "Tracks the cumulative profits or losses made by the organization since its formation. Adjusted once every fincial year-end.",
+            "type": "equity",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 3002,
+        "fields": {
+            "name": "Capital",
+            "balance": 0,
+            "description": "Tracks money injected into the business during startup and shortly after. Includes contributions such as property and equipment. May have several such accounts for each primary investor. Only used for unincorporated businesses",
+            "type": "equity",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 3003,
+        "fields": {
+            "name": "Drawing",
+            "balance": 0,
+            "description": "Tracks any money taken out of an organization by the business owner. If multiple owners are present, multiple drawing accounts are required",
+            "type": "equity",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4000,
+        "fields": {
+            "name": "Sales of Goods and Serivices",
+            "balance": 0,
+            "description": "Tracks the all the money earned selling company goods and services",
+            "type": "income",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4001,
+        "fields": {
+            "name": "Sales Discounts",
+            "balance": 0,
+            "description": "Tracks any reductions in full price of merchandise",
+            "type": "income",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4002,
+        "fields": {
+            "name": "Sales Returns",
+            "balance": 0,
+            "description": "Tracks all transactions related to sales returns of products.",
+            "type": "income",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4003,
+        "fields": {
+            "name": "Other Income",
+  
+            "balance": 0,
+            "description": "Non traditional revenue streams are recorded here.",
+            "type": "income",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4004,
+        "fields": {
+            "name": "Interest Income",
+            "balance": 0,
+            "description": "Money earned in interest by the organizations savings accounts",
+            "type": "income",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4005,
+        "fields": {
+            "name": "Sale of fixed assets",
+            "balance": 0,
+            "description": "Tracks money earned by the sale of fixed assets such as vehicles.",
+            "type": "income",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4006,
+        "fields": {
+            "name": "Purchases",
+            "balance": 0,
+            "description": "Relates to purchases the business intends to sell",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4007,
+        "fields": {
+            "name": "Purchase Discount",
+            "balance": 0,
+            "description": "Records discounts received from vendors.",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4008,
+        "fields": {
+            "name": "Purchase Returns",
+            "balance": 0,
+            "description": "Relates to products returned for stated reasons",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4009,
+        "fields": {
+            "name": "Freight Charges",
+            "balance": 0,
+            "description": "Shipping costs accompying the purchase of inventory",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4010,
+        "fields": {
+            "name": "Other Sales Costs",
+            "balance": 0,
+            "description": "Other Sales Costs that do not fit into the stated categories",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5000,
+        "fields": {
+            "name": "Advertising",
+            "balance": 0,
+            "description": "Costs associated with business promotion",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5001,
+        "fields": {
+            "name": "Bank Service Charges",
+            "balance": 0,
+            "description": "Charges made to the organizations accounts by its bank.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5002,
+        "fields": {
+            "name": "Dues and Subscriptions",
+            "balance": 0,
+            "description": "Business club membership expenses and other reccuring subscription costs.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5003,
+        "fields": {
+            "name": "Equipment Rental",
+            "balance": 0,
+            "description": "Charges incurred for short term equipment rental.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5004,
+        "fields": {
+            "name": "Telephone",
+            "balance": 0,
+            "description": "telephone costs and line rental.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5005,
+        "fields": {
+            "name": "Vehicles",
+            "balance": 0,
+            "description": "Costs associated with the operation of company vehicles.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5006,
+        "fields": {
+            "name": "Travel and Entertainment",
+            "balance": 0,
+            "description": "Expenses associated with business related travel and entertaiment of clients or suppliers.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5007,
+        "fields": {
+            "name": "Supplies",
+            "balance": 0,
+            "description": "Supplies that do not fit in the office supplies account",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5008,
+        "fields": {
+            "name": "Salaries and Wages",
+            "balance": 0,
+            "description": "Tracks any money paid to employees as salaries or wages.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5009,
+        "fields": {
+            "name": "Rent Expense",
+            "balance": 0,
+            "description": "Cost of renting business premises",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5010,
+        "fields": {
+            "name": "Payroll Taxes",
+            "balance": 0,
+            "description": "Tracks taxes associated with employee payroll e.g. NSSA, PAYE",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5011,
+        "fields": {
+            "name": "Legal and Accounting",
+            "balance": 0,
+            "description": "Fees paid for legal and accounting consultation.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5012,
+        "fields": {
+            "name": "Insurance",
+            "balance": 0,
+            "description": "Cost of buying insurance for the business ",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5013,
+        "fields": {
+            "name": "Office Expenses",
+            "balance": 0,
+            "description": "Tracks items purchased to run an office such as printer toner, etc.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5014,
+        "fields": {
+            "name": "Postage",
+            "balance": 0,
+            "description": "Includes payments made for shipping of goods using postal services.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5015,
+        "fields": {
+            "name": "Miscellaneous Expenses",
+            "balance": 0,
+            "description": "Tracks expenses that do not fit into any one of the established expense accounts.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
         }
     }
 ]
