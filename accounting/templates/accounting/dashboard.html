@@ -2,10 +2,10 @@
 <div class="jumbotron">
     <div class="container">
         <h1 class="display-3">Accounting</h1>
-        <p>Manage accounts, generate reports, and initiate transactions</p>
+        <p>Manage accounts, generate reports, and initiate Journal Entries</p>
         <hr class="my-2">
         <p class="lead">
-            <a class="btn btn-primary btn-lg" role="button" href="{% url 'accounting:create-transaction' %}">Create New transaction</a>
+            <a class="btn btn-primary btn-lg" role="button" href="{% url 'accounting:create-entry' %}">Create New Journal Entry</a>
         </p>
     </div>
 </div>
@@ -24,10 +24,10 @@
                                 <a href="{% url 'accounting:create-journal' %}">Create Journal</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:create-transaction' %}">Manual Journal entry</a>
+                                <a href="{% url 'accounting:create-entry' %}">Manual Journal entry</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:compound-transaction' %}">Compound Journal entry</a>
+                                <a href="{% url 'accounting:compound-entry' %}">Compound Journal entry</a>
                             </li>
                             <li class="list-group-item">
                                 <a href="{% url 'accounting:journal-list' %}">View Journals</a>

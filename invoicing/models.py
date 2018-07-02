@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import datetime
+import decimal
 
 from django.db import models
 from django.db.models import Q
@@ -10,12 +11,12 @@ from django.utils import timezone
 from common_data.models import Person
 from accounting.models import Account, Journal
 from common_data.utilities import load_config
-from accounting.models import Employee, Transaction, Tax
+from accounting.models import Employee, JournalEntry, Tax, Debit, Credit
 
 
 class Customer(Person):
     '''inherits from the base person class in common data
-    represents clients of the business with transactional specific details.
+    represents clients of the business with entry specific details.
     the customer can also have an account with the business for credit 
     purposes'''
 
@@ -69,7 +70,7 @@ class Invoice(models.Model):
 
     @property
     def tax_amount(self):
-        return self.subtotal * (self.tax.rate / 100.0)
+        return self.subtotal * decimal.Decimal((self.tax.rate / 100.0))
     
     def __str__(self):
         if self.type_of_invoice == "cash":
@@ -89,25 +90,38 @@ class Invoice(models.Model):
             raise ValueError('The invoice Type specified cannot have' + 
                 'separate payments, change to "credit" instead.')
     
-    def create_transaction(self):
+    def create_entry(self):
         config = load_config()
         if self.type_of_invoice == "cash":
-            t = Transaction.objects.create(
+            t = JournalEntry.objects.create(
                 reference='INV' + str(self.pk),
-                memo= 'Auto generated transaction from cash invoice.',
+                memo= 'Auto generated Entry from cash invoice.',
                 date=self.date_issued,
-                time='00:00',
-                amount = self.subtotal, #might change to total
-                credit = self.account if self.account else \
-                    Account.objects.get(pk=config['invoice_account']),
-                debit=self.customer.account \
+                journal =Journal.objects.get(pk=config['journal'])
+            )
+            Debit.objects.create(
+                amount = self.total,
+                entry= t,
+                account = self.customer.account \
                     if self.customer.account else \
                         Account.objects.get(pk=config['sales_account']),
-                Journal =Journal.objects.get(pk=config['journal'])
+            )
+            # current account
+            Credit.objects.create(
+                amount = self.subtotal,
+                entry= t,
+                account= self.account if self.account else \
+                    Account.objects.get(pk=config['invoice_account']),
+            )
+            #credit tax to tax account 
+            Credit.objects.create(
+                amount = self.tax_amount,
+                entry= t,
+                account= Account.objects.get(pk=config['tax_account']),
             )
             return t
         else:
-            raise ValueError('Only cash based invoices generate transactions')
+            raise ValueError('Only cash based invoices generate entries')
 
     def update_inventory(self):
         for item in self.invoiceitem_set.all():
@@ -119,8 +133,8 @@ class InvoiceItem(models.Model):
     invoice = models.ForeignKey('invoicing.Invoice', null=True)
     item = models.ForeignKey("inventory.Item", null=True)
     quantity = models.IntegerField(default=0)
-    price = models.FloatField(default=0)
-    discount = models.FloatField(default=0)
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
 
     def __str__(self):
         return self.item.item_name + " * " + str(self.quantity)
@@ -168,7 +182,7 @@ class SalesRepresentative(models.Model):
 
 class Payment(models.Model):
     invoice = models.OneToOneField("invoicing.Invoice", null=True)
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
     method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
                                         ("transfer", "Transfer"),
@@ -200,19 +214,21 @@ class Payment(models.Model):
         else:
             super(Payment, self).save(*args, **kwargs)
             config = load_config()
-            Transaction.objects.create(
+            j = JournalEntry.objects.create(
                 reference='PAY' + str(self.pk),
-                memo= 'Auto generated transaction from payment.',
+                memo= 'Auto generated journal entry from payment.',
                 date=self.date,
-                amount = self.amount, #might change to total
-                credit = Account.objects.get(
-                    pk=config['invoice_account']),
-                debit=self.invoice.customer.account \
-                    if self.invoice.customer.account else \
-                        Account.objects.get(pk=config['sales_account']),
-                Journal =Journal.objects.get(pk=config['journal'])
+                journal =Journal.objects.get(pk=config['journal'])
             )
-        
+            #3 args
+            j.simple_entry(
+                self.amount,
+                Account.objects.get(
+                    pk=config['invoice_account']),
+                self.invoice.customer.account \
+                    if self.invoice.customer.account else \
+                        Account.objects.get(pk=config['sales_account'])
+            )
 
 
 class Quote(models.Model):
@@ -231,7 +247,7 @@ class Quote(models.Model):
 
     @property
     def tax_amount(self):
-        return self.subtotal * (self.tax.rate / 100.0)
+        return self.subtotal * decimal.Decimal(self.tax.rate /100.0)
 
     @property
     def subtotal(self):
@@ -266,8 +282,8 @@ class QuoteItem(models.Model):
     quote = models.ForeignKey('invoicing.Quote', null=True)
     item = models.ForeignKey('inventory.Item', null=True)
     quantity = models.FloatField()
-    price = models.FloatField(default=0.0)
-    discount = models.FloatField(default=0.0)
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
 
     def save(self, *args, **kwargs):
         super(QuoteItem, self).save(*args, **kwargs)
@@ -277,12 +293,12 @@ class QuoteItem(models.Model):
     
     @property
     def total_without_discount(self):
-        return self.price * self.quantity
+        return self.price * decimal.Decimal(self.quantity)
     
     @property
     def subtotal(self):
         return self.total_without_discount - \
-            (self.total_without_discount * (self.discount / 100.0))
+            (self.total_without_discount * decimal.Decimal((self.discount / decimal.Decimal(100.0))))
 
     def update_price(self):
         self.price = self.item.unit_sales_price

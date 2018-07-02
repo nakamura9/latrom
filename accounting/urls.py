@@ -23,13 +23,13 @@ pay_urls = [
     url(r'^list-pay-slips/?$', views.PayslipListView.as_view(), name='list-pay-slips'),
     url(r'^pay-slip-detail/(?P<pk>[\w]+)/?$', views.PayslipView.as_view(), name='pay-slip-detail'),
 ]
-transaction_urls = [
-    url(r'^create-transaction/?$', views.TransactionCreateView.as_view(), 
-    name='create-transaction'),
-    url(r'^compound-transaction/?$', views.CompoundTransactionView.as_view(), 
-    name='compound-transaction'),
-    url(r'^transaction-detail/(?P<pk>[\w]+)/?$', views.TransactionDetailView.as_view(), 
-    name='transaction-detail'),
+entry_urls = [
+    url(r'^create-entry/?$', views.JournalEntryCreateView.as_view(), 
+    name='create-entry'),
+    url(r'^compound-entry/?$', views.ComplexEntryView.as_view(), 
+    name='compound-entry'),
+    url(r'^entry-detail/(?P<pk>[\w]+)/?$', views.JournalEntryDetailView.as_view(), 
+    name='entry-detail'),
 ]
 employee_urls = [
     url(r'^create-employee/?$', views.EmployeeCreateView.as_view(), 
@@ -90,4 +90,4 @@ urlpatterns =[
     url(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls + employee_router.urls + payslip_router.urls + \
     misc_urls + account_urls + employee_urls + journal_urls + \
-    transaction_urls + pay_urls + account_router.urls
+    entry_urls + pay_urls + account_router.urls

@@ -23,14 +23,14 @@
                 </tr>
             </thead>
             <tbody>
-                {% for t in transactions %}
+                {% for t in entries %}
                 <tr>
                     <td>{{t.date}}</td>
                     <td>{{t.credit}}</td>
                     <td>{{t.debit}}</td>
                     <td>{{t.memo}}</td>
                     <td>
-                        <a href="{% url 'accounting:transaction-detail' pk=t.pk %}" class="btn btn-success">Details</a>
+                        <a href="{% url 'accounting:entry-detail' pk=t.pk %}" class="btn btn-success">Details</a>
                     </td>
                 </tr>
                 {% endfor %}

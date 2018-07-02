@@ -35,27 +35,32 @@ class TaxForm(forms.ModelForm, BootstrapMixin):
         fields ='__all__'
         model = models.Tax
 
-class TransactionForm(forms.ModelForm, BootstrapMixin):
+class SimpleJournalEntryForm(forms.ModelForm, BootstrapMixin):
+    amount = forms.DecimalField()
+    credit = forms.ModelChoiceField(models.Account.objects.all())
+    debit = forms.ModelChoiceField(models.Account.objects.all())
     class Meta:
         fields="__all__"
-        model = models.Transaction
+        model = models.JournalEntry
 
+    def save(self, *args, **kwargs):
+        obj = super(SimpleJournalEntryForm, self).save(*args, **kwargs)
+        obj.simple_entry(
+            self.cleaned_data['amount'],
+            self.cleaned_data['credit'],
+            self.cleaned_data['debit']
+        )
+        return obj
 
-class CompoundTransactionForm(forms.ModelForm, BootstrapMixin):
+class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude=['amount', 'debit', 'credit']
-        model = models.Transaction
+        fields="__all__"
+        model = models.JournalEntry
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields="__all__"
         model = models.Account
-
-
-class TransferForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields= ["date", "amount", "credit", "debit", "memo"]
-        model = models.Transaction
 
 
 class LedgerForm(forms.ModelForm, BootstrapMixin):
@@ -95,13 +100,6 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.PayGrade
-
-'''
-class DirectPurchaseForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields = ['date', 'comments']
-        model = models.DirectPurchase
-'''
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
     class Meta:

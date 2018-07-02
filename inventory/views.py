@@ -17,7 +17,7 @@ import models
 import serializers
 import filters
 
-from accounting.models import Account, Transaction, Journal
+from accounting.models import Account, JournalEntry, Journal
 from common_data.utilities import ExtraContext,load_config, apply_style, Modal
 
 

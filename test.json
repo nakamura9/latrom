@@ -6,5 +6,6 @@
     "default_invoice_comments": "Thank you for your business",
     "invoice_template": "1",
     "sales_account": "1",
-    "direct_payment_journal": "1"
+    "direct_payment_journal": "1",
+    "tax_account": "1"
 }

@@ -33,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for t in object.transaction_set.all %}
+                        {% for t in object.journalentry_set.all %}
                         <tr>
                             <td scope="row">{{t.date}}</td>
                             <td>{{t.reference}}</td>
@@ -41,7 +41,7 @@
                             <td>{{t.debit}}</td>
                             <td>{{t.credit}}</td>
                             <td>
-                                <a class="btn btn-success" href="{% url 'accounting:transaction-detail' pk=t.pk %}">View</a>  
+                                <a class="btn btn-success" href="{% url 'accounting:entry-detail' pk=t.pk %}">View</a>  
                                 <!--
                                 <a class="btn btn-danger" href="#">Delete</a> -->
                             </td>

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
+import decimal
 
 from django.db import models
 from django.conf import settings
 from invoicing.models import Invoice, InvoiceItem
-from accounting.models import Account, Transaction
 
 
 class Supplier(models.Model):
@@ -24,8 +24,8 @@ class Item(models.Model):
     item_name = models.CharField(max_length = 32)
     code = models.AutoField(primary_key=True)
     unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="")
-    unit_sales_price = models.FloatField()
-    unit_purchase_price = models.FloatField()
+    unit_sales_price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.TextField(blank=True, default="")
     supplier = models.ForeignKey("inventory.Supplier", blank=True, null=True)
     image = models.FileField(blank=True, null=True, upload_to=settings.MEDIA_ROOT)
@@ -42,7 +42,7 @@ class Item(models.Model):
 
     @property
     def stock_value(self):
-        return self.unit_sales_price * self.quantity
+        return self.unit_sales_price * decimal.Decimal(self.quantity)
         
     @property
     def sales_to_date(self):
@@ -131,7 +131,7 @@ class OrderItem(models.Model):
     quantity = models.FloatField()
     #change and move this to the item
     #make changes to the react app as well
-    order_price = models.FloatField()
+    order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
 
     @property
@@ -157,7 +157,7 @@ class OrderItem(models.Model):
 
     @property
     def subtotal(self):
-        return self.quantity * self.order_price
+        return decimal.Decimal(self.quantity) * self.order_price
 
 class UnitOfMeasure(models.Model):
     name = models.CharField(max_length=64)

@@ -8,6 +8,7 @@ import os
 import urllib
 from models import *
 import datetime
+import decimal
 from latrom import settings
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
@@ -61,14 +62,16 @@ def create_account_models(cls):
     cls.grade.deductions.add(cls.deduction)
     cls.grade.save()
 
-    cls.transaction = Transaction.objects.create(
-        memo='record of test transaction',
+    cls.entry = JournalEntry.objects.create(
+        memo='record of test entry',
             date=TODAY,
-            amount=10,
-            credit= cls.account_c,
-            debit = cls.account_d,
-            Journal =cls.journal
+            journal =cls.journal
     )
+    cls.entry.simple_entry(
+            10,
+            cls.account_c,
+            cls.account_d,
+        )
     cls.employee = Employee.objects.create(
             first_name = 'First',
             last_name = 'Last',
@@ -218,18 +221,21 @@ class ModelTests(TestCase):
             Employee.objects.get(phone='12345678'), 
             Employee))
         
-    def test_create_transaction(self):
-        trans = Transaction.objects.create(
-            memo='record of test transaction',
+    def test_create_entry(self):
+        trans = JournalEntry.objects.create(
+            memo='record of test entry',
             date=TODAY,
-            amount=10,
-            credit= self.account_c,
-            debit = self.account_d,
-            Journal =self.journal
+            journal =self.journal,
+            reference = "test reference"
+        )
+        trans.simple_entry(
+            10,
+            self.account_c,
+            self.account_d,
         )
 
-        self.assertTrue(isinstance(trans, Transaction))
-        # includes the deduction from self.transaction
+        self.assertTrue(isinstance(trans, JournalEntry))
+        # includes the deduction from self.entry.debit
         self.assertEqual(self.account_c.balance, 120)
         self.assertEqual(self.account_d.balance, 80)
 
@@ -279,15 +285,14 @@ class ViewTests(TestCase):
             'deductions': cls.deduction.pk
         }
 
-        cls.TRANSACTION_DATA = {\
+        cls.ENTRY_DATA = {\
             'reference': 'some test ref',
-            'memo':'record of test transaction',
+            'memo':'record of test entry',
             'date':TODAY,
-            'time': '00:00',
-            'amount':10,
-            'credit': cls.account_c.pk,
-            'debit' : cls.account_d.pk,
-            'Journal' :cls.journal.pk
+            'journal' :cls.journal.pk,
+            'amount': 100,
+            'debit': cls.account_d.pk,
+            'credit': cls.account_c.pk
         }
     def test_get_dashboard(self):
         resp = self.client.get(reverse('accounting:dashboard'))
@@ -347,37 +352,34 @@ class ViewTests(TestCase):
             }))
         self.assertTrue(resp.status_code==302)
 
-    #TRANSACTIONS
-    def test_get_transaction_form(self):
-        resp = self.client.get(reverse('accounting:create-transaction'))
+    #ENTRIES
+    def test_get_entry_form(self):
+        resp = self.client.get(reverse('accounting:create-entry'))
         self.assertTrue(resp.status_code==200)
 
-    def test_get_compound_transaction_form(self):
-        resp = self.client.get(reverse('accounting:compound-transaction'))
+    def test_get_compound_entry_form(self):
+        resp = self.client.get(reverse('accounting:compound-entry'))
         self.assertTrue(resp.status_code==200)
 
-    def test_post_compound_transaction_form(self):
-        COMPOUND_DATA = dict(self.TRANSACTION_DATA)
-        del COMPOUND_DATA['amount']
-        del COMPOUND_DATA['debit']
-        del COMPOUND_DATA['credit']
+    def test_post_compound_entry_form(self):
+        COMPOUND_DATA = self.ENTRY_DATA
         COMPOUND_DATA['items[]'] = urllib.quote(json.dumps({
             'debit': 1,
             'amount':100,
             'account': self.account_c.pk
             }))
-        resp = self.client.post(reverse('accounting:compound-transaction'),
+        resp = self.client.post(reverse('accounting:compound-entry'),
             data=COMPOUND_DATA)
         self.assertTrue(resp.status_code==302)
 
-    def test_post_transaction_form(self):
-        resp = self.client.post(reverse('accounting:create-transaction'),
-            data=self.TRANSACTION_DATA)
+    def test_post_entry_form(self):
+        resp = self.client.post(reverse('accounting:create-entry'),
+            data=self.ENTRY_DATA)
         self.assertTrue(resp.status_code==302)
         
-    def test_get_transaction_detail(self):
-        resp = self.client.get(reverse('accounting:transaction-detail', 
-            kwargs={'pk': self.transaction.pk}))
+    def test_get_entry_detail(self):
+        resp = self.client.get(reverse('accounting:entry-detail', 
+            kwargs={'pk': self.entry.pk}))
         self.assertTrue(resp.status_code==200)
 
     #ACCOUNTS

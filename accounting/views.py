@@ -4,6 +4,7 @@ import os
 import json
 import urllib
 import datetime
+import decimal
 
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView,  FormView
@@ -27,51 +28,55 @@ class Dashboard(TemplateView):
     template_name = os.path.join('accounting', 'dashboard.html')
 
 #############################################################
-#                 Transaction Views                         #
+#                 JournalEntry Views                         #
 #############################################################
 
 
 # update and delete removed for security, only adjustments can alter the state 
-# of a transaction 
+# of an entry 
 
-class TransactionCreateView(ExtraContext, CreateView):
+class JournalEntryCreateView(ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
-    model = models.Transaction
-    form_class = forms.TransactionForm
+    model = models.JournalEntry
+    form_class = forms.SimpleJournalEntryForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Transaction"}
+    extra_context = {"title": "Create New JournalEntry"}
 
-class CompoundTransactionView(ExtraContext, CreateView):
+class ComplexEntryView(ExtraContext, CreateView):
     template_name = os.path.join('accounting', 'compound_transaction.html')
-    form_class= forms.CompoundTransactionForm
-
+    form_class= forms.ComplexEntryForm
 
     def post(self, request, *args, **kwargs):
-        
-        for item in request.POST.getlist('items[]'):
-            item_data = json.loads(urllib.unquote(item))
-            
-            trans = models.Transaction(
+        j = models.JournalEntry.objects.create(
                 reference = request.POST['reference'],
                 memo = request.POST['memo'],
                 date = request.POST['date'],
-                Journal = models.Journal.objects.get(
-                    pk=request.POST['Journal']),
-                amount = float(item_data['amount']),
+                journal = models.Journal.objects.get(
+                    pk=request.POST['journal']),
             )
-
+        for item in request.POST.getlist('items[]'):
+            item_data = json.loads(urllib.unquote(item))
+            amount = decimal.Decimal(item_data['amount'])
             if item_data['debit'] == '1':
-                trans.debit = models.Account.objects.get(
-                    pk=int(item_data['account']))
+                models.Debit.objects.create(
+                    entry = j,
+                    account = models.Account.objects.get(
+                    pk=int(item_data['account'])),
+                    amount = amount
+                ) 
             else:
-                trans.credit = models.Account.objects.get(
-                    pk=int(item_data['account']))
-            trans.save()
+                models.Credit.objects.create(
+                    entry = j,
+                    account = models.Account.objects.get(
+                    pk=int(item_data['account'])),
+                    amount = amount
+                )
+
         return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
 
-class TransactionDetailView(DeleteView):
+class JournalEntryDetailView(DeleteView):
     template_name = os.path.join('accounting', 'transaction_detail.html')
-    model = models.Transaction
+    model = models.JournalEntry
 
 #############################################################
 #                 Employee  Views                            #
@@ -130,7 +135,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 class AccountTransferPage(ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:dashboard')
-    form_class = forms.TransferForm
+    form_class = forms.SimpleJournalEntryForm
     extra_context = {
         'title': 'Transfer between Accounts'
     }
@@ -154,11 +159,10 @@ class AccountDetailView(DetailView):
     template_name = os.path.join('accounting', 'account_detail.html')
     model = models.Account 
     #implemnt filter functionality
-    def get_context_data(self, *args, **kwargs):
-        #implemented because related manager not getting all transactions 
+    def get_context_data(self, *args, **kwargs): 
         context = super(AccountDetailView, self).get_context_data(*args, **kwargs)
-        context['transactions'] = models.Transaction.objects.filter(
-            Q(credit=self.object) | Q(debit=self.object))
+        #combine lists
+        context['transactions'] = models.Debit.objects.filter(account=self.object)
         return context
 
 class AccountListView(ExtraContext, FilterView):
@@ -283,7 +287,7 @@ class DirectPaymentFormView(ExtraContext, FormView):
     form_class = forms.DirectPaymentForm
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {'title': 'Create Direct Payment Transaction'}
+    extra_context = {'title': 'Create Direct Payment'}
     def post(self, request):
         
         form = self.form_class(request.POST)
@@ -295,15 +299,17 @@ class DirectPaymentFormView(ExtraContext, FormView):
                     form.cleaned_data['method'])
             journal = models.Journal.objects.get(
                 pk=load_config()['direct_payment_journal'])
-            models.Transaction.objects.create(
+            j = models.JournalEntry.objects.create(
                 reference = 'DPMT:' + form.cleaned_data['reference'],
                 memo=notes_string + form.cleaned_data['notes'],
                 date=form.cleaned_data['date'],
-                amount=form.cleaned_data['amount'],
-                credit=form.cleaned_data['account_paid_to'],
-                debit=form.cleaned_data['account_paid_from'],
-                Journal = journal
-        )
+                journal = journal
+            )
+            j.simple_entry(
+                form.cleaned_data['amount'],
+                form.cleaned_data['account_paid_to'],
+                form.cleaned_data['account_paid_from'],
+            )
         return super(DirectPaymentFormView, self).post(request)
 
 class AccountConfigView(FormView):
@@ -366,6 +372,7 @@ class NonInvoicedCashSale(FormView):
     def post(self, request, *args, **kwargs):
         resp = super(NonInvoicedCashSale, self).post(request, *args, **kwargs)
         total = 0
+        config = load_config()
         for item in request.POST.getlist('items[]'):
             data = json.loads(urllib.unquote(item))
             quantity = float(data['quantity'])
@@ -377,21 +384,24 @@ class NonInvoicedCashSale(FormView):
             date = datetime.datetime.strptime(
                 request.POST['date'], '%m/%d/%Y').strftime('%Y-%m-%d')
 
-        models.Transaction(
+        j = models.JournalEntry.objects.create(
                 date=date,
-                amount = total,
                 memo = request.POST['comments'],
-                reference = "transaction derived from non invoiced cash sale",
-                credit=models.Account.objects.get(name='Current Account'),
-                debit=models.Account.objects.get(name='General Sales'),
-            ).save()
+                reference = "Journal Entry derived from non invoiced cash sale",
+                journal = load   
+            )
+        j.simple_entry(
+            total,
+            models.Account.objects.get(pk=config['invoice_account']),
+            models.Account.objects.get(pk=config['sales_account']),
+        )
         return resp
 
 class DirectPaymentList(ExtraContext, TemplateView):
     template_name = os.path.join('accounting', 'direct_payment_list.html')
     extra_context = {
-        'transactions': lambda : models.Transaction.objects.filter(
-           Journal = models.Journal.objects.get(
+        'entries': lambda : models.JournalEntry.objects.filter(
+           journal = models.Journal.objects.get(
                 pk=load_config()['direct_payment_journal']) 
         ) 
     }

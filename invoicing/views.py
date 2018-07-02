@@ -15,7 +15,6 @@ from django.conf import settings
 import forms
 
 from common_data.utilities import ExtraContext, apply_style,load_config, Modal
-from accounting.models import Tax, Transaction,Journal,Account
 from inventory.forms import QuickItemForm
 from accounting.forms import TaxForm
 from inventory.models import Item
@@ -224,9 +223,9 @@ class InvoiceCreateView(ExtraContext, CreateView):
                             item=Item.objects.get(pk=data['code']))
         
         # moved here because the invoice item data must first be 
-        # saved in the database before inventory and transactions 
+        # saved in the database before inventory and entries 
         # can be created
-        inv.create_transaction()
+        inv.create_entry()
         inv.update_inventory()
 
         return resp
@@ -239,7 +238,7 @@ class InvoiceUpdateView(ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
     def post(self, request, *args, **kwargs):
-        # implement check for whether a transaction exists
+        # implement check for whether an entry exists
         resp = super(InvoiceUpdateView, self).post(request, *args, **kwargs)
         inv = self.get_object()
         for item in request.POST.getlist("items[]"):

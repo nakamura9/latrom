@@ -1,7 +1,7 @@
 {% extends 'window.html' %} {% block content %}
 <div class="jumbotron">
-    <h1 class="display-3">Transaction Details</h1>
-    <p class="lead">Transaction Date: {{object.date}}</p>
+    <h1 class="display-3">Journal Entry Details</h1>
+    <p class="lead">Journal Entry Date: {{object.date}}</p>
     <hr class="my-2">
 </div>
 <div class="container">
@@ -22,7 +22,7 @@
                             </tr>
                             <tr>
                                 <th>Amount</th>
-                                <td>{{object.amount}}</td>
+                                <td>{{object.debit.amount}}</td>
                             </tr>
                             <tr>
                                 <th>Credit Account</th>

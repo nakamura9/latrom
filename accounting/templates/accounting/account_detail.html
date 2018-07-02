@@ -7,7 +7,7 @@
 </style>
 <div class="jumbotron">
     <h1 class="display-3">{{object.name}} Details</h1>
-    <p class="lead">Record of transactions and other features</p>
+    <p class="lead">Record of Entries and other features</p>
     <hr class="my-2">
     <p>Actions:</p>
     <p class="lead">
@@ -48,7 +48,7 @@
             <table class="table table-striped table-responsive">
                 <thead class="thead-default">
                     <tr>
-                        <th>Transaction ID</th>
+                        <th>Entry ID</th>
                         <th>Date</th>
                         <th>Description</th>
                         <th>Amount</th>
@@ -56,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for t in transactions %}
+                    {% for t in entries %}
                     <tr>
                         <td>{{t.id}}</td>
                         <td>{{t.date}}</td>

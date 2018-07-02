@@ -8,38 +8,53 @@ from common_data.models import Person
 from django.utils import timezone
 from common_data.utilities import income_tax_calculator
 
-class Transaction(models.Model):
-    id = models.AutoField(primary_key=True)
-    reference = models.CharField(max_length=128, default="")
-    memo = models.TextField()
-    date = models.DateField(default=datetime.date.today)
-    time = models.TimeField(default=timezone.now)
-    amount = models.FloatField()
-    credit = models.ForeignKey('accounting.Account', related_name="credit", null=True)
-    debit = models.ForeignKey('accounting.Account', null=True)
-    Journal = models.ForeignKey('accounting.Journal',null=True, blank=True)
-    
-    def __str__(self):
-        if self.reference:
-            return str(self.id) + " " + self.reference
-        else:
-            return str(self.id)
+class Debit(models.Model):
+    account = models.ForeignKey('accounting.Account')
+    amount =models.DecimalField(max_digits=6, decimal_places=2)
+    entry = models.ForeignKey('accounting.JournalEntry')
 
     def save(self, *args, **kwargs):
-        super(Transaction, self).save(*args, **kwargs)
-        #cannot allow updates to transactions,
-        # rather adjustments will be made to reflect corrections
-        if self.credit:
-            self.credit.increment(self.amount)
-        if self.debit:
-            self.debit.decrement(self.amount)
+        super(Debit, self).save(*args, **kwargs)
+        self.account.balance -= self.amount
+        self.account.save()
 
-#implement forms as wrappers for transactions
-#should i allow users to delete accounts?
-#maybe control by ensuring the last transaction is a certain age
+
+class Credit(models.Model):
+    account = models.ForeignKey('accounting.Account')
+    amount =models.DecimalField(max_digits=6,decimal_places=2)
+    entry = models.ForeignKey('accounting.JournalEntry')
+
+    def save(self, *args, **kwargs):
+        super(Credit, self).save(*args, **kwargs)
+        self.account.balance += self.amount
+        self.account.save()
+
+class JournalEntry(models.Model):
+    reference = models.CharField(max_length=128, default="")
+    date = models.DateField(default=datetime.date.today)
+    memo = models.TextField()
+    journal = models.ForeignKey('accounting.Journal')
+
+    @property
+    def amount(self):
+        return self.debit_set.first().amount 
+
+
+    def simple_entry(self, amount, credit_acc, debit_acc):
+        Credit.objects.create(
+            entry=self,
+            account = credit_acc,
+            amount = amount
+        )
+        Debit.objects.create(
+            entry=self,
+            account = debit_acc,
+            amount = amount
+        )
+
 class Account(models.Model):
     name = models.CharField(max_length=64)
-    balance = models.FloatField()
+    balance = models.DecimalField(max_digits=9, decimal_places=2)
     type = models.CharField(max_length=32, choices=[
         ('expense', 'Expense'), 
         ('asset', 'Asset'), 
@@ -93,7 +108,7 @@ class WorkBook(models.Model):
 
 class Adjustmet(models.Model):
     id = models.AutoField(primary_key=True)
-    transaction = models.ForeignKey('accounting.Transaction', null=True)
+    entry = models.ForeignKey('accounting.JournalEntry', null=True)
     workbook = models.ForeignKey('accounting.WorkBook', null=True)
     description = models.TextField()
 

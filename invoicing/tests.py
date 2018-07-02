@@ -11,7 +11,7 @@ from django.urls import reverse
 import models
 from latrom import settings
 from accounting.tests import create_account_models
-from accounting.models import Transaction, Employee
+from accounting.models import JournalEntry, Employee
 from inventory.tests import create_test_inventory_models
 
 TODAY = datetime.date.today()
@@ -177,10 +177,10 @@ class ModelTests(TestCase):
         self.assertEqual(self.invoice.subtotal, 100)
 
     def test_invoice_tax_amount(self):
-        self.assertEqual(self.invoice.tax_amount, 10)
+        self.assertEqual(int(self.invoice.tax_amount), 10)
 
     def test_invoice_total(self):
-        self.assertEqual(self.invoice.total, 110)
+        self.assertEqual(int(self.invoice.total), 110)
 
     def test_invoice_create_payment_error(self):
         self.assertRaises(ValueError, self.invoice.create_payment)
@@ -198,8 +198,8 @@ class ModelTests(TestCase):
         )
         self.assertIsInstance(inv.create_payment(), models.Payment)
 
-    def test_invoice_create_transaction(self):
-        self.assertIsInstance(self.invoice.create_transaction(), Transaction)
+    def test_invoice_create_entry(self):
+        self.assertIsInstance(self.invoice.create_entry(), JournalEntry)
 
     def test_invoice_update_inventory(self): 
         self.invoice.update_inventory()
@@ -235,7 +235,7 @@ class ModelTests(TestCase):
         self.assertEqual(self.salesrep.sales(TODAY, TODAY), 200)
 
     def test_payment_due(self):
-        self.assertEqual(self.payment.due, 0)
+        self.assertEqual(int(self.payment.due), 0)
 
     def test_create_receipt(self):
         inv = models.Invoice.objects.create(
@@ -267,10 +267,10 @@ class ModelTests(TestCase):
         self.assertEqual(self.quote.subtotal, 100)
 
     def test_quote_total(self):
-        self.assertEqual(self.quote.total, 110)
+        self.assertEqual(int(self.quote.total), 110)
 
     def test_quote_tax(self):
-        self.assertEqual(self.quote.tax_amount, 10)
+        self.assertEqual(int(self.quote.tax_amount), 10)
 
     def test_create_invoice_from_quote(self):
         inv = self.quote.create_invoice()

@@ -14,7 +14,7 @@
     <td>{{item.name}}</td>
     <td>{{item.start_period}}</td>
     <td>{{item.end_period}}</td>
-    <td>{{item.transaction_set.all.count}}</td>
+    <td>{{item.journalentry_set.all.count}}</td>
     <td><a class="btn btn-success" href="{% url 'accounting:journal-detail' pk=item.pk %}">View</a></td>
 </tr>
 {% endfor %}
