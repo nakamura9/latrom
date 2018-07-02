@@ -1,5 +1,6 @@
 
 from django import forms
+from common_data.utilities import load_config
 from common_data.forms import BootstrapMixin
 from accounting.models import Account, Journal
 import models
@@ -12,17 +13,18 @@ class ConfigForm(forms.Form):
     business_name = forms.CharField()
     business_address = forms.CharField(widget=forms.Textarea)
     contact_details = forms.CharField(widget=forms.Textarea)
-    currency = forms.ChoiceField(choices=[("dollars", "Dollars")])
-    paper_size = forms.ChoiceField(choices=[(".page-a4", "A4"),(".page-a5", "A5"),(".page-a6", "A6")])
-    margin_right = forms.CharField(widget=forms.NumberInput)
+    currency = forms.ChoiceField(choices=[("$", "Dollars")])
     invoice_account = forms.ModelChoiceField(Account.objects.all())
     invoice_credit_account = forms.ModelChoiceField(Account.objects.all())
     sales_account = forms.ModelChoiceField(Account.objects.all())
-    journal = forms.ModelChoiceField(Journal.objects.all())
-    margin_left = forms.CharField(widget=forms.NumberInput)
-    margin_top = forms.CharField(widget=forms.NumberInput)
-    margin_bottom = forms.CharField(widget=forms.NumberInput)
+    invoice_journal = forms.ModelChoiceField(Journal.objects.all())
+    payment_journal = forms.ModelChoiceField(Journal.objects.all())
     logo = forms.FileField(required = False)
+    include_billing = forms.BooleanField(required=False)
+    invoice_title = forms.CharField()
+    include_shipping = forms.BooleanField(required=False)
+    include_business_address = forms.BooleanField(required=False)
+    include_discount_column = forms.BooleanField(required=False)
     tax_rate = forms.CharField(widget=forms.NumberInput)
     tax_inclusive = forms.BooleanField(required=False)
     tax_column = forms.BooleanField(required=False)
@@ -52,7 +54,7 @@ class QuickCustomerForm(forms.ModelForm, BootstrapMixin):
 
 class SalesRepForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = '__all__'
+        exclude = 'active',
         model = models.SalesRepresentative
 
 class PaymentForm(forms.ModelForm, BootstrapMixin):
@@ -81,7 +83,8 @@ class InvoiceForm(forms.ModelForm, BootstrapMixin):
             Tab('Financial Details',
                 'type_of_invoice',
                 'tax',
-                'account',),
+                'account',
+                'purchase_order_number'),
             Tab('Comments', 
                 'terms',
                 'comments')

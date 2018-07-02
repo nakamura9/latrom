@@ -15,7 +15,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" href="#general" aria-controls="general" data-toggle="tab">General</a>
+            <a class="nav-link active" href="#general" aria-controls="general" data-toggle="tab">Accounting Details</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#invoice" aria-controls="tab" data-toggle="tab">Invoice Template</a>
@@ -56,12 +56,13 @@
                     </tr>
                     <tr>
                         <td><label for="">Invoice Transactional Journal</label></td>
-                        <td>{{form.journal}}</td>
+                        <td>{{form.invoice_journal}}</td>
                     </tr>
                     <tr>
-                        <td><label for="">Default Payment Terms</label></td>
-                        <td>{{form.default_terms}}</td>
-                    </tr>
+                            <td><label for="">Payment Transactional Journal</label></td>
+                            <td>{{form.payment_journal}}</td>
+                        </tr>
+                    
                 </tbody>
             </table>
         </div>
@@ -114,13 +115,30 @@
                     </tr>
                 </tbody>
             </table>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $('input[type="file"]').attr({
+                        'onchange': 'upload_img(this)'
+                    });
+                })
+                function upload_img(input){
+                    if(input.files && input.files[0]){
+                        var reader = new FileReader();
+                        reader.onload = function(e){
+                            $('#id-logo-preview').attr('src', e.target.result);
+                        }
+
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
+            </script>
 
             <div class="card card-info">
                 <div class="card-heading">
                     <h3 class="card-title">Logo Preview</h3>
                 </div>
                 <div class="card-body">
-                    <img width="300" height="200" class="img" src="{{logo}}" alt="logo image" />
+                    <img id="id-logo-preview" width="300" height="200" class="img" src="{{logo}}" alt="logo image" />
                 </div>
             </div>
 
@@ -177,42 +195,33 @@
         <div class="tab-pane fade" id="page-layout">
             <table>
                 <tbody>
+                        <tr>
+                                <td><label for="">Invoice Title</label></td>
+                                <td>{{form.invoice_title}}</td>
+                            </tr>
+                        <tr>
+                                <td><label for="">Default Payment Terms</label></td>
+                                <td>{{form.default_terms}}</td>
+                            </tr>
+                            <tr>
+                                    <td><label for="">Default Invoice Comments</label></td>
+                                    <td>{{form.default_invoice_comments}}</td>
+                                </tr>
                     <tr>
-                        <td>
-                            <label for="">Paper size</label>
-                        </td>
-                        <td>
-                            {{form.paper_size}}
-                        </td>
+                        <th>Include Billing address?</th>
+                        <td>{{form.include_billing}}</td>
                     </tr>
                     <tr>
-                        <td colspan="2">
-                            <b>Margins(inches)</b>
-                        </td>
+                        <th>Include Shipping address?</th>
+                        <td>{{form.include_shipping}}</td>
                     </tr>
                     <tr>
-                        <td>
-                            <label for="">Left</label>
-                        </td>
-                        <td>{{form.margin_left}}</td>
+                        <th>Include Business address?</th>
+                        <td>{{form.include_business_address}}</td>
                     </tr>
                     <tr>
-                        <td>
-                            <label for="">Top</label>
-                        </td>
-                        <td>{{form.margin_top}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="">Right</label>
-                        </td>
-                        <td>{{form.margin_right}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="">Bottom</label>
-                        </td>
-                        <td>{{form.margin_bottom}}</td>
+                        <th>Include Discount Column?</th>
+                        <td>{{form.include_discount_column}}</td>
                     </tr>
                 </tbody>
             </table>

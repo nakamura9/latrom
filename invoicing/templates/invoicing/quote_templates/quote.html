@@ -23,11 +23,17 @@
 <td class="{{style}}-head-cell">
     <p><b>Prepared For:</b></p>
     <p>{{object.customer}}</p>
+    {% if include_shipping %}
+    {% if object.customer.business %}
+    {{object.customer.business.business_address | linebreaks}}
+    {% else %}
+    {{object.customer.billing_address | linebreaks }}
+    {% endif %}
+    {% endif %}
 </td>
 {% endblock %}                        
 {% block content_headings %}
 <tr>
-    <td >Item</td>
     <td >Qty</td>
     <td  style="width:300px;">Description</td>
     <td >Unit Price</td>
@@ -38,9 +44,8 @@
 {% block content_body %}
 {% for item in object.quoteitem_set.all %}
 <tr>
-    <td >{{item.item.item_name}}</td>
     <td >{{item.quantity}}</td>
-    <td >{{item.item.description}}</td>
+    <td >{{item.item.item_name}}</td>
     <td >{{item.price}}</td>
     <td>{{item.discount}}</td>
     <td >{{item.subtotal}}</td>
@@ -51,22 +56,26 @@
     <td ></td>
     <td ></td>
     <td ></td>
-    <td></td>
     <td ></td>
 </tr>
 {% endblock content_body %} 
 
 {% block content_footer %}
 <tr>
-    <td colspan="5"><b>SubTotal:</b></td>
+    <td colspan="4"><b>SubTotal:</b></td>
     <td>{{object.subtotal}}</td>
 </tr>
 <tr>
-    <td colspan="5"><b>Sales Tax:</b></td>
+    <td colspan="4"><b>Tax Rate:</b></td>
+    <td>{{object.tax.rate}}</td>
+</tr>
+
+<tr>
+    <td colspan="4"><b>Tax Due:</b></td>
     <td>{{object.tax_amount}}</td>
 </tr>
 <tr>
-    <td colspan="5"><b>Total:</b></td>
+    <td colspan="4"><b>Total:</b></td>
     <td>{{object.total}}</td>
 </tr>
 <tr>
