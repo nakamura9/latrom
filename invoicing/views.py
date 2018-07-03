@@ -67,7 +67,7 @@ class CustomerListView(ExtraContext, FilterView):
     paginate_by = 2
 
     def get_queryset(self):
-        return Customer.objects.all().order_by('last_name')
+        return Customer.objects.all().order_by('name')
 
 
 

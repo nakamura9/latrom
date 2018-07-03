@@ -10,8 +10,14 @@ from crispy_forms.bootstrap import TabHolder, Tab
 #models ommitted UnitOfMeasure OrderItem Category
 
 class ConfigForm(BootstrapMixin, forms.Form):
+    '''
     inventory_account= forms.ModelChoiceField(Account.objects.all())
-    order_account= forms.ModelChoiceField(Account.objects.all())
+    order_account= forms.ModelChoiceField(Account.objects.all())'''
+    inventory_valuation = forms.ChoiceField(choices=[
+        ('fifo', 'First In First Out'),
+        ('lifo', 'Last In First Out'),
+        ('averaging', 'Averaging'),
+    ])
 
 class SupplierForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -72,7 +78,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
             )
         self.helper.add_input(Submit('submit', 'Submit'))
     class Meta:
-        exclude = ["items"]
+        exclude = ["items", "received_to_date"]
         model = models.Order
         
         

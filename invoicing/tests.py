@@ -29,11 +29,15 @@ def create_test_invoicing_models(cls):
             title='test role',
             pay_grade = cls.grade
         )
+    cls.contact_person = models.ContactPerson.objects.create(
+        first_name="person",
+        last_name="peeps"
+    )
     cls.customer = models.Customer.objects.create(
-        first_name = "First",
-        last_name = 'Last',
-        address = 'Somewhere',
+        name = "First",
+        business_address = 'Somewhere',
         email='mai@mail.com',
+        contact_person = cls.contact_person,
         phone='12343243',
         billing_address='somwewhere',
         account = cls.account_c
@@ -103,17 +107,19 @@ def create_test_invoicing_models(cls):
 
 
 class ModelTests(TestCase):
+    fixtures = ['accounts.json', 'journals.json']
+
     @classmethod
     def setUpTestData(cls):
+        super(ModelTests, cls).setUpTestData()
         create_account_models(cls)
         create_test_inventory_models(cls)
         create_test_invoicing_models(cls)
 
     def test_create_customer(self):
         cus = models.Customer.objects.create(
-            first_name = "First",
-            last_name = 'Last',
-            address = 'Somewhere',
+            name = "First",
+            business_address = 'Somewhere',
             email='mai@mail.com',
             phone='12343243',
             billing_address='somwewhere',
@@ -299,14 +305,15 @@ class ModelTests(TestCase):
         self.quote_item.item.save()
 
 class ViewTests(TestCase):
+    fixtures = ['accounts.json', 'journals.json']
+
     @classmethod
     def setUpClass(cls):
         super(ViewTests, cls).setUpClass()
         cls.client = Client()
         cls.CUSTOMER_DATA = {
-            'first_name' : "First",
-        'last_name' : 'Last',
-        'address' : 'Somewhere',
+            'name' : "First",
+        'business_address' : 'Somewhere',
         'email':'mai@mail.com',
         'phone':'12343243',
         'billing_address':'somwewhere',
@@ -444,11 +451,9 @@ class ViewTests(TestCase):
     def test_post_quick_customer(self):
         resp = self.client.post(reverse('invoicing:quick-customer'),
             data={
-                'first_name': 'first',
-                'last_name': 'last',
+                'name': 'first',
                 'phone': '2134',
-                'address': 'test address',
-                'account_number': '324234'
+                'business_address': 'test address',
                 })
         self.assertEqual(resp.status_code, 302)
 

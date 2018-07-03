@@ -95,6 +95,9 @@ def create_account_models(cls):
 
 class ModelTests(TestCase):
     # use fixtures later
+    fixtures = ['accounts.json', 'journals.json']
+
+
     @classmethod
     def setUpTestData(cls):
         create_account_models(cls)
@@ -245,6 +248,7 @@ class ModelTests(TestCase):
 
 
 class ViewTests(TestCase):
+    fixtures = ['accounts.json', 'journals.json']
     
 
     @classmethod
@@ -270,7 +274,8 @@ class ViewTests(TestCase):
                 'name': 'Other Test Account',
                 'balance': 100,
                 'type': 'asset',
-                'description': 'Test Description'
+                'description': 'Test Description',
+                'balance_sheet_category': 'expense'
             }
 
         cls.PAYGRADE_DATA = {
@@ -595,7 +600,8 @@ class ViewTests(TestCase):
             data={
                 'name': 'Other Test Journal',
                 'start_period': TODAY,
-                'end_period': TODAY + datetime.timedelta(days=30)
+                'end_period': TODAY + datetime.timedelta(days=30),
+                'description': 'some test description'
             })
         
         self.assertTrue(resp.status_code == 302)

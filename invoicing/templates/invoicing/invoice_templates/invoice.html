@@ -29,7 +29,7 @@
     <p>{{object.customer}}</p>
     {% if include_shipping %}
     {% if object.customer.business %}
-    {{object.customer.business.business_address | linebreaks}}
+    {{object.customer.business_address | linebreaks}}
     {% else %}
     {{object.customer.billing_address | linebreaks }}
     {% endif %}
@@ -76,6 +76,7 @@
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>SubTotal:</b></td>
     <td>{{object.subtotal | floatformat:2 }}</td>
 </tr>
+{% if tax_column %}
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Taxable Amount:</b></td>
     <td>{{object.subtotal | floatformat:2 }}</td>
@@ -88,10 +89,12 @@
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Tax Due:</b></td>
     <td>{{object.tax_amount | floatformat:2 }}</td>
 </tr>
+
 <tr>
     <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Total:</b></td>
     <td>{{object.total | floatformat:2 }}</td>
 </tr>
+{% endif %}
 {% endblock content_footer %}
 {% block footer_statements %}
 <div>

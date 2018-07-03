@@ -36,8 +36,8 @@ class JournalEntry(models.Model):
     journal = models.ForeignKey('accounting.Journal')
 
     @property
-    def amount(self):
-        return self.debit_set.first().amount 
+    def total(self):
+        return reduce(lambda x, y: x + y,[d.amount for d in self.debit_set.all()], 0)
 
 
     def simple_entry(self, amount, credit_acc, debit_acc):
@@ -60,7 +60,7 @@ class Account(models.Model):
         ('asset', 'Asset'), 
         ('liability', 'Liability'), 
         ('equity', 'Equity'), 
-        ('revenue', 'Revenue'),
+        ('income', 'Income'),
         ('cost-of-sales', 'Cost of Sales')])
     description = models.TextField()
     balance_sheet_category = models.CharField(max_length=16, choices=[
@@ -86,6 +86,9 @@ class Account(models.Model):
         self.save()
         return self.balance
     
+    def list_transactions(self):
+        debits = self.debit_set.all()
+        credits = self.credit_set.all()
     
 class Ledger(models.Model):
     name = models.CharField(max_length=64)
@@ -96,8 +99,9 @@ class Ledger(models.Model):
 
 class Journal(models.Model):
     name = models.CharField(max_length=64)
-    start_period = models.DateField()
-    end_period = models.DateField()
+    description = models.TextField(default="")
+    start_period = models.DateField(null=True)
+    end_period = models.DateField(null=True)
     
     @property
     def is_open(self):
@@ -243,7 +247,6 @@ class Payslip(models.Model):
         elif not hasattr(self.employee, 'salesrepresentative'):
             return 0
         else:
-            print 'sales!'
             total_sales = \
                 self.employee.salesrepresentative.sales(self.start_period, 
                     self.end_period)

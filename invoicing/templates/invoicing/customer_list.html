@@ -7,8 +7,8 @@
 </tr>
 {% endblock %} {% block list_content %} {% for customer in object_list %}
 <tr>
-    <td>{{customer.first_name}} {{customer.last_name}}</td>
-    <td>{{customer.address}}</td>
+    <td>{{customer.name}}</td>
+    <td>{{customer.billing_address}}</td>
     <td>{{customer.phone}}</td>
     <td>
         <div class="dropdown">

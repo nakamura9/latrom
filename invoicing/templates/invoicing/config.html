@@ -1,8 +1,16 @@
 {% extends "window.html" %} {% block content %} {% load render_bundle from webpack_loader %}
 {% load static %}
-
+{% for error in form.errors %}
+    <div class="alert alert-warning alert-dismissable">
+        {{error}}
+        <button type="button" data-dismiss="alert" class="close">
+            &times;
+        </button>
+    </div>
+    {% endfor %}
 <form method="POST" action="" enctype="multipart/form-data">
     {% csrf_token %}
+    
     <div class="jumbotron">
         <div class="container">
             <h1 class="display-3">Invoicing configuration</h1>
@@ -46,6 +54,7 @@
                         </td>
                         <td>{{form.currency}}</td>
                     </tr>
+                    <!--
                     <tr>
                         <td><label for="">Default Invoice Credit Account</label></td>
                         <td>{{form.invoice_account}}</td>
@@ -62,7 +71,7 @@
                             <td><label for="">Payment Transactional Journal</label></td>
                             <td>{{form.payment_journal}}</td>
                         </tr>
-                    
+                    -->
                 </tbody>
             </table>
         </div>
@@ -152,15 +161,17 @@
                         </td>
                         <td>{{form.tax_rate}}</td>
                     </tr>
+                    <!--
                     <tr>
                         <td>
                             <label for="">Item prices are tax inclusive</label>
                         </td>
                         <td>{{form.tax_inclusive}}</td>
                     </tr>
+                -->
                     <tr>
                         <td>
-                            <label for="">Show tax rate as a column on invoice</label>
+                            <label for="">Show Tax information on invoices</label>
                         </td>
                         <td>{{form.tax_column}}</td>
                     </tr>

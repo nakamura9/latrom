@@ -7,8 +7,8 @@ class CustomerFilter(django_filters.FilterSet):
     class Meta:
         model = models.Customer
         fields = {
-            'first_name': ['icontains'],
-            'last_name': ['icontains'],
+            'name': ['icontains'],
+            
         }
 
 class InvoiceFilter(django_filters.FilterSet):

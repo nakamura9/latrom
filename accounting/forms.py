@@ -59,7 +59,7 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields="__all__"
+        exclude="active",
         model = models.Account
 
 

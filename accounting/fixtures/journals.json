@@ -1,0 +1,47 @@
+[
+    {
+        "model": "accounting.journal",
+        "pk": 2,
+        "fields": {
+            "name": "Cash Disbursements",
+            "description": "Tracks expenses that are paid out to external entities such as salaries, bills and rent."
+            
+        }
+    },
+    {
+        "model": "accounting.journal",
+        "pk": 1,
+        "fields": {
+            "name": "Cash Receipts",
+            "description": "Records all cash received by an organization such as deposits made as capital from owners and investors as well as customer payments"
+            
+        }
+    },
+    {
+        "model": "accounting.journal",
+        "pk": 3,
+        "fields": {
+            "name": "Sales",
+            "description": "Tracks sales made and in store credit"
+            
+        }
+    },
+    {
+        "model": "accounting.journal",
+        "pk": 4,
+        "fields": {
+            "name": "Purchases",
+            "description": "Tracks transactions of items purchased by the business for sale at a later date."
+            
+        }
+    },
+    {
+        "model": "accounting.journal",
+        "pk": 5,
+        "fields": {
+            "name": "General",
+            "description": "Tracks transactions that don't fit in the big 4 journals - Purchases, Sales, Cash Disbursements and Cash Receipts"
+            
+        }
+    }
+]

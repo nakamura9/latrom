@@ -14,11 +14,12 @@ class ConfigForm(forms.Form):
     business_address = forms.CharField(widget=forms.Textarea)
     contact_details = forms.CharField(widget=forms.Textarea)
     currency = forms.ChoiceField(choices=[("$", "Dollars")])
-    invoice_account = forms.ModelChoiceField(Account.objects.all())
+    '''invoice_account = forms.ModelChoiceField(Account.objects.all())
     invoice_credit_account = forms.ModelChoiceField(Account.objects.all())
     sales_account = forms.ModelChoiceField(Account.objects.all())
     invoice_journal = forms.ModelChoiceField(Journal.objects.all())
     payment_journal = forms.ModelChoiceField(Journal.objects.all())
+    '''
     logo = forms.FileField(required = False)
     include_billing = forms.BooleanField(required=False)
     invoice_title = forms.CharField()
@@ -42,13 +43,13 @@ class ConfigForm(forms.Form):
 
 class CustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = '__all__'
+        exclude = 'active',
         model = models.Customer
 
 
 class QuickCustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = ['first_name', 'last_name', 'phone', 'address', 'account_number']
+        fields = ['name', 'business_address', 'phone']
         model = models.Customer
 
 

@@ -13,17 +13,19 @@ from accounting.models import Account, Journal
 from common_data.utilities import load_config
 from accounting.models import Employee, JournalEntry, Tax, Debit, Credit
 
-class BusinessCustomer(models.Model):
-    name = models.CharField(max_length=64)
-    tax_clearance = models.CharField(max_length=64)
-    business_address = models.TextField()
-    billing_address = models.TextField()
-    contact_person = models.CharField(max_length=64)
+class Customer(models.Model):
+    name = models.CharField(max_length=64, default="")
+    tax_clearance = models.CharField(max_length=64, default="", blank=True)
+    business_address = models.TextField(default= "", blank=True)
+    billing_address = models.TextField(default= "", blank=True)
+    banking_details = models.TextField(default= "", blank=True)
+    contact_person = models.ForeignKey('invoicing.ContactPerson', null=True, blank=True)
     active = models.BooleanField(default=True)
-    website = models.CharField(max_length=64)
-    email=models.CharField(max_length=64)
-    phone = models.CharField(max_length=64)
-
+    website = models.CharField(default= "",max_length=64, blank=True)
+    email=models.CharField(default= "",max_length=64, blank=True)
+    phone = models.CharField(default= "",max_length=64, blank=True)
+    account = models.ForeignKey('accounting.Account', null=True, blank=True)
+    
     def delete(self):
         self.active = False
         self.save()
@@ -31,21 +33,16 @@ class BusinessCustomer(models.Model):
     def __str__(self):
         return self.name    
 
-class Customer(Person):
+class ContactPerson(Person):
     '''inherits from the base person class in common data
     represents clients of the business with entry specific details.
     the customer can also have an account with the business for credit 
     purposes
     A customer may be a stand alone individual or part of a business organization.
     '''
-    business = models.ForeignKey('invoicing.BusinessCustomer', null=True, blank=True)
-    billing_address = models.CharField(max_length =128,blank=True , default="")
     phone_two = models.CharField(max_length = 16,blank=True , default="")
-    account_number = models.CharField(max_length= 16,blank=True , default="") #change
     other_details = models.TextField(blank=True, default="")
-    account = models.ForeignKey('accounting.Account', null=True, blank=True)
-    active = models.BooleanField(default=True)
-
+    
     def delete(self):
         self.active = False
         self.save()
@@ -98,6 +95,12 @@ class Invoice(models.Model):
             return 'CINV' + str(self.pk)
         else: 
             return 'DINV' + str(self.pk)
+
+    def save(self, *args, **kwargs):
+        if self.type_of_invoice == "credit" and self.customer.account == None:
+            raise ValueError('You cannot create a credit invoice for customers without an account with the organization')
+        else:
+            super(Invoice, self).save(*args, **kwargs)
     
     def create_payment(self):
         if self.type_of_invoice == 'credit':
@@ -118,27 +121,27 @@ class Invoice(models.Model):
                 reference='INV' + str(self.pk),
                 memo= 'Auto generated Entry from cash invoice.',
                 date=self.date_issued,
-                journal =Journal.objects.get(pk=config['journal'])
+                journal =Journal.objects.get(pk=3)#Sales Journal
             )
             Debit.objects.create(
                 amount = self.total,
                 entry= t,
                 account = self.customer.account \
                     if self.customer.account else \
-                        Account.objects.get(pk=config['sales_account']),
+                        Account.objects.get(pk=4000),
             )
             # current account
             Credit.objects.create(
                 amount = self.subtotal,
                 entry= t,
                 account= self.account if self.account else \
-                    Account.objects.get(pk=config['invoice_account']),
+                    Account.objects.get(pk=1000),
             )
             #credit tax to tax account 
             Credit.objects.create(
                 amount = self.tax_amount,
                 entry= t,
-                account= Account.objects.get(pk=config['tax_account']),
+                account= Account.objects.get(pk=2001),
             )
             return t
         else:
@@ -240,16 +243,14 @@ class Payment(models.Model):
                 reference='PAY' + str(self.pk),
                 memo= 'Auto generated journal entry from payment.',
                 date=self.date,
-                journal =Journal.objects.get(pk=config['journal'])
+                journal =Journal.objects.get(pk=3)
             )
             #3 args
             j.simple_entry(
                 self.amount,
                 Account.objects.get(
-                    pk=config['invoice_account']),
-                self.invoice.customer.account \
-                    if self.invoice.customer.account else \
-                        Account.objects.get(pk=config['sales_account'])
+                    pk=1000),
+                self.invoice.customer.account
             )
 
 class Quote(models.Model):

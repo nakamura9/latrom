@@ -20,7 +20,8 @@ def create_test_inventory_models(cls):
             physical_address='Test Address',
             telephone='1234325345',
             email='test@mail.com',
-            website = 'test.site'
+            website = 'test.site',
+            account = cls.account_c
             )
 
     cls.unit = models.UnitOfMeasure.objects.create(
@@ -70,9 +71,12 @@ def create_test_inventory_models(cls):
 
 
 class ModelTests(TestCase):
+    fixtures = ['accounts.json', 'journals.json']
+
     @classmethod
     def setUpTestData(cls):
         super(ModelTests, cls).setUpTestData()
+        create_account_models(cls)
         create_test_inventory_models(cls)
 
     def test_create_supplier(self):
@@ -82,7 +86,8 @@ class ModelTests(TestCase):
             physical_address='Test Address',
             telephone='1234325345',
             email='test@mail.com',
-            website = 'test.site'
+            website = 'test.site',
+            account = self.account_c
         )
         self.assertIsInstance(sup, models.Supplier)
 
@@ -199,6 +204,8 @@ class ModelTests(TestCase):
         
 
 class ViewTests(TestCase):
+    fixtures = ['accounts.json', 'journals.json']
+
     @classmethod
     def setUpClass(cls):
         super(ViewTests, cls).setUpClass()
@@ -207,8 +214,9 @@ class ViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super(ViewTests, cls).setUpTestData()
-        create_test_inventory_models(cls)
         create_account_models(cls)
+        create_test_inventory_models(cls)
+        
         cls.ITEM_DATA = {
             'item_name' : 'Other Test Item',
             'unit' : cls.unit.pk,
@@ -229,15 +237,17 @@ class ViewTests(TestCase):
             'physical_address' : 'Test Address',
             'telephone' : '1234325345',
             'email' : 'test@mail.com',
-            'website' : 'test.site'
+            'website' : 'test.site',
+            'account': cls.account_c.pk
         }
         cls.ORDER_DATA = {
             'expected_receipt_date' : TODAY,
             'issue_date' : TODAY,
+            'deferred_date' : TODAY,
             'supplier' : cls.supplier.pk,
             'bill_to' : 'Test Bill to',
             'ship_to' : 'Test Ship To',
-            'type_of_order': 0,
+            'type_of_order': 1,
             'tracking_number' : '34234',
             'notes' : 'Test Note',
             'status' : 'draft',
@@ -440,7 +450,6 @@ class ViewTests(TestCase):
     def test_post_config_view(self):
         resp = self.client.post(reverse('inventory:config'),
             data={
-                'inventory_account': self.account_c.pk,
-                'order_account': self.account_c.pk
+                'inventory_valuation': 'fifo'
             })
         self.assertTrue(resp.status_code == 302)

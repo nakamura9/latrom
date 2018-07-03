@@ -21,21 +21,39 @@
                                 <td>{{object.reference}}</td>
                             </tr>
                             <tr>
-                                <th>Amount</th>
-                                <td>{{object.debit.amount}}</td>
-                            </tr>
-                            <tr>
-                                <th>Credit Account</th>
-                                <td>{{object.credit}}</td>
-                            </tr>
-                            <tr>
-                                <th>Debit Account</th>
-                                <td>{{object.debit}}</td>
+                                <th>Total Amount</th>
+                                <td>{{object.total}}</td>
                             </tr>
                             <tr>
                                 <th>Memo</th>
                                 <td>{{object.memo}}</td>
                             </tr>
+                        </tbody>
+                    </table>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                
+                                <td>Account</td>
+                                <td>Credit/Debit</td>
+                                <td>Amount</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in object.debit_set.all %}
+                            <tr>
+                                <td>{{d.account}}</td>
+                                <td>Debit</td>
+                                <td>{{d.amount}}</td>
+                            </tr>
+                            {% endfor %}
+                            {% for c in object.credit_set.all %}
+                            <tr>
+                                <td>{{c.account}}</td>
+                                <td>Credit</td>
+                                <td>{{c.amount}}</td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
