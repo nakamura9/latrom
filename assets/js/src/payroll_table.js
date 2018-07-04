@@ -61,7 +61,8 @@ export default class PayrollTable extends Component{
                 
             });
         }
-        //window.location.replace('/accounting/');
+        window.location.replace('/accounting/list-pay-slips');
+        
     }
     render(){
         var fields = ['employee', 'normal_hours', 'overtime_one_hours', 'overtime_two_hours'];
