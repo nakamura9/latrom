@@ -269,7 +269,7 @@ class GoodsReceivedVoucherView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(GoodsReceivedVoucherView, self).get_context_data(*args, **kwargs)
         context.update(load_config())
-        return context
+        return apply_style(context)
 
 class CategoryCreateView(CreateView):
     form_class = forms.CategoryForm
