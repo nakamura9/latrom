@@ -159,6 +159,8 @@ class InvoiceItem(models.Model):
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
+    returned_quantity = models.FloatField(default=0.0)
+    returned = models.BooleanField(default=False)
 
     def __str__(self):
         return self.item.item_name + " * " + str(self.quantity)
@@ -184,6 +186,13 @@ class InvoiceItem(models.Model):
         self.price = self.item.unit_sales_price
         self.save()
 
+    def _return(self, quantity):
+        self.returned_quantity -= quantity
+        self.save()
+
+    @property
+    def returned_value(self):
+        self.pricce * self.returned_quantity
 
 class SalesRepresentative(models.Model):
     employee = models.OneToOneField('accounting.Employee', null=True)
@@ -325,3 +334,36 @@ class QuoteItem(models.Model):
     def update_price(self):
         self.price = self.item.unit_sales_price
         self.save()
+
+
+class CreditNote(models.Model):
+    """A document sent by a seller to a customer notifying them
+    that a credit has been made to their account against goods returned
+    by the buyer. Linked to invoices. Stores a list of items returned."""
+    date = models.DateField()
+    invoice = models.ForeignKey('invoicing.Invoice')
+    comments = models.TextField()
+
+    @property
+    def returned_items(self):
+        return self.invoice.invoiceitem_set.filter(returned=True)
+        
+    @property
+    def returned_total(self):
+        return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_items], 0)
+
+    def create_entry(self):
+        j = JournalEntry(
+            reference = 'CN' + str(self.pk),
+            memo="Auto generated journal entry from credit note",
+            date=self.date,
+            journal=Journal.objects.get(pk=3)
+        )
+        j.simple_entry(
+            self.returned_total,
+            self.invoice.customer.account,
+            Account.objects.get(pk=4002))
+
+    def save(self, *args, **kwargs):
+        super(CreditNote, self).save(*args, **kwargs)
+        self.create_entry()

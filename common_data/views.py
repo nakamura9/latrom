@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 import os
 from django.urls import reverse_lazy
+from accounting.models import Journal
 
 class Test(TemplateView):
     template_name = os.path.join("common_data", "test.html")
