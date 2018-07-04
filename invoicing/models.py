@@ -216,7 +216,7 @@ class Payment(models.Model):
                                         default='transfer')
     reference_number = models.AutoField(primary_key=True)
     sales_rep = models.ForeignKey("invoicing.SalesRepresentative", null=True)
-    
+    comments = models.TextField(default="Thank you for your business")
     def __str__(self):
         return 'PMT' + str(self.pk)
 
@@ -325,11 +325,3 @@ class QuoteItem(models.Model):
     def update_price(self):
         self.price = self.item.unit_sales_price
         self.save()
-
-#do i need this model?
-class Receipt(models.Model):
-    payment = models.OneToOneField('invoicing.Payment', null=True)
-    comments = models.TextField()
-    
-    def __str__(self):
-        return 'RPT' + str(self.pk)

@@ -49,10 +49,3 @@ class QuoteFilter(django_filters.FilterSet):
             'customer': ['exact'],
             'salesperson': ['exact'],
         }
-
-class ReceiptFilter(django_filters.FilterSet):
-    class Meta:
-        model = models.Receipt
-        fields = {
-            'id': ['icontains']
-        }

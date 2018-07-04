@@ -100,10 +100,6 @@ def create_test_invoicing_models(cls):
         item =cls.item,
         quantity=10
     )
-    cls.receipt = models.Receipt.objects.create(
-        payment= cls.payment,
-        comments = "comment"
-    )
 
 
 class ModelTests(TestCase):
@@ -175,10 +171,6 @@ class ModelTests(TestCase):
         )
         self.assertIsInstance(obj, models.QuoteItem)
 
-    def test_create_receipt(self):
-        #too lazy to create additional payment
-        self.assertTrue(models.Receipt.objects.all().count() == 1)
-
     def test_invoice_subtotal(self):
         self.assertEqual(self.invoice.subtotal, 100)
 
@@ -243,31 +235,6 @@ class ModelTests(TestCase):
     def test_payment_due(self):
         self.assertEqual(int(self.payment.due), 0)
 
-    def test_create_receipt(self):
-        inv = models.Invoice.objects.create(
-            type_of_invoice='credit',
-            customer=self.customer,
-            date_issued= TODAY,
-            due_date = TODAY,
-            comments = "TEst Comment",
-            tax = self.tax,
-            salesperson = self.salesrep,
-            account = self.account_c
-        )
-        pmt = models.Payment.objects.create(
-            invoice = inv,
-        amount=100,
-        date= TODAY,
-        method = 'cash',
-        sales_rep = self.salesrep
-        )
-        r = pmt.create_receipt()
-        self.assertIsInstance(r, models.Receipt)
-        
-        #roll back
-        r.delete()
-        pmt.delete()
-        inv.delete()
 
     def test_quote_subtotal(self):
         self.assertEqual(self.quote.subtotal, 100)
@@ -377,7 +344,8 @@ class ViewTests(TestCase):
         'amount' : 50,
         'date': TODAY,
         'method' : 'cash',
-        'sales_rep' : cls.salesrep.pk
+        'sales_rep' : cls.salesrep.pk,
+        'comments': 'Some test Comment'
         }
         cls.extra_pmt = models.Payment.objects.create(
             **{
@@ -501,14 +469,14 @@ class ViewTests(TestCase):
     def test_get_payment_update(self):
         resp = self.client.get(reverse('invoicing:update-payment',
             kwargs={
-                'pk': self.customer.pk
+                'pk': self.payment.pk
             }))
         self.assertEqual(resp.status_code, 200)
 
     def test_post_payment_update(self):
         resp = self.client.post(reverse('invoicing:update-payment',
             kwargs={
-                'pk': self.customer.pk
+                'pk': self.payment.pk
             }), data=self.PAYMENT_DATA)
         self.assertEqual(resp.status_code, 302)
 
@@ -660,57 +628,19 @@ class ViewTests(TestCase):
             }))
         self.assertEqual(resp.status_code, 200)
 
-    def test_get_quote_delete(self):
+    def test_post_quote_delete(self):
         resp = self.client.post(reverse('invoicing:delete-quote',
             kwargs={
                 'pk': self.quote.pk
             }))
         self.assertEqual(resp.status_code, 302)
 
-    def test_get_receipt_list(self):
-        resp = self.client.get(reverse('invoicing:receipt-list'))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_get_receipt_form(self):
-        resp = self.client.get(reverse('invoicing:create-receipt'))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_post_receipt_form(self):
-        
-        resp = self.client.post(reverse('invoicing:create-receipt'),
-            data={
-                'payment': self.extra_pmt.pk,
-            'comments': 'some comment'})
-        self.assertEqual(resp.status_code, 302)
-
-    def test_get_receipt_update(self):
-        resp = self.client.get(reverse('invoicing:receipt-update',
-            kwargs={
-                'pk': self.receipt.pk
-            }))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_post_receipt_update(self):
-        resp = self.client.post(reverse('invoicing:receipt-update',
-            kwargs={
-                'pk': self.receipt.pk
-            }), data={
-                'payment': self.extra_pmt.pk,
-            'comments': 'some updated comment'})
-        self.assertEqual(resp.status_code, 302)
-        
     def test_get_receipt_detail(self):
-        resp = self.client.get(reverse('invoicing:receipt-detail',
+        resp = self.client.get(reverse('invoicing:receipt',
             kwargs={
-                'pk': self.receipt.pk
+                'pk': self.payment.pk
             }))
         self.assertEqual(resp.status_code, 200)
-
-    def test_create_receipt_from_payment(self):
-        resp = self.client.get(reverse('invoicing:receipt-from-payment',
-            kwargs={
-                'pk': self.super_extra_inv.pk
-            }))
 
     def test_create_payment_from_invoice(self):
         

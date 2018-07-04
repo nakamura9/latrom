@@ -6,7 +6,7 @@
     <tbody>
         <tr>
             <td>Date:</td>
-            <td>{{object.payment.date}}</td>
+            <td>{{object.date}}</td>
         </tr>
         <tr>
             <td>Receipt Number:</td>
@@ -14,15 +14,15 @@
         </tr>
         <tr>
             <td>Payment Method:</td>
-            <td>{{object.payment.method}}</td>
+            <td>{{object.method}}</td>
         </tr>
         <tr>
             <td>Payment Reference Number:</td>
-            <td> {{object.payment.pk | stringformat:"06d"}}</td>
+            <td> {{object.pk | stringformat:"06d"}}</td>
         </tr>
         <tr>
             <td>Customer PO No:</td>
-            <td>{{object.payement.invoice.purchase_order_number | stringformat:"06d"}}</td>
+            <td>{{object.invoice.purchase_order_number | stringformat:"06d"}}</td>
         </tr>
         
     </tbody>
@@ -31,12 +31,12 @@
 {% block head_cell %}
 <td class="{{style}}-head-cell">
     <p><b>Prepared For:</b></p>
-    <p>{{object.payment.invoice.customer}}</p>
+    <p>{{object.invoice.customer}}</p>
     {% if include_shipping %}
-    {% if object.payment.invoice.customer.business %}
-    {{object.payment.invoice.customer.business.business_address | linebreaks}}
+    {% if object.invoice.customer.business %}
+    {{object.invoice.customer.business.business_address | linebreaks}}
     {% else %}
-    {{object.payment.invoice.customer.billing_address | linebreaks }}
+    {{object.invoice.customer.billing_address | linebreaks }}
     {% endif %}
     {% endif %}
     
@@ -44,19 +44,18 @@
 {% endblock %}                        
 {% block content_headings %}
 <tr>
-    <td >Item</td>
     <td >Qty</td>
-    <td  style="width:300px;">Description</td>
+    <td  style="width:60%;">Description</td>
     <td >Unit Price</td>
     <td >Total</td>
 </tr>
 {% endblock content_headings %}
 {% block content_body %}
-{% for item in object.payment.invoice.invoiceitem_set.all %}
+{% for item in object.invoice.invoiceitem_set.all %}
 <tr>
-    <td >{{item.item.item_name}}</td>
+    
     <td >{{item.quantity}}</td>
-    <td >{{item.item.description}}</td>
+    <td >{{item.item.item_name}}</td>
     <td >{{item.price}}</td>
     <td >{{item.subtotal | floatformat:2 }}</td>
 </tr>
@@ -66,22 +65,41 @@
     <td ></td>
     <td ></td>
     <td ></td>
-    <td ></td>
 </tr>
 {% endblock content_body %} 
 
 {% block content_footer %}
 <tr>
-    <td colspan="4"><b>Total:</b></td>
-    <td>{{object.payment.invoice.total | floatformat:2 }}</td>
+    <td colspan="3"><b>SubTotal:</b></td>
+    <td>{{object.invoice.subtotal | floatformat:2 }}</td>
+</tr>
+
+{% if tax_column %}
+<tr>
+    <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Taxable Amount:</b></td>
+    <td>{{object.invoice.subtotal | floatformat:2 }}</td>
 </tr>
 <tr>
-    <td colspan="4"><b>Amount Paid:</b></td>
-    <td>{{object.payment.amount | floatformat:2 }}</td>
+    <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Tax Rate:</b></td>
+    <td>{{object.invoice.tax.rate}}</td>
 </tr>
 <tr>
-    <td colspan="4"><b>Balance Due:</b></td>
-    <td>{{object.payment.due | floatformat:2 }}</td>
+    <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Tax Due:</b></td>
+    <td>{{object.invoice.tax_amount | floatformat:2 }}</td>
+</tr>
+
+<tr>
+    <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}"><b>Total:</b></td>
+    <td>{{object.invoice.total | floatformat:2 }}</td>
+</tr>
+{% endif %}
+<tr>
+    <td colspan="3"><b>Amount Paid:</b></td>
+    <td>{{object.amount | floatformat:2 }}</td>
+</tr>
+<tr>
+    <td colspan="3"><b>Balance Due:</b></td>
+    <td>{{object.due | floatformat:2 }}</td>
 </tr>
 {% endblock content_footer %}
 {% block footer_statements %}

@@ -139,16 +139,21 @@ class Order(models.Model):
                 )
                 j.simple_entry(
                     self.total,
+                    Account.objects.get(pk=2000),
                     self.supplier.account,
-                    Account.objects.get(pk=2000)
+                    
                 )
         else:
             j = JournalEntry.objects.create(
-
+                date = self.issue_date,
+                reference = "Auto generated entry from order" + str(self),
+                memo=self.notes,
+                journal = Journal.objects.get(pk=4)
             )
             j.simple_entry(
                 self.total,
-                
+                Account.objects.get(pk=4006),
+                Account.objects.get(pk=1000),
             )
         
 

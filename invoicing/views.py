@@ -351,37 +351,8 @@ class QuoteDeleteView(DeleteView):
 #               Receipt Views           #
 #########################################
 
-class ReceiptDeleteView(DeleteView):
-    template_name = os.path.join('common_data', 'delete_template.html')
-    model = Receipt
-    success_url = reverse_lazy('invoicing:receipt-list')
-
-
-class ReceiptCreateView(ExtraContext, CreateView):
-    extra_context = {
-        'title': 'Create New Receipt'
-    }
-    template_name = os.path.join('common_data', 'create_template.html')
-    form_class = forms.ReceiptForm
-    model = Receipt
-    success_url = reverse_lazy('invoicing:home')
-
-
-class ReceiptListView(ExtraContext, FilterView):
-    extra_context = {
-        "title": "List of Receipts",
-        "new_link": reverse_lazy("invoicing:create-receipt")
-        }
-        
-    template_name = os.path.join("invoicing", "receipt_list.html")
-    filterset_class = filters.ReceiptFilter
-    paginate_by = 5
-    
-    def get_queryset(self):
-        return Receipt.objects.all().order_by('pk')
-
 class ReceiptDetailView(DetailView):
-    model = Receipt
+    model = Payment
     template_name = os.path.join("invoicing", "receipt_templates",
         'receipt.html')
     
@@ -391,15 +362,6 @@ class ReceiptDetailView(DetailView):
         context['title'] = 'Receipt'
         return apply_style(context)
 
-
-class ReceiptUpdateView(ExtraContext, UpdateView):
-    extra_context = {
-        'title': 'Update Existing Receipt'
-    }
-    template_name = os.path.join('common_data', 'create_template.html')
-    form_class = forms.ReceiptForm
-    model = Receipt
-    success_url = reverse_lazy('invoicing:home')
 
 #########################################################
 #                  Template Views                       #

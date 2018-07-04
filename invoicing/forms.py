@@ -117,8 +117,3 @@ class QuoteForm(forms.ModelForm, BootstrapMixin):
         fields = ["date","customer", "comments", 'tax', 'salesperson']
         model = models.Quote
         
-
-class ReceiptForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields = '__all__'
-        model = models.Receipt

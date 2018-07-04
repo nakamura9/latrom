@@ -54,12 +54,8 @@ urlpatterns = [
     url(r'^quote-update/(?P<pk>[\w]+)$', views.QuoteUpdateView.as_view(), name='quote-update'),
     url(r'^create-quote$', views.QuoteCreateView.as_view(), name='create-quote'),
     url(r'^quote-list$', views.QuoteListView.as_view(), name='quote-list'),
-    url(r'^delete-receipt/(?P<pk>[\w]+)$', views.ReceiptDeleteView.as_view(), name='delete-receipt'),
-    url(r'^receipt-detail/(?P<pk>[\w]+)$', views.ReceiptDetailView.as_view(), name='receipt-detail'),
-    url(r'^receipt-update/(?P<pk>[\w]+)$', views.ReceiptUpdateView.as_view(), name='receipt-update'),
-    url(r'^create-receipt$', views.ReceiptCreateView.as_view(), name='create-receipt'),
-    url(r'^receipt-list$', views.ReceiptListView.as_view(), name='receipt-list'),
-    url(r'^receipt-from-payment/(?P<pk>[\w]+)$', views.create_receipt_from_payment, name='receipt-from-payment'),
+    
+    url(r'^receipt/(?P<pk>[\w]+)$', views.ReceiptDetailView.as_view(), name='receipt'),
     url(r'^payment-from-invoice/(?P<pk>[\w]+)$', views.create_payment_from_invoice, name='payment-from-invoice'),
     url(r'^invoice-from-quote/(?P<pk>[\w]+)$', views.create_invoice_from_quote, name='invoice-from-quote'),
 ] +  customer_router.urls + invoice_router.urls + \
