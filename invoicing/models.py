@@ -187,12 +187,14 @@ class InvoiceItem(models.Model):
         self.save()
 
     def _return(self, quantity):
-        self.returned_quantity -= quantity
+        self.returned_quantity  = float(quantity)
+        if self.returned_quantity > 0:
+            self.returned =True
         self.save()
 
     @property
     def returned_value(self):
-        self.pricce * self.returned_quantity
+        return self.price * decimal.Decimal(self.returned_quantity)
 
 class SalesRepresentative(models.Model):
     employee = models.OneToOneField('accounting.Employee', null=True)
@@ -353,7 +355,7 @@ class CreditNote(models.Model):
         return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_items], 0)
 
     def create_entry(self):
-        j = JournalEntry(
+        j = JournalEntry.objects.create(
             reference = 'CN' + str(self.pk),
             memo="Auto generated journal entry from credit note",
             date=self.date,

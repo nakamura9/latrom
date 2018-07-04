@@ -1,0 +1,68 @@
+{% extends "invoicing/themable_common/root.html" %} {% block base_contents %}
+<center>
+    <h3>Goods Received Note</h3>
+</center>
+<div style="clear:both">
+    <div style="float:left">
+        <img width="300" height="200" src="/media/logo/{{logo}}" alt="Logo" class="img-responsive">
+    </div>
+    <div style="float:left">
+        <h4>{{business_name}}</h4>
+    </div>
+</div>
+<div style="clear:both">
+    <div style="float:left">
+        <h5>Supplier</h5>
+    </div>
+    <div style="float:left">
+        <table>
+            <tbody>
+                <tr>
+                    <th>Purchase Order #</th>
+                    <td>{{object.order.pk}}</td>
+                </tr>
+                <tr>
+                    <th>Goods Received Note #</th>
+                    <td>{{object.pk}}</td>
+                </tr>
+                <tr>
+                        <th>Date</th>
+                        <td>{{object.receive_date}}</td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="width:100%">
+    <table class="{{style}}-content table">
+        <thead class="bg-primary">
+            <tr>
+                <td>Ordered Qty</td>
+                <td>Received Qty</td>
+                <td>Description</td>
+            </tr>
+        </thead>
+        <tbody class="item-table">
+            {% for item in object.order.orderitem_set.all %}
+                <tr>
+                    <td>{{item.quantity}}</td>
+                    <td>{{item.received}}</td>
+                    <td>{{item.item.item_name}}</td>
+                </tr>
+            {% endfor %}
+            <tr style="height:100%">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div style="border-radius:2mm; border: 1mm solid black; margin-top:0.5cm;">
+    <div class="text-white" style="padding:2.5mm;">Note</div>
+    <div>
+        <p>{{object.note}}</p>
+    </div>
+</div>
+{% endblock %}

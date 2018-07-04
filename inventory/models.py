@@ -213,7 +213,7 @@ class Category(models.Model):
         return self.name
 
 class StockReceipt(models.Model):
-    order = models.ForeignKey('inventory.Order', null=True)
+    order = models.ForeignKey('inventory.Order', null=True)# might make one to one
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)

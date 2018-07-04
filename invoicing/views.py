@@ -77,8 +77,59 @@ class CustomerDeleteView(DeleteView):
     success_url = reverse_lazy('invoicing:customer-list')
 
 #########################################
+#           Customer Views              #
+#########################################
+
+class CreditNoteCreateView(ExtraContext, CreateView):
+    extra_context = {"title": "Create New Credit Note"}
+    template_name = os.path.join("invoicing", "create_credit_note.html")
+    model = CreditNote
+    form_class = forms.CreditNoteForm
+    success_url = reverse_lazy("invoicing:home")
+
+    def post(self, request):
+        resp = super(CreditNoteCreateView, self).post(request)
+        data = json.loads(urllib.unquote(request.POST['returned-items']))
+        for key in data.keys():
+            iitem = InvoiceItem.objects.get(pk=key)
+            iitem._return(data[key])
+        return resp
+
+
+class CreditNoteUpdateView(ExtraContext, UpdateView):
+    extra_context = {"title": "Update Existing Credit Note"}
+    template_name = os.path.join("invoicing", "create_credit_note.html")
+    model = CreditNote
+    form_class = forms.CreditNoteForm
+    success_url = reverse_lazy("invoicing:home")
+
+
+class CreditNoteListView(ExtraContext, FilterView):
+    extra_context = {"title": "List of Credit Notes",
+                    "new_link": reverse_lazy("invoicing:credit-note-create")}
+    template_name = os.path.join("invoicing", "credit_note_list.html")
+    filterset_class = filters.CreditNoteFilter
+    paginate_by = 2
+
+    def get_queryset(self):
+        return CreditNote.objects.all().order_by('date')
+
+class CreditNoteDetailView(DetailView):
+    template_name = os.path.join('invoicing', 'credit_note.html')
+    model = CreditNote
+    
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
+        context.update(load_config())
+        context['title'] = 'Credit Note'
+        return apply_style(context)
+
+        
+#########################################
 #               Payment Views           #
 #########################################
+
 
 class PaymentAPIViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()

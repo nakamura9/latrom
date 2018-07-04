@@ -49,3 +49,11 @@ class QuoteFilter(django_filters.FilterSet):
             'customer': ['exact'],
             'salesperson': ['exact'],
         }
+
+
+class CreditNoteFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.CreditNote
+        fields = {
+            'date': ['exact'],
+        }

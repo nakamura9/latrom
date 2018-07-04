@@ -17,16 +17,13 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = "__all__"
-
-
     
 class InvoiceItemSerializer(serializers.ModelSerializer):
-    
     item = ItemSerializer(many=False)
 
     class Meta:
         model = InvoiceItem
-        fields = ("id", "quantity", "item", 'discount')
+        fields = ("id", "quantity", "item", 'discount', 'price')
 
 class InvoiceSerializer(serializers.ModelSerializer):
     invoiceitem_set = InvoiceItemSerializer(many=True)

@@ -262,6 +262,15 @@ class StockReceiptCreateView(CreateView):
             
         return resp 
 
+class GoodsReceivedVoucherView(DetailView):
+    model = models.StockReceipt
+    template_name = os.path.join("inventory", "goods_received.html")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(GoodsReceivedVoucherView, self).get_context_data(*args, **kwargs)
+        context.update(load_config())
+        return context
+
 class CategoryCreateView(CreateView):
     form_class = forms.CategoryForm
     model = models.Category

@@ -41,6 +41,7 @@ class JournalEntry(models.Model):
 
 
     def simple_entry(self, amount, credit_acc, debit_acc):
+        
         Credit.objects.create(
             entry=self,
             account = credit_acc,

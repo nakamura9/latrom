@@ -31,5 +31,6 @@ urlpatterns = [
     url(r'^order-detail/(?P<pk>[\w]+)/?$', views.OrderDetailView.as_view(), name="order-detail"),
     url(r'^stock-receipt-create/?$', views.StockReceiptCreateView.as_view(), name="stock-receipt-create"),
     url(r'^receive-from-order/(?P<pk>[\w]+)/?$', views.create_stock_receipt_from_order, name="receive-from-order"),
+    url(r'^goods-received/(?P<pk>[\w]+)/?$', views.GoodsReceivedVoucherView.as_view(), name="goods-received"),
     url(r'^config/?$', views.ConfigView.as_view(), name="config"),
 ] + item_router.urls + order_router.urls + order_item_router.urls

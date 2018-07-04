@@ -118,7 +118,8 @@ class QuoteForm(forms.ModelForm, BootstrapMixin):
         model = models.Quote
         
 
-class CreditNoteForm(forms.ModelForm):
+class CreditNoteForm( forms.ModelForm, BootstrapMixin):
+    invoice = forms.ModelChoiceField(models.Invoice.objects.exclude(customer__account__isnull=True))
     class Meta:
         fields = '__all__'
         model = models.CreditNote

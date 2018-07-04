@@ -12,6 +12,7 @@ module.exports = {
         direct_purchase: './js/direct_purchase',
         compound_transaction: './js/compound_transaction',
         stock_receipt: './js/stock_receipt',
+        credit_note: './js/credit_note',
     },
     output: {
         path: path.resolve('./bundles/'),

@@ -28,13 +28,9 @@
     <p><b>Bill To:</b></p>
     <p>{{object.customer}}</p>
     {% if include_shipping %}
-    {% if object.customer.business %}
     {{object.customer.business_address | linebreaks}}
-    {% else %}
-    {{object.customer.billing_address | linebreaks }}
     {% endif %}
-    {% endif %}
-</td>
+</td>                              
 {% endblock %}                        
 {% block content_headings %}
 <tr>

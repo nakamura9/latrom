@@ -47,6 +47,9 @@
                     <a href="{% url 'inventory:receive-from-order' pk=order.pk %}" class="dropdown-item">
                             <i class="fas fa-share-square"></i> Create Derived Stock Receipt
                     </a>
+                    {% if order.stockreceipt_set.all.count > 0 %}
+                        <a href="{% url 'inventory:goods-received' pk=order.stockreceipt_set.first.pk %}" class="dropdown-item">View Goods Received Note</a>
+                    {% endif %}
                 </div>
             </div>
                 

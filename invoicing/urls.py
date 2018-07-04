@@ -58,6 +58,10 @@ urlpatterns = [
     url(r'^receipt/(?P<pk>[\w]+)$', views.ReceiptDetailView.as_view(), name='receipt'),
     url(r'^payment-from-invoice/(?P<pk>[\w]+)$', views.create_payment_from_invoice, name='payment-from-invoice'),
     url(r'^invoice-from-quote/(?P<pk>[\w]+)$', views.create_invoice_from_quote, name='invoice-from-quote'),
+    url(r'^credit-note-create/?$', views.CreditNoteCreateView.as_view(), name='credit-note-create'),
+    url(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), name='credit-note-list'),
+    url(r'^credit-note-detail/(?P<pk>[\w]+)/?$', views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
+    
 ] +  customer_router.urls + invoice_router.urls + \
     payment_router.urls + sales_rep_router.urls +  invoice_item_router.urls + \
     quote_router.urls + quote_item_router.urls
