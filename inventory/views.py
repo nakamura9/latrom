@@ -16,8 +16,6 @@ import forms
 import models
 import serializers
 import filters
-
-from accounting.models import Account, JournalEntry, Journal
 from common_data.utilities import ExtraContext,load_config, apply_style, Modal
 
 
@@ -47,7 +45,7 @@ class ItemDeleteView(DeleteView):
     success_url = reverse_lazy('inventory:item-list')
 
 class ItemUpdateView(ExtraContext, UpdateView):
-    form_class = forms.ItemForm
+    form_class = forms.ItemUpdateForm
     model = models.Item
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "create_template.html")
@@ -110,6 +108,11 @@ class OrderAPIView(ModelViewSet):
     serializer_class = serializers.OrderSerializer
 
 class OrderCreateView(ExtraContext, CreateView):
+    '''The front end page combines with react to create a dynamic
+    table for entering items in the form.
+    The two systems communicate of json encoded strings 
+    passed as hidden input fields on the form as part of a
+    list of 'items[]'. '''
     form_class = forms.OrderForm
     model = models.Order
     success_url = reverse_lazy('inventory:home')
