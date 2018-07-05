@@ -6,7 +6,20 @@
 <link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> 
 {% endblock %} 
 {% block content %}
+<style>
+    .panel {
+        border: 1mm solid black;
+        margin: 2mm;
 
+    }
+    .panel-heading {
+        padding:2mm;
+        background-color: black;
+        color:white;
+    }
+
+    
+</style>
 
 <div class="jumbotron">
     <div class="container">
@@ -16,34 +29,78 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-8">
-            <div class="card card bg-primary text-white">
-                <div class="card-body">
-                    {% crispy form %}
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
+        <div class="col-sm-12">
             {% if modals %}
-            <div class="card">
-                <div class="card-body">
                     {% for modal in modals %}
                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#{{modal.link}}">
                         {{modal.title}}
                     </button>
-                    <hr />
                     {% endfor %}
-                </div>
-            </div>
+                
             {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div style="border:1mm solid black; padding:5mm; margin:5mm;">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                            <center><h2>{{invoice_title}}</h2></center>
+                            <div class="row">
+                                <div class="col-sm" style="width:50%;">
+                                   <center>
+                                        <img src="/media/logo/{{logo}}" alt="Logo" width="300" height="200" />
+                                   </center> 
+                                </div>
+                                <div class="col-sm">
+                                    <h4>{{business_name}}</h4>
+                                    <p>{{business_address | linebreaks}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm" >
+                                    <p>
+                                            <b>Bill To:</b>
+                                    </p>
+                                    <p>{{form.customer}}</p>
+                                    <p>Type of Invoice:</p>
+                                    <p>{{form.type_of_invoice}}</p>
+                                    <p>Sales Representatitve:</p>
+                                    <p>{{form.salesperson}}</p>
+                                    
+                                </div>
+                                <div class="col-sm" >
+                                    <p>Date:</p>
+                                    <p>{{form.date_issued}}</p>
+                                    <p>Due Date:</p>
+                                    <p>{{form.due_date}}</p>
+                                    <p>Customer Purchase Order Number:</p>
+                                    <p>{{form.purchase_order_number}}</p>
+                                    <p>Tax:</p>
+                                    <p>{{form.tax}}</p>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                    <div class="panel-heading">Terms</div>
+                                    {{form.terms}}
+                            </div>
+                            <div class="panel">
+                                <div class="panel-heading">Comments</div>
+                                {{form.comments}}
+                            </div>
+                            <button class="btn btn-primary">Submit</button>
+                        </form>
+                        <div class="col-sm-12" id="item-table">
+            
+                        </div>    
+            </div>
+            
 
         </div>
 
     </div>
     <div class="row">
-        <div class="col-sm-12" id="item-table">
-
-        </div>
+        
     </div>
 </div>
 {% if modals %}

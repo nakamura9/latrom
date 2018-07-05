@@ -56,25 +56,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for d in object.debit_set.all %}
+                    {% for t in object.transaction_list %}
                     <tr>
-                        <td>{{d.entry.id}}</td>
-                        <td>{{d.entry.date}}</td>
-                        <td>{{d.entry.memo}}</td>
-                        <td>{{d.amount}}</td>
+                        <td>{{t.entry.id}}</td>
+                        <td>{{t.entry.date}}</td>
+                        <td>{{t.entry.memo}}</td>
+                        <td>{{t.amount}}</td>
                         <td>
-                            Debit
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% for c in object.credit_set.all %}
-                    <tr>
-                        <td>{{c.entry.id}}</td>
-                        <td>{{c.entry.date}}</td>
-                        <td>{{c.entry.memo}}</td>
-                        <td>{{c.amount}}</td>
-                        <td>
-                            Credit
+                            {{t.name}}
                         </td>
                     </tr>
                     {% endfor %}

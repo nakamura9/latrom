@@ -61,6 +61,22 @@ class Item(models.Model):
         self.quantity -= float(amount)
         self.save()
         return self.quantity
+    
+    @property
+    def events(self):
+        class Event:
+            def __init__(self, date, description):
+                self.date = date
+                self.description= description
+
+            def __lt__(self, other):
+                return other.date < self.date
+
+        items= [Event(i.invoice.due_date, "removed %d items from inventory as part of invoice #%d." % (i.quantity, i.invoice.pk)) for i in InvoiceItem.objects.filter(item=self)]
+        orders = [Event(o.order.issue_date, "added %d items to inventory from purchase order #%d." % (o.received, o.order.pk)) for o in OrderItem.objects.filter(item=self) if o.received > 0]
+
+        events = items + orders 
+        return sorted(events)
 
 class Order(models.Model):
     expected_receipt_date = models.DateField()

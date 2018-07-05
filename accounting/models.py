@@ -13,10 +13,17 @@ class Debit(models.Model):
     amount =models.DecimalField(max_digits=6, decimal_places=2)
     entry = models.ForeignKey('accounting.JournalEntry')
 
+    @property
+    def name(self):
+        return "Debit"
+
     def save(self, *args, **kwargs):
         super(Debit, self).save(*args, **kwargs)
         self.account.balance -= self.amount
         self.account.save()
+
+    def __lt__(self, other):
+        return self.entry.date < other.entry.date
 
 
 class Credit(models.Model):
@@ -24,6 +31,13 @@ class Credit(models.Model):
     amount =models.DecimalField(max_digits=6,decimal_places=2)
     entry = models.ForeignKey('accounting.JournalEntry')
 
+    @property
+    def name(self):
+        return "Debit"
+
+    def __lt__(self, other):
+        return self.entry.date < other.entry.date
+        
     def save(self, *args, **kwargs):
         super(Credit, self).save(*args, **kwargs)
         self.account.balance += self.amount
@@ -87,9 +101,11 @@ class Account(models.Model):
         self.save()
         return self.balance
     
-    def list_transactions(self):
-        debits = self.debit_set.all()
-        credits = self.credit_set.all()
+    @property
+    def transaction_list(self):
+        debits = list(self.debit_set.all())
+        credits = list(self.credit_set.all())
+        return sorted(debits + credits)
     
 class Ledger(models.Model):
     name = models.CharField(max_length=64)

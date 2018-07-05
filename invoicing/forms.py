@@ -73,7 +73,7 @@ class PaymentForm(forms.ModelForm, BootstrapMixin):
 class InvoiceForm(forms.ModelForm, BootstrapMixin):
     def __init__(self, *args, **kwargs):
         super(InvoiceForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
+        '''self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
             Tab('Details',
@@ -90,9 +90,9 @@ class InvoiceForm(forms.ModelForm, BootstrapMixin):
                 'terms',
                 'comments')
         ))
-        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.add_input(Submit('submit', 'Submit'))'''
     class Meta:
-        fields = "__all__"
+        exclude = "active",
         model = models.Invoice
 
         

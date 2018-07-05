@@ -81,6 +81,14 @@
                                 <th>Date</th>
                                 <th>Description</th>
                             </thead>
+                            <tbody style="max-height:200px; overflow-y:auto;">
+                                {% for e in object.events %}
+                                    <tr>
+                                        <td>{{e.date}}</td>
+                                        <td>{{e.description}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>

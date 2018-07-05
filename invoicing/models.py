@@ -68,7 +68,6 @@ class Invoice(models.Model):
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
-    account = models.ForeignKey("accounting.Account", null=True, blank=True)
     active = models.BooleanField(default=True)
     purchase_order_number = models.CharField(blank=True, max_length=32)
     
@@ -134,8 +133,7 @@ class Invoice(models.Model):
             Credit.objects.create(
                 amount = self.subtotal,
                 entry= t,
-                account= self.account if self.account else \
-                    Account.objects.get(pk=1000),
+                account=Account.objects.get(pk=1000),
             )
             #credit tax to tax account 
             Credit.objects.create(

@@ -263,6 +263,10 @@ class InvoiceCreateView(ExtraContext, CreateView):
     template_name = os.path.join("invoicing", "invoice_create.html")
     form_class = forms.InvoiceForm
     success_url = reverse_lazy("invoicing:home")
+    def get_context_data(self, *args, **kwargs):
+        context = super(InvoiceCreateView, self).get_context_data(*args, **kwargs)
+        context.update(load_config())
+        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(InvoiceCreateView, self).post(request, *args, **kwargs)
