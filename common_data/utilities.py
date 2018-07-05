@@ -40,28 +40,6 @@ def load_config():
 
     return CONFIG
 
-def income_tax_calculator(gross):
-    upper_limits = [0, 300, 1500, 3000, 5000, 10000, 15000, 20000]
-    rates = {
-        (0,300) : (0, 0),
-        (300,1500) : (20, 60),
-        (1500,3000) : (25, 135),
-        (3000,5000) : (30, 285),
-        (5000,10000) : (35, 535),
-        (10000,15000) : (40, 1035),
-        (15000,20000) : (45, 1785),
-    }
-    count = 0
-    for limit in upper_limits:
-        if gross >= limit:
-            count += 1 
-        else:
-            bracket = (upper_limits[count -1], limit)
-            break
-    
-    
-    return ((gross * rates[bracket][0])/100) - rates[bracket][1]
-
 class Modal(object):
     '''for every modal use a object that contains the trigger link id, the modal form the modal action
 extra_context = {

@@ -54,8 +54,7 @@ def create_test_invoicing_models(cls):
         due_date = TODAY,
         comments = "TEst Comment",
         tax = cls.tax,
-        salesperson = cls.salesrep,
-        account = cls.account_c
+        salesperson = cls.salesrep
     )
 
     cls.invoice_c = models.Invoice.objects.create(
@@ -65,8 +64,7 @@ def create_test_invoicing_models(cls):
         due_date = TODAY,
         comments = "TEst Comment",
         tax = cls.tax,
-        salesperson = cls.salesrep,
-        account = cls.account_c
+        salesperson = cls.salesrep
     )
 
     cls.invoice_item = models.InvoiceItem.objects.create(
@@ -131,8 +129,7 @@ class ModelTests(TestCase):
             due_date = TODAY,
             comments = "TEst Comment",
             tax = self.tax,
-            salesperson = self.salesrep,
-            account = self.account_c
+            salesperson = self.salesrep
         )
         self.assertIsInstance(inv, models.Invoice)
 
@@ -191,8 +188,7 @@ class ModelTests(TestCase):
             due_date = TODAY,
             comments = "TEst Comment",
             tax = self.tax,
-            salesperson = self.salesrep,
-            account = self.account_c
+            salesperson = self.salesrep
         )
         self.assertIsInstance(inv.create_payment(), models.Payment)
 
@@ -311,8 +307,7 @@ class ViewTests(TestCase):
             'due_date' : TODAY,
             'comments' : "TEst Comment",
             'tax' : cls.tax,
-            'salesperson' : cls.salesrep,
-            'account' : cls.account_c
+            'salesperson' : cls.salesrep
         })
 
         bonus_inv = models.Invoice.objects.create(
@@ -323,8 +318,7 @@ class ViewTests(TestCase):
             'due_date' : TODAY,
             'comments' : "TEst Comment",
             'tax' : cls.tax,
-            'salesperson' : cls.salesrep,
-            'account' : cls.account_c
+            'salesperson' : cls.salesrep
         })
 
         cls.super_extra_inv = models.Invoice.objects.create(**{
@@ -334,8 +328,7 @@ class ViewTests(TestCase):
             'due_date' : TODAY,
             'comments' : "TEst Comment",
             'tax' : cls.tax,
-            'salesperson' : cls.salesrep,
-            'account' : cls.account_c
+            'salesperson' : cls.salesrep
         }
         )
 

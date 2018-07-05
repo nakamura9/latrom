@@ -6,5 +6,4 @@ import models
 
 admin.site.register(models.Account)
 admin.site.register(models.JournalEntry)
-admin.site.register(models.Ledger)
 admin.site.register(models.Journal)

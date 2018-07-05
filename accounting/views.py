@@ -10,7 +10,6 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView,  FormView
 from django.http import HttpResponseRedirect
 from django_filters.views import FilterView
-from django.db.models import Q
 from django.urls import reverse_lazy
 from rest_framework import viewsets
 
@@ -31,18 +30,24 @@ class Dashboard(TemplateView):
 #                 JournalEntry Views                         #
 #############################################################
 
-
 # update and delete removed for security, only adjustments can alter the state 
 # of an entry 
 
 class JournalEntryCreateView(ExtraContext, CreateView):
+    '''This type of journal entry has only one credit and one debit'''
     template_name = CREATE_TEMPLATE
     model = models.JournalEntry
     form_class = forms.SimpleJournalEntryForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New JournalEntry"}
+    extra_context = {"title": "Create New Journal Entry"}
 
 class ComplexEntryView(ExtraContext, CreateView):
+    '''This type of journal entry can have any number of 
+    credits and debits. The front end page uses react to dynamically 
+    alter the content of page hence the provided data from react is 
+    sent to the server as urlencoded json in a hidden field called items[]
+    
+    '''
     template_name = os.path.join('accounting', 'compound_transaction.html')
     form_class= forms.ComplexEntryForm
 
@@ -74,7 +79,7 @@ class ComplexEntryView(ExtraContext, CreateView):
 
         return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
 
-class JournalEntryDetailView(DeleteView):
+class JournalEntryDetailView(DetailView):
     template_name = os.path.join('accounting', 'transaction_detail.html')
     model = models.JournalEntry
 
@@ -111,7 +116,7 @@ class EmployeeListView(ExtraContext, FilterView):
         'new_link': reverse_lazy('accounting:create-employee')
     }
     def get_queryset(self):
-        return models.Employee.objects.all().order_by('first_name')
+        return models.Employee.objects.filter(active=True).order_by('first_name')
 
 class EmployeeDetailView(DetailView):
     template_name = os.path.join('accounting', 'employee_detail.html')
@@ -121,7 +126,6 @@ class EmployeeDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('accounting:list-employees')
     model = models.Employee
-
 
 
 #############################################################
@@ -158,12 +162,7 @@ class AccountUpdateView(ExtraContext, UpdateView):
 class AccountDetailView(DetailView):
     template_name = os.path.join('accounting', 'account_detail.html')
     model = models.Account 
-    #implemnt filter functionality
-    def get_context_data(self, *args, **kwargs): 
-        context = super(AccountDetailView, self).get_context_data(*args, **kwargs)
-        #combine lists
-        context['transactions'] = models.Debit.objects.filter(account=self.object)
-        return context
+    
 
 class AccountListView(ExtraContext, FilterView):
     template_name = os.path.join('accounting', 'account_list.html')
@@ -174,7 +173,7 @@ class AccountListView(ExtraContext, FilterView):
         'new_link': reverse_lazy('accounting:create-account')
                 }
     def get_queryset(self):
-        return models.Account.objects.all().order_by('pk')
+        return models.Account.objects.filter(active=True).order_by('pk')
 #############################################################
 #                        Misc Views                         #
 #############################################################
@@ -232,9 +231,9 @@ class UtilsListView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(UtilsListView, self).get_context_data(*args, **kwargs)
-        context['allowances'] = models.Allowance.objects.all().order_by('name')
-        context['deductions'] = models.Deduction.objects.all().order_by('name')
-        context['commissions'] = models.CommissionRule.objects.all().order_by('name')
+        context['allowances'] = models.Allowance.objects.filter(active=True).order_by('name')
+        context['deductions'] = models.Deduction.objects.filter(active=True).order_by('name')
+        context['commissions'] = models.CommissionRule.objects.filter(active=True).order_by('name')
         context['taxes'] = models.Tax.objects.all().order_by('name')
         return context
 
@@ -284,6 +283,9 @@ class CommissionDeleteView(DeleteView):
     model = models.CommissionRule
 
 class DirectPaymentFormView(ExtraContext, FormView):
+    '''Uses a simple form view as a wrapper for a transaction in the journals
+    for transactions involving two accounts.
+    '''
     form_class = forms.DirectPaymentForm
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:dashboard')
@@ -298,7 +300,7 @@ class DirectPaymentFormView(ExtraContext, FormView):
                 (form.cleaned_data['paid_to'],
                     form.cleaned_data['method'])
             journal = models.Journal.objects.get(
-                pk=load_config()['direct_payment_journal'])
+                pk=4)#purchases journal
             j = models.JournalEntry.objects.create(
                 reference = 'DPMT:' + form.cleaned_data['reference'],
                 memo=notes_string + form.cleaned_data['notes'],
@@ -307,17 +309,19 @@ class DirectPaymentFormView(ExtraContext, FormView):
             )
             j.simple_entry(
                 form.cleaned_data['amount'],
+                models.Account.objects.get(pk=4006),#purchases account
                 form.cleaned_data['account_paid_to'],
-                form.cleaned_data['account_paid_from'],
             )
         return super(DirectPaymentFormView, self).post(request)
 
 class AccountConfigView(FormView):
+    '''
+    Tabbed Configuration view for accounts 
+    '''
     form_class = forms.ConfigForm
     template_name = os.path.join('accounting', 'config.html')
     success_url = reverse_lazy('accounting:dashboard')
     
-
     def get_initial(self):
         return load_config()
 
@@ -365,6 +369,14 @@ class PayGradeDeleteView(DeleteView):
     model = models.PayGrade
 
 class NonInvoicedCashSale(FormView):
+    '''
+    A transaction handled entirely in the accounting part of the application
+    No invoice is generated but the relevant accounts are transacted on and 
+    the appropriate inventory is updated.
+    React is used to provide a table of items that can be added to the cash
+    sale. It communicates with the server in the form of json submitted as 
+    part of a number of hidden fields called 'items[]'.
+    '''
     form_class = forms.NonInvoicedSaleForm
     template_name = os.path.join('accounting', 'non_invoiced_cash_sale.html')
     success_url = reverse_lazy('accounting:dashboard')
@@ -377,12 +389,17 @@ class NonInvoicedCashSale(FormView):
             data = json.loads(urllib.unquote(item))
             quantity = float(data['quantity'])
             item = Item.objects.get(pk=data['code'])
-            item.quantity -= quantity
-            total += (item.unit_sales_price * quantity) * (float(data['discount']) / 100)
-            item.save()
+            #update inventory
+            item.decrement(quantity)
+            amount_sold = item.unit_sales_price * quantity 
+            discount = amount_sold * (float(data['discount']) / 100)
+            total += amount_sold - discount
             #fix
             date = datetime.datetime.strptime(
                 request.POST['date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+        
+        #add taxes here from the config
+
 
         j = models.JournalEntry.objects.create(
                 date=date,
@@ -392,8 +409,8 @@ class NonInvoicedCashSale(FormView):
             )
         j.simple_entry(
             total,
-            models.Account.objects.get(pk=config['invoice_account']),
-            models.Account.objects.get(pk=config['sales_account']),
+            models.Account.objects.get(pk=4000),#sales
+            models.Account.objects.get(pk=1004),#inventory
         )
         return resp
 
@@ -401,9 +418,7 @@ class DirectPaymentList(ExtraContext, TemplateView):
     template_name = os.path.join('accounting', 'direct_payment_list.html')
     extra_context = {
         'entries': lambda : models.JournalEntry.objects.filter(
-           journal = models.Journal.objects.get(
-                pk=load_config()['direct_payment_journal']) 
-        ) 
+           journal = models.Journal.objects.get(pk=4)) 
     }
 
 #############################################################

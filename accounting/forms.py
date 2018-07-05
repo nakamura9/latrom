@@ -71,7 +71,7 @@ class LedgerForm(forms.ModelForm, BootstrapMixin):
 
 class JournalForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields="__all__"
+        exclude="active",
         model = models.Journal
 
 class NonInvoicedSaleForm(BootstrapMixin,forms.Form):
@@ -81,18 +81,18 @@ class NonInvoicedSaleForm(BootstrapMixin,forms.Form):
 
 class AllowanceForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude="active",
         model = models.Allowance
 
     
 class CommissionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude="active",
         model = models.CommissionRule
 
 class DeductionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude="active",
         model = models.Deduction
 
 
@@ -103,7 +103,7 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude="active",
         model = models.Employee
 
     def __init__(self, *args, **kwargs):
@@ -121,11 +121,4 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                     'hire_date',
                     'title',
                     'pay_grade')))
-        ''',
-                Tab('Payment Details', 
-                    'hourly_rate',
-                    'overtime_rate',
-                    'overtime_two_rate',
-                    'monthly_salary',
-                    'monthly_leave_days')'''
         self.helper.add_input(Submit('submit', 'Submit'))

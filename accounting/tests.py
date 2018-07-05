@@ -28,8 +28,7 @@ def create_account_models(cls):
         )
     cls.journal = Journal.objects.create(
             name= 'Model Test Journal',
-            start_period=TODAY,
-            end_period = TODAY + datetime.timedelta(days=30)
+            description="test journal"
         )
     cls.tax = Tax.objects.create(
             name='model test tax',
@@ -113,13 +112,10 @@ class ModelTests(TestCase):
             Account))
 
     def test_create_journal(self):
-        Journal.objects.create(name='Sales Book',
-            start_period=TODAY,
-            end_period= TODAY + datetime.timedelta(days=30))
+        j = Journal.objects.create(name='Sales Book')
 
         self.assertTrue(isinstance(
-            Journal.objects.get(name='Sales Book'), 
-            Journal))
+            j, Journal))
 
     def test_create_tax(self):
         Tax.objects.create(name='sales tax',
@@ -139,8 +135,6 @@ class ModelTests(TestCase):
         self.assertTrue(isinstance(
             deduction, 
             Deduction))
-
-        self.assertEqual(deduction.deduct(100), 10)
 
     def test_create_allowance(self):
         Allowance.objects.create(
@@ -205,8 +199,8 @@ class ModelTests(TestCase):
         self.assertEqual(slip.overtime_one_pay, 60)
         self.assertEqual(slip.overtime_two_pay, 0)
         self.assertEqual(slip.gross_pay, 756)
-        self.assertAlmostEqual(slip.income_tax, 91.2)
-        self.assertEqual(slip.net_pay, 634.8)
+        self.assertAlmostEqual(slip.PAYE, 91.2)
+        self.assertEqual(slip.net_pay, 589.2)
 
     def test_create_employee(self):
         Employee.objects.create(
@@ -542,6 +536,7 @@ class ViewTests(TestCase):
                 'name': 'Other Test Deduction',
                 'method': 0,
                 'rate': 10,
+                'trigger':1,
                 'amount': 0,
             })
         self.assertTrue(resp.status_code == 302)
@@ -567,6 +562,7 @@ class ViewTests(TestCase):
             }), data={
                 'name': 'Other Test Deduction',
                 'method': 1,
+                'trigger':1,
                 'amount': 10,
                 'rate': 0
             })
