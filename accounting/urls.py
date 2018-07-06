@@ -15,6 +15,9 @@ account_router.register(r'^api/account', views.AccountViewSet)
 payslip_router = routers.DefaultRouter()
 payslip_router.register(r'^api/payslip', views.PayslipViewset)
 
+assets = views.AssetViewGroup()
+expenses = views.ExpenseViewGroup()
+
 pay_urls = [
     url(r'^create-pay-grade/?$', views.PayGradeCreateView.as_view(), name='create-pay-grade'),
     url(r'^update-pay-grade/(?P<pk>[\w]+)/?$', views.PayGradeUpdateView.as_view(), name='update-pay-grade'),
@@ -90,4 +93,4 @@ urlpatterns =[
     url(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls + employee_router.urls + payslip_router.urls + \
     misc_urls + account_urls + employee_urls + journal_urls + \
-    entry_urls + pay_urls + account_router.urls
+    entry_urls + pay_urls + account_router.urls + assets.urls + expenses.urls

@@ -16,6 +16,16 @@ class ConfigForm(BootstrapMixin, forms.Form):
     direct_payment_account = forms.ModelChoiceField(
         models.Account.objects.all())
 
+class AssetForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.Asset
+
+class ExpenseForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.Expense
+
 class DirectPaymentForm(BootstrapMixin, forms.Form):
     date = forms.DateField()
     paid_to = forms.ModelChoiceField(Supplier.objects.all())

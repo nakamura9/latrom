@@ -53,6 +53,7 @@ def create_test_invoicing_models(cls):
         date_issued= TODAY,
         due_date = TODAY,
         comments = "TEst Comment",
+        terms ="test terms",
         tax = cls.tax,
         salesperson = cls.salesrep
     )
@@ -63,6 +64,7 @@ def create_test_invoicing_models(cls):
         date_issued= TODAY,
         due_date = TODAY,
         comments = "TEst Comment",
+        terms ="test terms",
         tax = cls.tax,
         salesperson = cls.salesrep
     )
@@ -128,6 +130,7 @@ class ModelTests(TestCase):
             date_issued= TODAY,
             due_date = TODAY,
             comments = "TEst Comment",
+            terms ="test terms",
             tax = self.tax,
             salesperson = self.salesrep
         )
@@ -188,6 +191,7 @@ class ModelTests(TestCase):
             due_date = TODAY,
             comments = "TEst Comment",
             tax = self.tax,
+            terms ="test terms",
             salesperson = self.salesrep
         )
         self.assertIsInstance(inv.create_payment(), models.Payment)
@@ -307,6 +311,7 @@ class ViewTests(TestCase):
             'due_date' : TODAY,
             'comments' : "TEst Comment",
             'tax' : cls.tax,
+            'terms' :"test terms",
             'salesperson' : cls.salesrep
         })
 
@@ -318,6 +323,7 @@ class ViewTests(TestCase):
             'due_date' : TODAY,
             'comments' : "TEst Comment",
             'tax' : cls.tax,
+            'terms' :"test terms",
             'salesperson' : cls.salesrep
         })
 
@@ -328,6 +334,7 @@ class ViewTests(TestCase):
             'due_date' : TODAY,
             'comments' : "TEst Comment",
             'tax' : cls.tax,
+            'terms' :"test terms",
             'salesperson' : cls.salesrep
         }
         )
