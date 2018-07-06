@@ -71,26 +71,6 @@ class PaymentForm(forms.ModelForm, BootstrapMixin):
 
 
 class InvoiceForm(forms.ModelForm, BootstrapMixin):
-    def __init__(self, *args, **kwargs):
-        super(InvoiceForm, self).__init__(*args, **kwargs)
-        '''self.helper = FormHelper()
-        self.helper.layout = Layout(
-            TabHolder(
-            Tab('Details',
-                'date_issued',
-                'due_date',
-                'customer',
-                'salesperson'),
-            Tab('Financial Details',
-                'type_of_invoice',
-                'tax',
-                'account',
-                'purchase_order_number'),
-            Tab('Comments', 
-                'terms',
-                'comments')
-        ))
-        self.helper.add_input(Submit('submit', 'Submit'))'''
     class Meta:
         exclude = "active",
         model = models.Invoice

@@ -85,8 +85,10 @@ class Invoice(models.Model):
     customer = models.ForeignKey("invoicing.Customer", null=True)
     date_issued = models.DateField( default=timezone.now)
     due_date = models.DateField( default=timezone.now)
-    terms = models.CharField(max_length = 128, default="")
-    comments = models.TextField(blank=True, default="")
+    terms = models.CharField(max_length = 128, default=lambda :
+        load_config().get('default_terms', ""))
+    comments = models.TextField(blank=True, default=lambda : 
+        load_config().get('default_invoice_comments', ""))
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)

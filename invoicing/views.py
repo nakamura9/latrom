@@ -270,6 +270,7 @@ class InvoiceCreateView(ExtraContext, CreateView):
                 QuickItemForm),
         ]
         }
+            
     template_name = os.path.join("invoicing", "invoice_create.html")
     form_class = forms.InvoiceForm
     success_url = reverse_lazy("invoicing:home")
@@ -278,10 +279,7 @@ class InvoiceCreateView(ExtraContext, CreateView):
         context.update(load_config())
         return context
 
-    def get_initial(self):
-        config = load_config()
-        return {key: config.get(key, "") \
-            for key in ['default_invoice_comments', "default_terms"]}
+    
 
     def post(self, request, *args, **kwargs):
         resp = super(InvoiceCreateView, self).post(request, *args, **kwargs)
