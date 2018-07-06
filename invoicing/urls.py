@@ -1,5 +1,6 @@
 from django.conf.urls import url
 import views
+import report_views
 from rest_framework.routers import DefaultRouter
 
 
@@ -60,6 +61,10 @@ urlpatterns = [
     url(r'^invoice-from-quote/(?P<pk>[\w]+)$', views.create_invoice_from_quote, name='invoice-from-quote'),
     url(r'^credit-note-create/?$', views.CreditNoteCreateView.as_view(), name='credit-note-create'),
     url(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), name='credit-note-list'),
+    url(r'^customer-statement-form/?$', report_views.CustomerStatementReportFormView.as_view(), 
+        name='customer-statement-form'),
+    url(r'^customer-statement/?$', 
+        report_views.CustomerStatementReport.as_view(), name='customer-statement'),
     url(r'^credit-note-detail/(?P<pk>[\w]+)/?$', views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
     
 ] +  customer_router.urls + invoice_router.urls + \
