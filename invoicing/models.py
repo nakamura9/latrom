@@ -14,6 +14,10 @@ from common_data.utilities import load_config
 from accounting.models import Employee, JournalEntry, Tax, Debit, Credit
 
 class Customer(models.Model):
+    '''The customer model represents business clients to whom products are 
+    sold. Customers are typically businesses and the fields reflect that 
+    likelihood. Individuals however can also be represented.
+    Customers can have accounts if store credit is extended to them.'''
     name = models.CharField(max_length=64, default="")
     tax_clearance = models.CharField(max_length=64, default="", blank=True)
     business_address = models.TextField(default= "", blank=True)
@@ -50,21 +54,39 @@ class ContactPerson(Person):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
-#add support for credit notes
+INVOICE_TYPES = [
+    ('cash', 'Cash Invoice'),
+    ('credit', 'Credit Based')
+    ]
+
 class Invoice(models.Model):
-    '''base model handles both cash and credit based invoices '''
-    type_of_invoice = models.CharField(max_length=12, choices=[
-        ('cash', 'Cash Invoice'),
-        ('credit', 'Credit Based')], 
-            default='cash')
+    '''Represents the document sent by a selling party to a buyer.
+    It outlines the items purchased, their cost and other features
+    such as the seller's information and the buyers information.
+    An aggregate relationship with the InvoiceItem class. 
+    
+    methods
+    ----------
+    create_payment - used only for credit invoices creates a complete
+        payment for the invoice object.
+    create_entry - journal entry created where the sales and tax accounts are 
+        credited and the inventory account is debited
+    update_inventory - decrements each item in the inventory
+
+    properties
+    ------------
+    subtotal - returns the sale value of the invoice
+    total - returns the price inclusive of tax
+    tax_amount - returns the amount of tax due on an invoice
+    
+    '''
+    type_of_invoice = models.CharField(max_length=12, 
+        choices=INVOICE_TYPES, default='cash')
     customer = models.ForeignKey("invoicing.Customer", null=True)
     date_issued = models.DateField( default=timezone.now)
     due_date = models.DateField( default=timezone.now)
-    terms = models.CharField(max_length = 64, 
-        default=load_config()['default_terms'])# give finite choices
-    comments = models.TextField(blank=True, 
-        default=load_config().get('default_invoice_comments', ""))
-
+    terms = models.CharField(max_length = 128, default="")
+    comments = models.TextField(blank=True, default="")
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
@@ -87,8 +109,10 @@ class Invoice(models.Model):
 
     @property
     def tax_amount(self):
-        return self.subtotal * decimal.Decimal((self.tax.rate / 100.0))
-    
+        if self.tax:
+            return self.subtotal * decimal.Decimal((self.tax.rate / 100.0))
+        return 0
+
     def __str__(self):
         if self.type_of_invoice == "cash":
             return 'CINV' + str(self.pk)
@@ -114,7 +138,6 @@ class Invoice(models.Model):
                 'separate payments, change to "credit" instead.')
     
     def create_entry(self):
-        config = load_config()
         if self.type_of_invoice == "cash":
             t = JournalEntry.objects.create(
                 reference='INV' + str(self.pk),
@@ -122,36 +145,41 @@ class Invoice(models.Model):
                 date=self.date_issued,
                 journal =Journal.objects.get(pk=3)#Sales Journal
             )
-            Debit.objects.create(
-                amount = self.total,
-                entry= t,
-                account = self.customer.account \
-                    if self.customer.account else \
-                        Account.objects.get(pk=4000),
-            )
-            # current account
-            Credit.objects.create(
-                amount = self.subtotal,
-                entry= t,
-                account=Account.objects.get(pk=1000),
-            )
-            #credit tax to tax account 
-            Credit.objects.create(
-                amount = self.tax_amount,
-                entry= t,
-                account= Account.objects.get(pk=2001),
-            )
+            t.debit(self.total, Account.objects.get(pk=4009))#inventory
+            t.credit(self.subtotal, Account.objects.get(pk=4000))#sales
+            t.credit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
+
             return t
         else:
             raise ValueError('Only cash based invoices generate entries')
 
     def update_inventory(self):
+        #called in views.py
         for item in self.invoiceitem_set.all():
             item.item.decrement(item.quantity)
              
 
 class InvoiceItem(models.Model):
-    '''Items listed as part of an invoice'''
+    '''Items listed as part of an invoice. Records the price for that 
+    particular invoice and the discount offered as well as the quantity
+    returned to the business.Part of an aggregate with invoice.
+
+    methods
+    -----------
+    update_price - can be used to reflect the new unit sales 
+        price when a change happens in inventory as a result of
+        an order
+    _return - returns some or all of the ordered quantity to the business
+        as a result of some error or shortcoming in the product.
+    
+    properties
+    -----------
+    total_without_discount - the value of the ordered items without 
+        a discount applied
+    subtotal - value inclusive of discount
+    returned_value - value of goods returned to store
+    
+    '''
     invoice = models.ForeignKey('invoicing.Invoice', null=True)
     item = models.ForeignKey("inventory.Item", null=True)
     quantity = models.IntegerField(default=0)
@@ -195,6 +223,14 @@ class InvoiceItem(models.Model):
         return self.price * decimal.Decimal(self.returned_quantity)
 
 class SalesRepresentative(models.Model):
+    '''Really just a dummy class that points to an employee. 
+    allows sales and commission to be tracked.
+    
+    methods
+    ---------
+    sales - takes two dates as arguments and returns the 
+    amount sold exclusive of tax. Used in commission calculation
+    '''
     employee = models.OneToOneField('accounting.Employee', null=True)
     number = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
@@ -215,6 +251,17 @@ class SalesRepresentative(models.Model):
 
 
 class Payment(models.Model):
+    '''Model represents payments made by credit customers only!
+    These transactions are currently implemented to require full payment 
+    of each invoice. Support for multiple payments for a single invoice
+    may be considered as required by clients.
+    Information stored include data about the invoice, the amount paid 
+    and other notable comments
+    
+    methods
+    ---------
+    create_entry - returns the journal entry that debits the customer account
+        and credits the sales account. Should also impact tax accounts'''
     invoice = models.OneToOneField("invoicing.Invoice", null=True)
     amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
@@ -233,36 +280,61 @@ class Payment(models.Model):
     def due(self):
         return self.invoice.total - self.amount
 
-    def create_receipt(self):
-        r = Receipt.objects.create(payment=self,
-            comments='Auto generated receipt from a payment object')
-        return r
 
     def delete(self):
         self.active = False
         self.save()
+
+    def create_entry(self):
+        j = JournalEntry.objects.create(
+                reference='PAY' + str(self.pk),
+                memo= 'Auto generated journal entry from payment.',
+                date=self.date,
+                journal =Journal.objects.get(pk=3)
+            )
+        
+        # split into sales tax and sales
+        if not self.invoice.tax:
+            j.simple_entry(
+                self.amount,
+                self.invoice.customer.account,
+                Account.objects.get(
+                    pk=4000),#sales account
+            )
+        else:
+            # will not work for partial payments
+            j.debit(self.amount, self.invoice.customer.account)
+            #sales
+            j.credit(self.invoice.subtotal, Account.objects.get(pk=4000))
+            #tax
+            j.credit(self.invoice.tax_amount, Account.objects.get(pk=2001))
+            
 
     def save(self, *args, **kwargs):
         if self.invoice.type_of_invoice == "cash":
             raise ValueError('Only Credit Invoices can create payments')
         else:
             super(Payment, self).save(*args, **kwargs)
-            config = load_config()
-            j = JournalEntry.objects.create(
-                reference='PAY' + str(self.pk),
-                memo= 'Auto generated journal entry from payment.',
-                date=self.date,
-                journal =Journal.objects.get(pk=3)
-            )
-            #3 args
-            j.simple_entry(
-                self.amount,
-                Account.objects.get(
-                    pk=1000),
-                self.invoice.customer.account
-            )
+            self.create_entry()
 
 class Quote(models.Model):
+    '''Model that represents a quotation set to a client for 
+    some product. This model is similar in structure to an invoice 
+    the difference being it does not affect the chart of accounts or
+    the inventory. Forms an aggregate with QuoteItem
+    
+    methods
+    ----------
+    create_invoice - uses the data from the quotation to create an invoice
+        based on the quote including the quoted prices!
+    
+    properties
+    -----------
+    total - returns the sale value and the tax 
+    subtotal - returns the sale value of the quoted items
+    tax_amount -returns the amount of tax due for the quoted items.
+
+    '''
     date = models.DateField(default=datetime.date.today)
     customer = models.ForeignKey('invoicing.Customer', null=True)
     number = models.AutoField(primary_key = True)
@@ -310,6 +382,20 @@ class Quote(models.Model):
             return inv
 
 class QuoteItem(models.Model):
+    '''Part of Quotations in aggregate form. similar to invoice item 
+    in that it maintains a link to an invoice item and maintains its own price
+    and discount values.
+    
+    properties
+    -----------
+    total_without_discount - returns the full value of quoted item.
+    subtotal - includes the discount subtracted from the full value.
+    
+    methods
+    -----------
+    update_price - changes the price of the product based on the value
+    stored in the inventory.
+    '''
     quote = models.ForeignKey('invoicing.Quote', null=True)
     item = models.ForeignKey('inventory.Item', null=True)
     quantity = models.FloatField()
@@ -339,7 +425,20 @@ class QuoteItem(models.Model):
 class CreditNote(models.Model):
     """A document sent by a seller to a customer notifying them
     that a credit has been made to their account against goods returned
-    by the buyer. Linked to invoices. Stores a list of items returned."""
+    by the buyer. Linked to invoices. Stores a list of items returned.
+    
+    properties
+    -----------
+    returned_items - returns a queryset of all returned items for an invoice
+    returned_total - returns the numerical value of the items returned.
+    
+    methods
+    -----------
+    create_entry - creates a journal entry in the accounting system where
+        the customer account is credited and sales returns is debitted. NB 
+        futher transactions will have to be made if the returned goods 
+        are to be written off."""
+    
     date = models.DateField()
     invoice = models.ForeignKey('invoicing.Invoice')
     comments = models.TextField()

@@ -34,7 +34,6 @@ def load_config():
     try:
         CONFIG = json.load(config_file)
     except Exception as e:
-        print e.message
         CONFIG = {}
     config_file.close()
 

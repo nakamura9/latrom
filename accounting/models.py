@@ -107,18 +107,24 @@ class JournalEntry(models.Model):
 
 
     def simple_entry(self, amount, credit_acc, debit_acc):
+        self.credit(amount, credit_acc)
+        self.debit(amount, debit_acc)
+        
+    def credit(self, amount, account):
         Credit.objects.create(
             entry=self,
-            account = credit_acc,
+            account = account,
             amount = amount
         )
+
+    def debit(self, amount, account):
         Debit.objects.create(
             entry=self,
-            account = debit_acc,
+            account = account,
             amount = amount
         )
 
-
+        
 class Journal(models.Model):
     '''
     Represents the document of first entry for all transactions

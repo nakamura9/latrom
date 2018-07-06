@@ -70,7 +70,6 @@ class CustomerListView(ExtraContext, FilterView):
         return Customer.objects.all().order_by('name')
 
 
-
 class CustomerDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = Customer
@@ -81,6 +80,14 @@ class CustomerDeleteView(DeleteView):
 #########################################
 
 class CreditNoteCreateView(ExtraContext, CreateView):
+    '''Credit notes are created along with react on the front end.
+    each note tracks each invoice item and returns the quantity 
+    of the item that was returned. The data is shared as a single 
+    urlencoded json string. this string is an object that maps 
+    keys to values where the key is the primary key of the invoice item
+    and the value is the quantity returned. Django handles the return on the
+    database side of things.
+    '''
     extra_context = {"title": "Create New Credit Note"}
     template_name = os.path.join("invoicing", "create_credit_note.html")
     model = CreditNote
@@ -118,7 +125,6 @@ class CreditNoteDetailView(DetailView):
     template_name = os.path.join('invoicing', 'credit_note.html')
     model = CreditNote
     
-
     def get_context_data(self, *args, **kwargs):
         context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
         context.update(load_config())
@@ -246,6 +252,10 @@ class InvoiceDetailView(DetailView):
 
         
 class InvoiceCreateView(ExtraContext, CreateView):
+    '''Quotes and Invoices are created with React.js help.
+    data is shared between the static form and django by means
+    of a json urlencoded string stored in a list of hidden input 
+    fields called 'items[]'. '''
     extra_context = {
         "title": "Create a New Invoice",
         'modals': [
@@ -268,6 +278,11 @@ class InvoiceCreateView(ExtraContext, CreateView):
         context.update(load_config())
         return context
 
+    def get_initial(self):
+        config = load_config()
+        return {key: config.get(key, "") \
+            for key in ['default_invoice_comments', "default_terms"]}
+
     def post(self, request, *args, **kwargs):
         resp = super(InvoiceCreateView, self).post(request, *args, **kwargs)
         inv = Invoice.objects.latest("pk")
@@ -286,6 +301,10 @@ class InvoiceCreateView(ExtraContext, CreateView):
         return resp
 
 class InvoiceUpdateView(ExtraContext, UpdateView):
+    '''An update view is similar to a create view but it allows the 
+    user to remove existing items from a quote using the list 
+    of hidden inputs called 'removed_items[]'. '''
+
     extra_content = {"title": "Update Invoice"}
     template_name = os.path.join("invoicing", "invoice_update.html")
     model = Invoice
@@ -319,6 +338,10 @@ class QuoteItemAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.QuoteItemSerializer
 
 class QuoteCreateView(ExtraContext, CreateView):
+    '''Quotes and Invoices are created with React.js help.
+    data is shared between the static form and django by means
+    of a json urlencoded string stored in a list of hidden input 
+    fields called 'items[]'. '''
     extra_context = {
         "title": "Create a New Quotation",
         'modals': [
@@ -350,6 +373,10 @@ class QuoteCreateView(ExtraContext, CreateView):
         return resp
 
 class QuoteUpdateView(ExtraContext, UpdateView):
+    '''An update view is similar to a create view but it allows the 
+    user to remove existing items from a quote using the list 
+    of hidden inputs called 'removed_items[]'. '''
+    
     extra_content = {"title": "Update an existing Quotation"}
     template_name = os.path.join("invoicing", "quote_update.html")
     model = Quote
@@ -422,13 +449,10 @@ class ReceiptDetailView(DetailView):
 #                  Template Views                       #
 #########################################################
 
-#views with forms augmented with react use template views
-
 
 class ConfigView(FormView):
     template_name = os.path.join("invoicing", "config.html")
     form_class = forms.ConfigForm
-    
     
     def get_context_data(self):
         context = super(ConfigView, self).get_context_data()
@@ -436,7 +460,6 @@ class ConfigView(FormView):
         if config.get('logo', None):
             context['logo']='/media/logo/' + config['logo']
         return context
-
 
     def get_initial(self):
         return load_config()
@@ -458,12 +481,6 @@ class ConfigView(FormView):
             
         json.dump(data, open("config.json", 'w'))
         return HttpResponseRedirect(reverse_lazy("invoicing:home"))
-
-
-def create_receipt_from_payment(request, pk=None):
-    payment = get_object_or_404(Payment, pk=pk)
-    payment.create_receipt()
-    return HttpResponseRedirect(reverse('invoicing:home'))
 
 def create_payment_from_invoice(request, pk=None):
     invoice = get_object_or_404(Invoice, pk=pk)
