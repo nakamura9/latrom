@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'accounting',
     'django_filters',
     'crispy_forms',
+    'autofixture',
 ]
 
 MIDDLEWARE = [
