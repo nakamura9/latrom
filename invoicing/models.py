@@ -13,6 +13,13 @@ from accounting.models import Account, Journal
 from common_data.utilities import load_config
 from accounting.models import Employee, JournalEntry, Tax, Debit, Credit
 
+# used in default fields for invoices
+def get_default_comments():
+    load_config().get('default_invoice_comments', "")
+    
+def get_default_terms():
+    load_config().get('default_terms', "")
+
 class Customer(models.Model):
     '''The customer model represents business clients to whom products are 
     sold. Customers are typically businesses and the fields reflect that 
@@ -85,8 +92,8 @@ class Invoice(models.Model):
     customer = models.ForeignKey("invoicing.Customer", null=True)
     date_issued = models.DateField( default=timezone.now)
     due_date = models.DateField( default=timezone.now)
-    terms = models.CharField(max_length = 128, default="")
-    comments = models.TextField(blank=True, default="")
+    terms = models.CharField(max_length = 128, blank=True, default=get_default_terms)
+    comments = models.TextField(blank=True, default=get_default_comments)
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
@@ -367,7 +374,8 @@ class Quote(models.Model):
                 date_issued=self.date,
                 comments = self.comments,
                 tax=self.tax,
-                salesperson=self.salesperson
+                salesperson=self.salesperson,
+                terms = "Please contact the supplier for details regarding payment terms.",
             )
             inv = Invoice.objects.latest('pk')
             for item in self.quoteitem_set.all():

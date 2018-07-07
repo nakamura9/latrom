@@ -542,3 +542,96 @@ class Payslip(models.Model):
     @property
     def net_pay(self):
         return self.gross_pay - self.total_deductions
+
+DEPRECIATION_METHOD = [
+    (0, 'Straight Line'),
+    (1, 'Sum of years digits'),
+    (2, 'Double Declining balance')
+]
+asset_choices = ['Land', 'Buildings', 'Vehicles', 'LeaseHold Improvements',
+    'Furniture and Fixtures', 'Equipment']
+ASSET_CHOICES = [(asset_choices.index(i), i) for i in asset_choices]
+
+
+class Asset(models.Model):
+    '''Represents a resource controlled by the organization from which 
+    a future financial benefit is expected.
+    Data regarding the value and depreciation techniques employed on the 
+    asset are stored in this model.
+    The corresponding journal entry is supplied on creation.
+    '''
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True)
+    category = models.IntegerField(choices=ASSET_CHOICES)
+    initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
+    account = models.ForeignKey('accounting.Account', 
+        limit_choices_to=Q(type='asset'))
+    depreciation_period = models.IntegerField()
+    init_date = models.DateField()
+    depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
+    salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
+
+    def create_entry(self):
+        j = JournalEntry.objects.create(
+            reference = "Asset. ID: " + str(self.pk),
+            date = datetime.date.today(),
+            memo =  "Asset added. Name: %s. Description: %s " % (
+                self.name, self.description
+            ),
+            journal = Journal.objects.get(pk=5)# not ideal
+        )
+        j.simple_entry(self.initial_value, 
+        Account.objects.get(name=asset_choices[self.category]), 
+        self.account)
+
+    def depreciate(self):
+        pass
+
+    @property
+    def current_value(self):
+        pass
+
+    def _str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        super(Asset, self).save(*args, **kwargs)
+        self.create_entry()
+
+
+expense_choices = ['Advertising', 'Bank Service Charges', 'Equipment Rental', 
+    'Dues and Subscriptions', 'Telephone', 'Vehicles', 'Travel and Expenses',
+        'Suppliers', 'Rent', 'Payroll Expenses', 'Insurance', 'Office Expenses',
+        'Postage', 'Other']
+EXPENSE_CHOICES = [(expense_choices.index(i), i) for i in expense_choices]
+
+class Expense(models.Model):
+    '''A representation of the costs incurred by an organization 
+    in an effort to generate revenue.
+    Related information about the cost category, date amounts and 
+    whether or not the expense can be billed to customers is also 
+    recorded. Creates a journal entry when intialized.'''
+    date = models.DateField()
+    description = models.TextField()
+    category = models.IntegerField(choices=EXPENSE_CHOICES)
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    billable = models.BooleanField(default=False)
+    customer = models.ForeignKey('invoicing.Customer')
+    account = models.ForeignKey('accounting.Account')
+    
+    def create_entry(self):
+        j = JournalEntry.objects.create(
+            reference = "Expense. ID: " + str(self.pk),
+            date = self.date,
+            memo =  "Expense recorded. Category: %s." % self.category,
+            journal = Journal.objects.get(pk=2)# cash disbursements
+        )
+        j.simple_entry(self.amount, 
+        Account.objects.get(name=expense_choices[self.category]), 
+        self.customer.account \
+        if billable \
+        else self.account)
+
+    def save(self, *args, **kwargs):
+        super(Expense, self).save(*args, **kwargs)
+        self.create_entry()

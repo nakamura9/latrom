@@ -19,7 +19,7 @@
                     <form method="POST" action="" enctype="multipart/form-data">
                         {% csrf_token %}
                         <table class="table">
-                            {{form.as_table}}
+                            {{form.as_p}}
                         </table>
                         <button class="btn btn-default pull-right" type="submit">Submit</button>
                     </form>

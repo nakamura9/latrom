@@ -7,6 +7,7 @@ import os
 class ModelViewGroup(object):
     model = None
     create_form = None
+    update_form = None
     create_update_form = None
     urls = []
     create_template = None

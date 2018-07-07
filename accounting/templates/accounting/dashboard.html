@@ -48,10 +48,10 @@
                                 <a href="{% url 'accounting:direct-payment-list' %}">List Direct Payments</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:order-create' %}">Create Purchase Order</a>
+                                <a href="{% url 'accounting:expense-create' %}">Record Expense</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:order-list' %}">List Orders</a>
+                                <a href="{% url 'accounting:expense-list' %}">List Expenses</a>
                             </li>
                         </ul>
                     </div>
@@ -111,6 +111,12 @@
                             <li class="list-group-item">
                                 <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
                             </li>
+                            <li class="list-group-item">
+                                    <a href="{% url 'accounting:asset-create' %}">Add Asset</a>
+                                </li>
+                                <li class="list-group-item">
+                                        <a href="{% url 'accounting:asset-list' %}">View List of assets</a>
+                                    </li>
                         </ul>
                     </div>
                 </div>

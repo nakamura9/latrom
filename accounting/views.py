@@ -18,7 +18,7 @@ import models
 import filters
 import forms
 from inventory.models import Item
-from common_data.utilities import ExtraContext, load_config, apply_style
+from common_data.utilities import ExtraContext, load_config, apply_style, ModelViewGroup
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -505,3 +505,23 @@ class PayrollConfigView(ExtraContext, TemplateView):
     extra_context = {
         'employees': models.Employee.objects.all()
     }
+
+#########################################################
+#                  Assets and Expenses                  #
+#########################################################
+
+class AssetViewGroup(ModelViewGroup):
+    model = models.Asset
+    create_form = forms.AssetForm
+    create_template = os.path.join('accounting', 'asset_create.html')
+    list_template = os.path.join('accounting', 'asset_list.html')
+    delete_template = os.path.join('common_data', 'delete_template.html')
+    success_url = "/accounting/"
+
+class ExpenseViewGroup(ModelViewGroup):
+    model = models.Expense
+    create_form = forms.ExpenseForm
+    create_template = os.path.join('accounting','expense_create.html')
+    list_template = os.path.join('accounting', 'expense_list.html')
+    delete_template = os.path.join('common_data', 'delete_template.html')
+    success_url = "/accounting/"
