@@ -47,7 +47,7 @@ class Item(models.Model):
     '''
     item_name = models.CharField(max_length = 32)
     code = models.AutoField(primary_key=True)
-    unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="")
+    unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="", null=True)
     unit_sales_price = models.DecimalField(max_digits=6, decimal_places=2)
     unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.TextField(blank=True, default="")
@@ -89,7 +89,7 @@ class Item(models.Model):
             & Q(order__issue_date__lt = START))
 
         if older_items.count() > 0:
-            previous_price = older_items.latest('issue_date').order_price
+            previous_price = older_items.latest('order__issue_date').order_price
         else:
             previous_price = self.unit_purchase_price
          
@@ -107,7 +107,7 @@ class Item(models.Model):
         #get the value of items ordered in the last month
         total_ordered_value = 0
         for i in ordered_in_last_month:
-            total_ordered_value += i.received * i.order_price
+            total_ordered_value += i.received_total
 
         #get the number of sold items in the last 30 days
         sold_in_last_month = InvoiceItem.objects.filter(

@@ -24,7 +24,7 @@ class InventoryHome(ExtraContext, FilterView):
         "title": "Inventory Home",
         "new_link": reverse_lazy("inventory:item-create")
         }
-    paginate_by = 2
+    paginate_by = 20
     filterset_class = filters.ItemFilter
     template_name = os.path.join("inventory", "inventory_list.html")
 
@@ -57,7 +57,7 @@ class ItemDetailView(DetailView):
 
 
 class ItemListView(ExtraContext, FilterView):
-    paginate_by = 3
+    paginate_by = 20
     filterset_class = filters.ItemFilter
     template_name = os.path.join('inventory', 'item_list.html')
     extra_context = {
@@ -171,7 +171,7 @@ class OrderUpdateView(ExtraContext, UpdateView):
 
 
 class OrderListView(ExtraContext, FilterView):
-    paginate_by = 5
+    paginate_by = 10
     filterset_class = filters.OrderFilter
     template_name = os.path.join("inventory", "order_list.html")
     extra_context = {"title": "Order List",
@@ -221,7 +221,7 @@ class SupplierUpdateView(ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Supplier"}
 
 class SupplierListView(ExtraContext, FilterView):
-    paginate_by = 5
+    paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier_list.html")
     extra_context = {"title": "Supplier List",

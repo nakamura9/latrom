@@ -17,4 +17,9 @@ class Migration(migrations.Migration):
             name='image',
             field=models.FileField(blank=True, null=True, upload_to=b'F:\\Documents\\code\\git\\latrom\\media'),
         ),
+        migrations.AlterField(
+            model_name='item',
+            name='unit',
+            field=models.ForeignKey(blank=True, default='', null=True, on_delete=models.deletion.CASCADE, to='inventory.UnitOfMeasure'),
+        )
     ]
