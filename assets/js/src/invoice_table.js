@@ -12,7 +12,10 @@ class InvoiceTable extends Component{
         child of the overall form component */
         this.state = {
             total: 0,
-            items: []
+            items: [],
+            tax_rate: 0,
+            tax_amount:0,
+            subtotal: 0,
         };
     }
 
@@ -75,29 +78,71 @@ class InvoiceTable extends Component{
         //adds items to the state 
         this.setState({items: this.state.items.concat(data)});
         this.props.addHandler(data, this.state.items.length);
+        
+        //set subtotals tax amounts and tax rates
+        //get tax rate
+        var tax_obj = $('#id_tax').val();
+        if(tax_obj === ""){
+            alert('Please Select a Valid Tax Rate');
+        }else{
+            $.ajax({
+                url: '/accounting/api/tax/' + tax_obj,
+                method: 'get'
+            }).then(
+                res =>{
+                    //get subtotal
+                    var subtotal = this.state.items.reduce((x, y) => {
+                        let subtotal = y.price * y.quantity;
+                        let discount = subtotal * (y.discount / 100);
+                        return (x + (subtotal - discount));
+                    }, 0)
+                    console.log(res.rate);
+                    console.log(subtotal);
+                    //set tax amount
+                    var tax_amount = subtotal * (res.rate / 100);
+                    console.log(tax_amount);
+                    //set total
+                    var total = tax_amount + subtotal;
+                    console.log(total);
+                    this.setState({
+                        tax_rate: res.rate,
+                        tax_amount: tax_amount,
+                        subtotal: subtotal,
+                        total:total
+                    })
+                }
+            )
+    
+            
+        }
+        
     }
 
     subtotalHandler(row){
-        return(row.subtotal);
+        return(row.subtotal.toFixed(2));
     }
 
     render(){
         const headStyle = {
             borderLeft: "1px solid white",
         };
-        const field_names = ["Item Code", "Item Description", "Quantity",'Discount', "Unit Price",  "Subtotal"];
+        const field_names = ["Qty", "Description", "Unit Price",'Discount',  "Subtotal"];
         return(
             <div>
                 <h3>Item Table</h3>
                 <table className="table table-striped">
                     <Heading fields={field_names} />
                     <TableContent contents={this.state.items}
-                        fields={["code", "description", "quantity",  'discount',"price",]} 
+                        fields={["quantity", "description","price", 'discount',]} 
                         removeHandler={this.removeItem.bind(this)}
                         subtotalHandler={this.subtotalHandler}/>    
                     <EntryRow url="/inventory/api/item" 
                             addItem={this.addItem.bind(this)}
-                            contents={this.state.items} />
+                            contents={this.state.items}
+                            tax_rate={this.state.tax_rate}
+                            tax_amount={this.state.tax_amount}
+                            subtotal={this.state.subtotal}
+                            total={this.state.total} />
                 </table>
             </div>
         );
@@ -109,11 +154,18 @@ class EntryRow extends Component {
         super(props);
         this.state = {
             inputs: {},
-            options: []
+            options: [],
+            curr_item: {
+                unit_sales_price: 0.00
+            },
+            show_tax: false,
+            curr_tax_rate: 0
         };
     }
     
     componentDidMount(){
+        
+        //inventory items list
         $.ajax({
             url: this.props.url,
             data: {},
@@ -121,6 +173,15 @@ class EntryRow extends Component {
         }).then(res => {
         this.setState({options: res});
         });
+
+        //determine whether to show the tax information
+        $.ajax({
+            url: '/base/api/config',
+            method:'get'
+        }).then( res =>{
+            this.setState({show_tax: res.tax_column});
+        });
+
     }
 
     inputHandler(event){
@@ -128,44 +189,51 @@ class EntryRow extends Component {
         var value = event.target.value;
         var newVals = this.state.inputs;
         newVals[name] = value;
+        if(name==="item"){
+            var decomposed = value.split('-');
+            var pk = decomposed[0];
+            $.ajax({
+                url: '/inventory/api/item/' + pk,
+                method:'get'
+            }).then(res => {
+            this.setState({curr_item: res})
+            });
+        }
+
         this.setState({inputs: newVals});
     }
 
     addItem(){
-        var decomposed = this.state.inputs.item.split("-");
-        var data = {};
-        data.code = decomposed[0];
-        data.description = decomposed[1];
-        data.price = parseFloat(decomposed[2]);
-        data.quantity = this.state.inputs.quantity;
-        data.discount = this.state.inputs.discount;
-        var total = data.price * data.quantity
-        var discount = total * data.discount / 100;
-        data.subtotal = total - discount;
-        this.props.addItem(data);
+            var data = {};
+            data.code = this.state.curr_item.code
+            data.quantity = this.state.inputs.quantity;
+            data.description = this.state.curr_item.item_name;
+            data.discount = this.state.inputs.discount;
+            data.price = this.state.curr_item.unit_sales_price;
+            var total = data.price * data.quantity;
+            var discount = total * data.discount / 100;
+            console.log(discount);
+            data.subtotal = total - discount;
+            this.props.addItem(data);
+            // clears the unit price field
+            this.setState({curr_item: {
+                unit_sales_price: 0.00
+            }})
         $('#entry-row-item').val("");
         $('#entry-row-quantity').val("");
         $('#entry-row-discount').val("");
         
+        
     }
 
     render(){
+        var footStyle ={
+            textAlign:'right'
+        }
         return(
             <tfoot>
                 <tr>
-                    <td colSpan="4">
-                        <input placeholder="Select Item..."     
-                            className="form-control" 
-                            id="entry-row-item" 
-                            name='item'
-                            type="text" list="item-datalist"  
-                            onChange={this.inputHandler.bind(this)} />
-                        <datalist id="item-datalist">
-                    {this.state.options.map((item, index) =>( 
-                        <option key={index} >{item.code} - {item.item_name} - {item.unit_sales_price}</option>
-                        ))}
-                    </datalist>
-                    </td>
+                    <td></td>
                     <td>
                         <input className="form-control" 
                             placeholder="quantity"
@@ -174,29 +242,53 @@ class EntryRow extends Component {
                             name='quantity' 
                             onChange={this.inputHandler.bind(this)} />
                     </td>
+                    <td style={{width:'40%'}}>
+                        <input placeholder="Select Item..."     
+                            className="form-control" 
+                            id="entry-row-item" 
+                            name='item'
+                            type="text" list="item-datalist"  
+                            onChange={this.inputHandler.bind(this)} />
+                        <datalist id="item-datalist">
+                    {this.state.options.map((item, index) =>( 
+                        <option key={index} >{item.code} - {item.item_name} </option>
+                        ))}
+                    </datalist>
+                    </td>
+                    
+                    <td>
+                        {this.state.curr_item.unit_sales_price}
+                    </td>
                     <td><input className="form-control" 
                         id="entry-row-discount" 
                         type="number" 
                         placeholder="discount"
                         name='discount'
                         onChange={this.inputHandler.bind(this)} /></td>
+                    
                     <td>
                         <center>
-                            <button className="btn btn-primary" onClick={this.addItem.bind(this)}>
+                            <button className="btn btn-dark" onClick={this.addItem.bind(this)}>
                             Add Item
                             </button>
                         </center>
                     </td>
                 </tr>
-                <tr>
-                    <td colSpan={6}></td>
-                    <td><b><u>Total:</u>{(this.props.contents.length === 0) ? 0 :
-                                         this.props.contents.reduce(
-                                             function(a,b){
-                                                return a + b.subtotal
-                                            }, 0
-                                    )}
-                    </b></td>
+                <tr style={footStyle}>
+                    <td colSpan={5}><b><u>SubTotal:</u></b></td>
+                    <td><b><u>{this.props.subtotal.toFixed(2)}</u></b></td>
+                </tr>
+                <tr style={footStyle}>
+                    <td colSpan={5}><b><u>Tax Rate:</u></b></td>
+                    <td><b><u>{this.props.tax_rate}</u></b></td>
+                </tr>
+                <tr style={footStyle}>
+                    <td colSpan={5}><b><u>Tax Due:</u></b></td>
+                    <td><b><u>{this.props.tax_amount.toFixed(2)}</u></b></td>
+                </tr>
+                <tr style={footStyle}>
+                    <td colSpan={5}><b><u>Total:</u></b></td>
+                    <td><b><u>{this.props.total.toFixed(2)}</u></b></td>
                 </tr>
             </tfoot>
         );

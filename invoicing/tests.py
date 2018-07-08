@@ -219,18 +219,18 @@ class ModelTests(TestCase):
         self.invoice_item.save()
 
     def test_invoice_item_price_update(self):
-        self.invoice_item.item.unit_sales_price=100
+        self.invoice_item.item.price=0.1
         self.invoice_item.item.save()
         self.invoice_item.update_price()
         self.assertEqual(self.invoice_item.price, 100)
         
         #roll back changes
-        self.invoice_item.item.unit_sales_price=10
+        self.invoice_item.item.price=0.2
         self.invoice_item.item.save()
         self.invoice_item.update_price()
 
     def test_sales_rep_sales(self):
-        self.assertEqual(self.salesrep.sales(TODAY, TODAY), 200)
+        self.assertEqual(self.salesrep.sales(TODAY, TODAY), 400)
 
     def test_payment_due(self):
         self.assertEqual(int(self.payment.due), 0)
@@ -240,7 +240,7 @@ class ModelTests(TestCase):
         self.assertEqual(self.quote.subtotal, 100)
 
     def test_quote_total(self):
-        self.assertEqual(int(self.quote.total), 110)
+        self.assertEqual(int(self.quote.total), 220)
 
     def test_quote_tax(self):
         self.assertEqual(int(self.quote.tax_amount), 10)
@@ -263,12 +263,12 @@ class ModelTests(TestCase):
         self.quote_item.save()
         
     def test_quote_update_price(self):
-        self.quote_item.item.unit_sales_price = 100
+        self.quote_item.item.price = 0.5
         self.quote_item.item.save()
         self.quote_item.update_price()
-        self.assertEqual(self.quote_item.price, 100)
+        self.assertEqual(self.quote_item.price, 20)
         #rollback
-        self.quote_item.item.unit_sales_price = 10
+        self.quote_item.item.price = 0.2
         self.quote_item.item.save()
 
 class ViewTests(TestCase):

@@ -36,7 +36,8 @@ def create_test_inventory_models(cls):
     cls.item = models.Item.objects.create(
             item_name='test name',
             unit=cls.unit,
-            unit_sales_price=10,
+            pricing_method=1,
+            price=0.5,
             unit_purchase_price=8,
             description='Test Description',
             supplier = cls.supplier,
@@ -95,7 +96,8 @@ class ModelTests(TestCase):
         item = models.Item.objects.create(
             item_name='other test name',
             unit=self.unit,
-            unit_sales_price=10,
+            pricing_method=1,
+            price=0.25,
             unit_purchase_price=8,
             description='Test Description',
             supplier = self.supplier,
@@ -220,7 +222,8 @@ class ViewTests(TestCase):
         cls.ITEM_DATA = {
             'item_name' : 'Other Test Item',
             'unit' : cls.unit.pk,
-            'unit_sales_price' : 10,
+            'price' : 0.2,
+            'pricing_method': 2,
             'unit_purchase_price' : 8,
             'description' : 'Test Description',
             'supplier' : cls.supplier.pk,

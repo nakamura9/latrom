@@ -20,7 +20,7 @@ class Transaction(models.Model):
     Is an aggregate component of a JournalEntry
     '''
     account = models.ForeignKey('accounting.Account')
-    amount =models.DecimalField(max_digits=6, decimal_places=2)
+    amount =models.DecimalField(max_digits=9, decimal_places=2)
     entry = models.ForeignKey('accounting.JournalEntry')
     class Meta:
         abstract =True

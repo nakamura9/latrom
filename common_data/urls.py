@@ -3,6 +3,7 @@ import views
 
 
 urlpatterns = [
-    url(r'^test/?$', views.Test.as_view(), name="test"),
-    url(r'^react-test/?$', views.ReactTest.as_view(), name="react-test"),    
+    url(r'^workflow/?$', views.WorkFlowView.as_view(), name="workflow"),
+    url(r'^react-test/?$', views.ReactTest.as_view(), name="react-test"),
+    url(r'^api/config/?$', views.config_JSON_API, name='api-config') 
 ]

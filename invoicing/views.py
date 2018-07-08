@@ -216,7 +216,7 @@ class SalesRepsAPIViewSet(viewsets.ModelViewSet):
 #########################################
 
 class InvoiceAPIViewSet(viewsets.ModelViewSet):
-    queryset = Invoice.objects.all()
+    queryset = Invoice.objects.filter(active=True)
     serializer_class = serializers.InvoiceSerializer
 
 class InvoiceItemAPIViewSet(viewsets.ModelViewSet):
@@ -237,7 +237,7 @@ class InvoiceListView(ExtraContext, FilterView):
     paginate_by = 5
 
     def get_queryset(self):
-        return Invoice.objects.all().order_by('date_issued')
+        return Invoice.objects.filter(active=True).order_by('date_issued')
     
 
 class InvoiceDetailView(DetailView):
@@ -306,7 +306,7 @@ class InvoiceUpdateView(ExtraContext, UpdateView):
     extra_content = {"title": "Update Invoice"}
     template_name = os.path.join("invoicing", "invoice_update.html")
     model = Invoice
-    form_class = forms.InvoiceForm
+    form_class = forms.InvoiceUpdateForm
     success_url = reverse_lazy("invoicing:home")
 
     def post(self, request, *args, **kwargs):
@@ -438,6 +438,18 @@ class ReceiptDetailView(DetailView):
     
     def get_context_data(self, *args, **kwargs):
         context = super(ReceiptDetailView, self).get_context_data(*args, **kwargs)
+        context.update(load_config())
+        context['title'] = 'Receipt'
+        return apply_style(context)
+
+
+class InvoiceReceiptDetailView(DetailView):
+    model = Invoice
+    template_name = os.path.join("invoicing", "receipt_templates",
+        'invoice_receipt.html')
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(InvoiceReceiptDetailView, self).get_context_data(*args, **kwargs)
         context.update(load_config())
         context['title'] = 'Receipt'
         return apply_style(context)

@@ -55,7 +55,7 @@ urlpatterns = [
     url(r'^quote-update/(?P<pk>[\w]+)$', views.QuoteUpdateView.as_view(), name='quote-update'),
     url(r'^create-quote$', views.QuoteCreateView.as_view(), name='create-quote'),
     url(r'^quote-list$', views.QuoteListView.as_view(), name='quote-list'),
-    
+    url(r'^invoice-receipt/(?P<pk>[\w]+)$', views.InvoiceReceiptDetailView.as_view(), name='invoice-receipt'),
     url(r'^receipt/(?P<pk>[\w]+)$', views.ReceiptDetailView.as_view(), name='receipt'),
     url(r'^payment-from-invoice/(?P<pk>[\w]+)$', views.create_payment_from_invoice, name='payment-from-invoice'),
     url(r'^invoice-from-quote/(?P<pk>[\w]+)$', views.create_invoice_from_quote, name='invoice-from-quote'),

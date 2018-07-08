@@ -4,7 +4,8 @@ from models import *
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = "__all__"
+        fields = ['unit_sales_price', 'unit_purchase_price', 'quantity',
+            'code', 'item_name', 'description']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     item = ItemSerializer(many=False)
