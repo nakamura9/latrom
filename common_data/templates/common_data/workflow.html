@@ -1,0 +1,76 @@
+{% extends "base.html" %} {% block window %}
+<div class="jumbotron">
+    <h1 class="display-3">Begin your WorkFlow</h1>
+    <p class="lead">Get started managing day to day business activities</p>
+    <hr class="my-2">
+    <p>Quick links to the most frequent actions and get a visual overview of a typical workflow.</p>
+
+</div>
+
+<ul>
+    <li style="list-style-type:none;">
+        <span>
+            <h1>
+                <i class="fas fa-arrow-right"></i>Configuration</h1>
+        </span>
+        <ul>
+            <li>
+                <a href="/inventory/config/">Set Up Inventory Options</a>
+            </li>
+            <li>
+                <a href="/invoicing/config/">Set Up Invoicing Options</a>
+            </li>
+        </ul>
+    </li>
+    <li style="list-style-type:none;">
+        <span>
+            <h1>
+                <i class="fas fa-arrow-right"></i>Manage Inventory</h1>
+        </span>
+        <ul>
+            <li>
+                <a href="/inventory/item-create/">Add Item to Inventory</a>
+            </li>
+            <li>
+                <a href="/inventory/order-create/">Order Stock for your business</a>
+            </li>
+            <li>
+                <a href="/inventory/stock-receipt-create/">Receive an order from a supplier</a>
+            </li>
+        </ul>
+    </li>
+
+    <li style="list-style-type:none;">
+        <span>
+            <h1>
+                <i class="fas fa-arrow-right"></i>Sell products</h1>
+        </span>
+        <ul>
+            <li>
+                <a href="/invoicing/create-quote">Create a quotation for your products</a>
+            </li>
+            <li>
+                <a href="/invoicing/create-invoice">Create an invoice for a customer</a>
+            </li>
+            <li>
+                <a href="/invoicing/create-payment">Apply a customer's payment</a>
+            </li>
+        </ul>
+    </li>
+    <li style="list-style-type:none;">
+        <span>
+            <h1><i class="fas fa-arrow-right"></i>Manage Employees</h1>
+        </span>
+        <ul>
+            <li><a href="/accounting/payroll-config/">Configure</a></li>
+            <li><a href="/accounting/create-employee/">Add Employee</a></li>
+            <li><a href="/accounting/list-pay-slips/">View Payslips</a></li>
+        </ul>
+    </li>
+</ul>
+
+
+
+
+
+{% endblock %}

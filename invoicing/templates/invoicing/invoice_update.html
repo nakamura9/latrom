@@ -19,10 +19,6 @@
                 <form method="POST" action="">
                         {% csrf_token %}
                         <table class="table">
-                            <tr>
-                                <td><label>Customer:</label></td>
-                                <td><div id="customer-search"></div></td>
-                            </tr>
                             {{form.as_table}}
                         </table>
                         <button type="submit" class="btn btn-primary pull-right">Submit</button> 

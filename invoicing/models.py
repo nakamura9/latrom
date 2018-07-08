@@ -42,7 +42,20 @@ class Customer(models.Model):
         self.save()
 
     def __str__(self):
-        return self.name    
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            n_customers = Customer.objects.all().count()
+            self.account = Account.objects.create(
+                name= "Customer: %s" % self.name,
+                balance =0,
+                id= 1100 + n_customers,
+                type = 'asset',
+                description = 'Account which represents credit extended to a customer',
+                balance_sheet_category='current-assets'
+            )
+        super(Customer, self).save(*args, **kwargs)
 
 class ContactPerson(Person):
     '''inherits from the base person class in common data
@@ -127,10 +140,12 @@ class Invoice(models.Model):
             return 'DINV' + str(self.pk)
 
     def save(self, *args, **kwargs):
-        if self.type_of_invoice == "credit" and self.customer.account == None:
-            raise ValueError('You cannot create a credit invoice for customers without an account with the organization')
-        else:
-            super(Invoice, self).save(*args, **kwargs)
+        super(Invoice, self).save(*args, **kwargs)
+        # to prevent a transaction during an update
+        if not self.pk is None:
+            return
+        self.create_entry()
+        
     
     def create_payment(self):
         if self.type_of_invoice == 'credit':
@@ -269,7 +284,7 @@ class Payment(models.Model):
     ---------
     create_entry - returns the journal entry that debits the customer account
         and credits the sales account. Should also impact tax accounts'''
-    invoice = models.OneToOneField("invoicing.Invoice", null=True)
+    invoice = models.ForeignKey("invoicing.Invoice", null=True)
     amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
     method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
@@ -321,7 +336,10 @@ class Payment(models.Model):
         if self.invoice.type_of_invoice == "cash":
             raise ValueError('Only Credit Invoices can create payments')
         else:
+            # to prevent a transaction during an update
             super(Payment, self).save(*args, **kwargs)
+            if not self.pk is None:
+                return
             self.create_entry()
 
 class Quote(models.Model):
@@ -473,4 +491,7 @@ class CreditNote(models.Model):
 
     def save(self, *args, **kwargs):
         super(CreditNote, self).save(*args, **kwargs)
+        # to prevent a transaction during an update
+        if not self.pk is None:
+            return
         self.create_entry()

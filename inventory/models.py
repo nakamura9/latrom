@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import datetime
 import decimal
+import rest_framework
 
 from django.db import models
 from django.db.models import Q
@@ -27,6 +28,28 @@ class Supplier(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            n_suppliers = Supplier.objects.all().count()
+            self.account = Account.objects.create(
+                name= "Supplier: %s" % self.name,
+                id = 2100 + n_suppliers,
+                balance =0,
+                type = 'liability',
+                description = 'Account which represents debt owed to a supplier',
+                balance_sheet_category='current-liabilities'
+            )
+        
+        super(Supplier, self).save(*args, **kwargs)
+        
+
+
+PRICING_CHOICES = [
+    (0, 'Manual'),
+    (1, 'Margin'),
+    (2, 'Markup')
+]
+
 class Item(models.Model):
     '''The most basic element of inventory. Represents tangible products that are sold.
     this model tracks details concerning sale and receipt of products as well as their 
@@ -48,7 +71,9 @@ class Item(models.Model):
     item_name = models.CharField(max_length = 32)
     code = models.AutoField(primary_key=True)
     unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="", null=True)
-    unit_sales_price = models.DecimalField(max_digits=6, decimal_places=2)
+    
+    pricing_method = models.IntegerField(choices=PRICING_CHOICES, default=0)
+    price = models.DecimalField(max_digits=9, decimal_places=2)
     unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.TextField(blank=True, default="")
     supplier = models.ForeignKey("inventory.Supplier", blank=True, null=True)
@@ -64,6 +89,16 @@ class Item(models.Model):
     def __str__(self):
         return str(self.code) + " - " + self.item_name
 
+    
+    @property
+    def unit_sales_price(self):
+        if self.pricing_method == 0:
+            return decimal.Decimal(self.price)
+        elif self.pricing_method == 1:
+            return decimal.Decimal(self.unit_purchase_price / (1 - self.price))
+        else:
+            return decimal.Decimal(self.unit_purchase_price * (1 + self.price))
+    
     @property
     def stock_value(self):
         '''all calculations are based on the last 30 days
@@ -304,6 +339,9 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         super(Order, self).save(*args, **kwargs)
+        # to prevent a transaction during an update
+        if not self.pk is None:
+            return
         if self.type_of_order == 1:
             if self.deferred_date == None:
                 raise ValueError('The Order with a deferred payment must have a deferred payment date.')
@@ -432,8 +470,14 @@ class StockReceipt(models.Model):
 
     def save(self, *args, **kwargs):
         super(StockReceipt, self).save(*args, **kwargs)
+        self.order.received_to_date = self.order.received_total
+        self.order.save()
+        # to prevent a transaction during an update
+        if not self.pk is None:
+            return
         if self.order.type_of_order == 2:#payment on receipt
             self.create_entry()
+        
 
     def create_entry(self):
         j = JournalEntry.objects.create(
@@ -448,5 +492,4 @@ class StockReceipt(models.Model):
             Account.objects.get(pk=1004),
             Account.objects.get(pk=1000)
         )
-        self.order.received_to_date = self.order.received_total
-        self.order.save()
+        

@@ -83,7 +83,6 @@
     <th>Item Name</th>
     <th>Description</th>
     <th>Category</th>
-    <th>Cost</th>
     <th>Price</th>
     <th>Quantity</th>
     <th>Measure</th>
@@ -94,8 +93,7 @@
     <td>{{item.item_name}}</td>
     <td>{{item.description | truncatechars:30}}</td>
     <td>{{item.category}}</td>
-    <td>{{item.unit_purchase_price}}</td>
-    <td>{{item.unit_sales_price}}</td>
+    <td>{{item.unit_sales_price | floatformat:2 }}</td>
     <td>{{item.quantity}}</td>
     <td>{{item.unit.name}}</td>
     <td>

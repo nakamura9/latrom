@@ -43,7 +43,7 @@ class ConfigForm(forms.Form):
 
 class CustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = 'active',
+        exclude = ['active', 'account']
         model = models.Customer
 
 
@@ -75,7 +75,10 @@ class InvoiceForm(forms.ModelForm, BootstrapMixin):
         exclude = "active",
         model = models.Invoice
 
-        
+class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'type_of_invoice','saleseperson', 'customer', 'date_issued', 'due_date']
+        model = models.Invoice
 
 class QuoteForm(forms.ModelForm, BootstrapMixin):
     def __init__(self, *args, **kwargs):

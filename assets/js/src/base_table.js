@@ -5,7 +5,7 @@ class Heading extends Component{
     //props of an array
     render(){
         var style = {
-                backgroundColor: 'steelblue',
+                backgroundColor: 'black',
                 color: 'white',
                 padding: '10px',
                 borderLeft: '1px solid white'

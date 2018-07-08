@@ -19,7 +19,7 @@ class ConfigForm(BootstrapMixin, forms.Form):
 
 class SupplierForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = '__all__'
+        exclude = ['active', 'account']
         model = models.Supplier
         
 class ItemForm(forms.ModelForm, BootstrapMixin):
@@ -38,7 +38,8 @@ class ItemForm(forms.ModelForm, BootstrapMixin):
                     'supplier'),
                 Tab('Pricing', 
                     'unit',
-                    'unit_sales_price',
+                    'pricing_method',
+                    'price',
                     'unit_purchase_price'),
                 Tab('Categories', 
                     'category', 
@@ -125,7 +126,7 @@ class UnitForm(forms.ModelForm, BootstrapMixin):
 
 class QuickItemForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = ['item_name', 'unit_sales_price', 'unit_purchase_price', 'quantity', 'unit']
+        fields =  ['item_name', 'price', 'pricing_method','unit_purchase_price', 'quantity', 'unit']
         model = models.Item
 
 class CategoryForm(forms.ModelForm, BootstrapMixin):
