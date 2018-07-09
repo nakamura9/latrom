@@ -283,6 +283,7 @@ class Employee(Person):
     title = models.CharField(max_length=32)
     pay_grade = models.ForeignKey('accounting.PayGrade', null=True)
     leave_days = models.FloatField(default=0)
+    user = models.OneToOneField('auth.User', null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
     
     def delete(self):

@@ -100,6 +100,7 @@ class EmployeeCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     extra_context = {
         'title': 'Add Employee to payroll system'
     }
+    
 
 class EmployeeUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
