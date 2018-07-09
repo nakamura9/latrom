@@ -5,6 +5,8 @@ import json
 import urllib
 
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from rest_framework.viewsets import ModelViewSet
@@ -19,12 +21,12 @@ import filters
 from common_data.utilities import ExtraContext,load_config, apply_style, Modal
 
 
-class InventoryHome(ExtraContext, FilterView):
+class InventoryHome(LoginRequiredMixin, ExtraContext, FilterView):
     extra_context = {
         "title": "Inventory Home",
         "new_link": reverse_lazy("inventory:item-create")
         }
-    paginate_by = 20
+    paginate_by = 10
     filterset_class = filters.ItemFilter
     template_name = os.path.join("inventory", "inventory_list.html")
 
@@ -39,25 +41,25 @@ class ItemAPIView(ModelViewSet):
     queryset = models.Item.objects.all()
     serializer_class = serializers.ItemSerializer
 
-class ItemDeleteView(DeleteView):
+class ItemDeleteView(LoginRequiredMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.Item
     success_url = reverse_lazy('inventory:item-list')
 
-class ItemUpdateView(ExtraContext, UpdateView):
+class ItemUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     form_class = forms.ItemUpdateForm
     model = models.Item
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "create_template.html")
     extra_context = {"title": "Update Existing Item"}
 
-class ItemDetailView(DetailView):
+class ItemDetailView(LoginRequiredMixin, DetailView):
     model = models.Item
     template_name = os.path.join("inventory", "item_detail.html")
 
 
-class ItemListView(ExtraContext, FilterView):
-    paginate_by = 20
+class ItemListView(LoginRequiredMixin, ExtraContext, FilterView):
+    paginate_by = 10
     filterset_class = filters.ItemFilter
     template_name = os.path.join('inventory', 'item_list.html')
     extra_context = {
@@ -69,7 +71,7 @@ class ItemListView(ExtraContext, FilterView):
         return models.Item.objects.all().order_by('pk')
 
 
-class ItemCreateView(ExtraContext, CreateView):
+class ItemCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.ItemForm
     model = models.Item
     success_url = reverse_lazy('inventory:home')
@@ -93,7 +95,7 @@ class ItemCreateView(ExtraContext, CreateView):
         })]
         }
 
-class QuickItemCreateView(ExtraContext, CreateView):
+class QuickItemCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.QuickItemForm
     model = models.Item
     success_url = reverse_lazy('inventory:home')
@@ -107,7 +109,7 @@ class OrderAPIView(ModelViewSet):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
 
-class OrderCreateView(ExtraContext, CreateView):
+class OrderCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     '''The front end page combines with react to create a dynamic
     table for entering items in the form.
     The two systems communicate of json encoded strings 
@@ -145,7 +147,7 @@ class OrderCreateView(ExtraContext, CreateView):
                     order_price=data['order_price'])            
         return resp
         
-class OrderUpdateView(ExtraContext, UpdateView):
+class OrderUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     form_class = forms.OrderForm
     model = models.Order
     success_url = reverse_lazy('inventory:home')
@@ -170,7 +172,7 @@ class OrderUpdateView(ExtraContext, UpdateView):
         return resp
 
 
-class OrderListView(ExtraContext, FilterView):
+class OrderListView(LoginRequiredMixin, ExtraContext, FilterView):
     paginate_by = 10
     filterset_class = filters.OrderFilter
     template_name = os.path.join("inventory", "order_list.html")
@@ -180,17 +182,17 @@ class OrderListView(ExtraContext, FilterView):
     def get_queryset(self):
         return models.Order.objects.all().order_by('pk')
 
-class OrderStatusView(ExtraContext, DetailView):
+class OrderStatusView(LoginRequiredMixin, ExtraContext, DetailView):
     template_name = os.path.join('inventory', 'order_status.html')
     model = models.Order
 
-class OrderDeleteView(DeleteView):
+class OrderDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Order
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('inventory:order-list')
 
 
-class OrderDetailView(ExtraContext, DetailView):
+class OrderDetailView(LoginRequiredMixin, ExtraContext, DetailView):
     model = models.Order
     template_name = os.path.join('inventory', 'order_templates', 'order.html')
     extra_context = {
@@ -206,21 +208,21 @@ class OrderDetailView(ExtraContext, DetailView):
 #              Supplier views                  #
 ################################################
 
-class SupplierCreateView(ExtraContext, CreateView):
+class SupplierCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.SupplierForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "create_template.html")
     extra_context = {"title": "Create New Supplier"}
 
-class SupplierUpdateView(ExtraContext, UpdateView):
+class SupplierUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     form_class = forms.SupplierForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "create_template.html")
     extra_context = {"title": "Update Existing Supplier"}
 
-class SupplierListView(ExtraContext, FilterView):
+class SupplierListView(LoginRequiredMixin, ExtraContext, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier_list.html")
@@ -230,7 +232,7 @@ class SupplierListView(ExtraContext, FilterView):
     def get_queryset(self):
         return models.Supplier.objects.all().order_by('pk')
                     
-class SupplierDeleteView(DeleteView):
+class SupplierDeleteView(LoginRequiredMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url=reverse_lazy('inventory:supplier-list')
     model = models.Supplier
@@ -239,7 +241,7 @@ class SupplierDeleteView(DeleteView):
 #                  Misc views                  #
 ################################################
 
-class UnitCreateView(CreateView):
+class UnitCreateView(LoginRequiredMixin, CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:home')
@@ -249,7 +251,7 @@ class OrderItemAPIView(ModelViewSet):
     queryset = models.OrderItem.objects.all()
     serializer_class = serializers.OrderItemSerializer    
 
-class StockReceiptCreateView(CreateView):
+class StockReceiptCreateView(LoginRequiredMixin,CreateView):
     form_class = forms.StockReceiptForm
     model = models.StockReceipt
     success_url = reverse_lazy('inventory:home')
@@ -265,7 +267,7 @@ class StockReceiptCreateView(CreateView):
             
         return resp 
 
-class GoodsReceivedVoucherView(DetailView):
+class GoodsReceivedVoucherView(LoginRequiredMixin, DetailView):
     model = models.StockReceipt
     template_name = os.path.join("inventory", "goods_received.html")
 
@@ -274,19 +276,19 @@ class GoodsReceivedVoucherView(DetailView):
         context.update(load_config())
         return apply_style(context)
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(LoginRequiredMixin, CreateView):
     form_class = forms.CategoryForm
     model = models.Category
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "create_template.html")
     extra_context = {"title": "Category"}
 
-class UnitDeleteView(DeleteView):
+class UnitDeleteView(LoginRequiredMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.UnitOfMeasure
     success_url = reverse_lazy('invoicing.item-list')
 
-class ConfigView(FormView):
+class ConfigView(LoginRequiredMixin, FormView):
     template_name = os.path.join('inventory', 'config.html')
     form_class = forms.ConfigForm
     success_url = reverse_lazy('inventory:home')
@@ -303,7 +305,7 @@ class ConfigView(FormView):
             json.dump(new_config, open('config.json', 'w'))
         return super(ConfigView, self).post(request)
 
-
+@login_required
 def create_stock_receipt_from_order(request, pk):
     order = get_object_or_404(models.Order, pk=pk)
     order.receive()

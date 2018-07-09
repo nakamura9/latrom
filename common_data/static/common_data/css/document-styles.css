@@ -1,6 +1,8 @@
 .item-table {
     border: 1px solid black;
-    min-width: 400px;
+    width:100%;
+    height:60%;
+
 }
 
 table {
@@ -30,6 +32,7 @@ table {
 }
 
 .simple-content thead td {
+    
     padding: 10px;
     border-right: 1px solid white;
     color: white;
@@ -48,6 +51,22 @@ table {
 .simple-head-cell {
     padding: 10px; 
     
+}
+
+.simple-footer-cell {
+    border: 0.5mm solid black;
+    margin-top: 2mm;
+
+}
+
+.simple-footer-cell-heading{
+    color: white;
+    background-color: black;
+    padding: 2mm;
+}
+
+.simple-footer-cell-contents{
+    padding: 2mm;
 }
 
 .steel-content thead td {

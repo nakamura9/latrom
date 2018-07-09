@@ -230,13 +230,16 @@ class EntryRow extends Component {
         var footStyle ={
             textAlign:'right'
         }
+        var inputStyle = {
+            width: "100%",
+            height: "100%",
+        };
         return(
             <tfoot>
                 <tr>
-                    <td></td>
-                    <td>
+                    <td colSpan={2}>
                         <input className="form-control" 
-                            placeholder="quantity"
+                            placeholder="Qty"
                             id="entry-row-quantity" 
                             type="number"
                             name='quantity' 
@@ -262,7 +265,7 @@ class EntryRow extends Component {
                     <td><input className="form-control" 
                         id="entry-row-discount" 
                         type="number" 
-                        placeholder="discount"
+                        placeholder="Dis..."
                         name='discount'
                         onChange={this.inputHandler.bind(this)} /></td>
                     

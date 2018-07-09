@@ -1,83 +1,154 @@
-{% extends "invoicing/themable_common/base.html" %}
+{% extends "common_data/page.html" %}
 
+{% block page_contents %}
+<style>
+        #page-layout {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #title {
+            text-align: center;
+        }
+        </style>
+        
+        <div class="{{style}}-top-trim-large"></div>
+        <div class="{{style}}-top-trim-small"></div>
 
-{% block head_table %}
-<table >
-    <tbody>
-        <tr>
-            <td>Date:</td>
-            <td>{{object.date}}</td>
-        </tr>
-        <tr>
-            <td>Quotation Number:</td>
-            <td>{{object.number | stringformat:"06d"}}</td>
-        </tr>
-    </tbody>
-</table>
+        <table id="page-layout">
+                <tbody>
+                    <tr>
+                        <td colspan="2" id="title">
+                            <h1>Quotation</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img width="300" height="100" src="/media/logo/{{logo}}" alt="Logo">
+                        </td>
+                        <td>
+                            <h4>
+                                <b>{{business_name}}</b>
+                            </h4>
+                            {% if include_business_address %} {{business_address | linebreaks}} {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="{{style}}-head-cell">
+                                <p>
+                                    <b>Prepared For:</b>
+                                </p>
+                                <p>{{object.customer}}</p>
+                                {% if include_shipping %} {{object.customer.business_address | linebreaks}} {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Date:</td>
+                                        <td>{{object.date}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quotation Number:</td>
+                                        <td>{{object.number | stringformat:"06d"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table class="{{style}}-content" style="width:100%;height:60%;">
+                                <thead>
+                                    <tr>
+                                        <td style="width:10%;">Qty</td>
+                                        <td style="width:50%;">Description</td>
+                                        <td style="width:15%;">Unit Price</td>
+                                        {% if include_discount_column %}
+                                        <td>Discount Rate (%)</td>
+                                        {% endif %}
+                                        <td style="width:15%;">Total</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="item-table">
+                                    {% for item in object.quoteitem_set.all %}
+                                    <tr>
+                                        <td>{{item.quantity}}</td>
+                                        <td>{{item.item.item_name}}</td>
+                                        <td>{{item.price}}</td>
+                                        {% if include_discount_column %}
+                                        <td>{{item.discount}}</td>
+                                        {% endif %}
+                                        <td>{{item.subtotal | floatformat:2 }}</td>
+            
+                                    </tr>
+                                    {% endfor %}
+                                    <tr style="height:100%">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        {% if include_discount_column %}
+                                        <td></td>
+                                        {% endif %}
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                                            <b>SubTotal:</b>
+                                        </td>
+                                        <td>{{object.subtotal | floatformat:2 }}</td>
+                                    </tr>
+                                    {% if tax_column %}
+                                    <tr>
+                                        <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                                            <b>Taxable Amount:</b>
+                                        </td>
+                                        <td>{{object.subtotal | floatformat:2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                                            <b>Tax Rate:</b>
+                                        </td>
+                                        <td>{{object.tax.rate}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                                            <b>Tax Due:</b>
+                                        </td>
+                                        <td>{{object.tax_amount | floatformat:2 }}</td>
+                                    </tr>
+            
+                                    <tr>
+                                        <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                                            <b>Total:</b>
+                                        </td>
+                                        <td>{{object.total | floatformat:2 }}</td>
+                                    </tr>
+                                    {% endif %}
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="{{style}}-footer-cell">
+                                <div class="{{style}}-footer-cell-heading">
+                                    <h6>Comments:</h6>
+                                </div>
+                                <div class="{{style}}-footer-cell-contents">
+                                    <p>{{object.comments | linebreaks}}</p>
+                                </div>
+            
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="{{style}}-bottom-trim-small"></div>
+            <div class="{{style}}-bottom-trim-large"></div>
 {% endblock %}
-{% block head_cell %}
-<td class="{{style}}-head-cell">
-    <p><b>Prepared For:</b></p>
-    <p>{{object.customer}}</p>
-    {% if include_shipping %}
-    {% if object.customer.business %}
-    {{object.customer.business.business_address | linebreaks}}
-    {% else %}
-    {{object.customer.billing_address | linebreaks }}
-    {% endif %}
-    {% endif %}
-</td>
-{% endblock %}                        
-{% block content_headings %}
-<tr>
-    <td >Qty</td>
-    <td  style="width:300px;">Description</td>
-    <td >Unit Price</td>
-    <td>Discount Rate (%)</td>
-    <td >Total</td>
-</tr>
-{% endblock content_headings %}
-{% block content_body %}
-{% for item in object.quoteitem_set.all %}
-<tr>
-    <td >{{item.quantity}}</td>
-    <td >{{item.item.item_name}}</td>
-    <td >{{item.price}}</td>
-    <td>{{item.discount}}</td>
-    <td >{{item.subtotal | floatformat:2 }}</td>
-</tr>
-{% endfor %}
-<tr style="height:100%">
-    <td ></td>
-    <td ></td>
-    <td ></td>
-    <td ></td>
-    <td ></td>
-</tr>
-{% endblock content_body %} 
-
-{% block content_footer %}
-<tr>
-    <td colspan="4"><b>SubTotal:</b></td>
-    <td>{{object.subtotal | floatformat:2 }}</td>
-</tr>
-<tr>
-    <td colspan="4"><b>Tax Rate:</b></td>
-    <td>{{object.tax.rate}}</td>
-</tr>
-
-<tr>
-    <td colspan="4"><b>Tax Due:</b></td>
-    <td>{{object.tax_amount | floatformat:2 }}</td>
-</tr>
-<tr>
-    <td colspan="4"><b>Total:</b></td>
-    <td>{{object.total | floatformat:2 }}</td>
-</tr>
-<tr>
-    
-</tr>
-{% endblock content_footer %}
-{% block footer_statements %}
-<p><b>{{object.comments}}</b></p>
-{% endblock footer_statements %}            

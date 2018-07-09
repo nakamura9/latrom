@@ -130,5 +130,6 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                 Tab('Employee Details', 
                     'hire_date',
                     'title',
-                    'pay_grade')))
+                    'pay_grade',
+                    )))
         self.helper.add_input(Submit('submit', 'Submit'))

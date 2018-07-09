@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head %}
+    {% block head_extended %}{% endblock %}
+{% endblock %}
 {% block window %}
 
 <nav class="navbar navbar-expand-sm bg-light" >
@@ -6,7 +9,7 @@
             <a class="navbar-brand" href="{% url 'base:workflow' %}">Latrom</a>
             <li class="nav-item active"><a class="nav-link" href="{% url 'invoicing:home' %}">Invoicing</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'inventory:home' %}">Inventory</a></li>
-            <!--<li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>-->
+            {% if request.user.is_superuser %}<li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>{% endif %}
         </ul>
 </nav>
 <article>
@@ -18,6 +21,7 @@
         <li ><a style="color:white;" href="/logout">Logout</a></li>
         <li><a style="color:white;" href="/login">Login</a></li>
         <li><a style="color:white;" href="#">About</a></li>
+        <li style="color:white;">{{request.user.username}} is logged in.</li>
     </ul>
 </footer>
 <script type="text/javascript">
