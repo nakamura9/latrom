@@ -10,7 +10,7 @@ from django.urls import reverse
 
 import models
 from latrom import settings
-from accounting.tests import create_account_models
+from common_data.tests import create_account_models
 from accounting.models import JournalEntry 
 from employees.models import Employee
 from inventory.tests import create_test_inventory_models

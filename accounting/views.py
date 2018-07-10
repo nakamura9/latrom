@@ -64,20 +64,13 @@ class ComplexEntryView(LoginRequiredMixin, ExtraContext, CreateView):
         for item in request.POST.getlist('items[]'):
             item_data = json.loads(urllib.unquote(item))
             amount = decimal.Decimal(item_data['amount'])
-            if item_data['debit'] == '1':
-                models.Debit.objects.create(
-                    entry = j,
-                    account = models.Account.objects.get(
-                    pk=int(item_data['account'])),
-                    amount = amount
-                ) 
+            account = models.Account.objects.get(
+                    pk=int(item_data['account']))
+            #make sure
+            if int(item_data['debit']) == 1:
+                j.debit(amount, account)
             else:
-                models.Credit.objects.create(
-                    entry = j,
-                    account = models.Account.objects.get(
-                    pk=int(item_data['account'])),
-                    amount = amount
-                )
+                j.credit(amount, account)
 
         return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
 
@@ -170,7 +163,7 @@ class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {'title': 'Create Direct Payment'}
     def post(self, request):
-        
+        resp = super(DirectPaymentFormView, self).post(request)
         form = self.form_class(request.POST)
         if form.is_valid():
             notes_string = """
@@ -188,10 +181,10 @@ class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
             )
             j.simple_entry(
                 form.cleaned_data['amount'],
-                models.Account.objects.get(pk=4006),#purchases account
-                form.cleaned_data['account_paid_to'],
+                form.cleaned_data['paid_to'].account,#purchases account
+                form.cleaned_data['account_paid_from'],
             )
-        return super(DirectPaymentFormView, self).post(request)
+        return resp
 
 class AccountConfigView(LoginRequiredMixin, FormView):
     '''
@@ -232,33 +225,38 @@ class NonInvoicedCashSale(LoginRequiredMixin, FormView):
         resp = super(NonInvoicedCashSale, self).post(request, *args, **kwargs)
         total = 0
         config = load_config()
-        for item in request.POST.getlist('items[]'):
-            data = json.loads(urllib.unquote(item))
-            quantity = float(data['quantity'])
-            item = Item.objects.get(pk=data['code'])
-            #update inventory
-            item.decrement(quantity)
-            amount_sold = item.unit_sales_price * quantity 
-            discount = amount_sold * (float(data['discount']) / 100)
-            total += amount_sold - discount
-            #fix
-            date = datetime.datetime.strptime(
-                request.POST['date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+        form =self.form_class(request.POST)
         
-        #add taxes here from the config
+        #clean data
+        if form.is_valid():
+            for item in request.POST.getlist('items[]'):
+                data = json.loads(urllib.unquote(item))
+                quantity = float(data['quantity'])
+                item = Item.objects.get(pk=data['code'])
+                #update inventory
+                item.decrement(quantity)
+                amount_sold = item.unit_sales_price * decimal.Decimal(quantity) 
+                discount = amount_sold * decimal.Decimal(float(data['discount']) / 100.0)
+                total += amount_sold - discount
+                # record discounts in accounts
+                #fix
+                date = form.cleaned_data['date'].strftime('%Y-%m-%d')
+            
+            #add taxes here from the config
 
 
-        j = models.JournalEntry.objects.create(
-                date=date,
-                memo = request.POST['comments'],
-                reference = "Journal Entry derived from non invoiced cash sale",
-                journal = load   
+            j = models.JournalEntry.objects.create(
+                    date=date,
+                    memo = request.POST['comments'],
+                    reference = "Journal Entry derived from non invoiced cash sale",
+                    journal = models.Journal.objects.get(pk=3)#sales journal
+                    
+                )
+            j.simple_entry(
+                total,
+                models.Account.objects.get(pk=4000),#sales
+                models.Account.objects.get(pk=1004),#inventory
             )
-        j.simple_entry(
-            total,
-            models.Account.objects.get(pk=4000),#sales
-            models.Account.objects.get(pk=1004),#inventory
-        )
         return resp
 
 class DirectPaymentList(LoginRequiredMixin, ExtraContext, TemplateView):

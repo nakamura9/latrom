@@ -31,7 +31,6 @@ class DirectPaymentForm(BootstrapMixin, forms.Form):
     date = forms.DateField()
     paid_to = forms.ModelChoiceField(Supplier.objects.all())
     account_paid_from = forms.ModelChoiceField(models.Account.objects.all())
-    account_paid_to = forms.ModelChoiceField(models.Account.objects.all())
     method = forms.ChoiceField(choices=[
         ('cash', 'Cash'),
         ('transfer', 'Transfer'),

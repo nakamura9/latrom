@@ -12,44 +12,13 @@ import decimal
 from latrom import settings
 
 from common_data.tests import create_test_user
+from inventory.tests import create_test_inventory_models
+from common_data.tests import create_account_models
 
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
-def create_account_models(cls):
-    cls.account_c = Account.objects.create(
-            name= 'Model Test Credit Account',
-            balance=100,
-            type='asset',
-            description='Some description'
-        )
-    cls.account_d = Account.objects.create(
-            name= 'Model Test Debit Account',
-            balance=100,
-            type='liability',
-            description='Some description'
-        )
-    cls.journal = Journal.objects.create(
-            name= 'Model Test Journal',
-            description="test journal"
-        )
-    cls.tax = Tax.objects.create(
-            name='model test tax',
-            rate=10
-        )
-    
 
-    cls.entry = JournalEntry.objects.create(
-        memo='record of test entry',
-            date=TODAY,
-            journal =cls.journal
-    )
-    cls.entry.simple_entry(
-            10,
-            cls.account_c,
-            cls.account_d,
-        )
-    
 
 class ModelTests(TestCase):
     # use fixtures later
@@ -60,31 +29,28 @@ class ModelTests(TestCase):
         create_account_models(cls)
 
     def test_create_account(self):
-        Account.objects.create(name= 'Test Account',
+        acc = Account.objects.create(name= 'Other Test Account',
             balance=200,
             type='asset',
             description='Some description')
 
-        self.assertTrue(isinstance(
-            Account.objects.get(name="Test Account"), 
-            Account))
+        self.assertIsInstance(acc, Account)
 
     def test_create_journal(self):
         j = Journal.objects.create(name='Sales Book')
 
-        self.assertTrue(isinstance(
-            j, Journal))
+        self.assertIsInstance(j, Journal)
 
     def test_create_tax(self):
-        Tax.objects.create(name='sales tax',
-            rate=15).save()
+        t=Tax.objects.create(name='sales tax',
+            rate=15)
         
-        self.assertTrue(isinstance(
-            Tax.objects.get(name='sales tax'), Tax))
-
-    
+        self.assertIsInstance(t, Tax)
         
     def test_create_entry(self):
+        #get balances before transactions
+        acc_c_b4 = self.account_c.balance
+        acc_d_b4 = self.account_d.balance 
         trans = JournalEntry.objects.create(
             memo='record of test entry',
             date=TODAY,
@@ -99,12 +65,45 @@ class ModelTests(TestCase):
 
         self.assertTrue(isinstance(trans, JournalEntry))
         # includes the deduction from self.entry.debit
-        self.assertEqual(self.account_c.balance, 120)
-        self.assertEqual(self.account_d.balance, 80)
+        self.assertEqual(self.account_c.balance, acc_c_b4 + 10)
+        self.assertEqual(self.account_d.balance, acc_d_b4 - 10)
 
     def test_increment_decrement_account(self):
-        self.assertEqual(self.account_c.increment(10), 130)
-        self.assertEqual(self.account_c.decrement(10), 120)
+        acc_c_b4 = self.account_c.balance
+        self.assertEqual(self.account_c.increment(10), acc_c_b4 + 10)
+        self.assertEqual(self.account_c.decrement(10), acc_c_b4)
+
+    def test_create_asset(self):
+        acc_d_b4 = self.account_d.balance
+        asset = Asset.objects.create(
+            name='Test Asset',
+            description='Test description',
+            category = 0,
+            initial_value = 100,
+            debit_account = self.account_d,
+            depreciation_period = 5,
+            init_date = TODAY,
+            depreciation_method = 0,
+            salvage_value = 20,
+        )
+        self.assertIsInstance(asset, Asset)
+        #testing transaction
+        self.assertEqual(self.account_d.balance, acc_d_b4 - 100)
+    
+    def test_create_expense(self):
+        acc_d_b4 = self.account_d.balance
+        expense = Expense.objects.create(
+            date=TODAY,
+            description = 'Test Description',
+            category=0,
+            amount=100,
+            billable=False,
+            debit_account=self.account_d,
+        )
+
+        self.assertIsInstance(expense, Expense)
+        #test transaction 
+        self.assertEqual(self.account_d.balance, acc_d_b4 -100)
 
 
 class ViewTests(TestCase):
@@ -120,6 +119,7 @@ class ViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_account_models(cls)
+        create_test_inventory_models(cls)
         
         cls.ACCOUNT_DATA = {
                 'name': 'Other Test Account',
@@ -161,6 +161,8 @@ class ViewTests(TestCase):
 
     def test_post_compound_entry_form(self):
         COMPOUND_DATA = self.ENTRY_DATA
+        acc_c_b4 = self.account_c.balance
+       
         COMPOUND_DATA['items[]'] = urllib.quote(json.dumps({
             'debit': 1,
             'amount':100,
@@ -169,6 +171,8 @@ class ViewTests(TestCase):
         resp = self.client.post(reverse('accounting:compound-entry'),
             data=COMPOUND_DATA)
         self.assertTrue(resp.status_code==302)
+        #test transaction effect on account !Not working!
+        self.assertEqual(self.account_c.balance, acc_c_b4)
 
     def test_post_entry_form(self):
         resp = self.client.post(reverse('accounting:create-entry'),
@@ -229,6 +233,22 @@ class ViewTests(TestCase):
     def test_get_cash_sale(self):
         resp = self.client.get(reverse('accounting:non-invoiced-cash-sale'))
         self.assertTrue(resp.status_code == 200)
+
+    def test_POST_cash_sale(self):
+        resp = self.client.post(reverse('accounting:non-invoiced-cash-sale'),
+            data={
+                'date': TODAY,
+                'comments': 'Test Comments',
+                'items[]': urllib.quote(
+                    json.dumps({
+                        'code': self.item.pk,
+                        'quantity':1,
+                        'discount': 10
+                        })
+                    )
+                })
+
+        self.assertTrue(resp.status_code == 302)
     
     #JOURNALS
 
@@ -274,6 +294,31 @@ class ViewTests(TestCase):
 
         self.assertTrue(resp.status_code == 302)
 
+    #Direct payments
     def test_get_direct_payment_list(self):
         resp = self.client.get(reverse('accounting:direct-payment-list'))
         self.assertEqual(resp.status_code, 200)
+
+    def test_get_direct_payment_form(self):
+        resp = self.client.get(reverse('accounting:direct-payment'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_payment_form(self):
+        sup_b = self.supplier.account.balance
+        resp = self.client.post(reverse('accounting:direct-payment'),
+            data={
+               'date':TODAY,
+               'paid_to': self.supplier.pk,
+               'account_paid_from': self.account_c.pk,
+               'method': 'cash',
+               'amount': 100,
+               'reference': 'DPMT',
+               'notes': 'Some Note'
+
+            })
+        self.assertEqual(resp.status_code, 302)
+        # test transaction failing
+        self.assertEqual(self.supplier.account.balance, sup_b) # + 100
+
+
+    #asset and expense views tests

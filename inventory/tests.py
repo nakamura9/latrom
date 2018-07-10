@@ -5,8 +5,7 @@ import json
 import urllib
 import datetime
 from django.utils import timezone
-from accounting.tests import create_account_models
-from common_data.tests import create_test_user
+from common_data.tests import create_test_user, create_account_models
 
 from django.test import TestCase,Client
 from django.urls import reverse

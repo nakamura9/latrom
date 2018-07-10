@@ -9,7 +9,6 @@ from django.db.models import Q
 from django.utils import timezone
 from common_data.models import Person
 
-
 class Transaction(models.Model):
     '''
     Transaction
@@ -48,7 +47,7 @@ class Debit(Transaction):
 
 class Credit(Transaction):
     '''
-    Debit
+    Credit
     ==========
     Inherits from transaction, is an aggregate part of a JournalEntry
     and adds to the account when saved.
@@ -286,27 +285,31 @@ class Asset(models.Model):
     description = models.TextField(blank=True)
     category = models.IntegerField(choices=ASSET_CHOICES)
     initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
-    account = models.ForeignKey('accounting.Account', 
-        limit_choices_to=Q(type='asset'))
-    depreciation_period = models.IntegerField()
+    debit_account = models.ForeignKey('accounting.Account')
+    depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
     salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
 
     def create_entry(self):
+        '''debits the debit account and credits the appropriate asset account'''
         j = JournalEntry.objects.create(
             reference = "Asset. ID: " + str(self.pk),
             date = datetime.date.today(),
             memo =  "Asset added. Name: %s. Description: %s " % (
                 self.name, self.description
             ),
-            journal = Journal.objects.get(pk=5)# not ideal
+            journal = Journal.objects.get(pk=5)# not ideal general journal
         )
         j.simple_entry(self.initial_value, 
-        Account.objects.get(name=asset_choices[self.category]), 
-        self.account)
+        Account.objects.get(name=asset_choices[self.category]),#one of the asset accounts
+        self.debit_account)
 
     def depreciate(self):
+        pass
+
+    def salvage(self):
+        #removes asset from the books and credits the appropriate account
         pass
 
     @property
@@ -317,8 +320,11 @@ class Asset(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        #check if the item exists before trying to save it
+        flag = self.pk
         super(Asset, self).save(*args, **kwargs)
-        self.create_entry()
+        if flag is None:
+            self.create_entry()
 
 
 expense_choices = ['Advertising', 'Bank Service Charges', 'Equipment Rental', 
@@ -338,8 +344,8 @@ class Expense(models.Model):
     category = models.IntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     billable = models.BooleanField(default=False)
-    customer = models.ForeignKey('invoicing.Customer')
-    account = models.ForeignKey('accounting.Account')
+    customer = models.ForeignKey('invoicing.Customer', null=True)
+    debit_account = models.ForeignKey('accounting.Account')
     
     def create_entry(self):
         j = JournalEntry.objects.create(
@@ -351,10 +357,12 @@ class Expense(models.Model):
         j.simple_entry(self.amount, 
         Account.objects.get(name=expense_choices[self.category]), 
         self.customer.account \
-        if billable \
-        else self.account)
+        if self.billable \
+        else self.debit_account)
 
     def save(self, *args, **kwargs):
+        flag = self.pk
         super(Expense, self).save(*args, **kwargs)
-        self.create_entry()
+        if flag is None:
+            self.create_entry()
 
