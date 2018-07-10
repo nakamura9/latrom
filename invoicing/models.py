@@ -9,9 +9,9 @@ from django.db.models import Q
 from django.utils import timezone
 
 from common_data.models import Person
-from accounting.models import Account, Journal
 from common_data.utilities import load_config
-from accounting.models import Employee, JournalEntry, Tax, Debit, Credit
+from accounting.models import Account, Journal, JournalEntry, Tax, Debit, Credit
+from employees.models import Employee
 
 # used in default fields for invoices
 def get_default_comments():
@@ -253,7 +253,7 @@ class SalesRepresentative(models.Model):
     sales - takes two dates as arguments and returns the 
     amount sold exclusive of tax. Used in commission calculation
     '''
-    employee = models.OneToOneField('accounting.Employee', null=True)
+    employee = models.OneToOneField('employees.Employee', null=True)
     number = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
 

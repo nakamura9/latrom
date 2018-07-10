@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'invoicing',
     'inventory',
+    'employees',
     'accounting',
     'django_filters',
     'crispy_forms',

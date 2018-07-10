@@ -1,0 +1,20 @@
+{% extends 'common_data/list_template.html' %}
+{% block list_headings %}
+<tr>
+    <th>Grade Name</th>
+    <th>Number of Employees</th>
+    <th>Basic Pay</th>
+    <th>Actions</th>
+</tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for item in object_list %}
+        <td>{{item.name}}</td>
+        <td>{{item.employee_set.all.count}}</td>
+        <td>{{item.monthly_salary}}</td>
+        <td>
+            <a href="{% url 'employees:update-pay-grade' pk=item.pk %}" class="btn btn-success">Update</a>
+        </td>
+    {% endfor %}
+{% endblock %}

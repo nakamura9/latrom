@@ -86,52 +86,6 @@ class JournalEntryDetailView(LoginRequiredMixin, DetailView):
     model = models.JournalEntry
 
 #############################################################
-#                 Employee  Views                            #
-#############################################################
-
-class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = models.Employee.objects.all()
-    serializer_class = serializers.EmployeeSerializer
-
-class EmployeeCreateView(LoginRequiredMixin, ExtraContext, CreateView):
-    template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
-    form_class = forms.EmployeeForm
-    extra_context = {
-        'title': 'Add Employee to payroll system'
-    }
-    
-
-class EmployeeUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
-    template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
-    form_class = forms.EmployeeForm
-    model = models.Employee
-    extra_context = {
-        'title': 'Edit Employee data on payroll system'
-    }
-
-class EmployeeListView(LoginRequiredMixin, ExtraContext, FilterView):
-    template_name = os.path.join('accounting', 'employee_list.html')
-    filterset_class = filters.EmployeeFilter
-    extra_context = {
-        'title': 'List of Employees',
-        'new_link': reverse_lazy('accounting:create-employee')
-    }
-    def get_queryset(self):
-        return models.Employee.objects.filter(active=True).order_by('first_name')
-
-class EmployeeDetailView(LoginRequiredMixin, DetailView):
-    template_name = os.path.join('accounting', 'employee_detail.html')
-    model = models.Employee
-
-class EmployeeDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('accounting:list-employees')
-    model = models.Employee
-
-
-#############################################################
 #                 Account  Views                            #
 #############################################################
 class AccountViewSet(viewsets.ModelViewSet):
@@ -207,84 +161,6 @@ class TaxDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('accounting:util-list')
     model = models.Tax
 
-class DeductionCreateView(LoginRequiredMixin, ExtraContext, CreateView):
-    form_class = forms.DeductionForm
-    template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {
-        'title': 'Add Deductions For Payroll'
-    }
-
-class DeductionUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
-    form_class = forms.DeductionForm
-    model = models.Deduction
-    template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:util-list')
-    extra_context = {
-        'title': 'Update existing deduction'
-    }
-
-class DeductionDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('accounting:util-list')
-    model = models.Deduction
-
-class UtilsListView(LoginRequiredMixin, TemplateView):
-    template_name = os.path.join('accounting', 'utils_list.html')
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(UtilsListView, self).get_context_data(*args, **kwargs)
-        context['allowances'] = models.Allowance.objects.filter(active=True).order_by('name')
-        context['deductions'] = models.Deduction.objects.filter(active=True).order_by('name')
-        context['commissions'] = models.CommissionRule.objects.filter(active=True).order_by('name')
-        context['taxes'] = models.Tax.objects.all().order_by('name')
-        return context
-
-
-class AllowanceCreateView(LoginRequiredMixin, ExtraContext, CreateView):
-    form_class = forms.AllowanceForm
-    template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {
-        'title': 'Create New Allowance '
-    }
-
-class AllowanceUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
-    form_class = forms.AllowanceForm
-    model = models.Allowance
-    template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:util-list')
-    extra_context = {
-        'title': 'Edit Existing Allowance '
-    }
-
-class AllowanceDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('accounting:util-list')
-    model = models.Allowance
-
-class CommissionCreateView(LoginRequiredMixin, ExtraContext, CreateView):
-    form_class = forms.CommissionForm
-    template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {
-        'title': 'Add Commission Rule for pay grades'
-    }
-
-class CommissionUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
-    form_class = forms.CommissionForm
-    model = models.CommissionRule
-    template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:util-list')
-    extra_context = {
-        'title': 'Edit Existing Commission Rule'
-    }
-
-class CommissionDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('accounting:util-list')
-    model = models.CommissionRule
-
 class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
     '''Uses a simple form view as a wrapper for a transaction in the journals
     for transactions involving two accounts.
@@ -338,38 +214,6 @@ class AccountConfigView(LoginRequiredMixin, FormView):
             json.dump(new_config, open('config.json', 'w'))
 
         return super(AccountConfigView, self).post(request)
-
-###################################################
-#                 Pay Grade Views                 #
-###################################################
-
-class PayGradeCreateView(LoginRequiredMixin, ExtraContext, CreateView):
-    form_class = forms.PayGradeForm
-    template_name =CREATE_TEMPLATE
-    success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {
-        'title': 'Add pay grades for payroll'
-    }
-
-class PayGradeUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
-    form_class = forms.PayGradeForm
-    template_name =CREATE_TEMPLATE
-    success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {
-        'title': 'Edit existing Pay Grade'
-    }
-
-class PayGradeListView(LoginRequiredMixin, ListView):
-    template_name = os.path.join('accounting', 'pay_grade_list.html')
-    paginate_by = 10
-    extra_context = {
-        'title': 'List of Payslips'
-    }
-
-class PayGradeDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = os.path.join('common_data', 'delete_template')
-    success_url = reverse_lazy('accounting:list-pay-grades')
-    model = models.PayGrade
 
 class NonInvoicedCashSale(LoginRequiredMixin, FormView):
     '''
@@ -425,36 +269,6 @@ class DirectPaymentList(LoginRequiredMixin, ExtraContext, TemplateView):
     }
 
 #############################################################
-#                     Payslip Views                         #
-#############################################################
-
-class PayslipView(LoginRequiredMixin, DetailView):
-    template_name = os.path.join('accounting', 'payslip.html')
-    model= models.Payslip
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(PayslipView, self).get_context_data(*args, **kwargs)
-        context['title'] = 'Pay Slip'
-        context.update(load_config())
-        return context
-
-class PayslipListView(LoginRequiredMixin, ExtraContext, FilterView):
-    filterset_class = filters.PayslipFilter
-    template_name = os.path.join('accounting', 'payslip_list.html')
-    paginate_by = 10
-    extra_context = {
-        'title': 'List of Payslips'
-    }
-
-    def get_queryset(self):
-        return models.Payslip.objects.all().order_by('start_period')
-        
-
-class PayslipViewset(viewsets.ModelViewSet):
-    queryset = models.Payslip.objects.all()
-    serializer_class = serializers.PayslipSerializer
-
-#############################################################
 #                    Journal Views                         #
 #############################################################
 
@@ -480,34 +294,6 @@ class JournalListView(LoginRequiredMixin, ExtraContext, FilterView):
 
     def get_queryset(self):
         return models.Journal.objects.all().order_by('name')
-
-
-#############################################################
-#                    PayGrade Views                         #
-#############################################################
-
-class PayGradeUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
-    form_class = forms.PayGradeForm
-    template_name =CREATE_TEMPLATE
-    model = models.PayGrade
-    success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {
-        'title': 'Update existing pay grade'
-    }
-
-
-class PayGradeListView(LoginRequiredMixin, ExtraContext, FilterView):
-    template_name = os.path.join('accounting', 'pay_grade_list.html')
-    extra_context = {
-        'title': 'List of Pay Grades'
-    }
-    model = models.PayGrade
-
-class PayrollConfigView(ExtraContext, TemplateView):
-    template_name = os.path.join('accounting', 'payroll_config.html')
-    extra_context = {
-        'employees': models.Employee.objects.all()
-    }
 
 #########################################################
 #                  Assets and Expenses                  #

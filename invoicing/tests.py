@@ -11,8 +11,11 @@ from django.urls import reverse
 import models
 from latrom import settings
 from accounting.tests import create_account_models
-from accounting.models import JournalEntry, Employee
+from accounting.models import JournalEntry 
+from employees.models import Employee
 from inventory.tests import create_test_inventory_models
+from employees.tests import create_employees_models
+from common_data.tests import create_test_user
 
 TODAY = datetime.date.today()
 #simulate the uploading of a file to increase coverage
@@ -109,6 +112,7 @@ class ModelTests(TestCase):
     def setUpTestData(cls):
         super(ModelTests, cls).setUpTestData()
         create_account_models(cls)
+        create_employees_models(cls)
         create_test_inventory_models(cls)
         create_test_invoicing_models(cls)
 
@@ -172,13 +176,13 @@ class ModelTests(TestCase):
         self.assertIsInstance(obj, models.QuoteItem)
 
     def test_invoice_subtotal(self):
-        self.assertEqual(self.invoice.subtotal, 100)
+        self.assertEqual(int(self.invoice.subtotal), 200)
 
     def test_invoice_tax_amount(self):
-        self.assertEqual(int(self.invoice.tax_amount), 10)
+        self.assertEqual(int(self.invoice.tax_amount), 20)
 
     def test_invoice_total(self):
-        self.assertEqual(int(self.invoice.total), 110)
+        self.assertEqual(int(self.invoice.total), 220)
 
     def test_invoice_create_payment_error(self):
         self.assertRaises(ValueError, self.invoice.create_payment)
@@ -206,13 +210,13 @@ class ModelTests(TestCase):
         self.invoice.invoiceitem_set.first().item.increment(10)
         
     def test_invoice_item_total_wout_discount(self):
-        self.assertEqual(self.invoice_item.total_without_discount, 100)
+        self.assertEqual(int(self.invoice_item.total_without_discount), 111)
 
     def test_invoice_item_subtotal(self):
         #includes discount
         self.invoice_item.discount = 10
         self.invoice_item.save()
-        self.assertEqual(self.invoice_item.subtotal, 100)
+        self.assertEqual(int(self.invoice_item.subtotal), 111)
         
         #undo changes
         self.invoice_item.discount = 0
@@ -222,7 +226,7 @@ class ModelTests(TestCase):
         self.invoice_item.item.price=0.1
         self.invoice_item.item.save()
         self.invoice_item.update_price()
-        self.assertEqual(self.invoice_item.price, 100)
+        self.assertEqual(int(self.invoice_item.price), 11)
         
         #roll back changes
         self.invoice_item.item.price=0.2
@@ -233,17 +237,17 @@ class ModelTests(TestCase):
         self.assertEqual(self.salesrep.sales(TODAY, TODAY), 400)
 
     def test_payment_due(self):
-        self.assertEqual(int(self.payment.due), 0)
+        self.assertEqual(int(self.payment.due), 110)
 
 
     def test_quote_subtotal(self):
-        self.assertEqual(self.quote.subtotal, 100)
+        self.assertEqual(int(self.quote.subtotal), 200)
 
     def test_quote_total(self):
         self.assertEqual(int(self.quote.total), 220)
 
     def test_quote_tax(self):
-        self.assertEqual(int(self.quote.tax_amount), 10)
+        self.assertEqual(int(self.quote.tax_amount), 20)
 
     def test_create_invoice_from_quote(self):
         inv = self.quote.create_invoice()
@@ -252,12 +256,12 @@ class ModelTests(TestCase):
         inv.delete()
 
     def test_quote_item_total_wout_discount(self):
-        self.assertEqual(self.quote_item.total_without_discount, 100)
+        self.assertEqual(int(self.quote_item.total_without_discount), 200)
 
     def test_quote_item_subtotal(self):
         self.quote_item.discount = 10
         self.quote_item.save()
-        self.assertEqual(self.quote_item.subtotal, 90)
+        self.assertEqual(int(self.quote_item.subtotal), 180)
         #rollback
         self.quote_item.discount = 0
         self.quote_item.save()
@@ -277,6 +281,7 @@ class ViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(ViewTests, cls).setUpClass()
+        create_test_user(cls)
         cls.client = Client()
         cls.CUSTOMER_DATA = {
             'name' : "First",
@@ -372,9 +377,13 @@ class ViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_account_models(cls)
+        create_employees_models(cls)
         create_test_inventory_models(cls)
         create_test_invoicing_models(cls)
 
+    def setUp(self):
+        #wont work in setUpClass
+        self.client.login(username='Testuser', password='123')
 
     def test_get_home(self):
         resp = self.client.get(reverse('invoicing:home'))

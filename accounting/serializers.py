@@ -6,16 +6,6 @@ class TaxSerializer(serializers.ModelSerializer):
         model = models.Tax
         fields = '__all__'
 
-class EmployeeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Employee
-        fields = '__all__'
-
-class PayslipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Payslip
-        fields = "__all__"
-
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:

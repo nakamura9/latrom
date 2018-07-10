@@ -70,9 +70,9 @@
                                 <a href="{% url 'invoicing:create-invoice' %}">Create Invoice</a>
                             </li>
                             <li class="list-group-item">
-                                    <a href="{% url  'invoicing:create-payment' %}">Apply Payment</a>
-                                </li>
-                            
+                                <a href="{% url  'invoicing:create-payment' %}">Apply Payment</a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -112,37 +112,14 @@
                                 <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
                             </li>
                             <li class="list-group-item">
-                                    <a href="{% url 'accounting:asset-create' %}">Add Asset</a>
-                                </li>
-                                <li class="list-group-item">
-                                        <a href="{% url 'accounting:asset-list' %}">View List of assets</a>
-                                    </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Payroll</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:create-employee' %}">Add Employee</a>
+                                <a href="{% url 'accounting:asset-create' %}">Add Asset</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:list-employees' %}">List Employees</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:payroll-config' %}">Configure Payroll</a>
+                                <a href="{% url 'accounting:asset-list' %}">View List of assets</a>
                             </li>
                         </ul>
                     </div>
                 </div>
-            </div>
-
-            <hr />
-
-            <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Configuration</h4>
@@ -161,5 +138,4 @@
 </div>
 
 
-
-{% endblock %}
+    {% endblock %}

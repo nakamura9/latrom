@@ -6,6 +6,7 @@ import urllib
 import datetime
 from django.utils import timezone
 from accounting.tests import create_account_models
+from common_data.tests import create_test_user
 
 from django.test import TestCase,Client
 from django.urls import reverse
@@ -160,7 +161,7 @@ class ModelTests(TestCase):
         pass
 
     def test_item_stock_value(self):
-        self.assertEqual(self.item.stock_value, 100)
+        self.assertEqual(int(self.item.stock_value), 200)
 
     def test_item_increment_and_decrement(self):
         self.assertEqual(self.item.increment(10), 20)
@@ -217,6 +218,7 @@ class ViewTests(TestCase):
     def setUpTestData(cls):
         super(ViewTests, cls).setUpTestData()
         create_account_models(cls)
+        create_test_user(cls)
         create_test_inventory_models(cls)
         
         cls.ITEM_DATA = {
@@ -260,6 +262,10 @@ class ViewTests(TestCase):
                 'order_price': 10
                 }))
         }
+
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
 
     def test_get_home_page(self):
         resp = self.client.get(reverse('inventory:home'))

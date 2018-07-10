@@ -1,0 +1,103 @@
+{% extends "window.html" %} {% load render_bundle from webpack_loader %} {% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Employee Management Dashboard</h1>
+    <p class="lead">Control panel for adding employees, running payroll and other employee related functions</p>
+    <hr class="my-2">
+</div>
+{% csrf_token %}
+
+<div class="container">
+    <div class="row">
+        <div class="card-deck">
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title">Payroll Elements</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item ">
+                            <a href="{% url 'employees:create-deduction' %}">Add Deduction</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:create-allowance' %}">Add Allowance</a>
+                        </li>
+                        <li class="list-group-item disabled">
+                            <a href="{% url 'employees:create-commission' %}">Add Commission</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:create-pay-grade' %}">Add Pay Grade</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title">Employees</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:create-employee' %}">
+                                Add Employee
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:list-employees' %}">
+                                List and Manage Employees
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:list-pay-grades' %}">List Pay Grades</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:list-pay-slips' %}">View Pay Slips</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title">Reports</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="">Employee Attendance</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="">Payroll Tax Report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card-deck">
+            <div class="card bg-primary text-white" style="width:100%">
+                <div class="card-header">
+                    <h4 class="card-title">Configuration</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{% url 'employees:util-list' %}">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="payroll-table"></div>
+    </div>
+</div>
+{% render_bundle 'payroll' %}
+<script>
+    $(document).ready(() => {
+        $('#id_start_date').datepicker();
+        $('#id_end_date').datepicker();
+    });
+</script>
+{% endblock content %}
