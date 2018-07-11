@@ -159,7 +159,7 @@ class PaymentUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Payment"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Payment
-    form_class = forms.PaymentForm
+    form_class = forms.PaymentUpdateForm #some fields missing!
     success_url = reverse_lazy("invoicing:home")
 
 class SalesRepDeleteView(LoginRequiredMixin, DeleteView):

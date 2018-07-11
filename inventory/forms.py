@@ -38,9 +38,11 @@ class ItemForm(forms.ModelForm, BootstrapMixin):
                     'supplier'),
                 Tab('Pricing', 
                     'unit',
+                    'unit_purchase_price',
                     'pricing_method',
-                    'price',
-                    'unit_purchase_price'),
+                    'markup',
+                    'margin',
+                    'direct_price'),
                 Tab('Categories', 
                     'category', 
                     'sub_category'),
@@ -70,8 +72,11 @@ class ItemUpdateForm(forms.ModelForm, BootstrapMixin):
                     'supplier'),
                 Tab('Pricing', 
                     'unit',
-                    'unit_sales_price',
-                    'unit_purchase_price'),
+                    'unit_purchase_price',
+                    'pricing_method',
+                    'markup',
+                    'margin',
+                    'direct_price'),
                 Tab('Categories', 
                     'category', 
                     'sub_category'),
@@ -126,7 +131,7 @@ class UnitForm(forms.ModelForm, BootstrapMixin):
 
 class QuickItemForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields =  ['item_name', 'price', 'pricing_method','unit_purchase_price', 'quantity', 'unit']
+        fields =  ['item_name', 'direct_price', 'pricing_method','unit_purchase_price', 'quantity', 'unit']
         model = models.Item
 
 class CategoryForm(forms.ModelForm, BootstrapMixin):

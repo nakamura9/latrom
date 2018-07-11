@@ -73,7 +73,9 @@ class Item(models.Model):
     unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="", null=True)
     
     pricing_method = models.IntegerField(choices=PRICING_CHOICES, default=0)
-    price = models.DecimalField(max_digits=9, decimal_places=2)
+    direct_price = models.DecimalField(max_digits=9, decimal_places=2)
+    margin = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    markup = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.TextField(blank=True, default="")
     supplier = models.ForeignKey("inventory.Supplier", blank=True, null=True)
@@ -93,11 +95,11 @@ class Item(models.Model):
     @property
     def unit_sales_price(self):
         if self.pricing_method == 0:
-            return decimal.Decimal(self.price)
+            return self.direct_price
         elif self.pricing_method == 1:
-            return decimal.Decimal(self.unit_purchase_price / (1 - self.price))
+            return decimal.Decimal(self.unit_purchase_price / (1 - self.margin))
         else:
-            return decimal.Decimal(self.unit_purchase_price * (1 + self.price))
+            return decimal.Decimal(self.unit_purchase_price * (1 + self.markup))
     
     @property
     def stock_value(self):
@@ -163,7 +165,7 @@ class Item(models.Model):
         initial_quantity = self.quantity + ordered_quantity - sold_quantity
         
         # get the value of the items before the valuation period
-        intial_value = decimal.Decimal(initial_quantity) * previous_price
+        initial_value = decimal.Decimal(initial_quantity) * previous_price
         total_value = 0
         
         #if no valuation system is being used
@@ -171,7 +173,7 @@ class Item(models.Model):
             return self.unit_sales_price * decimal.Decimal(self.quantity)
         else:
             if config['inventory_valuation'] == 'averaging':
-                total_value += intial_value
+                total_value += initial_value
                 total_value += total_ordered_value
 
                 average_value = total_value / (ordered_quantity + initial_quantity)
@@ -192,7 +194,7 @@ class Item(models.Model):
                 if index == 0:
                     total_value += initial_value - total_sold_value
                     total_value += total_ordered_value
-                    average_value = total_value / (ordered_quantity + (initial_quantity - sold_quantity))
+                    average_value = total_value / decimal.Decimal(ordered_quantity + (initial_quantity - sold_quantity))
                     return average_value
                 else:
                     remaining_orders = ordered_in_last_month_ordered[index:]
@@ -301,16 +303,20 @@ class Order(models.Model):
         return 'ORD' + str(self.pk)
 
     @property
+    def items(self):
+        return self.orderitem_set.all()
+
+    @property
     def total(self):
-        return reduce(lambda x, y: x + y , [item.subtotal for item in self.orderitem_set.all()], 0)
+        return reduce(lambda x, y: x + y , [item.subtotal for item in self.items], 0)
 
     @property
     def received_total(self):
-        return reduce(lambda x, y: x + y , [item.received_total for item in self.orderitem_set.all()], 0)
+        return reduce(lambda x, y: x + y , [item.received_total for item in self.items], 0)
     
     @property
     def fully_received(self):
-        for item in self.orderitem_set.all():
+        for item in self.items:
             if item.fully_received == False : return False
         return True
 
@@ -324,6 +330,31 @@ class Order(models.Model):
                 received += 1
         return (float(received) / float(n_items)) * 100
 
+    def create_deffered_entry(self):
+        j = JournalEntry.objects.create(
+                    reference = "Auto generated entry created by order " + str(self),
+                    date=self.deferred_date,
+                    memo = self.notes,
+                    journal = Journal.objects.get(pk=4)
+                )
+        j.simple_entry(
+                    self.total,
+                    Account.objects.get(pk=2000), #accounts payable
+                    self.supplier.account, # since we owe the supplier
+                )
+    def create_immediate_entry(self):
+        j = JournalEntry.objects.create(
+                date = self.issue_date,
+                reference = "Auto generated entry from order" + str(self),
+                memo=self.notes,
+                journal = Journal.objects.get(pk=4)
+            )
+        j.simple_entry(
+                self.total,
+                Account.objects.get(pk=1004),#inventory
+                Account.objects.get(pk=4006),#purchases account
+            )
+
     def receive(self):
         if self.status != 'received':
             sr = StockReceipt.objects.create(
@@ -336,46 +367,7 @@ class Order(models.Model):
             for item in self.orderitem_set.all():
                 item.receive(item.quantity)
             sr.create_entry()
-
-    def save(self, *args, **kwargs):
-        super(Order, self).save(*args, **kwargs)
-        # to prevent a transaction during an update
-        if not self.pk is None:
-            return
-        if self.type_of_order == 1:
-            if self.deferred_date == None:
-                raise ValueError('The Order with a deferred payment must have a deferred payment date.')
-            if self.supplier.account == None:
-                raise ValueError('A deffered payment requires the organization to have an account with the supplier')
-            else:
-                #create transaction dated deferred date
-                j = JournalEntry.objects.create(
-                    reference = "Auto generated entry created by order " + str(self),
-                    date=self.deferred_date,
-                    memo = self.notes,
-                    journal = Journal.objects.get(pk=4)
-                )
-                j.simple_entry(
-                    self.total,
-                    Account.objects.get(pk=2000), #accounts payable
-                    self.supplier.account, # since we owe the supplier
-                    
-                )
-        elif self.type_of_order == 0:
-            j = JournalEntry.objects.create(
-                date = self.issue_date,
-                reference = "Auto generated entry from order" + str(self),
-                memo=self.notes,
-                journal = Journal.objects.get(pk=4)
-            )
-            j.simple_entry(
-                self.total,
-                Account.objects.get(pk=1004),#inventory
-                Account.objects.get(pk=4006),#purchases account
-            )
-        else:
-            #create no transaction until stock receipt
-            pass
+    #check for deffered date with deferred type of invoice
 
 class OrderItem(models.Model):
     '''A component of an order this tracks the order price 
@@ -472,11 +464,6 @@ class StockReceipt(models.Model):
         super(StockReceipt, self).save(*args, **kwargs)
         self.order.received_to_date = self.order.received_total
         self.order.save()
-        # to prevent a transaction during an update
-        if not self.pk is None:
-            return
-        if self.order.type_of_order == 2:#payment on receipt
-            self.create_entry()
         
 
     def create_entry(self):
@@ -489,7 +476,7 @@ class StockReceipt(models.Model):
         new_total = self.order.received_total - decimal.Decimal(self.order.received_to_date)
         j.simple_entry(
             new_total,
-            Account.objects.get(pk=1004),
-            Account.objects.get(pk=1000)
+            Account.objects.get(pk=1004),#inventory
+            Account.objects.get(pk=1000)#checking account
         )
         

@@ -65,9 +65,11 @@ class PaymentForm(forms.ModelForm, BootstrapMixin):
         fields = '__all__'
         model = models.Payment
 
-    def __init__(self, *args, **kwargs):
-        super(PaymentForm, self).__init__(*args, **kwargs)
-        self.fields["date"].widget.attrs["class"] = "form-control ui-date-picker"
+
+class PaymentUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['invoice', 'amount']
+        model = models.Payment
 
 
 class InvoiceForm(forms.ModelForm, BootstrapMixin):

@@ -9,7 +9,6 @@ def create_test_user(cls):
     cls.user = User.objects.create(username='Testuser')
     cls.user.set_password('123')
     cls.user.save()
-    print cls.user
 
 def create_account_models(cls):
     cls.account_c = Account.objects.create(

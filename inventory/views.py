@@ -144,7 +144,14 @@ class OrderCreateView(LoginRequiredMixin, ExtraContext, CreateView):
                 item=models.Item.objects.get(
                     pk=data['item_name']),
                     quantity=data['quantity'],
-                    order_price=data['order_price'])            
+                    order_price=data['order_price'])   
+        
+        #create transaction after loading all the items
+        if order.type_of_order == 0:#cash
+            order.create_immediate_entry()
+        elif order.type_of_order == 1:
+            order.create_deffered_entry()
+
         return resp
         
 class OrderUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
@@ -169,6 +176,8 @@ class OrderUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
 
         for pk in request.POST.getlist("removed_items[]"):
             models.OrderItem.objects.get(pk=pk).delete()
+
+        #create adjustment transaction if the amount changes
         return resp
 
 
@@ -265,6 +274,8 @@ class StockReceiptCreateView(LoginRequiredMixin,CreateView):
             _ , pk = key.split('-')
             models.OrderItem.objects.get(pk=pk).receive(data[key])
             
+        #make transaction after receiving each item.
+        self.object.create_entry()
         return resp 
 
 class GoodsReceivedVoucherView(LoginRequiredMixin, DetailView):

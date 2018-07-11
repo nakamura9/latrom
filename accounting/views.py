@@ -181,7 +181,7 @@ class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
             )
             j.simple_entry(
                 form.cleaned_data['amount'],
-                form.cleaned_data['paid_to'].account,#purchases account
+                form.cleaned_data['paid_to'].account,
                 form.cleaned_data['account_paid_from'],
             )
         return resp

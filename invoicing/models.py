@@ -138,13 +138,6 @@ class Invoice(models.Model):
             return 'CINV' + str(self.pk)
         else: 
             return 'DINV' + str(self.pk)
-
-    def save(self, *args, **kwargs):
-        super(Invoice, self).save(*args, **kwargs)
-        # to prevent a transaction during an update
-        if not self.pk is None:
-            return
-        self.create_entry()
         
     
     def create_payment(self):
@@ -161,17 +154,17 @@ class Invoice(models.Model):
     
     def create_entry(self):
         if self.type_of_invoice == "cash":
-            t = JournalEntry.objects.create(
+            j = JournalEntry.objects.create(
                 reference='INV' + str(self.pk),
                 memo= 'Auto generated Entry from cash invoice.',
                 date=self.date_issued,
                 journal =Journal.objects.get(pk=3)#Sales Journal
             )
-            t.debit(self.total, Account.objects.get(pk=4009))#inventory
-            t.credit(self.subtotal, Account.objects.get(pk=4000))#sales
-            t.credit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
+            j.debit(self.total, Account.objects.get(pk=4009))#inventory
+            j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
+            j.credit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
 
-            return t
+            return j
         else:
             raise ValueError('Only cash based invoices generate entries')
 
@@ -309,7 +302,7 @@ class Payment(models.Model):
 
     def create_entry(self):
         j = JournalEntry.objects.create(
-                reference='PAY' + str(self.pk),
+                reference='PMT' + str(self.pk),
                 memo= 'Auto generated journal entry from payment.',
                 date=self.date,
                 journal =Journal.objects.get(pk=3)
@@ -324,23 +317,25 @@ class Payment(models.Model):
                     pk=4000),#sales account
             )
         else:
-            # will not work for partial payments
+            # will now work for partial payments
             j.debit(self.amount, self.invoice.customer.account)
-            #sales
-            j.credit(self.invoice.subtotal, Account.objects.get(pk=4000))
-            #tax
-            j.credit(self.invoice.tax_amount, Account.objects.get(pk=2001))
+            # calculate tax as a proportion of the amount paid
+            tax_amount = self.amount * decimal.Decimal(self.invoice.tax.rate / 100.0)
+            # sales account
+            j.credit(self.amount - tax_amount, Account.objects.get(pk=4000))
+            # tax
+            j.credit(tax_amount, Account.objects.get(pk=2001))
             
 
     def save(self, *args, **kwargs):
+        flag = self.pk
         if self.invoice.type_of_invoice == "cash":
             raise ValueError('Only Credit Invoices can create payments')
         else:
             # to prevent a transaction during an update
             super(Payment, self).save(*args, **kwargs)
-            if not self.pk is None:
-                return
-            self.create_entry()
+            if flag is None:
+                self.create_entry()
 
 class Quote(models.Model):
     '''Model that represents a quotation set to a client for 
@@ -487,7 +482,7 @@ class CreditNote(models.Model):
         j.simple_entry(
             self.returned_total,
             self.invoice.customer.account,
-            Account.objects.get(pk=4002))
+            Account.objects.get(pk=4002))# sales returns 
 
     def save(self, *args, **kwargs):
         super(CreditNote, self).save(*args, **kwargs)

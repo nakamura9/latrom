@@ -11,7 +11,7 @@ from django.urls import reverse
 import models
 from latrom import settings
 from common_data.tests import create_account_models
-from accounting.models import JournalEntry 
+from accounting.models import JournalEntry, Account
 from employees.models import Employee
 from inventory.tests import create_test_inventory_models
 from employees.tests import create_employees_models
@@ -176,13 +176,16 @@ class ModelTests(TestCase):
         self.assertIsInstance(obj, models.QuoteItem)
 
     def test_invoice_subtotal(self):
-        self.assertEqual(int(self.invoice.subtotal), 200)
+        #10 items @ $10
+        self.assertEqual(int(self.invoice.subtotal), 100)
 
     def test_invoice_tax_amount(self):
-        self.assertEqual(int(self.invoice.tax_amount), 20)
+        #10% of $100
+        self.assertEqual(int(self.invoice.tax_amount), 10)
 
     def test_invoice_total(self):
-        self.assertEqual(int(self.invoice.total), 220)
+        #10 items @ $10 with $10 tax
+        self.assertEqual(int(self.invoice.total), 110)
 
     def test_invoice_create_payment_error(self):
         self.assertRaises(ValueError, self.invoice.create_payment)
@@ -210,13 +213,13 @@ class ModelTests(TestCase):
         self.invoice.invoiceitem_set.first().item.increment(10)
         
     def test_invoice_item_total_wout_discount(self):
-        self.assertEqual(int(self.invoice_item.total_without_discount), 111)
+        self.assertEqual(int(self.invoice_item.total_without_discount), 100)
 
     def test_invoice_item_subtotal(self):
         #includes discount
         self.invoice_item.discount = 10
         self.invoice_item.save()
-        self.assertEqual(int(self.invoice_item.subtotal), 111)
+        self.assertEqual(int(self.invoice_item.subtotal), 100)
         
         #undo changes
         self.invoice_item.discount = 0
@@ -226,7 +229,7 @@ class ModelTests(TestCase):
         self.invoice_item.item.price=0.1
         self.invoice_item.item.save()
         self.invoice_item.update_price()
-        self.assertEqual(int(self.invoice_item.price), 11)
+        self.assertEqual(int(self.invoice_item.price), 10)
         
         #roll back changes
         self.invoice_item.item.price=0.2
@@ -234,20 +237,23 @@ class ModelTests(TestCase):
         self.invoice_item.update_price()
 
     def test_sales_rep_sales(self):
-        self.assertEqual(self.salesrep.sales(TODAY, TODAY), 400)
+        self.assertEqual(self.salesrep.sales(TODAY, TODAY), 200)
 
     def test_payment_due(self):
-        self.assertEqual(int(self.payment.due), 110)
+        #after payment made nothing is due
+        self.assertEqual(int(self.payment.due), 0)
 
 
     def test_quote_subtotal(self):
-        self.assertEqual(int(self.quote.subtotal), 200)
+        #10 items @ $10
+        self.assertEqual(int(self.quote.subtotal), 100)
 
     def test_quote_total(self):
-        self.assertEqual(int(self.quote.total), 220)
+        #10 items @ $10 + $10 tax
+        self.assertEqual(int(self.quote.total), 110)
 
     def test_quote_tax(self):
-        self.assertEqual(int(self.quote.tax_amount), 20)
+        self.assertEqual(int(self.quote.tax_amount), 10)
 
     def test_create_invoice_from_quote(self):
         inv = self.quote.create_invoice()
@@ -256,23 +262,26 @@ class ModelTests(TestCase):
         inv.delete()
 
     def test_quote_item_total_wout_discount(self):
-        self.assertEqual(int(self.quote_item.total_without_discount), 200)
+        #10 items @ $10
+        self.assertEqual(int(self.quote_item.total_without_discount), 100)
 
     def test_quote_item_subtotal(self):
+        #10 items @ $10 with $10 discount
         self.quote_item.discount = 10
         self.quote_item.save()
-        self.assertEqual(int(self.quote_item.subtotal), 180)
+        self.assertEqual(int(self.quote_item.subtotal), 90)
         #rollback
         self.quote_item.discount = 0
         self.quote_item.save()
         
     def test_quote_update_price(self):
-        self.quote_item.item.price = 0.5
+        self.quote_item.item.pricing_method = 0
+        self.quote_item.item.direct_price = 20
         self.quote_item.item.save()
         self.quote_item.update_price()
         self.assertEqual(self.quote_item.price, 20)
         #rollback
-        self.quote_item.item.price = 0.2
+        self.quote_item.item.direct_price = 10
         self.quote_item.item.save()
 
 class ViewTests(TestCase):
@@ -471,9 +480,14 @@ class ViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_payment_form(self):
+        prev_bal = self.customer.account.balance
         resp = self.client.post(reverse('invoicing:create-payment'),
             data=self.PAYMENT_DATA)
         self.assertEqual(resp.status_code, 302)
+        #testing for transaction account
+        pmt = models.Payment.objects.latest('pk')
+        self.assertEqual(pmt.invoice.customer.account.balance, prev_bal -50)
+        
 
     def test_get_payment_update(self):
         resp = self.client.get(reverse('invoicing:update-payment',
@@ -557,9 +571,14 @@ class ViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_invoice_form(self):
+        sales = Account.objects.get(pk=4000)
+        prev_sales = sales.balance
+        print prev_sales
         resp = self.client.post(reverse('invoicing:create-invoice'),
         data=self.INVOICE_DATA)
         self.assertEqual(resp.status_code, 302)
+        #test transaction
+        #self.assertEqual(sales.balance, prev_sales + 90)
 
     def test_get_invoice_update(self):
         resp = self.client.get(reverse('invoicing:update-invoice',

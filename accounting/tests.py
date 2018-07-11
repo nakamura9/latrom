@@ -68,7 +68,17 @@ class ModelTests(TestCase):
         self.assertEqual(self.account_c.balance, acc_c_b4 + 10)
         self.assertEqual(self.account_d.balance, acc_d_b4 - 10)
 
-    def test_increment_decrement_account(self):
+    def test_journal_entry_debit(self):
+        pre_total_debit = self.entry.total_debits
+        self.entry.debit(10, self.account_c)
+        self.assertEqual(self.entry.total_debits, pre_total_debit + 10)
+
+    def test_journal_entry_credit(self):
+        pre_total_credit = self.entry.total_credits
+        self.entry.credit(10, self.account_c)
+        self.assertEqual(self.entry.total_credits, pre_total_credit + 10)
+
+    def test_account_increment_decrement_account(self):
         acc_c_b4 = self.account_c.balance
         self.assertEqual(self.account_c.increment(10), acc_c_b4 + 10)
         self.assertEqual(self.account_c.decrement(10), acc_c_b4)
@@ -161,8 +171,7 @@ class ViewTests(TestCase):
 
     def test_post_compound_entry_form(self):
         COMPOUND_DATA = self.ENTRY_DATA
-        acc_c_b4 = self.account_c.balance
-       
+        n = JournalEntry.objects.all().count()
         COMPOUND_DATA['items[]'] = urllib.quote(json.dumps({
             'debit': 1,
             'amount':100,
@@ -171,8 +180,9 @@ class ViewTests(TestCase):
         resp = self.client.post(reverse('accounting:compound-entry'),
             data=COMPOUND_DATA)
         self.assertTrue(resp.status_code==302)
-        #test transaction effect on account !Not working!
-        self.assertEqual(self.account_c.balance, acc_c_b4)
+
+        #test transaction effect on account
+        self.assertEqual(JournalEntry.objects.latest('pk').total_debits, 100)
 
     def test_post_entry_form(self):
         resp = self.client.post(reverse('accounting:create-entry'),
@@ -247,8 +257,9 @@ class ViewTests(TestCase):
                         })
                     )
                 })
-
         self.assertTrue(resp.status_code == 302)
+        #1 item with 10% discount @ $10
+        self.assertEqual(JournalEntry.objects.latest('pk').total_debits, 9)
     
     #JOURNALS
 
@@ -317,8 +328,7 @@ class ViewTests(TestCase):
 
             })
         self.assertEqual(resp.status_code, 302)
-        # test transaction failing
-        self.assertEqual(self.supplier.account.balance, sup_b) # + 100
-
+        # test transaction impact on accounts
+        self.assertEqual(JournalEntry.objects.latest('pk').total_debits, 100)
 
     #asset and expense views tests

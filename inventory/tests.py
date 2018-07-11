@@ -10,6 +10,7 @@ from common_data.tests import create_test_user, create_account_models
 from django.test import TestCase,Client
 from django.urls import reverse
 import models 
+from accounting.models import Account, JournalEntry
 
 TODAY = datetime.date.today()
 
@@ -36,8 +37,9 @@ def create_test_inventory_models(cls):
     cls.item = models.Item.objects.create(
             item_name='test name',
             unit=cls.unit,
-            pricing_method=1,
-            price=0.5,
+            pricing_method=0, #KISS direct pricing
+            direct_price=10,
+            margin=0.5,
             unit_purchase_price=8,
             description='Test Description',
             supplier = cls.supplier,
@@ -60,8 +62,7 @@ def create_test_inventory_models(cls):
     cls.order_item = models.OrderItem.objects.create(
             order=cls.order,
             item=cls.item,
-            quantity=10,
-            order_price=10
+            quantity=10
         )
     cls.stock_receipt = models.StockReceipt.objects.create(
             order = cls.order,
@@ -97,7 +98,8 @@ class ModelTests(TestCase):
             item_name='other test name',
             unit=self.unit,
             pricing_method=1,
-            price=0.25,
+            direct_price=10,
+            margin=0.25,
             unit_purchase_price=8,
             description='Test Description',
             supplier = self.supplier,
@@ -114,14 +116,21 @@ class ModelTests(TestCase):
         ord = models.Order.objects.create(
             expected_receipt_date = TODAY,
             issue_date = TODAY,
+            type_of_order=1,
             supplier=self.supplier,
             bill_to = 'Test Bill to',
             ship_to = 'Test Ship To',
             tracking_number = '34234',
             notes = 'Test Note',
-            status = 'draft'    
+            status = 'submitted'    
+        )
+        models.OrderItem.objects.create(
+            order=ord,
+            item=self.item,
+            quantity=1,
         )
         self.assertIsInstance(ord, models.Order)
+        #NB No transactions are created as yet
 
     def test_create_order_item(self):
         ord_item = models.OrderItem.objects.create(
@@ -160,14 +169,16 @@ class ModelTests(TestCase):
         pass
 
     def test_item_stock_value(self):
-        self.assertEqual(int(self.item.stock_value), 200)
+        #needs a much more complex test!
+        self.assertEqual(int(self.item.stock_value), 100)
 
     def test_item_increment_and_decrement(self):
         self.assertEqual(self.item.increment(10), 20)
         self.assertEqual(self.item.decrement(10), 10)
 
     def test_order_total(self):
-        self.assertEqual(self.order.total, 100)
+        #10 items @ $8 
+        self.assertEqual(self.order.total, 80)
 
     def test_order_fully_received(self):
         self.assertFalse(self.order.fully_received)
@@ -202,7 +213,8 @@ class ModelTests(TestCase):
         self.order_item.save()
 
     def test_order_item_subtotal(self):
-        self.assertEqual(self.order_item.subtotal, 100)
+        #10 items @ $8
+        self.assertEqual(self.order_item.subtotal, 80)
         
 
 class ViewTests(TestCase):
@@ -223,7 +235,9 @@ class ViewTests(TestCase):
         cls.ITEM_DATA = {
             'item_name' : 'Other Test Item',
             'unit' : cls.unit.pk,
-            'price' : 0.2,
+            'margin' : 0.2,
+            'markup' : 0.2,
+            'direct_price' : 10,
             'pricing_method': 2,
             'unit_purchase_price' : 8,
             'description' : 'Test Description',
@@ -251,7 +265,7 @@ class ViewTests(TestCase):
             'supplier' : cls.supplier.pk,
             'bill_to' : 'Test Bill to',
             'ship_to' : 'Test Ship To',
-            'type_of_order': 1,
+            'type_of_order': 0,
             'tracking_number' : '34234',
             'notes' : 'Test Note',
             'status' : 'draft',
@@ -387,6 +401,8 @@ class ViewTests(TestCase):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
         self.assertTrue(resp.status_code == 302)
+        #tests the created transaction
+        self.assertEqual(Account.objects.get(pk=1004).balance, 100)
 
     def test_get_order_list(self):
         resp = self.client.get(reverse('inventory:order-list'))
@@ -439,7 +455,7 @@ class ViewTests(TestCase):
         self.assertTrue(resp.status_code == 200)
 
     def test_post_stock_receipt_form(self):
-
+        inv_b4 = Account.objects.get(pk=1004).balance
         resp = self.client.post(reverse('inventory:stock-receipt-create'),
             data={
                 'order': self.order.pk,
@@ -450,6 +466,8 @@ class ViewTests(TestCase):
                 }))
             })
         self.assertTrue(resp.status_code == 302)
+        #test the created transaction
+        self.assertEqual(Account.objects.get(pk=1004).balance, inv_b4 + 16 )
 
     def test_get_config_view(self):
         resp = self.client.get(reverse('inventory:config'))
