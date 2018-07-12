@@ -289,9 +289,8 @@ class InvoiceCreateView(LoginRequiredMixin, ExtraContext, CreateView):
         inv = Invoice.objects.latest("pk")
         for item in request.POST.getlist("items[]"):
             data = json.loads(urllib.unquote(item))
-            inv.invoiceitem_set.create(quantity=data['quantity'],
-                            discount=data['discount'],
-                            item=Item.objects.get(pk=data['code']))
+            inv.add_item(Item.objects.get(pk=data['code']), 
+                data['quantity'], data['discount'])
         
         # moved here because the invoice item data must first be 
         # saved in the database before inventory and entries 
@@ -318,9 +317,8 @@ class InvoiceUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
         inv = self.get_object()
         for item in request.POST.getlist("items[]"):
             data = json.loads(urllib.unquote(item))
-            inv.invoiceitem_set.create(quantity=data['quantity'],
-                            discount=data['discount'],
-                            item=Item.objects.get(pk=data['code']))
+            inv.add_item(Item.objects.get(pk=data['code']), 
+                data['quantity'],data['discount'])
         for pk in request.POST.getlist("removed_items[]"):
             InvoiceItem.objects.get(pk=pk).delete()
         
@@ -372,10 +370,8 @@ class QuoteCreateView(LoginRequiredMixin, ExtraContext, CreateView):
         quo = Quote.objects.latest("pk")
         for item in request.POST.getlist("items[]"):
             data = json.loads(urllib.unquote(item))
-            quo.quoteitem_set.create(
-                quantity=data['quantity'],
-                item=Item.objects.get(pk=data['code']),
-                discount=data['discount'])
+            quo.add_item(Item.objects.get(pk=data['code']),
+                data['quantity'], data['discount'])
         
         return resp
 

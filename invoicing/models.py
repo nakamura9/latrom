@@ -126,6 +126,15 @@ class Invoice(models.Model):
     def total(self):
         return self.subtotal + self.tax_amount
 
+    def add_item(self, item, quantity,discount):
+        self.invoiceitem_set.create(
+            item=item, 
+            quantity=quantity,
+            discount=discount
+        )
+    def remove_item(self, item_pk):
+        # remove an item from an invoice
+        pass
 
     @property
     def tax_amount(self):
@@ -379,6 +388,12 @@ class Quote(models.Model):
 
     def __str__(self):
         return 'QUO' + str(self.number)
+
+    def add_item(self, item, quantity, discount):
+        self.quoteitem_set.create(
+                quantity=quantity,
+                item=item,
+                discount=discount)
 
     def create_invoice(self):
         if not self.invoiced:
