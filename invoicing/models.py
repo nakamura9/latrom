@@ -13,6 +13,7 @@ from common_data.utilities import load_config
 from accounting.models import Account, Journal, JournalEntry, Tax, Debit, Credit
 from employees.models import Employee
 
+
 # used in default fields for invoices
 def get_default_comments():
     load_config().get('default_invoice_comments', "")
@@ -56,6 +57,34 @@ class Customer(models.Model):
                 balance_sheet_category='current-assets'
             )
         super(Customer, self).save(*args, **kwargs)
+
+    @property
+    def credit_invoices(self):
+        return [i for i in Invoice.objects.filter(
+            Q(type_of_invoice='credit') & Q(customer=self)) \
+            if not i.paid_in_full]
+        
+    @property
+    def age_list(self):
+        #returns a 7 element tuple that enumerates the number of invoices 
+        # that are, current 0-7 overude 8-14 days and so forth
+        
+        age_list = [0, 0, 0, 0, 0, 0]
+        for inv in self.credit_invoices:
+            if inv.overdue == 0:
+                age_list[0] += 1
+            elif inv.overdue < 8:
+                age_list[1] += 1 
+            elif inv.overdue < 15:
+                age_list[2] += 1
+            elif inv.overdue < 31:
+                age_list[3] += 1 
+            elif inv.overdue < 61:
+                age_list[4] += 1
+            else:
+                age_list[5] += 1
+        
+        return age_list
 
 class ContactPerson(Person):
     '''inherits from the base person class in common data
@@ -105,14 +134,23 @@ class Invoice(models.Model):
     customer = models.ForeignKey("invoicing.Customer", null=True)
     date_issued = models.DateField( default=timezone.now)
     due_date = models.DateField( default=timezone.now)
-    terms = models.CharField(max_length = 128, blank=True, null=True, default=get_default_terms)
-    comments = models.TextField(blank=True, null=True, default=get_default_comments)
+    ship_from = models.ForeignKey('inventory.WareHouse', null=True)
+    terms = models.CharField(max_length = 128, blank=True, null=True, 
+        default=get_default_terms)
+    comments = models.TextField(blank=True, null=True, 
+        default=get_default_comments)
     number = models.AutoField(primary_key = True)
     tax = models.ForeignKey('accounting.Tax', null=True)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
     active = models.BooleanField(default=True)
     purchase_order_number = models.CharField(blank=True, max_length=32)
     
+    @property
+    def paid_in_full(self):
+        payments = Payment.objects.filter(invoice=self)
+        return reduce(lambda x, y:x + y, [p.amount for p in payments], 0) == \
+            self.total
+
     def delete(self):
         self.active = False
         self.save()
@@ -148,6 +186,16 @@ class Invoice(models.Model):
         else: 
             return 'DINV' + str(self.pk)
         
+    @property
+    def overdue(self):
+        if self.paid_in_full:
+            return 0
+        today = datetime.date.today()
+        if today < self.due_date:
+            return 0
+        else:
+            delta = today- self.due_date
+        return delta.days
     
     def create_payment(self):
         if self.type_of_invoice == 'credit':
@@ -167,21 +215,30 @@ class Invoice(models.Model):
                 reference='INV' + str(self.pk),
                 memo= 'Auto generated Entry from cash invoice.',
                 date=self.date_issued,
-                journal =Journal.objects.get(pk=3)#Sales Journal
+                journal =Journal.objects.get(pk=1)#Sales Journal
             )
-            j.debit(self.total, Account.objects.get(pk=4009))#inventory
-            j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
-            j.credit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
+            j.credit(self.total, Account.objects.get(pk=4009))#inventory
+            j.debit(self.subtotal, Account.objects.get(pk=4000))#sales
+            j.debit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
 
             return j
         else:
-            raise ValueError('Only cash based invoices generate entries')
+            j = JournalEntry.objects.create(
+                reference='INV' + str(self.pk),
+                memo= 'Auto generated Entry from cash invoice.',
+                date=self.date_issued,
+                journal =Journal.objects.get(pk=3)#Sales Journal
+            )
+            j.credit(self.total, Account.objects.get(pk=4009))#inventory
+            j.debit(self.total, self.customer.account)#sales
+            
+            return j
 
     def update_inventory(self):
         #called in views.py
         for item in self.invoiceitem_set.all():
-            item.item.decrement(item.quantity)
-             
+            #check if ship_from has the item in sufficient quantity
+             self.ship_from.decrement_item(item.item, item.quantity)
 
 class InvoiceItem(models.Model):
     '''Items listed as part of an invoice. Records the price for that 
@@ -234,7 +291,7 @@ class InvoiceItem(models.Model):
 
     def update_price(self):
         self.price = self.item.unit_sales_price
-        self.save()
+        self.save()            
 
     def _return(self, quantity):
         self.returned_quantity  = float(quantity)
@@ -397,6 +454,7 @@ class Quote(models.Model):
 
     def create_invoice(self):
         if not self.invoiced:
+            #only one should exist
             Invoice.objects.create(
                 customer=self.customer,
                 date_issued=self.date,

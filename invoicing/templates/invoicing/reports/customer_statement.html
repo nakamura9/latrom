@@ -1,5 +1,4 @@
-{% extends "invoicing/themable_common/root.html" %} 
-{% block base_contents %}
+{% extends "invoicing/themable_common/root.html" %} {% block base_contents %}
 <style>
     .cell {
         border-collapse: collapse;
@@ -8,121 +7,110 @@
 
     }
 </style>
-<div >
-        <table >
-                <tbody>
-            
-                    <tr>
-                        <td>
-                            <img src="/media/logo/{{logo}}" alt="">
-                        </td>
-                        <td>
-                            <h3>{{business_name}}</h3>
-                            <hr class="my-2">
-                            <p>{{busines_address | linebreaks }}</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <h2>Customer Statement</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <h3>{{customer.name}}</h3>
-                            <hr class="my-2">
-                            <p>{{customer.address}}</p>
-                        </td>
-                        <td>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>Current Balance</th>
-                                        <td>{{customer.account.balance}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Start Period</th>
-                                        <td>{{start}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>End Period</th>
-                                        <td>{{end}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <div >
-                                <table style=" border: 1mm solid black;">
-                                    <thead>
-                                        <tr style="background-color:black; color:white; padding:3mm;">
-                                            <td>Date</td>
-                                            <td>Transaction ID</td>
-                                            <td>Description</td>
-                                            <td>Credit</td>
-                                            <td>Debit</td>
-                                            <td>Line Total</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for inv in invoices %}
-                                        <tr>
-                                           <td class="cell">{{inv.date_issued}}</td>
-                                           <td class="cell">{{inv.pk}}</td>
-                                           <td class="cell">Invoice charged</td> 
-                                           <td class="cell">{{inv.total | floatformat:2}}</td>
-                                           <td class="cell">
-                                                {% if inv.type_of_invoice == 'cash' %}
-                                                    {{inv.total | floatformat:2}}
-                                                {% else %}
-                                                    0.00
-                                                {% endif %}
-            
-                                           </td>
-                                           <td class="cell">
-                                                {% if inv.type_of_invoice == 'cash' %}
-                                                    0.00
-                                                {% else %}
-                                                ({{inv.total | floatformat:2}})
-                                                {% endif %}
-                                           </td>
-                                        </tr>
-                                        {% endfor %}
-                                        {% for pay in payments %}
-                                        <tr>
-                                                <td class="cell">{{pay.date}}</td>
-                                                <td class="cell">{{pay.pk}}</td>
-                                                <td class="cell">Payment for Invoice #:{{pay.invoice.pk}}</td> 
-                                                <td class="cell">0.00</td>
-                                                <td class="cell">{{pay.amount | floatformat:2}}</td>
-                                                <td class="cell">{{pay.amount | floatformat:2}}</td>
-                                             </tr>
-                                            {% endfor %}
-                                            <tr style="height:100%">
-                                                <td class="cell"></td>
-                                                <td class="cell"></td>
-                                                <td class="cell"></td>
-                                                <td class="cell"></td>
-                                                <td class="cell"></td>
-                                                <td class="cell"></td>
-                                            </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr style="border-top: 1mm solid black;">
-                                            <td colspan="5">Remaining Balance:</td>
-                                            <td>{{customer.account.balance | floatformat:2}}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-            
-                </tbody>
-            </table>
-</div>
+<table style="width:100%">
+    <tbody>
+        <tr>
+            <td style="width:50%"> 
+                <img src="/media/logo/{{logo}}" alt="Logo" width='300' height='200'>
+            </td>
+            <td>
+                <h2>{{business_name}}</h2>
+                <hr class="my-2">
+                <p>{{business_address | linebreaks }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <center><h1>Customer Statement</h1></center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h3>{{customer.name}}</h3>
+                <hr class="my-2">
+                <p>{{customer.business_address}}</p>
+            </td>
+            <td>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Current Balance</th>
+                            <td>{{customer.account.balance}}</td>
+                        </tr>
+                        <tr>
+                            <th>Start Period</th>
+                            <td>{{start}}</td>
+                        </tr>
+                        <tr>
+                            <th>End Period</th>
+                            <td>{{end}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div>
+                    <table style=" border: 1mm solid black;width:100% height:60%" >
+                        <thead>
+                            <tr style="background-color:black; color:white; padding:3mm;">
+                                <td style="width:15%">Date</td>
+                                <td style="width:15%">Due Date</td>
+                                <td style="width:25%">Description</td>
+                                <td style="width:15%">Credit</td>
+                                <td style="width:15%">Debit</td>
+                                <td style="width:15%">Line Total</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inv in invoices %}
+                            <tr>
+                                <td class="cell">{{inv.date_issued}}</td>
+                                <td class="cell">{{inv.due_date}}</td>
+                                <td class="cell">Invoice {{inv.pk | stringformat:"06d"}}</td>
+                                <td class="cell">{{inv.total | floatformat:2}}</td>
+                                <td class="cell">
+                                    {% if inv.type_of_invoice == 'cash' %} {{inv.total | floatformat:2}} {% else %} 0.00 {% endif %}
+
+                                </td>
+                                <td class="cell">
+                                    {% if inv.type_of_invoice == 'cash' %} 0.00 {% else %} ({{inv.total | floatformat:2}}) {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %} {% for pay in payments %}
+                            <tr>
+                                <td class="cell">{{pay.date}}</td>
+                                <td class="cell">{{pay.pk | stringformat:"06d"}}</td>
+                                <td class="cell">Payment for Invoice #:{{pay.invoice.pk}}</td>
+                                <td class="cell">0.00</td>
+                                <td class="cell">{{pay.amount | floatformat:2}}</td>
+                                <td class="cell">{{pay.amount | floatformat:2}}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr style="height:100%">
+                                <td class="cell"></td>
+                                <td class="cell"></td>
+                                <td class="cell"></td>
+                                <td class="cell"></td>
+                                <td class="cell"></td>
+                                <td class="cell"></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 1mm solid black;">
+                                <td colspan="5">Remaining Balance:</td>
+                                <td>{{customer.account.balance | floatformat:2}}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+
 
 
 {% endblock %}

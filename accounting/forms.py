@@ -7,6 +7,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 from django.contrib.auth.models import User
+from inventory.models import WareHouse
 
 class ConfigForm(BootstrapMixin, forms.Form):
     start_of_financial_year = forms.DateField()
@@ -72,6 +73,11 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
         exclude="active",
         model = models.Account
 
+class AccountUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude="active", "balance"
+        model = models.Account
+
 
 class LedgerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -86,5 +92,6 @@ class JournalForm(forms.ModelForm, BootstrapMixin):
 
 class NonInvoicedSaleForm(BootstrapMixin,forms.Form):
     date = forms.DateField()
+    sold_from = forms.ModelChoiceField(WareHouse.objects.all())
     #items = forms.MultipleChoiceField(widget=forms.MultipleHiddenInput)
     comments = forms.CharField(widget=forms.Textarea)

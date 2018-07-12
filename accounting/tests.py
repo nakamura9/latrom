@@ -249,6 +249,7 @@ class ViewTests(TestCase):
             data={
                 'date': TODAY,
                 'comments': 'Test Comments',
+                'sold_from': self.warehouse.pk,
                 'items[]': urllib.quote(
                     json.dumps({
                         'code': self.item.pk,

@@ -10,9 +10,9 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 
 class ConfigForm(forms.Form):
-    business_name = forms.CharField()
-    business_address = forms.CharField(widget=forms.Textarea)
-    contact_details = forms.CharField(widget=forms.Textarea)
+    business_name = forms.CharField(required=False)
+    business_address = forms.CharField(widget=forms.Textarea, required=False)
+    contact_details = forms.CharField(widget=forms.Textarea, required=False)
     currency = forms.ChoiceField(choices=[("$", "Dollars")])
     '''invoice_account = forms.ModelChoiceField(Account.objects.all())
     invoice_credit_account = forms.ModelChoiceField(Account.objects.all())
@@ -22,7 +22,7 @@ class ConfigForm(forms.Form):
     '''
     logo = forms.FileField(required = False)
     include_billing = forms.BooleanField(required=False)
-    invoice_title = forms.CharField()
+    invoice_title = forms.CharField(required=False)
     include_shipping = forms.BooleanField(required=False)
     include_business_address = forms.BooleanField(required=False)
     include_discount_column = forms.BooleanField(required=False)
@@ -30,9 +30,9 @@ class ConfigForm(forms.Form):
     tax_inclusive = forms.BooleanField(required=False)
     tax_column = forms.BooleanField(required=False)
     invoice_template = forms.ChoiceField(choices=[("1", "Simple"),("2", "Blue"),("3", "Steel"),("4", "Verdant"),("5", "Warm"),])
-    registration_number = forms.CharField()
-    default_terms = forms.CharField()
-    default_invoice_comments = forms.CharField(widget=forms.Textarea)
+    registration_number = forms.CharField(required=False)
+    default_terms = forms.CharField(required=False)
+    default_invoice_comments = forms.CharField(widget=forms.Textarea,required=False)
 
     def __init__(self, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)
@@ -74,7 +74,7 @@ class PaymentUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class InvoiceForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active",
+        exclude = "active", 
         model = models.Invoice
 
 class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):

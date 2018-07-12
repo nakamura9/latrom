@@ -1,8 +1,8 @@
 {% extends "window.html" %} {% block content %}
 {% load static %}
 <div class="jumbotron">
-    <h1 class="display-3">Invoicing Dashboard</h1>
-    <p class="lead">Create invoices, make payments, generate reports</p>
+    <h1 class="display-3">Sales Dashboard</h1>
+    <p class="lead">Create invoices, apply customer payments, generate reports</p>
     
 </div>
 <div class="row">
@@ -11,22 +11,23 @@
     <div class="card-deck">
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Personnel</h4>
+                    <h4 class="card-title">Quotations</h4>
                 </div>
                 <div class="card-body">
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-sales-rep' %}">Add Sales Rep</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">List and Review Sales Reps</a></li>
+                    <ul class="list-group">
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-quote' %}">Create New Quotation</a></li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:quote-list' %}">List Quotations</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Invoicing</h4>
+                    <h4 class="card-title">Invoices</h4>
                 </div>
                 <div class="card-body">
                     <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-invoice' %}">Create New Invoice</a></li>
                     <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoices-list' %}">List Invoices</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-quote' %}">Create New Quotation</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:quote-list' %}">List Quotations</a></li>
+                    
                     
                 </div>
             </div>
@@ -47,13 +48,13 @@
     <div class="card-deck">
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Products</h4>
+                    <h4 class="card-title">Returns</h4>
                 </div>
                 <div class="card-body">
-                    <li class="list-group-item"><a class="card-link" href="{% url 'inventory:item-create' %}">Add Item</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'inventory:item-list' %}">List Items</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:credit-note-create' %}">Create Credit note</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:credit-note-list' %}">Credit note List</a></li>
+                    <ul class="list-group">
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:credit-note-create' %}">Create Credit note</a></li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:credit-note-list' %}">Credit note List</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="card bg-primary text-white">
@@ -77,8 +78,8 @@
                     <li class="list-group-item"><a class="card-link" href="#">Unpaid Accounts Report</a></li>
                     <li class="list-group-item"><a class="card-link" href="#">Sales Rep reports</a></li>
                     <li class="list-group-item"><a class="card-link" href="#">Statement</a></li>
-                    <li class="list-group-item"><a class="card-link" href="#">Inventory Reports</a></li>
-                    <li class="list-group-item"><a class="card-link" href="#">Invoice Reports</a></li> -->
+                    <li class="list-group-item"><a class="card-link" href="#">Inventory Reports</a></li>-->
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoice-aging' %}">Invoice Aging Report</a></li>
                 </div>
     </div>
     </div>

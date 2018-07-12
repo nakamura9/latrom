@@ -33,4 +33,10 @@ urlpatterns = [
     url(r'^receive-from-order/(?P<pk>[\w]+)/?$', views.create_stock_receipt_from_order, name="receive-from-order"),
     url(r'^goods-received/(?P<pk>[\w]+)/?$', views.GoodsReceivedVoucherView.as_view(), name="goods-received"),
     url(r'^config/?$', views.ConfigView.as_view(), name="config"),
+    url(r'^warehouse-create/$', views.WareHouseCreateView.as_view(), name='warehouse-create'),
+    url(r'^warehouse-update/(?P<pk>[\w]+)/?$', views.WareHouseUpdateView.as_view(), name='warehouse-update'),
+    url(r'^warehouse-list/$', views.WareHouseListView.as_view(), name='warehouse-list'),
+    url(r'^warehouse-detail/(?P<pk>[\w]+)/?$', views.WareHouseDetailView.as_view(), name='warehouse-detail'),
+    url(r'^warehouse-delete/(?P<pk>[\w]+)/?$', views.WareHouseDeleteView.as_view(), name='warehouse-delete'),
+
 ] + item_router.urls + order_router.urls + order_item_router.urls

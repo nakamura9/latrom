@@ -80,7 +80,6 @@ class Item(models.Model):
     description = models.TextField(blank=True, default="")
     supplier = models.ForeignKey("inventory.Supplier", blank=True, null=True)
     image = models.FileField(blank=True, null=True, upload_to=settings.MEDIA_ROOT)
-    quantity = models.FloatField(blank=True, default=0)
     minimum_order_level = models.IntegerField( default=0)
     maximum_stock_level = models.IntegerField(default=0)
     category = models.ForeignKey('inventory.Category', blank=True, null=True)
@@ -91,6 +90,11 @@ class Item(models.Model):
     def __str__(self):
         return str(self.code) + " - " + self.item_name
 
+    @property
+    def quantity(self):
+        #returns quantity from all warehouses
+        items = WareHouseItem.objects.filter(item=self)
+        return reduce(lambda x, y: x + y, [i.quantity for i in items], 0)
     
     @property
     def unit_sales_price(self):
@@ -128,6 +132,7 @@ class Item(models.Model):
         if older_items.count() > 0:
             previous_price = older_items.latest('order__issue_date').order_price
         else:
+            #uses the oldest available price. not implemented here
             previous_price = self.unit_purchase_price
          
         # get the ordered items from the last 30 days.
@@ -142,10 +147,9 @@ class Item(models.Model):
             [i.received for i in ordered_in_last_month], 0)
         
         #get the value of items ordered in the last month
-        total_ordered_value = 0
-        for i in ordered_in_last_month:
-            total_ordered_value += i.received_total
-
+        total_ordered_value = reduce(lambda x,y: x + y,
+            [i.received_total for i in ordered_in_last_month], 0)
+        
         #get the number of sold items in the last 30 days
         sold_in_last_month = InvoiceItem.objects.filter(
             Q(item=self)
@@ -157,10 +161,9 @@ class Item(models.Model):
             [i.quantity for i in sold_in_last_month], 0)
 
         #get the value of the items sold in the last month
-        total_sold_value = 0
-        for i in sold_in_last_month:
-            total_ordered_value += i.quantity * i.price
-
+        total_sold_value = reduce(lambda x, y: x + y, 
+            [i.total_without_discount for i in sold_in_last_month], 0)
+        
         #determine the quantity of inventory before the valuation period
         initial_quantity = self.quantity + ordered_quantity - sold_quantity
         
@@ -212,16 +215,6 @@ class Item(models.Model):
         items = InvoiceItem.objects.filter(item=self)
         total_sales = reduce(lambda x,y: x + y, [item.quantity * item.price for item in items], 0)
         return total_sales
-    
-    def increment(self, amount):
-        self.quantity += float(amount)
-        self.save()
-        return self.quantity
-
-    def decrement(self, amount):
-        self.quantity -= float(amount)
-        self.save()
-        return self.quantity
     
     def delete(self):
         self.active = False
@@ -288,7 +281,7 @@ class Order(models.Model):
     deferred_date = models.DateField(blank=True, null=True)
     supplier = models.ForeignKey('inventory.supplier', blank=True, null=True)
     bill_to = models.CharField(max_length=128, blank=True, default="")
-    ship_to = models.CharField(max_length=128, blank=True, default="")
+    ship_to = models.ForeignKey('inventory.WareHouse')
     tracking_number = models.CharField(max_length=64, blank=True, default="")
     notes = models.TextField(blank=True, default="")
     status = models.CharField(max_length=16, choices=[
@@ -398,8 +391,19 @@ class OrderItem(models.Model):
         return True
 
     def receive(self, n):
-        self.received += float(n)
-        self.item.quantity += float(n)
+        n= float(n)
+        self.received += n
+        
+        if not self.order.ship_to.has_item(self.item):
+            #item does not yet exist
+            wh_item = WareHouseItem.objects.create(item=self.item,
+                quantity = n,
+                warehouse=self.order.ship_to)
+        else:
+            wh_item = WareHouseItem.objects.get(warehouse=self.order.ship_to, 
+            item= self.item)
+            wh_item.increment(n)
+
         self.item.unit_purchase_price = self.order_price
         self.item.save()
         self.save()
@@ -452,7 +456,9 @@ class StockReceipt(models.Model):
     create_entry - method only called for instances where inventory 
     is paid for on receipt as per order terms.
     '''
-    order = models.ForeignKey('inventory.Order', null=True)# might make one to one
+    order = models.ForeignKey('inventory.Order', null=True)
+    #received_by = models.ForeignKey('employees.Employee', 
+    #    null=True, limit_choices_to=Q(user__isnull=False))
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)
@@ -480,3 +486,75 @@ class StockReceipt(models.Model):
             Account.objects.get(pk=1000)#checking account
         )
         
+
+class WareHouse(models.Model):
+    name = models.CharField(max_length=128)
+    address = models.TextField()
+    
+    @property
+    def all_items(self):
+        return self.warehouseitem_set.all()
+
+    def decrement_item(self, item, quantity):
+        #safety checks handled elsewhere
+        #created to avoid circular imports in invoices
+        self.get_item(item).decrement(quantity)
+
+
+    def has_item(self, item):
+        return(
+            WareHouseItem.objects.filter(item=item, warehouse=self).count() > 0
+        ) 
+            
+    
+    def get_item(self, item):
+        if self.has_item(item):
+            return WareHouseItem.objects.get(item=item, warehouse=self)
+        else:
+             return None
+    
+    def add_item(self, item, quantity):
+        #check if record of item is already in warehouse
+        if self.has_item(item):
+            self.get_item().increment(quantity)
+        else:
+            self.warehouseitem_set.create(item=item, quantity=quantity)
+
+    def transfer(self, other, item, quantity):
+        #transfer stock from current warehouse to other warehouse
+        
+        if not other.has_item(item):
+            raise Exception('The destination warehouse does not stock this item')
+        elif not self.has_item(item):
+            raise Exception('The source warehouse does not stock this item')
+
+        else:
+            other.get_item(item).increment(quantity)
+            self.get_item(item).decrement(quantity)
+            # for successful transfers, record the transfer cost some way
+
+    def __str__(self):
+        return self.name
+
+class WareHouseItem(models.Model):
+    item = models.ForeignKey('inventory.Item')
+    quantity = models.FloatField()
+    warehouse = models.ForeignKey('inventory.Warehouse', null=True)
+
+    def increment(self, amt):
+        amount = float(amt)
+        if self.quantity + amount > self.item.maximum_stock_level:
+            raise Exception('Stock level will exceed maximum allowed')
+        self.quantity += amount
+        self.save()
+        return self.quantity
+
+    def decrement(self, amt):
+        amount = float(amt)
+        if self.quantity < amount:
+            raise ValueError('Cannot have a quantity less than zero')
+        self.quantity -= amount
+        self.save()
+        # check if min stock level is exceeded
+        return self.quantity
+

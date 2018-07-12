@@ -55,6 +55,7 @@ def create_test_invoicing_models(cls):
         customer=cls.customer,
         date_issued= TODAY,
         due_date = TODAY,
+        ship_from = cls.warehouse,
         comments = "TEst Comment",
         terms ="test terms",
         tax = cls.tax,
@@ -66,6 +67,7 @@ def create_test_invoicing_models(cls):
         customer=cls.customer,
         date_issued= TODAY,
         due_date = TODAY,
+        ship_from = cls.warehouse,
         comments = "TEst Comment",
         terms ="test terms",
         tax = cls.tax,
@@ -210,7 +212,6 @@ class ModelTests(TestCase):
         self.invoice.update_inventory()
         self.assertEqual(
             self.invoice.invoiceitem_set.first().item.quantity, 0)
-        self.invoice.invoiceitem_set.first().item.increment(10)
         
     def test_invoice_item_total_wout_discount(self):
         self.assertEqual(int(self.invoice_item.total_without_discount), 100)
@@ -310,6 +311,7 @@ class ViewTests(TestCase):
             'tax' : cls.tax.pk,
             'salesperson' : cls.salesrep.pk,
             'account' : cls.account_c.pk,
+            'ship_from': cls.warehouse.pk,
             'terms': 'some test terms',
             'items[]': urllib.quote(json.dumps({
                 'quantity': '10',
@@ -573,7 +575,6 @@ class ViewTests(TestCase):
     def test_post_invoice_form(self):
         sales = Account.objects.get(pk=4000)
         prev_sales = sales.balance
-        print prev_sales
         resp = self.client.post(reverse('invoicing:create-invoice'),
         data=self.INVOICE_DATA)
         self.assertEqual(resp.status_code, 302)

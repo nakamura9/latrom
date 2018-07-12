@@ -1,0 +1,52 @@
+{% extends "window.html" %} {% load static %} {% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">{{title}}</h1>
+        <hr>
+        <p>Constrain the parameters of the report to be generated</p>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            {% block other %}{% endblock %}
+        </div>
+        <div class="col-sm-6">
+            <div class="card ">
+                <div class="card-body">
+                    <!-- The trick is making the form method GET-->
+                    <form method="GET" action="{{action}}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table class="table">
+                            {{form.as_p}}
+                        </table>
+                        <button class="btn btn-default pull-right" type="submit">View Report</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    $(document).ready(function(){
+        {% for modal in modals %}
+        $('#{{modal.link}}_form').ajaxForm(
+            function(){
+                alert('created successfully');
+            }
+        );
+    {% endfor %}
+    });
+</script>
+{% endblock %}

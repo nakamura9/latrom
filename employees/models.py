@@ -242,6 +242,10 @@ class Payslip(models.Model):
         return self.employee.pay_grade.overtime_two_rate * self.overtime_two_hours
 
     @property
+    def overtime_pay(self):
+        return self.overtime_one_pay + self.overtime_two_pay
+    
+    @property
     def PAYE(self):
         upper_limits = [0, 300, 1500, 3000, 5000, 10000, 15000, 20000]
         rates = {

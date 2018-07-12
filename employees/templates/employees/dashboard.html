@@ -9,85 +9,101 @@
 
 <div class="container">
     <div class="row">
-        <div class="card-deck">
-            <div class="card bg-primary text-white">
-                <div class="card-header">
-                    <h4 class="card-title">Payroll Elements</h4>
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Payroll Elements</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item ">
+                                <a href="{% url 'employees:create-deduction' %}">Add Deduction</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:create-allowance' %}">Add Allowance</a>
+                            </li>
+                            <li class="list-group-item disabled">
+                                <a href="{% url 'employees:create-commission' %}">Add Commission</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:create-pay-grade' %}">Add Pay Grade</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item ">
-                            <a href="{% url 'employees:create-deduction' %}">Add Deduction</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:create-allowance' %}">Add Allowance</a>
-                        </li>
-                        <li class="list-group-item disabled">
-                            <a href="{% url 'employees:create-commission' %}">Add Commission</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:create-pay-grade' %}">Add Pay Grade</a>
-                        </li>
-                    </ul>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Employees</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:create-employee' %}">
+                                    Add Employee
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:list-employees' %}">
+                                    List and Manage Employees
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:list-pay-grades' %}">List Pay Grades</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:list-pay-slips' %}">View Pay Slips</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Reports</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="">Employee Attendance</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="">Payroll Tax Report</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="card bg-primary text-white">
-                <div class="card-header">
-                    <h4 class="card-title">Employees</h4>
+            <hr class="my-2">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                            <h4 class="card-title">Employee Roles</h4>
+                    </div>
+                    
+                    <div class="card-body">
+                        
+                        <ul class="list-group">
+                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-sales-rep' %}">Add Sales Rep</a></li>
+                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">List and Review Sales Reps</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:create-employee' %}">
-                                Add Employee
-                            </a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:list-employees' %}">
-                                List and Manage Employees
-                            </a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:list-pay-grades' %}">List Pay Grades</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:list-pay-slips' %}">View Pay Slips</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card bg-primary text-white">
-                <div class="card-header">
-                    <h4 class="card-title">Reports</h4>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <a href="">Employee Attendance</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="">Payroll Tax Report</a>
-                        </li>
-                    </ul>
+
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Configuration</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:util-list' %}">Settings</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="card-deck">
-            <div class="card bg-primary text-white" style="width:100%">
-                <div class="card-header">
-                    <h4 class="card-title">Configuration</h4>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <a href="{% url 'employees:util-list' %}">Settings</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+
     </div>
     <div class="row">
         <div id="payroll-table"></div>

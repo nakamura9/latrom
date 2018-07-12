@@ -18,7 +18,13 @@
     <tbody>
         <tr>
             <td colspan="2" id="title">
-                <h1>{{invoice_title}}</h1>
+                <h1>
+                    {% if invoice_title == "" %}
+                        Invoice
+                    {% else %}
+                    {{invoice_title}}
+                    {% endif %}
+                </h1>
             </td>
         </tr>
         <tr>

@@ -6,6 +6,7 @@ from common_data.forms import BootstrapMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
+from django.contrib.auth import authenticate
 
 #models ommitted UnitOfMeasure OrderItem Category
 VALUATION_OPTIONS = [
@@ -31,8 +32,7 @@ class ItemForm(forms.ModelForm, BootstrapMixin):
                 Tab('Description', 
                     'item_name',
                     'description',),
-                Tab('Stock Info', 
-                    'quantity', 
+                Tab('Stock Info',
                     'minimum_order_level',
                     'maximum_stock_level',
                     'supplier'),
@@ -52,7 +52,7 @@ class ItemForm(forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
-        fields = '__all__'
+        exclude = 'quantity',
         model = models.Item
 
         
@@ -118,10 +118,21 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         
         
 class StockReceiptForm(forms.ModelForm, BootstrapMixin):
+    #password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         exclude = 'fully_received',
         model= models.StockReceipt
-        
+
+    '''
+    def clean(self):
+        super(StockReceiptForm, self).clean()
+        username = self.cleaned_data['received_by'].username
+        password = self.cleaned_data['password']
+        user = authenticate(username=username, 
+            password=password)
+        if not user:
+            raise forms.ValidationError('Failed to authenticate stock receipt')
+    ''' 
 
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -131,10 +142,15 @@ class UnitForm(forms.ModelForm, BootstrapMixin):
 
 class QuickItemForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields =  ['item_name', 'direct_price', 'pricing_method','unit_purchase_price', 'quantity', 'unit']
+        fields =  ['item_name', 'direct_price', 'pricing_method','unit_purchase_price', 'unit']
         model = models.Item
 
 class CategoryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Category
+        
+class WareHouseForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = '__all__'
+        model = models.WareHouse

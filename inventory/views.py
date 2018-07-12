@@ -20,6 +20,7 @@ import serializers
 import filters
 from common_data.utilities import ExtraContext,load_config, apply_style, Modal
 
+CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
 class InventoryHome(LoginRequiredMixin, ExtraContext, FilterView):
     extra_context = {
@@ -50,7 +51,7 @@ class ItemUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     form_class = forms.ItemUpdateForm
     model = models.Item
     success_url = reverse_lazy('inventory:home')
-    template_name = os.path.join("common_data", "create_template.html")
+    template_name = CREATE_TEMPLATE
     extra_context = {"title": "Update Existing Item"}
 
 class ItemDetailView(LoginRequiredMixin, DetailView):
@@ -321,3 +322,48 @@ def create_stock_receipt_from_order(request, pk):
     order = get_object_or_404(models.Order, pk=pk)
     order.receive()
     return HttpResponseRedirect(reverse_lazy('inventory:home'))
+
+#######################################################
+#               WareHouse Views                       #
+#######################################################
+
+
+class WareHouseCreateView(ExtraContext, CreateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.WareHouseForm
+    success_url = reverse_lazy('inventory:warehouse-list')
+    extra_context = {
+        'title': 'Create New Warehouse Location'
+    }
+
+class WareHouseUpdateView(ExtraContext, UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.WareHouse
+    form_class = forms.WareHouseForm
+    success_url = reverse_lazy('inventory:warehouse-list')
+    extra_context = {
+        'title': 'Update Warehouse Location Details'
+    }
+
+class WareHouseDetailView( DetailView):
+    template_name = os.path.join('inventory', 'warehouse_detail.html')
+    model = models.WareHouse
+
+class WareHouseListView(ExtraContext, ListView):
+    template_name = os.path.join('inventory', 'warehouse_list.html')
+    model = models.WareHouse
+    paginate_by = 10
+    extra_context = {
+        'new_link': reverse_lazy('inventory:warehouse-create'),
+        'title': 'List of Inventory WareHouse Locations'
+    }
+
+
+class WareHouseDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = models.WareHouse
+    success_url = reverse_lazy('inventory:warehouse-list')
+    # create a template for disposing of or transferring stored inventory
+##########################################################
+#                                                        #
+##########################################################

@@ -104,7 +104,7 @@ class AccountCreateView(LoginRequiredMixin, ExtraContext, CreateView):
 class AccountUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
-    form_class = forms.AccountForm
+    form_class = forms.AccountUpdateForm
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {"title": "Update Existing Account"}
 
@@ -136,7 +136,7 @@ class TaxUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     form_class = forms.TaxForm
     model= models.Tax
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
+    success_url = reverse_lazy('employees:util-list')
     extra_context = {
         'title': 'Editing Existing Tax'
     }
@@ -144,14 +144,14 @@ class TaxUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
 class TaxCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.TaxForm
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('accounting:util-list')
+    success_url = reverse_lazy('employees:util-list')
     extra_context = {
         'title': 'Add Taxes For Invoices'
     }
 
 class TaxDeleteView(LoginRequiredMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('accounting:util-list')
+    success_url = reverse_lazy('employees:util-list')
     model = models.Tax
 
 class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
@@ -234,7 +234,10 @@ class NonInvoicedCashSale(LoginRequiredMixin, FormView):
                 quantity = float(data['quantity'])
                 item = Item.objects.get(pk=data['code'])
                 #update inventory
-                item.decrement(quantity)
+                warehouse =form.cleaned_data['sold_from']
+                if warehouse.has_item(item):
+                    warehouse.decrement_item(item, quantity)
+                
                 amount_sold = item.unit_sales_price * decimal.Decimal(quantity) 
                 discount = amount_sold * decimal.Decimal(float(data['discount']) / 100.0)
                 total += amount_sold - discount

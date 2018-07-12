@@ -1,0 +1,74 @@
+{% extends "common_data/printable_page.html" %} {% block page_contents %}
+
+<table class="table" style="width:100%">
+    <tbody>
+        <tr>
+            <td style="width:50%">
+                <img src="/media/logo/{{logo}}" alt="Logo" width='300' height='200'>
+            </td>
+            <td>
+                <h2>{{business_name}}</h2>
+                <hr class="my-2">
+                <p>{{business_address | linebreaks }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <center>
+                    <h1>Invoice Aging Report</h1>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Number of customers</th>
+                            <td>{{customers.count}}</td>
+                        </tr>
+                        <tr>
+                            <th>Number of Invoices</th>
+                            <td>{{invoice_count}}</td>
+                        </tr>
+                        <tr>
+                            <th>Number of outstanding invoices</th>
+                            <td>{{outstanding_invoices}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th colspan="6" style="text-align:center">Invoice Age</th>
+                        </tr>
+                        <tr>
+                                <th></th>
+                                <th>Current</th>
+                                <th>0-7 Days</th>
+                                <th>8-14 Days</th>
+                                <th>15-30 Days</th>
+                                <th>31- 60 Days</th>
+                                <th>61+ Days</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in customers %}
+                            <td>{{c}}</td>
+                            {% for count in c.age_list %}
+                                <td>{{count}}</td>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock page_contents %}

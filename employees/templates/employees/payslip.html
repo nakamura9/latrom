@@ -96,11 +96,15 @@
                                     <td>{{object.employee.pay_grade.monthly_salary}}</td>
                                 </tr>
                                 <tr>
-                                    <th>Hourly Income</th>
-                                    <td>{{object.employee.pay_grade.monthly_salary}}</td>
+                                    <th>Normal Hourly Income</th>
+                                    <td>{{object.normal_pay}}</td>
                                 </tr>
+                                <tr>
+                                        <th>Overtime Hourly Income</th>
+                                        <td>{{object.overtime_pay}}</td>
+                                    </tr>
                                 <tr style="border-bottom: 2px solid black;">
-                                    <th>Total Allowances(breakdown below)</th>
+                                    <th>Total Benefits(breakdown below)</th>
                                     <td>{{object.employee.pay_grade.total_allowances}}</td>
                                 </tr>
                                 {% for a in object.employee.pay_grade.allowances.all %}

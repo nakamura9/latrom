@@ -1,0 +1,54 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">WareHouse Details</h1>
+    <p class="lead">Information regarding the ware house building and the inventory stored there.</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:order-create' %}" role="button">Order new stock</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Warehouse Details</h4>
+                    <p class="card-text"><b>Name:</b> {{object.name}}</p>
+                    <p class="card-text"><b>Location:</b> <br>
+                        {{object.address | linebreaks}} </p>
+                    <p class="card-text"># of Items: {{object.all_items.count}} </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Items</h3>
+            <hr class="my-2">
+            <table class="table table-striped">
+                <thead>
+                    <tr class="bg-primary text-white">
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Min Order level</th>
+                        <th>Max Inventory quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in object.all_items %}
+                        <tr>
+                            <td>{{i.item}}</td>
+                            <td>{{i.quantity}}</td>
+                            <td>{{i.item.minimum_order_level}}</td>
+                            <td>{{i.item.maximum_stock_level}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

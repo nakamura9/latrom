@@ -41,7 +41,7 @@ export default class PayrollTable extends Component{
         for( i in data){
             console.log(data[i].employee)
             $.ajax({
-                url: '/accounting/api/payslip/',
+                url: '/employees/api/payslip/',
                 method: 'POST',
                 data: {
                     'csrfmiddlewaretoken': token,
@@ -61,7 +61,7 @@ export default class PayrollTable extends Component{
                 
             });
         }
-        window.location.replace('/accounting/list-pay-slips');
+        window.location.replace('/employees/list-pay-slips');
         
     }
     render(){
@@ -120,7 +120,7 @@ class PayrollEntryRow extends Component{
     componentDidMount(){
         //get list of employees
         $.ajax({
-            'url': '/accounting/api/employee/',
+            'url': '/employees/api/employee/',
             'method': 'GET'
         }).then(res => {
             console.log(res);

@@ -29,6 +29,17 @@ quote_item_router = DefaultRouter()
 quote_item_router.register(r'api/quote', views.QuoteItemAPIViewSet, base_name='quote-api')
 
 
+report_urls = [
+    url(r'^customer-statement-form/?$', 
+        report_views.CustomerReportFormView.as_view(),
+             name='customer-statement-form'),
+    url(r'^customer-statement/?$', report_views.CustomerStatement.as_view(),
+             name='customer-statement'),
+    url(r'^invoice-aging/?$', report_views.InvoiceAgingReport.as_view(),
+             name='invoice-aging'),
+]
+
+
 urlpatterns = [
     url(r'^$', views.Home.as_view(), name="home"),
     url(r'^config/?$', views.ConfigView.as_view(), name="config"),
@@ -61,12 +72,8 @@ urlpatterns = [
     url(r'^invoice-from-quote/(?P<pk>[\w]+)$', views.create_invoice_from_quote, name='invoice-from-quote'),
     url(r'^credit-note-create/?$', views.CreditNoteCreateView.as_view(), name='credit-note-create'),
     url(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), name='credit-note-list'),
-    url(r'^customer-statement-form/?$', report_views.CustomerStatementReportFormView.as_view(), 
-        name='customer-statement-form'),
-    url(r'^customer-statement/?$', 
-        report_views.CustomerStatementReport.as_view(), name='customer-statement'),
     url(r'^credit-note-detail/(?P<pk>[\w]+)/?$', views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
     
 ] +  customer_router.urls + invoice_router.urls + \
     payment_router.urls + sales_rep_router.urls +  invoice_item_router.urls + \
-    quote_router.urls + quote_item_router.urls
+    quote_router.urls + quote_item_router.urls + report_urls
