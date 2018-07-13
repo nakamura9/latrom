@@ -1,7 +1,7 @@
 
 from django import forms
 from common_data.utilities import load_config
-from common_data.forms import BootstrapMixin
+from common_data.forms import BootstrapMixin, PeriodReportForm
 from accounting.models import Account, Journal
 import models
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
@@ -121,17 +121,5 @@ class CreditNoteForm( forms.ModelForm, BootstrapMixin):
 # payment summary
 # sales by item 
 
-period_choices = ['------','Last Month', 'Last Quarter', 'Last 6 Months', 'Last Year']
-PERIOD_CHOICES = [(period_choices.index(i), i) for i in period_choices]
-class CustomerStatementReportForm(BootstrapMixin, forms.Form):
+class CustomerStatementReportForm(PeriodReportForm):
     customer = forms.ModelChoiceField(models.Customer.objects.all())
-    default_periods = forms.ChoiceField(choices=PERIOD_CHOICES)
-    start_period = forms.DateField(required=False)
-    end_period = forms.DateField(required=False)
-
-    #custom validator
-
-class PeriodReportForm(BootstrapMixin, forms.Form):
-    default_periods = forms.ChoiceField(choices=PERIOD_CHOICES)
-    start_period = forms.DateField(required=False)
-    end_period = forms.DateField(required=False)

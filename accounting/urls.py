@@ -1,5 +1,6 @@
 from django.conf.urls import url
 import views
+import report_views
 from rest_framework import routers
 
 tax_router = routers.DefaultRouter()
@@ -10,6 +11,12 @@ account_router.register(r'^api/account', views.AccountViewSet)
 
 assets = views.AssetViewGroup()
 expenses = views.ExpenseViewGroup()
+
+report_urls = [
+    url(r'^balance-sheet/?$', report_views.BalanceSheet.as_view(), name='balance-sheet'),
+    url(r'^income-statement/?$', report_views.IncomeStatement.as_view(), name='income-statement'),
+    url(r'^income-statement-form/?$', report_views.IncomeStatementFormView.as_view(), name='income-statement-form')
+]
 
 entry_urls = [
     url(r'^create-entry/?$', views.JournalEntryCreateView.as_view(), 
@@ -55,4 +62,5 @@ journal_urls = [
 urlpatterns =[
     url(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls +  misc_urls + account_urls  + journal_urls + \
-    entry_urls  + account_router.urls + assets.urls + expenses.urls
+    entry_urls  + account_router.urls + assets.urls + expenses.urls +\
+    report_urls

@@ -6,7 +6,7 @@ from django.views.generic import TemplateView, DetailView
 from django.urls import reverse_lazy
 from django.db.models import Q
 
-from common_data.utilities import ExtraContext, load_config
+from common_data.utilities import ExtraContext, load_config, extract_period
 import models 
 import forms
 
@@ -27,21 +27,7 @@ class CustomerStatement(TemplateView):
         customer = models.Customer.objects.get(
             pk=kwargs['customer'])
         
-        n = kwargs['default_periods']
-        if n != '0':
-            deltas = {
-                '1': 30,
-                '2': 90,
-                '3': 180
-            }
-            end = datetime.date.today()
-            start = end - datetime.timedelta(
-                days=deltas[n])
-        else:
-            start = datetime.datetime.strptime(
-                kwargs['start_period'], "%m/%d/%Y")
-            end = datetime.datetime.strptime(
-                kwargs['end_period'], "%m/%d/%Y")
+        start, end = extract_period(kwargs)
         
         invoices = models.Invoice.objects.filter(
             Q(customer=customer) & Q(date_issued__gte=start)
@@ -60,7 +46,7 @@ class CustomerStatement(TemplateView):
             'payments': payments
         })
         context.update(load_config())
-        return 
+        return context
         
 
 class InvoiceAgingReport(TemplateView):

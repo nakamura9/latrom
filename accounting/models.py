@@ -165,8 +165,9 @@ BALANCE_SHEET_CATEGORIES = [
         ('current-assets', 'Current Assets'),
         ('long-term-assets', 'Long Term Assets'),
         ('current-liabilites', 'Current Liabilites'),
+        ('long-term-liabilites', 'Long Term Liabilites'),
         ('expense', 'Expense'),
-        ('current-assets', 'Current Assets'),\
+        ('current-assets', 'Current Assets'),
         ("not-included", "Not Included")
     ]
 class Account(models.Model):

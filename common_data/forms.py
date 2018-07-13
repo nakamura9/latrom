@@ -14,4 +14,11 @@ class BootstrapMixin(forms.Form):
             if isinstance(field.widget, forms.widgets.DateInput):
                 field.widget.attrs['class'] += " ui-date-picker"
             
+period_choices = ['------','Last Month', 'Last Quarter', 'Last 6 Months', 'Last Year']
+PERIOD_CHOICES = [(period_choices.index(i), i) for i in period_choices]
 
+
+class PeriodReportForm(BootstrapMixin, forms.Form):
+    default_periods = forms.ChoiceField(choices=PERIOD_CHOICES)
+    start_period = forms.DateField(required=False)
+    end_period = forms.DateField(required=False)

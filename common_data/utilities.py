@@ -4,6 +4,7 @@ from latrom import settings
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.conf.urls import url
+import datetime
 
 class ModelViewGroup(object):
     model = None
@@ -130,5 +131,21 @@ extra_context = {
         self.form = form
 
     
-class ModelTestTools(object):
-    pass
+def extract_period(kwargs):
+    n = kwargs['default_periods']
+    if n != '0':
+        deltas = {
+                '1': 30,
+                '2': 90,
+                '3': 180
+            }
+        end = datetime.date.today()
+        start = end - datetime.timedelta(
+                days=deltas[n])
+    else:
+        start = datetime.datetime.strptime(
+            kwargs['start_period'], "%m/%d/%Y")
+        end = datetime.datetime.strptime(
+            kwargs['end_period'], "%m/%d/%Y")
+
+    return (start, end)

@@ -1,0 +1,66 @@
+{% extends "common_data/printable_page.html" %} {% block page_contents %}
+
+<table class="table" style="width:100%">
+    <tbody>
+        <tr>
+            <td style="width:50%">
+                <img src="/media/logo/{{logo}}" alt="Logo" width='300' height='200'>
+            </td>
+            <td>
+                <h2>{{business_name}}</h2>
+                <hr class="my-2">
+                <p>{{business_address | linebreaks }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <center>
+                    <h1>Income Statement</h1>
+                    <h4>Period Spanning {{start}} - {{end}}</h4>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Revenues</th>
+                        </tr>
+                        <tr>
+                            <td>Net Sales</td>
+                            <td>{{net_sales | floatformat:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>Interest Income</td>
+                            <td>{{interest_income | floatformat:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>Total Revenue:</td>
+                            <td>{{total_revenue | floatformat:2}}</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Expenses</th>
+                        </tr>
+                        {% for e in expenses %}
+                        <tr>
+                            {% for i in e %}
+                            <td>{{i}}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Total Expenses</td>
+                            <td>{{total_expenses}}</td>
+                        </tr>
+                        <tr>
+                            <td>Net Income</td>
+                            <td>{{net_income | floatformat:2}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock page_contents %}
