@@ -65,6 +65,7 @@ class Allowance(models.Model):
     name = models.CharField(max_length = 32)
     amount = models.FloatField()
     active = models.BooleanField(default=True)
+    taxable = models.BooleanField(default=True)
     def __str__(self):
         return self.name
     
@@ -172,6 +173,10 @@ class PayGrade(models.Model):
         return self.name
 
     @property
+    def tax_free_benefits(self):
+        return reduce((lambda x, y: x + y), [a.amount for a in self.allowances.filter(taxable=False)], 0)
+
+    @property
     def total_allowances(self):
         return reduce((lambda x, y: x + y), [a.amount for a in self.allowances.all()], 0)
 
@@ -259,13 +264,14 @@ class Payslip(models.Model):
         }
         count = 0
         for limit in upper_limits:
-            if self.gross_pay >= limit:
+            if self.taxable_gross_pay >= limit:
                 count += 1 
             else:
                 bracket = (upper_limits[count -1], limit)
                 break
     
-        return ((self.gross_pay * rates[bracket][0])/100) - rates[bracket][1]
+        return ((self.taxable_gross_pay * rates[bracket][0])/100) - \
+            rates[bracket][1]
 
     @property
     def gross_pay(self):
@@ -276,6 +282,11 @@ class Payslip(models.Model):
         gross += self.employee.pay_grade.total_allowances
         gross += self.commission_pay
         return gross
+
+    @property 
+    def taxable_gross_pay(self):
+        return self.gross_pay - self.employee.pay_grade.tax_free_benefits
+
 
     @property
     def _deductions(self):

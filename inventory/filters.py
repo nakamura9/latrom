@@ -10,7 +10,6 @@ class ItemFilter(django_filters.FilterSet):
         model = Item
         fields = {
             'item_name': ['icontains'],
-            'code': ['icontains'],
             'unit': ['exact'],
             'supplier': ['exact'],
             'category': ['exact'],

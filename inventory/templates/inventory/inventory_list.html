@@ -18,10 +18,10 @@
                 </li>
                 <li class="list-group-item">
                     <a href="{% url 'inventory:warehouse-list' %}">WareHouse List</a>
-                </li><!--
+                </li>
                 <li class="list-group-item">
-                    <a href="">Item Stock Level Report</a>
-                </li>-->
+                    <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -39,10 +39,10 @@
                 </li>
                 <li class="list-group-item">
                     <a href="{% url 'inventory:stock-receipt-create' %}">Receive order</a>
-                </li><!--
+                </li>
                 <li class="list-group-item">
-                    <a href="">Order status Report</a>
-                </li>-->
+                    <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
+                </li>
             </ul>
         </div>
     </div>

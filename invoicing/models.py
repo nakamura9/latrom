@@ -134,6 +134,7 @@ class Invoice(models.Model):
     customer = models.ForeignKey("invoicing.Customer", null=True)
     date_issued = models.DateField( default=timezone.now)
     due_date = models.DateField( default=timezone.now)
+    date_paid = models.DateField(default=timezone.now)
     ship_from = models.ForeignKey('inventory.WareHouse', null=True)
     terms = models.CharField(max_length = 128, blank=True, null=True, 
         default=get_default_terms)

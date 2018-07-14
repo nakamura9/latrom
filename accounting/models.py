@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 import datetime
-import decimal
+from decimal import Decimal as D
 
 from django.db import models
 from django.db.models import Q
@@ -85,6 +85,8 @@ class JournalEntry(models.Model):
     date = models.DateField(default=datetime.date.today)
     memo = models.TextField()
     journal = models.ForeignKey('accounting.Journal')
+    posted_to_general_ledger = models.BooleanField(default=False)
+    adjusted = models.BooleanField(default=False)
 
     @property
     def total_debits(self):
@@ -170,7 +172,8 @@ BALANCE_SHEET_CATEGORIES = [
         ('current-assets', 'Current Assets'),
         ("not-included", "Not Included")
     ]
-class Account(models.Model):
+
+class AbstractAccount(models.Model):
     '''
     The representation of the record of all financial expenditures and receipts
     associated with a particular purpose.
@@ -192,17 +195,17 @@ class Account(models.Model):
     balance_sheet_category = models.CharField(max_length=16, 
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
     active = models.BooleanField(default=True)
-
+    
     def __str__(self):
         return str(self.pk) + "-" + self.name
 
     def increment(self, amount):
-        self.balance += decimal.Decimal(amount)
+        self.balance += D(amount)
         self.save()
         return self.balance
 
     def decrement(self, amount):
-        self.balance -= decimal.Decimal(amount)
+        self.balance -= D(amount)
         self.save()
         return self.balance
 
@@ -216,7 +219,26 @@ class Account(models.Model):
         debits = list(self.debit_set.all())
         credits = list(self.credit_set.all())
         return sorted(debits + credits)
+
+    class Meta:
+        abstract = True
+
+class Account(AbstractAccount):
     
+    def convert_to_interest_bearing_account(self):
+        # create an instance of InterestBearingAccount 
+        # and delete this account
+        pass
+    
+
+class InterestBearingAccount(AbstractAccount):
+    interest_rate = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    interest_interval = models.IntegerField(choices = [(0, 'monthly'), (1, 'annually')], default=1)
+    interest_method = models.IntegerField(choices = [(0, 'Simple'), 
+        (1, 'Commpound')], default=0)
+
+    def convert_to_current_account(self):
+        '''remove the interest related features of the account'''
 
 class Ledger(models.Model):
     '''
@@ -334,7 +356,8 @@ expense_choices = ['Advertising', 'Bank Service Charges', 'Equipment Rental',
         'Postage', 'Other']
 EXPENSE_CHOICES = [(expense_choices.index(i), i) for i in expense_choices]
 
-class Expense(models.Model):
+
+class AbstractExpense(models.Model):
     '''A representation of the costs incurred by an organization 
     in an effort to generate revenue.
     Related information about the cost category, date amounts and 
@@ -347,7 +370,11 @@ class Expense(models.Model):
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', null=True)
     debit_account = models.ForeignKey('accounting.Account')
-    
+
+    class Meta:
+        abstract = True
+
+class Expense(AbstractExpense):
     def create_entry(self):
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
@@ -367,3 +394,17 @@ class Expense(models.Model):
         if flag is None:
             self.create_entry()
 
+
+EXPENSE_CYCLE_CHOICES = [(1, 'Daily'), (7, 'Weekly'), (14, 'Bi- Monthly'), 
+    (30, 'Monthly'), (90, 'Quarterly'), (182, 'Bi-Annually'), (365, 'Annually')]
+
+class RecurringExpense(AbstractExpense):
+    recurring = models.BooleanField(default=False)
+    cycle = models.IntegerField(choices=EXPENSE_CYCLE_CHOICES, null=True)
+    expiration_date = models.DateField(null=True)
+    start_date = models.DateField(null=True)
+    last_created_date = models.DateField(null=True)
+
+    @property
+    def is_current(self):
+        return datetime.date.today() < self.expiration_date

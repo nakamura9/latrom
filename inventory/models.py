@@ -280,6 +280,7 @@ class Order(models.Model):
         (2, 'Pay on Receipt') ], default=0)
     deferred_date = models.DateField(blank=True, null=True)
     supplier = models.ForeignKey('inventory.supplier', blank=True, null=True)
+    supplier_invoice_number = models.CharField(max_length=32, blank=True, default="")
     bill_to = models.CharField(max_length=128, blank=True, default="")
     ship_to = models.ForeignKey('inventory.WareHouse')
     tracking_number = models.CharField(max_length=64, blank=True, default="")
@@ -321,7 +322,7 @@ class Order(models.Model):
         for item in items:
             if item.fully_received == True : 
                 received += 1
-        return (float(received) / float(n_items)) * 100
+        return (float(received) / float(n_items)) * 100.0
 
     def create_deffered_entry(self):
         j = JournalEntry.objects.create(
