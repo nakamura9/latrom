@@ -1,0 +1,50 @@
+{% extends "window.html" %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Payroll Tax</h1>
+    <p class="lead">Details for Payroll Tax Object</p>
+    <hr class="my-2">
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'employees:update-payroll-tax' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="card-columns">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Paid By: {{object.paid_by}}</p>
+                </div>
+            </div>
+            <div class="card bg-primary text-white" style="width:100%">
+                <div class="card-body">
+                    <h4 class="card-title">Tax Table</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Lower Limit</th>
+                                <th>Upper Limit</th>
+                                <th>Rate</th>
+                                <th>Deduction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in object.list_brackets %}
+                            <tr>
+                                <td>{{b.lower_boundary}}</td>
+                                <td>{{b.upper_boundary}}</td>
+                                <td>{{b.rate}}</td>
+                                <td>{{b.deduction}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

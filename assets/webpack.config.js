@@ -13,6 +13,7 @@ module.exports = {
         compound_transaction: './js/compound_transaction',
         stock_receipt: './js/stock_receipt',
         credit_note: './js/credit_note',
+        tax_brackets: './js/tax_brackets',
     },
     output: {
         path: path.resolve('./bundles/'),

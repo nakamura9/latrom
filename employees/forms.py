@@ -117,3 +117,9 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
             self.instance.user = self.created_user
             self.instance.save()
         return obj
+
+class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.PayrollTax
+        fields = '__all__'
+        

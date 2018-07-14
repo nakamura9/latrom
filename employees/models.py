@@ -168,6 +168,7 @@ class PayGrade(models.Model):
     commission = models.ForeignKey('employees.CommissionRule', null=True, blank=True)
     allowances = models.ManyToManyField('employees.Allowance', blank=True)
     deductions = models.ManyToManyField('employees.Deduction', blank=True)
+    payroll_taxes = models.ManyToManyField('employees.PayrollTax', blank=True)
 
     def __str__(self):
         return self.name
@@ -301,3 +302,45 @@ class Payslip(models.Model):
     @property
     def net_pay(self):
         return self.gross_pay - self.total_deductions
+
+
+class PayrollTax(models.Model):
+    name = models.CharField(max_length=64)
+    paid_by = models.IntegerField(choices=[(0, 'Employees'), (1, 'Employer')])
+
+    @property
+    def paid_by_string(self):
+        return ['Employees', 'Employer'][self.paid_by]
+
+
+    def __str__(self):
+        return self.name 
+        
+    def add_bracket(self, lower, upper, rate, deduction):
+        #insert code to prevent overlap
+        TaxBracket.objects.create(payroll_tax=self,
+            lower_boundary=lower, 
+            upper_boundary=upper,
+            rate=rate,
+            deduction=deduction)
+
+    def delete_bracket(self, bracket_id):
+        TaxBracket.objects.get(pk=bracket_id).delete()
+
+    def update_bracket(self, bracket_id, lower, upper, rate, deduction):
+        tb = TaxBracket.objects.get(pk=bracket_id)
+        tb.lower = lower
+        tb.upper = upper
+        tb.rate = rate
+        tb.deduction = deduction
+        tb.save()
+
+    def list_brackets(self):
+        return TaxBracket.objects.filter(payroll_tax =self).order_by('upper_boundary')
+
+class TaxBracket(models.Model):
+    payroll_tax = models.ForeignKey('employees.PayrollTax', null=True)
+    lower_boundary = models.DecimalField(max_digits=9, decimal_places=2)
+    upper_boundary = models.DecimalField(max_digits=9, decimal_places=2)
+    rate = models.DecimalField(max_digits=5, decimal_places=2)
+    deduction = models.DecimalField(max_digits=9, decimal_places=2)

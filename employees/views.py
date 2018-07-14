@@ -108,7 +108,7 @@ class UtilsListView(LoginRequiredMixin, TemplateView):
         context['allowances'] = models.Allowance.objects.filter(active=True).order_by('name')
         context['deductions'] = models.Deduction.objects.filter(active=True).order_by('name')
         context['commissions'] = models.CommissionRule.objects.filter(active=True).order_by('name')
-        context['taxes'] = Tax.objects.all().order_by('name')
+        context['taxes'] = models.PayrollTax.objects.all().order_by('name')
         return context
 
 
@@ -245,3 +245,43 @@ class PayGradeListView(LoginRequiredMixin, ExtraContext, FilterView):
     }
     model = models.PayGrade
 
+
+#####################################################
+#                   Payroll Tax Forms               #
+#####################################################
+
+class PayrollTaxCreateView(LoginRequiredMixin, CreateView):
+    template_name = os.path.join('employees','payroll_tax.html')
+    form_class = forms.PayrollTaxForm
+    success_url = reverse_lazy('employees:dashboard')
+    
+
+    def post(self, request):
+        resp = super(PayrollTaxCreateView, self).post(request)
+        brackets = json.loads(urllib.unquote(request.POST['brackets']))
+        payroll_tax = models.PayrollTax.objects.latest('pk')
+
+        for b in brackets:
+            payroll_tax.add_bracket(b['lower_limit'], b['upper_limit'],
+                b['rate'], b['deduction'])
+
+        return resp
+
+class PayrollTaxUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+    template_name = os.path.join('common_data','create_template.html')
+    form_class = forms.PayrollTaxForm
+    success_url = reverse_lazy('employees:dashboard')
+    model = models.PayrollTax
+    extra_context = {
+        'title': 'Update Payroll Tax Object'
+    }
+
+class PayrollTaxDetailView(DetailView):
+    template_name = os.path.join('employees', 'payroll_tax_detail.html')
+    model = models.PayrollTax
+
+
+class PayrollTaxDeleteView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = models.PayrollTax
+    success_url = reverse_lazy('employees:dashboard')

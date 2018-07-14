@@ -239,6 +239,7 @@ class InterestBearingAccount(AbstractAccount):
 
     def convert_to_current_account(self):
         '''remove the interest related features of the account'''
+        pass
 
 class Ledger(models.Model):
     '''
@@ -363,18 +364,19 @@ class AbstractExpense(models.Model):
     Related information about the cost category, date amounts and 
     whether or not the expense can be billed to customers is also 
     recorded. Creates a journal entry when intialized.'''
-    date = models.DateField()
     description = models.TextField()
     category = models.IntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
-    billable = models.BooleanField(default=False)
-    customer = models.ForeignKey('invoicing.Customer', null=True)
     debit_account = models.ForeignKey('accounting.Account')
 
     class Meta:
         abstract = True
 
 class Expense(AbstractExpense):
+    date = models.DateField()
+    billable = models.BooleanField(default=False)
+    customer = models.ForeignKey('invoicing.Customer', null=True)
+    
     def create_entry(self):
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
@@ -399,7 +401,6 @@ EXPENSE_CYCLE_CHOICES = [(1, 'Daily'), (7, 'Weekly'), (14, 'Bi- Monthly'),
     (30, 'Monthly'), (90, 'Quarterly'), (182, 'Bi-Annually'), (365, 'Annually')]
 
 class RecurringExpense(AbstractExpense):
-    recurring = models.BooleanField(default=False)
     cycle = models.IntegerField(choices=EXPENSE_CYCLE_CHOICES, null=True)
     expiration_date = models.DateField(null=True)
     start_date = models.DateField(null=True)
@@ -408,3 +409,14 @@ class RecurringExpense(AbstractExpense):
     @property
     def is_current(self):
         return datetime.date.today() < self.expiration_date
+
+    def create_entry(self):
+        j = JournalEntry.objects.create(
+            reference = "Expense. ID: " + str(self.pk),
+            date = datetime.date.today,
+            memo =  "Recurrent Expense recorded. Category: %s." % self.category,
+            journal = Journal.objects.get(pk=2)# cash disbursements
+        )
+        j.simple_entry(self.amount, 
+        Account.objects.get(name=expense_choices[self.category]), 
+        self.debit_account)
