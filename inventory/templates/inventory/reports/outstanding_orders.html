@@ -1,0 +1,53 @@
+{% extends "common_data/printable_page.html" %} {% block page_contents %}
+
+<table class="table" style="width:100%">
+    <tbody>
+        <tr>
+            <td style="width:50%">
+                <img src="/media/logo/{{logo}}" alt="Logo" width='300' height='200'>
+            </td>
+            <td>
+                <h2>{{business_name}}</h2>
+                <hr class="my-2">
+                <p>{{business_address | linebreaks }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <center>
+                    <h1>Outstanding Orders Report</h1>
+                    <h4>As of {{ date }}</h4>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Supplier</th>
+                            <th>Order Number</th>
+                            <th>Order Value</th>
+                            <th>Expected Receipt Date</th>
+                            <th>Percentage Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {% for order in orders %}
+                            {% if not order.fully_received %}
+                            <tr>
+                                <td>{{order.supplier}}</td>
+                                <td>{{order.pk | stringformat:"06d"}}</td>
+                                <td>{{order.total}}</td>
+                                <td>{{order.expected_receipt_date}}</td>
+                                <td>{{order.percent_received}}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
