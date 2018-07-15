@@ -138,10 +138,7 @@
                                 <tr>
                                     <th colspan=2>Deductions</th>
                                 </tr>
-                                <tr>
-                                    <th>PAYE</th>
-                                    <td>{{object.income_tax}}</td>
-                                </tr>
+                                
                                 <tr style="border-bottom: 2px solid black;">
                                     <th>Total Deductions(breakdown below)</th>
                                     <td>{{object.employee.pay_grade.total_deductions}}</td>
@@ -150,6 +147,15 @@
                                 <tr>
                                     <th>{{d.name}}</th>
                                     <td>{{d.amount}}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="2">Payroll Taxes</th>
+                                </tr>
+                                {% for tax in object.calculated_payroll_taxes_list %}
+                                <tr>
+                                    <td>{{tax.name}}</td>
+                                    <td>{{tax.amount}}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>

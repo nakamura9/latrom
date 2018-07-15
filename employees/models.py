@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
-import decimal
+from decimal import Decimal as D
 
 
 from django.db import models
@@ -194,8 +194,7 @@ class Payslip(models.Model):
     normal_pay - returns the income earned on the hourly rate of normal pay
     overtime_one_pay - returns total money earned in the first bracket of overtime
     overtime_two_pay - returns the total money earned in the second bracket of overtime
-    PAYE - returns the amount of PAYE earned based on gross earnings and where
-        these fall in the pay bracket structure at  ZIMRA
+    
     gross_pay - returns the sum total of all the money earned from basic salaries,
         allowances and hourly pay
     _deductions - returns the sum of the money deducted from the Deduct objects as 
@@ -244,35 +243,19 @@ class Payslip(models.Model):
         return self.employee.pay_grade.overtime_rate * self.overtime_one_hours
 
     @property
+    def calculated_payroll_taxes_list(self):
+        return [{
+            'name': tax.name,
+            'amount': tax.tax(self.taxable_gross_pay)} \
+                for tax in self.employee.pay_grade.payroll_taxes.all()]
+
+    @property
     def overtime_two_pay(self):
         return self.employee.pay_grade.overtime_two_rate * self.overtime_two_hours
 
     @property
     def overtime_pay(self):
         return self.overtime_one_pay + self.overtime_two_pay
-    
-    @property
-    def PAYE(self):
-        upper_limits = [0, 300, 1500, 3000, 5000, 10000, 15000, 20000]
-        rates = {
-            (0,300) : (0, 0),
-            (300,1500) : (20, 60),
-            (1500,3000) : (25, 135),
-            (3000,5000) : (30, 285),
-            (5000,10000) : (35, 535),
-            (10000,15000) : (40, 1035),
-            (15000,20000) : (45, 1785),
-        }
-        count = 0
-        for limit in upper_limits:
-            if self.taxable_gross_pay >= limit:
-                count += 1 
-            else:
-                bracket = (upper_limits[count -1], limit)
-                break
-    
-        return ((self.taxable_gross_pay * rates[bracket][0])/100) - \
-            rates[bracket][1]
 
     @property
     def gross_pay(self):
@@ -296,8 +279,14 @@ class Payslip(models.Model):
                 for d in self.employee.pay_grade.deductions.all()], 0)
 
     @property
+    def total_payroll_taxes(self):
+        return reduce(lambda x, y: x + y, 
+            [t.tax(self.gross_pay) \
+                for t in self.employee.pay_grade.payroll_taxes.all()], 0)
+
+    @property
     def total_deductions(self):
-        return self.PAYE + self._deductions
+        return self.total_payroll_taxes + self._deductions
 
     @property
     def net_pay(self):
@@ -311,6 +300,20 @@ class PayrollTax(models.Model):
     @property
     def paid_by_string(self):
         return ['Employees', 'Employer'][self.paid_by]
+
+    def tax(self, gross):
+        bracket = self.get_bracket(gross)
+        if bracket:
+            return (D(gross) * (bracket.rate / D(100.0))) - bracket.deduction 
+        return 0
+
+    def get_bracket(self, gross):
+        print gross
+        for bracket in self.taxbracket_set.all():
+            if bracket.lower_boundary <= gross and \
+                    bracket.upper_boundary >= gross:
+                return bracket
+        return None
 
 
     def __str__(self):
