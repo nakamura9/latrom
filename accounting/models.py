@@ -286,7 +286,7 @@ class Asset(models.Model):
     description = models.TextField(blank=True)
     category = models.IntegerField(choices=ASSET_CHOICES)
     initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account')
+    credit_account = models.ForeignKey('accounting.Account')
     depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
@@ -302,9 +302,11 @@ class Asset(models.Model):
             ),
             journal = Journal.objects.get(pk=5)# not ideal general journal
         )
+        #credits decrease assets and debits increase them
+        #both transactions come from assets so it remains balanced
         j.simple_entry(self.initial_value, 
-        Account.objects.get(name=asset_choices[self.category]),#one of the asset accounts
-        self.debit_account)
+        self.credit_account,
+        Account.objects.get(name=asset_choices[self.category]),#one of the asset accounts)
 
     def depreciate(self):
         pass
@@ -346,7 +348,7 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', null=True)
-    debit_account = models.ForeignKey('accounting.Account')
+    #debit_account = models.ForeignKey('accounting.Account')
     
     def create_entry(self):
         j = JournalEntry.objects.create(
@@ -355,11 +357,12 @@ class Expense(models.Model):
             memo =  "Expense recorded. Category: %s." % self.category,
             journal = Journal.objects.get(pk=2)# cash disbursements
         )
+        #debits increase expenses credits decrease assets so...
         j.simple_entry(self.amount, 
-        Account.objects.get(name=expense_choices[self.category]), 
         self.customer.account \
         if self.billable \
-        else self.debit_account)
+        else Account.objects.get(pk=1000),#cash account
+        Account.objects.get(name=expense_choices[self.category]), )
 
     def save(self, *args, **kwargs):
         flag = self.pk

@@ -217,10 +217,18 @@ class Invoice(models.Model):
                 date=self.date_issued,
                 journal =Journal.objects.get(pk=1)#Sales Journal
             )
-            j.credit(self.total, Account.objects.get(pk=4009))#inventory
-            j.debit(self.subtotal, Account.objects.get(pk=4000))#sales
+            #where does 
+            #credit the average of inventory value 
+            # credit sales account debit cash account
+            j.simple_entry(self.total,
+                Account.objects.get(pk=4000),#sales credit
+                Account.objects.get(pk=1000)#cash debit
+                )
+            '''   
+            j.credit(self.total, Account.objects.get(pk=1004))#inventory
+            j.debit(self.subtotal, Account.objects.get(pk=1000))#cash
             j.debit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
-
+            '''
             return j
         else:
             j = JournalEntry.objects.create(
@@ -229,9 +237,15 @@ class Invoice(models.Model):
                 date=self.date_issued,
                 journal =Journal.objects.get(pk=3)#Sales Journal
             )
-            j.credit(self.total, Account.objects.get(pk=4009))#inventory
-            j.debit(self.total, self.customer.account)#sales
+            j.simple_entry(self.total,
+                Account.objects.get(pk=4000), #credit sales
+                self.customer.account#debit the customer
+            )
             
+            '''
+            j.credit(self.total, Account.objects.get(pk=1004))#inventory
+            j.debit(self.total, self.customer.account)#sales
+            '''
             return j
 
     def update_inventory(self):

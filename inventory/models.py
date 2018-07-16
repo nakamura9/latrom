@@ -332,9 +332,10 @@ class Order(models.Model):
                 )
         j.simple_entry(
                     self.total,
-                    Account.objects.get(pk=2000), #accounts payable
                     self.supplier.account, # since we owe the supplier
+                    Account.objects.get(pk=4006),#purchases 
                 )
+
     def create_immediate_entry(self):
         j = JournalEntry.objects.create(
                 date = self.issue_date,
@@ -344,7 +345,7 @@ class Order(models.Model):
             )
         j.simple_entry(
                 self.total,
-                Account.objects.get(pk=1004),#inventory
+                Account.objects.get(pk=1000),#cash
                 Account.objects.get(pk=4006),#purchases account
             )
 
@@ -482,8 +483,8 @@ class StockReceipt(models.Model):
         new_total = self.order.received_total - decimal.Decimal(self.order.received_to_date)
         j.simple_entry(
             new_total,
+            Account.objects.get(pk=1000),#checking account
             Account.objects.get(pk=1004),#inventory
-            Account.objects.get(pk=1000)#checking account
         )
         
 
