@@ -13,6 +13,8 @@ class ConfigForm(forms.Form):
     business_name = forms.CharField(required=False)
     business_address = forms.CharField(widget=forms.Textarea, required=False)
     contact_details = forms.CharField(widget=forms.Textarea, required=False)
+    global_price_multiplier = forms.FloatField(required=False)
+    auto_adjust_prices = forms.BooleanField(required =False)
     currency = forms.ChoiceField(choices=[("$", "Dollars")])
     '''invoice_account = forms.ModelChoiceField(Account.objects.all())
     invoice_credit_account = forms.ModelChoiceField(Account.objects.all())

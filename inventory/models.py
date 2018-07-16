@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
-import decimal
+from decimal import Decimal as D
 import rest_framework
 
 from django.db import models
@@ -99,12 +99,19 @@ class Item(models.Model):
     @property
     def unit_sales_price(self):
         if self.pricing_method == 0:
-            return self.direct_price
+            price = self.direct_price 
         elif self.pricing_method == 1:
-            return decimal.Decimal(self.unit_purchase_price / (1 - self.margin))
+            price = D(self.unit_purchase_price / (1 - self.margin))
         else:
-            return decimal.Decimal(self.unit_purchase_price * (1 + self.markup))
-    
+            price = D(self.unit_purchase_price * (1 + self.markup))
+        config = load_config()
+        
+        if config.get('auto_adjust_prices', False):
+            multiplier = config.get('global_price_multiplier', 0)
+            return price + (price * D(multiplier))
+        else:
+            return price
+
     @property
     def stock_value(self):
         '''all calculations are based on the last 30 days
@@ -168,12 +175,12 @@ class Item(models.Model):
         initial_quantity = self.quantity + ordered_quantity - sold_quantity
         
         # get the value of the items before the valuation period
-        initial_value = decimal.Decimal(initial_quantity) * previous_price
+        initial_value = D(initial_quantity) * previous_price
         total_value = 0
         
         #if no valuation system is being used
         if not config.get('inventory_valuation', None):
-            return self.unit_sales_price * decimal.Decimal(self.quantity)
+            return self.unit_sales_price * D(self.quantity)
         else:
             if config['inventory_valuation'] == 'averaging':
                 total_value += initial_value
@@ -197,7 +204,7 @@ class Item(models.Model):
                 if index == 0:
                     total_value += initial_value - total_sold_value
                     total_value += total_ordered_value
-                    average_value = total_value / decimal.Decimal(ordered_quantity + (initial_quantity - sold_quantity))
+                    average_value = total_value / D(ordered_quantity + (initial_quantity - sold_quantity))
                     return average_value
                 else:
                     remaining_orders = ordered_in_last_month_ordered[index:]
@@ -208,7 +215,7 @@ class Item(models.Model):
                         [i.received for i in remaining_orders], 0)
 
             else:
-                return self.unit_sales_price * decimal.Decimal(self.quantity)
+                return self.unit_sales_price * D(self.quantity)
 
     @property
     def sales_to_date(self):
@@ -422,11 +429,11 @@ class OrderItem(models.Model):
         
     @property
     def received_total(self):
-        return decimal.Decimal(self.received)  * self.order_price
+        return D(self.received)  * self.order_price
 
     @property
     def subtotal(self):
-        return decimal.Decimal(self.quantity) * self.order_price
+        return D(self.quantity) * self.order_price
 
 class UnitOfMeasure(models.Model):
     '''Simple class for representing units of inventory.'''
@@ -480,7 +487,7 @@ class StockReceipt(models.Model):
             date =self.receive_date,
             journal = Journal.objects.get(pk=2)
         )
-        new_total = self.order.received_total - decimal.Decimal(self.order.received_to_date)
+        new_total = self.order.received_total - D(self.order.received_to_date)
         j.simple_entry(
             new_total,
             Account.objects.get(pk=1000),#checking account
