@@ -1,7 +1,6 @@
 db.sqlite3
 *.pyc
 /assets/node_modules/
-/assets/bundles/
 .coverage
 htmlcov/
 env/
