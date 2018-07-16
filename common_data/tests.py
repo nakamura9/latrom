@@ -48,7 +48,7 @@ def create_account_models(cls):
         description='Test description',
         category = 0,
         initial_value = 100,
-        debit_account = cls.account_d,
+        credit_account = cls.account_d,
         depreciation_period = 5,
         init_date = TODAY,
         depreciation_method = 0,
@@ -60,5 +60,4 @@ def create_account_models(cls):
         category=0,
         amount=100,
         billable=False,
-        debit_account=cls.account_d,
     )

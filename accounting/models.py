@@ -306,7 +306,7 @@ class Asset(models.Model):
         #both transactions come from assets so it remains balanced
         j.simple_entry(self.initial_value, 
         self.credit_account,
-        Account.objects.get(name=asset_choices[self.category]),#one of the asset accounts)
+        Account.objects.get(name=asset_choices[self.category]))#one of the asset accounts
 
     def depreciate(self):
         pass
@@ -348,7 +348,6 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', null=True)
-    #debit_account = models.ForeignKey('accounting.Account')
     
     def create_entry(self):
         j = JournalEntry.objects.create(
@@ -363,6 +362,7 @@ class Expense(models.Model):
         if self.billable \
         else Account.objects.get(pk=1000),#cash account
         Account.objects.get(name=expense_choices[self.category]), )
+        print 'entry'
 
     def save(self, *args, **kwargs):
         flag = self.pk
