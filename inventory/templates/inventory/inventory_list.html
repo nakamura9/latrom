@@ -23,10 +23,16 @@
                     <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{% url 'inventory:inventory-check-form' %}">
-                        Perform Inventory Check
-                    </a>
-                </li>
+                        <a href="{% url 'inventory:inventory-check-list' %}">
+                            Review and Create Inventory Checks
+                        </a>
+                    </li>
+                    
+                <li class="list-group-item">
+                        <a href="{% url 'inventory:create-transfer-order' %}">
+                           Transfer Inventory between warehouses
+                        </a>
+                    </li>
             </ul>
         </div>
     </div>

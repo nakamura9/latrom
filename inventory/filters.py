@@ -34,3 +34,23 @@ class SupplierFilter(django_filters.FilterSet):
             'name': ['icontains'],
             'contact_person': ['icontains']
         }
+
+
+class InventoryCheckFilter(django_filters.FilterSet):
+    class Meta:
+        model = InventoryCheck
+        fields = {
+            'date': ['exact'],
+            'warehouse': ['exact'],
+            'adjusted_by': ['exact']
+        }
+
+
+class TransferOrderFilter(django_filters.FilterSet):
+    class Meta:
+        model = TransferOrder
+        fields = {
+            'issue_date': ['exact'],
+            'source_warehouse': ['exact'],
+            'receiving_warehouse': ['exact']
+        }

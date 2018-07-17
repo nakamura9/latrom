@@ -30,3 +30,8 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
+
+class StockAdjustmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockAdjustment
+        fields = "__all__"

@@ -1,0 +1,78 @@
+{% extends "window.html" %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Inventory Check Summary</h1>
+    <p class="lead">Review Results of Inventory Check</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Warehouse</th>
+                                <td>{{object.warehouse}}</td>
+                            </tr>
+                            <tr>
+                                <th>Date Performed</th>
+                                <td>{{object.date}}</td>
+                            </tr>
+                            <tr>
+                                <th>Next Check Date</th>
+                                <td>{{object.next_adjustment_date}}</td>
+                            </tr>
+                            <tr>
+                                <th>Inventory Supervisor</th>
+                                <td>{{object.adjusted_by}}</td>
+                            </tr>
+                            <tr>
+                                <th># of Products stored</th>
+                                <td>{{object.warehouse.product_count}}</td>
+                            </tr>
+                            <tr>
+                                <th># of Adjustments</th>
+                                <td>{{object.adjustments.count}}</td>
+                            </tr>
+                            <tr>
+                                <th>Value of Adjustments</th>
+                                <td>{{object.value_of_all_adjustments}}</td>
+                            </tr>
+                            <tr>
+                                <th>Comments</th>
+                                <td>{{object.comments}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <table class="table">
+                <thead>
+                    <tr class="bg-primary">
+                        <th>Item</th>
+                        <th>Recorded Quantity</th>
+                        <th>Actual Quantity</th>
+                        <th>Difference</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sa in object.adjustments %}
+                    <tr>
+                        <td>{{sa.warehouse_item.item.item_name}}</td>
+                        <td>{{sa.prev_quantity}}</td>
+                        <td>{{sa.warehouse_item.quantity}}</td>
+                        <td>{{sa.adjustment}}</td>
+                        <td>{{sa.note}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

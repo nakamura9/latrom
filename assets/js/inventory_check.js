@@ -14,15 +14,16 @@ class InventoryChecker extends Component {
     }
 
     componentDidMount(){
-        document.getElementById("id_warehouse").addEventListener('change', this.setWareHouse.bind(this));
-    }
-
-    setWareHouse(evt){
+        let url = window.location.href;
+        let url_elements = url.split('/');
+        console.log(url_elements);
+        let warehouse = url_elements[url_elements.length - 1]
         this.setState({
-            warehouse: evt.target.value,
+            warehouse: warehouse,
         });
+        console.log(warehouse);
         $.ajax({
-            'url': 'api/warehouse-items/'+ this.state.warehouse,
+            'url': '/inventory/api/warehouse-items/'+ warehouse,
             'method': 'GET',
         }).then(res => {
             console.log(res);
@@ -38,8 +39,9 @@ class InventoryChecker extends Component {
             alert('Inventory is finished');
             evt.target.disabled =true;
         }else{
+            this.setState({items: []});
             $.ajax({
-                'url': 'api/warehouse-items/'+ this.state.warehouse,
+                'url': '/inventory/api/warehouse-items/'+ this.state.warehouse,
                 'method': 'GET',
                 data: {
                     page: this.state.nextPage
@@ -70,7 +72,7 @@ class InventoryChecker extends Component {
             <tbody>{
                 this.state.items.length === 0
                 ? <tr>
-                    <td colSpan={4} style={{textAlign:'center'}}><b>Select a warehouse</b></td>
+                    <td colSpan={4} style={{textAlign:'center'}}><b>Select a populated warehouse</b></td>
                   </tr>
                 : this.state.items.map((item, i) => (
                     <WareHouseItem data={item} 
@@ -108,7 +110,22 @@ class WareHouseItem extends Component{
         }
     }
     createAdjustment(){
-        alert('adjustment');
+        let note = prompt('Create Acompanying Note:');
+        let url = window.location.href;
+        let url_elements = url.split('/');
+        $.ajax({
+            'url': '/inventory/api/stock-adjustment/',
+            'method': 'POST',
+            'data': {
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                warehouse_item: this.props.data.id,
+                adjustment: this.props.data.quantity - this.state.value,
+                note: note,
+                inventory_check: url_elements[url_elements.length-2]
+            }
+        }).then(() =>{
+            this.setState({'verified': true});
+        })
     }
 
     render(){
@@ -125,6 +142,7 @@ class WareHouseItem extends Component{
                         onChange={this.updateVal.bind(this)}
                         defaultValue={this.props.data.quantity}/>
                 </td>
+
                 <td>
                     <button className="btn btn-primary" 
                         onClick={this.validate.bind(this)}

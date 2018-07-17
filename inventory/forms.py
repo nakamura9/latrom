@@ -7,6 +7,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 from django.contrib.auth import authenticate
+from employees.models import Employee
 
 #models ommitted UnitOfMeasure OrderItem Category
 VALUATION_OPTIONS = [
@@ -118,21 +119,10 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         
         
 class StockReceiptForm(forms.ModelForm, BootstrapMixin):
-    #password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         exclude = 'fully_received',
         model= models.StockReceipt
 
-    '''
-    def clean(self):
-        super(StockReceiptForm, self).clean()
-        username = self.cleaned_data['received_by'].username
-        password = self.cleaned_data['password']
-        user = authenticate(username=username, 
-            password=password)
-        if not user:
-            raise forms.ValidationError('Failed to authenticate stock receipt')
-    ''' 
 
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -159,3 +149,18 @@ class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.InventoryCheck
+
+class TransferOrderForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['actual_completion_date', 'receive_notes']
+        model = models.TransferOrder
+
+
+class TransferReceiptForm(BootstrapMixin, forms.Form):
+    transfer_order = forms.ModelChoiceField(
+        models.TransferOrder.objects.filter(completed=False))
+    date = forms.DateField()
+    notes = forms.CharField(widget=forms.Textarea)
+    receiving_inventory_controller = forms.ModelChoiceField(
+        Employee.objects.all())
+

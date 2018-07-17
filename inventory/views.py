@@ -14,7 +14,6 @@ from rest_framework.generics import ListAPIView
 from django_filters.views import FilterView
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-
 import forms
 import models
 import serializers
@@ -368,24 +367,26 @@ class WareHouseDeleteView(DeleteView):
 ##########################################################
 #                                                        #
 ##########################################################
-class InventoryCheckCreateView(FormView):
+class InventoryCheckCreateView(CreateView):
     template_name = os.path.join('inventory', 'inventory_check_form.html')
-    form_class = forms.InventoryCheckForm
+    form_class = forms.InventoryCheckForm    
+    
+    def get_success_url(self):
+        return reverse_lazy('inventory:inventory-check', kwargs={
+            'warehouse':self.object.warehouse.pk,
+            'inventory_check':self.object.pk,
+        }) 
 
 class InventoryCheckView(TemplateView):
-    template_name = os.path.join('inventory', 'inventory_check_form.html')
+    template_name = os.path.join('inventory', 'inventory_check.html')
     form_class = forms.InventoryCheckForm
 
-    def get(self):
-        pass
-        
 class WareHouseItemListAPIView(ListAPIView):
     serializer_class = serializers.WareHouseItemSerializer
     pagination_class = WareHousePaginator
     
     def get_queryset(self):
         w_pk = self.kwargs['warehouse']
-        print models.WareHouse.objects.first().pk
         warehouse = get_object_or_404(models.WareHouse, pk=w_pk)
         return models.WareHouseItem.objects.filter(
             warehouse=warehouse)
@@ -394,3 +395,45 @@ class WareHouseItemListAPIView(ListAPIView):
 class WareHouseAPIView(ModelViewSet):
     queryset = models.WareHouse.objects.all()
     serializer_class = serializers.WareHouseSerializer
+
+class StockAdjustmentAPIView(ModelViewSet):
+    queryset = models.StockAdjustment.objects.all()
+    serializer_class = serializers.StockAdjustmentSerializer
+
+
+class InventoryCheckDetailView(DetailView):
+    model = models.InventoryCheck
+    template_name = os.path.join('inventory', 'inventory_check_summary.html')
+
+class InventoryCheckListView(ExtraContext ,FilterView):
+    paginate_by = 10
+    filterset_class = filters.InventoryCheckFilter
+    template_name = os.path.join("inventory", "inventory_check_list.html")
+    extra_context = {"title": "List of Inventory Checks",
+                    "new_link": reverse_lazy("inventory:inventory-check-form")}
+
+    def get_queryset(self):
+        return models.InventoryCheck.objects.all().order_by('date')
+
+#########################################################
+#                   Transfer Order                      #
+#########################################################
+
+class TransferOrderCreateView(CreateView):
+    template_name = os.path.join('inventory', 'transfer_order_create.html')
+    form_class = forms.TransferOrderForm
+    success_url = reverse_lazy('inventory:home')
+
+class TransferOrderListView(FilterView):
+    filterset_class = filters.TransferOrderFilter
+    template_name = os.path.join('inventory', 'transfer_order_list.html')
+
+class TransferOrderDetailView(DetailView):
+    model = models.TransferOrder
+    template_name = os.path.join('inventory', 'transfer_order_detail.html')
+
+
+class TransferOrderReceiveView(FormView):
+    template_name = os.path.join('inventory', 'transfer_order_receive.html')
+    form_class = forms.TransferReceiptForm
+    success_url = reverse_lazy('inventory:home')

@@ -10,17 +10,12 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Inventory Check Form</h4>
-                    {% csrf_token %}
-                    <form action="">
-                        {{form.as_p}}
-                        <button class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
-            </div>
+        {{warehouse}}
+        <div class="col-sm-2">
+            <form action="">
+                
+                {% csrf_token %}
+            </form>
         </div>
         <div class="col-sm-8">
             <h3>Items:</h3>
@@ -29,6 +24,7 @@
                 
             </div>
         </div>
+        <div class="col-sm-2"></div>
     </div>
 </div>
 {% render_bundle "inventory_check" %}

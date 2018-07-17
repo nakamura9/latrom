@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
-import decimal
+from decimal import Decimal as D
 import rest_framework
 
 from django.db import models
@@ -101,9 +101,9 @@ class Item(models.Model):
         if self.pricing_method == 0:
             return self.direct_price
         elif self.pricing_method == 1:
-            return decimal.Decimal(self.unit_purchase_price / (1 - self.margin))
+            return D(self.unit_purchase_price / (1 - self.margin))
         else:
-            return decimal.Decimal(self.unit_purchase_price * (1 + self.markup))
+            return D(self.unit_purchase_price * (1 + self.markup))
     
     @property
     def stock_value(self):
@@ -168,12 +168,12 @@ class Item(models.Model):
         initial_quantity = self.quantity + ordered_quantity - sold_quantity
         
         # get the value of the items before the valuation period
-        initial_value = decimal.Decimal(initial_quantity) * previous_price
+        initial_value = D(initial_quantity) * previous_price
         total_value = 0
         
         #if no valuation system is being used
         if not config.get('inventory_valuation', None):
-            return self.unit_sales_price * decimal.Decimal(self.quantity)
+            return self.unit_sales_price * D(self.quantity)
         else:
             if config['inventory_valuation'] == 'averaging':
                 total_value += initial_value
@@ -197,7 +197,7 @@ class Item(models.Model):
                 if index == 0:
                     total_value += initial_value - total_sold_value
                     total_value += total_ordered_value
-                    average_value = total_value / decimal.Decimal(ordered_quantity + (initial_quantity - sold_quantity))
+                    average_value = total_value / D(ordered_quantity + (initial_quantity - sold_quantity))
                     return average_value
                 else:
                     remaining_orders = ordered_in_last_month_ordered[index:]
@@ -208,7 +208,7 @@ class Item(models.Model):
                         [i.received for i in remaining_orders], 0)
 
             else:
-                return self.unit_sales_price * decimal.Decimal(self.quantity)
+                return self.unit_sales_price * D(self.quantity)
 
     @property
     def sales_to_date(self):
@@ -422,11 +422,11 @@ class OrderItem(models.Model):
         
     @property
     def received_total(self):
-        return decimal.Decimal(self.received)  * self.order_price
+        return D(self.received)  * self.order_price
 
     @property
     def subtotal(self):
-        return decimal.Decimal(self.quantity) * self.order_price
+        return D(self.quantity) * self.order_price
 
 class UnitOfMeasure(models.Model):
     '''Simple class for representing units of inventory.'''
@@ -480,7 +480,7 @@ class StockReceipt(models.Model):
             date =self.receive_date,
             journal = Journal.objects.get(pk=2)
         )
-        new_total = self.order.received_total - decimal.Decimal(self.order.received_to_date)
+        new_total = self.order.received_total - D(self.order.received_to_date)
         j.simple_entry(
             new_total,
             Account.objects.get(pk=1004),#inventory
@@ -492,6 +492,15 @@ class WareHouse(models.Model):
     name = models.CharField(max_length=128)
     address = models.TextField()
     
+    @property
+    def product_count(self):
+        return self.all_items.count
+    
+    @property
+    def item_count(self):
+        return reduce(lambda x, y: x + y, 
+            [i.quantity for i in self.all_items], 0)
+
     @property
     def all_items(self):
         return self.warehouseitem_set.all()
@@ -568,9 +577,55 @@ class InventoryCheck(models.Model):
     adjusted_by = models.ForeignKey('employees.Employee')
     warehouse = models.ForeignKey('inventory.WareHouse')
     comments = models.TextField()
+    
+    @property 
+    def adjustments(self):
+        return self.stockadjustment_set.all()
+
+    @property
+    def value_of_all_adjustments(self):
+        return reduce(lambda x, y: x + y, 
+            [i.adjustment_value for i in self.adjustments], 0)
 
 class StockAdjustment(models.Model):
     warehouse_item = models.ForeignKey('inventory.WareHouseItem')
     adjustment = models.FloatField()
     note = models.TextField()
     inventory_check = models.ForeignKey('inventory.InventoryCheck')
+
+    @property
+    def adjustment_value(self):
+        return D(self.adjustment) * self.warehouse_item.item.unit_purchase_price
+
+    @property
+    def prev_quantity(self):
+        return self.warehouse_item.quantity + self.adjustment
+
+    def adjust_inventory(self):
+        self.warehouse_item.decrement(self.adjustment)
+
+    def save(self, *args, **kwargs):
+        super(StockAdjustment, self).save(*args, **kwargs)
+        self.adjust_inventory()
+
+class TransferOrder(models.Model):
+    issue_date = models.DateField()
+    expected_completion_date = models.DateField()
+    issuing_inventory_controller = models.ForeignKey('employees.Employee',
+        related_name='issuing_inventory_controller')
+    receiving_inventory_controller = models.ForeignKey('employees.Employee', null=True)
+    actual_completion_date =models.DateField(null=True)
+    source_warehouse = models.ForeignKey('inventory.WareHouse',
+        related_name='source_warehouse')
+    receiving_warehouse = models.ForeignKey('inventory.WareHouse')
+    order_issuing_notes = models.TextField(blank=True)
+    receive_notes = models.TextField(blank=True)
+    completed = models.BooleanField(default=False)
+    
+    #link expenses 
+
+
+class TransferOrderLine(models.Model):
+    item = models.ForeignKey('inventory.Item')
+    quantity = models.FloatField()
+    transfer_order = models.ForeignKey('inventory.TransferOrder')
