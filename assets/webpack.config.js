@@ -14,6 +14,7 @@ module.exports = {
         stock_receipt: './js/stock_receipt',
         credit_note: './js/credit_note',
         tax_brackets: './js/tax_brackets',
+        inventory_check: './js/inventory_check',
     },
     output: {
         path: path.resolve('./bundles/'),

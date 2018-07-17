@@ -290,7 +290,7 @@ class Payslip(models.Model):
 
     @property
     def net_pay(self):
-        return self.gross_pay - self.total_deductions
+        return D(self.gross_pay) - self.total_deductions
 
 
 class PayrollTax(models.Model):

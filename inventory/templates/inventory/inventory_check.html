@@ -1,0 +1,35 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Inventory Check</h1>
+    <p class="lead">Verify Inventory in Each Warehouse.</p>
+    <hr class="my-2">
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Inventory Check Form</h4>
+                    {% csrf_token %}
+                    <form action="">
+                        {{form.as_p}}
+                        <button class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Items:</h3>
+            <div id="inventory-checker">
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% render_bundle "inventory_check" %}
+{% endblock content %}

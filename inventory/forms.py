@@ -154,3 +154,8 @@ class WareHouseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = '__all__'
         model = models.WareHouse
+
+class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.InventoryCheck

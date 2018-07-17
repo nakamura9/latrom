@@ -9,6 +9,9 @@ order_router = routers.DefaultRouter()
 order_router.register(r'^api/order', views.OrderAPIView)
 order_item_router = routers.DefaultRouter()
 order_item_router.register(r'^api/order-item', views.OrderItemAPIView)
+warehouse_router = routers.DefaultRouter()
+warehouse_router.register(r'^api/warehouse', views.WareHouseAPIView)
+
 
 report_urls = [
     url(r'^inventory-report/?$', report_views.InventoryReport.as_view(),    
@@ -47,6 +50,9 @@ urlpatterns = [
     url(r'^warehouse-list/$', views.WareHouseListView.as_view(), name='warehouse-list'),
     url(r'^warehouse-detail/(?P<pk>[\w]+)/?$', views.WareHouseDetailView.as_view(), name='warehouse-detail'),
     url(r'^warehouse-delete/(?P<pk>[\w]+)/?$', views.WareHouseDeleteView.as_view(), name='warehouse-delete'),
+    url(r'^inventory-check/?$', views.InventoryCheckView.as_view(), name='inventory-check'),
+    url(r'^inventory-check-form/?$', views.InventoryCheckCreateView.as_view(), name='inventory-check-form'),
+    url(r'^api/warehouse-items/(?P<warehouse>[\d]+)/?$', views.WareHouseItemListAPIView.as_view(), name='warehouse-items')
 
 ] + item_router.urls + order_router.urls + order_item_router.urls + \
-    report_urls
+    report_urls +  warehouse_router.urls

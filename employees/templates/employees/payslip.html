@@ -56,7 +56,7 @@
                 </tr>
                 <tr>
                     <th>Employee Number:</th>
-                    <td>{{object.employee.employee_number}}</td>
+                    <td>{{object.employee.employee_number |stringformat:"06d"}}</td>
                 </tr>
                 <tr>
                     <th>Employee Grade:</th>
@@ -64,11 +64,11 @@
                 </tr>
                 <tr>
                     <th>Earnings YTD:</th>
-                    <td>{{object.employee.earnings_YTD}}</td>
+                    <td>{{object.employee.earnings_YTD | floatformat:2}}</td>
                 </tr>
                 <tr>
                     <th>Deductions YTD:</th>
-                    <td>{{object.employee.deductions_YTD}}</td>
+                    <td>{{object.employee.deductions_YTD | floatformat:2}}</td>
                 </tr>
                 <tr>
                         <th>Leave Days:</th>
@@ -93,35 +93,35 @@
                             <tbody>
                                 <tr>
                                     <th>Basic Salary</th>
-                                    <td>{{object.employee.pay_grade.monthly_salary}}</td>
+                                    <td>{{object.employee.pay_grade.monthly_salary | floatformat:2}}</td>
                                 </tr>
                                 <tr>
                                     <th>Normal Hourly Income</th>
-                                    <td>{{object.normal_pay}}</td>
+                                    <td>{{object.normal_pay | floatformat:2}}</td>
                                 </tr>
                                 <tr>
                                         <th>Overtime Hourly Income</th>
-                                        <td>{{object.overtime_pay}}</td>
+                                        <td>{{object.overtime_pay | floatformat:2}}</td>
                                     </tr>
                                 <tr style="border-bottom: 2px solid black;">
                                     <th>Total Benefits(breakdown below)</th>
-                                    <td>{{object.employee.pay_grade.total_allowances}}</td>
+                                    <td>{{object.employee.pay_grade.total_allowances | floatformat:2}}</td>
                                 </tr>
                                 {% for a in object.employee.pay_grade.allowances.all %}
                                 <tr>
                                     <th>{{a.name}}</th>
-                                    <td>{{a.amount}}</td>
+                                    <td>{{a.amount | floatformat:2}}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
                                     <th>Commission</th>
-                                    <td>{{object.commission_pay}}</td>
+                                    <td>{{object.commission_pay | floatformat:2}}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th>Gross Eearnings:</th>
-                                    <td>{{object.gross_pay}}</td>
+                                    <td>{{object.gross_pay | floatformat:2}}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -141,12 +141,12 @@
                                 
                                 <tr style="border-bottom: 2px solid black;">
                                     <th>Total Deductions(breakdown below)</th>
-                                    <td>{{object.employee.pay_grade.total_deductions}}</td>
+                                    <td>{{object.employee.pay_grade.total_deductions | floatformat:2}}</td>
                                 </tr>
                                 {% for d in object.employee.pay_grade.deductions.all %}
                                 <tr>
                                     <th>{{d.name}}</th>
-                                    <td>{{d.amount}}</td>
+                                    <td>{{d.amount | floatformat:2}}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
@@ -155,7 +155,7 @@
                                 {% for tax in object.calculated_payroll_taxes_list %}
                                 <tr>
                                     <td>{{tax.name}}</td>
-                                    <td>{{tax.amount}}</td>
+                                    <td>{{tax.amount | floatformat:2}}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
@@ -163,7 +163,7 @@
                             <tfoot>
                                 <tr>
                                     <td>Total Deductions</td>
-                                    <td>{{object.total_deductions}}</td>
+                                    <td>{{object.total_deductions | floatformat:2}}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -173,7 +173,7 @@
             <tfoot>
                 <tr style="border:3px solid black;">
                     <th style="padding:10px;">Net Income</th>
-                    <th style="padding:10px;text-align:right;">{{object.net_pay}}</td>
+                    <th style="padding:10px;text-align:right;">{{object.net_pay | floatformat:2}}</td>
                 </tr>
             </tfoot>
         </table>

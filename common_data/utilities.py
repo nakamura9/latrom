@@ -5,6 +5,12 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.conf.urls import url
 import datetime
+from rest_framework.pagination import PageNumberPagination
+
+class WareHousePaginator(PageNumberPagination):
+    page_size = 1
+    max_page_size = 1
+    page_size_query_description = 'page_size'
 
 class ModelViewGroup(object):
     model = None

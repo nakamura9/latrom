@@ -541,6 +541,8 @@ class WareHouseItem(models.Model):
     item = models.ForeignKey('inventory.Item')
     quantity = models.FloatField()
     warehouse = models.ForeignKey('inventory.Warehouse', null=True)
+    verified = models.BooleanField(default=False)
+    #verification expires after the next inventory check date
 
     def increment(self, amt):
         amount = float(amt)
@@ -559,3 +561,16 @@ class WareHouseItem(models.Model):
         # check if min stock level is exceeded
         return self.quantity
 
+#might need to rename
+class InventoryCheck(models.Model):
+    date = models.DateField()
+    next_adjustment_date = models.DateField(null=True)
+    adjusted_by = models.ForeignKey('employees.Employee')
+    warehouse = models.ForeignKey('inventory.WareHouse')
+    comments = models.TextField()
+
+class StockAdjustment(models.Model):
+    warehouse_item = models.ForeignKey('inventory.WareHouseItem')
+    adjustment = models.FloatField()
+    note = models.TextField()
+    inventory_check = models.ForeignKey('inventory.InventoryCheck')
