@@ -315,3 +315,15 @@ class ExpenseViewGroup(ModelViewGroup):
     list_template = os.path.join('accounting', 'expense_list.html')
     delete_template = os.path.join('common_data', 'delete_template.html')
     success_url = "/accounting/"
+
+
+####################################################
+#                  Bookeeper                       #
+####################################################
+
+class BookeeperCreateView(CreateView):
+    pass
+
+class BookkeeperListView(FilterView):
+    pass
+

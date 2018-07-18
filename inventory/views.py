@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django_filters.views import FilterView
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
@@ -22,18 +22,9 @@ from common_data.utilities import *
 
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
-class InventoryHome(LoginRequiredMixin, ExtraContext, FilterView):
-    extra_context = {
-        "title": "Inventory Home",
-        "new_link": reverse_lazy("inventory:item-create")
-        }
-    paginate_by = 10
-    filterset_class = filters.ItemFilter
-    template_name = os.path.join("inventory", "inventory_list.html")
+class InventoryHome(LoginRequiredMixin, TemplateView):
+    template_name = os.path.join("inventory", "dashboard.html")
 
-    def get_queryset(self):
-        return models.Item.objects.all().order_by('pk')
-        
 ################################################
 #              Item views                      #
 ################################################
@@ -381,6 +372,10 @@ class InventoryCheckView(TemplateView):
     template_name = os.path.join('inventory', 'inventory_check.html')
     form_class = forms.InventoryCheckForm
 
+class WareHouseItemAPIView(RetrieveAPIView):
+    serializer_class = serializers.WareHouseItemSerializer
+    queryset = models.WareHouseItem.objects.all()
+    
 class WareHouseItemListAPIView(ListAPIView):
     serializer_class = serializers.WareHouseItemSerializer
     pagination_class = WareHousePaginator
@@ -391,6 +386,14 @@ class WareHouseItemListAPIView(ListAPIView):
         return models.WareHouseItem.objects.filter(
             warehouse=warehouse)
 
+class UnpaginatedWareHouseItemListAPIView(ListAPIView):
+    serializer_class = serializers.WareHouseItemSerializer
+    
+    def get_queryset(self):
+        w_pk = self.kwargs['warehouse']
+        warehouse = get_object_or_404(models.WareHouse, pk=w_pk)
+        return models.WareHouseItem.objects.filter(
+            warehouse=warehouse)
 
 class WareHouseAPIView(ModelViewSet):
     queryset = models.WareHouse.objects.all()
@@ -424,16 +427,59 @@ class TransferOrderCreateView(CreateView):
     form_class = forms.TransferOrderForm
     success_url = reverse_lazy('inventory:home')
 
-class TransferOrderListView(FilterView):
+    def post(self, request, *args, **kwargs):
+        resp = super(TransferOrderCreateView, self).post(
+            request, *args, **kwargs)
+        print request.POST['items']
+        data = json.loads(urllib.unquote(request.POST['items']))
+        items = data['items'] 
+        for i in items:
+            item = models.Item.objects.get(pk=i['item'].split('-')[0])
+            models.TransferOrderLine.objects.create(
+                item = item,
+                quantity = i['quantity'],
+                transfer_order = self.object
+            )
+        return resp
+
+class TransferOrderListView(ExtraContext, FilterView):
     filterset_class = filters.TransferOrderFilter
     template_name = os.path.join('inventory', 'transfer_order_list.html')
+    paginate_by =10
+    extra_context = {
+        'title': 'List of Transfer Orders',
+        'new_link': reverse_lazy('inventory:create-transfer-order')
+    }
 
 class TransferOrderDetailView(DetailView):
     model = models.TransferOrder
     template_name = os.path.join('inventory', 'transfer_order_detail.html')
 
 
-class TransferOrderReceiveView(FormView):
-    template_name = os.path.join('inventory', 'transfer_order_receive.html')
+class TransferOrderReceiveView(ExtraContext, UpdateView):
+    #os.path.join('inventory', 'transfer_order_receive.html')
+    template_name = CREATE_TEMPLATE
     form_class = forms.TransferReceiptForm
+    model = models.TransferOrder
     success_url = reverse_lazy('inventory:home')
+    extra_context = {
+        'title': 'Receive Transfer of Inventory'
+    }
+
+
+    def post(self, request, *args, **kwargs):
+        resp = super(TransferOrderReceiveView, self).post(request, *args, **kwargs)
+
+        self.object.complete()
+        return resp
+
+
+#####################################################
+#               Inventory Controller                #
+#####################################################
+
+class InventoryControllerCreateView(CreateView):
+    pass
+
+class InventoryControllerListView(FilterView):
+    pass

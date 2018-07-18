@@ -57,7 +57,12 @@ urlpatterns = [
     url(r'^inventory-check-list/?$', views.InventoryCheckListView.as_view(), name='inventory-check-list'),
     url(r'^inventory-check-summary/(?P<pk>[\w]+)/?$', views.InventoryCheckDetailView.as_view(), name='inventory-check-summary'),
     url(r'^api/warehouse-items/(?P<warehouse>[\d]+)/?$', views.WareHouseItemListAPIView.as_view(), name='warehouse-items'),
+    url(r'^api/warehouse-item/(?P<pk>[\d]+)/?$', views.WareHouseItemAPIView.as_view(), name='warehouse-item'),
+    url(r'^api/unpaginated-warehouse-items/(?P<warehouse>[\d]+)/?$', views.UnpaginatedWareHouseItemListAPIView.as_view(), name='unpaginated-warehouse-items'),
     url(r'^create-transfer-order/?$', views.TransferOrderCreateView.as_view(), name='create-transfer-order'),
+    url(r'^transfer-order-list/?$', views.TransferOrderListView.as_view(), name='transfer-order-list'),
+    url(r'^transfer-order-detail/(?P<pk>[\d]+)/?$', views.TransferOrderDetailView.as_view(), name='transfer-order-detail'),
+    url(r'^receive-transfer/(?P<pk>[\d]+)/?$', views.TransferOrderReceiveView.as_view(), name='receive-transfer'),
 
 ] + item_router.urls + order_router.urls + order_item_router.urls + \
     report_urls +  warehouse_router.urls + stock_adjustment_router.urls

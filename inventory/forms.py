@@ -152,15 +152,17 @@ class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
 
 class TransferOrderForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = ['actual_completion_date', 'receive_notes']
+        exclude = ['actual_completion_date', 'receive_notes', 'completed']
         model = models.TransferOrder
 
 
-class TransferReceiptForm(BootstrapMixin, forms.Form):
-    transfer_order = forms.ModelChoiceField(
-        models.TransferOrder.objects.filter(completed=False))
-    date = forms.DateField()
-    notes = forms.CharField(widget=forms.Textarea)
-    receiving_inventory_controller = forms.ModelChoiceField(
-        Employee.objects.all())
+class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = ['actual_completion_date', 'receive_notes', 'receiving_inventory_controller']
+        model = models.TransferOrder
 
+
+class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.InventoryController

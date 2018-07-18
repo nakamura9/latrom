@@ -1,0 +1,45 @@
+{% extends "common_data/list_template.html" %}
+{% block list_headings %}
+
+<tr>
+    <th>Date</th>
+    <th>Source</th>
+    <th>Destination</th>
+    <th>Number of Items</th>
+    <th>Actions</th>
+</tr>
+
+{% endblock list_headings %}
+
+
+{% block list_content %}
+
+    {% for t in object_list %}
+        <tr>
+            <td>{{t.issue_date}}</td>
+            <td>{{t.source_warehouse}}</td>
+            <td>{{t.receiving_warehouse}}</td>
+            <td>{{t.trasferorderline_set.all.count}}</td>
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                                Actions
+                            </button>
+                    <div class="dropdown-menu" aria-labelledby="triggerId">
+                        <a class="dropdown-item" href="{% url 'inventory:transfer-order-detail' pk=t.pk %}"> 
+                            Detail
+                        </a>
+                    {% if not t.completed %}
+                    <a class="dropdown-item" href="{% url 'inventory:receive-transfer' pk=t.pk %}">
+                        Complete
+                    </a>
+                    {% endif %}        
+                    </div>
+                </div>
+                
+            </td>
+        </tr>
+    {% endfor %}
+
+{% endblock list_content %}

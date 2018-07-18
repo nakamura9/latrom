@@ -104,3 +104,9 @@ class NonInvoicedSaleForm(BootstrapMixin,forms.Form):
     sold_from = forms.ModelChoiceField(WareHouse.objects.all())
     #items = forms.MultipleChoiceField(widget=forms.MultipleHiddenInput)
     comments = forms.CharField(widget=forms.Textarea)
+
+
+class BookkeeperForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.Bookkeeper

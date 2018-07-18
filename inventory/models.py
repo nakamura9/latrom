@@ -11,6 +11,15 @@ from invoicing.models import Invoice, InvoiceItem
 from accounting.models import JournalEntry, Journal, Account
 from common_data.utilities import load_config
 
+class InventoryController(models.Model):
+    '''Model that represents employees with the role of 
+    inventory controller and have the ability to make purchase orders,
+    receive them, transfer inventory between warehouses and perform other 
+    functions.'''
+    employee = models.ForeignKey('employees.Employee')
+
+
+
 class Supplier(models.Model):
     '''The businesses and individuals that provide the organization with 
     products it will sell. Basic features include contact details address and 
@@ -526,7 +535,7 @@ class WareHouse(models.Model):
     def add_item(self, item, quantity):
         #check if record of item is already in warehouse
         if self.has_item(item):
-            self.get_item().increment(quantity)
+            self.get_item(item).increment(quantity)
         else:
             self.warehouseitem_set.create(item=item, quantity=quantity)
 
@@ -623,7 +632,13 @@ class TransferOrder(models.Model):
     completed = models.BooleanField(default=False)
     
     #link expenses 
-
+    def complete(self):
+        for line in self.transferorderline_set.all():
+            self.source_warehouse.decrement_item(line.item, line.quantity)
+            self.receiving_warehouse.add_item(line.item, line.quantity)
+        print 'called'
+        self.completed = True
+        self.save()
 
 class TransferOrderLine(models.Model):
     item = models.ForeignKey('inventory.Item')

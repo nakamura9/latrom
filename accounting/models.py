@@ -9,6 +9,11 @@ from django.db.models import Q
 from django.utils import timezone
 from common_data.models import Person
 
+class Bookkeeper(models.Model):
+    '''Model that gives employees access to the bookkeeping function of the 
+    software such as order creation and the like.'''
+    employee = models.ForeignKey('employees.Employee') 
+
 class Transaction(models.Model):
     '''
     Transaction

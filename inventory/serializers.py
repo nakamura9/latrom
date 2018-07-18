@@ -13,6 +13,7 @@ class WareHouseItemSerializer(serializers.ModelSerializer):
         model = WareHouseItem
         fields = "__all__"
 
+
 class WareHouseSerializer(serializers.ModelSerializer):
     warehouseitem_set = WareHouseItemSerializer(many=True)
     class Meta:

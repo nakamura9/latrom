@@ -1,0 +1,135 @@
+{% extends "window.html" %} {% block content %}
+<style>
+    .card th {
+        color: white;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Items</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:item-create' %}">Create New Item</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:item-list' %}">Inventory Item List</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:transfer-order-list' %}">
+                                    Inventory Transfer History </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Orders</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:order-create' %}">Create New Purchase Order</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:order-list' %}">List Orders</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:stock-receipt-create' %}">Receive order</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Suppliers</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:supplier-create' %}">Create New Supplier</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:supplier-list'%} ">List Suppliers</a>
+                            </li>
+                            <!--
+                                <li class="list-group-item">
+                                    <a href="">Supplier Reports</a>
+                                </li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Reports</h4>
+                        </div>
+                        <ul class="list-group">
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Warehouse Management</h4>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:warehouse-create' %}">Add Warehouse</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:warehouse-list' %}">WareHouse List</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:inventory-check-list' %}">
+                                    Review and Create Inventory Checks
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Configuration</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:config' %}">Settings</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

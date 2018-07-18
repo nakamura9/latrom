@@ -1,0 +1,86 @@
+{% extends "window.html" %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Transfer Order Details</h1>
+    <p class="lead">Data Associated with inventory movement between warehouses</p>
+    <hr class="my-2">
+
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Issued</th>
+                                <td>{{object.issue_date}}</td>
+                                <tr>
+                                    <th>Expected Completion Date</th>
+                                    <td>{{object.expected_completion_date}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Completed:</th>
+                                    <td>
+                                        {% if object.completed %} Completed on {{object.actual_completion_date}} {% else %} No {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Order Issuing Controller</th>
+                                    <td>{{object.issuing_inventory_controller}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Order Receiving Controller</th>
+                                    <td>{{object.receiving_inventory_controller}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Source Warehouse</th>
+                                    <td>{{object.source_warehouse}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Destination Warehouse</th>
+                                    <td>{{object.receiving_warehouse}}</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2">Notes</th>
+
+                                </tr>
+                                <tr>
+                                    <th>On Ordering</th>
+                                    <td>{{object.order_issuing_notes}}</td>
+                                </tr>
+                                <tr>
+                                    <th>On Receiving</th>
+                                    <td>{{object.receive_notes}}</td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <h3>Items</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr class="bg-primary text-white">
+                        <th>Item</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in object.transferorderline_set.all %}
+                    <tr>
+                        <td>{{line.item.item_name}}</td>
+                        <td>{{line.quantity}}</td>
+                    </tr>
+                    {% endfor  %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
