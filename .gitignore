@@ -5,4 +5,4 @@ db.sqlite3
 htmlcov/
 env/
 media/*.*
-media/logo/
+media/

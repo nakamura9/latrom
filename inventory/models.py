@@ -9,7 +9,9 @@ from django.db.models import Q
 from django.conf import settings
 from invoicing.models import Invoice, InvoiceItem
 from accounting.models import JournalEntry, Journal, Account
-from common_data.utilities import load_config
+from common_data.models import SingletonModel
+
+
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
@@ -51,7 +53,6 @@ class Supplier(models.Model):
         
         super(Supplier, self).save(*args, **kwargs)
         
-
 
 PRICING_CHOICES = [
     (0, 'Manual'),
@@ -127,7 +128,6 @@ class Item(models.Model):
         if self.quantity == 0:
             return 0
 
-        config = load_config()
         #dates under consideration 
         TODAY  = datetime.date.today()
         START = TODAY - datetime.timedelta(days=30)
@@ -181,6 +181,7 @@ class Item(models.Model):
         total_value = 0
         
         #if no valuation system is being used
+        #create inventory config ***
         if not config.get('inventory_valuation', None):
             return self.unit_sales_price * D(self.quantity)
         else:

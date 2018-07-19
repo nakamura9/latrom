@@ -6,11 +6,20 @@
 
 <nav class="navbar navbar-expand-sm bg-light" >
         <ul class="navbar-nav">
-            <a class="navbar-brand" href="{% url 'base:workflow' %}">Latrom</a>
+            <!--{% url 'base:workflow' %}-->
+            <a class="navbar-brand" href="#"  >Latrom</a>
+            {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
             <li class="nav-item active"><a class="nav-link" href="{% url 'invoicing:home' %}">Sales</a></li>
+            {% endif %}
+            {% if request.user.is_superuser or request.user.employee.is_inventory_controller %}
             <li class="nav-item"><a class="nav-link" href="{% url 'inventory:home' %}">Inventory</a></li>
+            {% endif %}
+            {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
             <li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>
+            {% endif %}
+            {% if request.user.is_superuser %}
             <li><a class="nav-link" href="{% url 'employees:dashboard' %}">Employees</a></li>
+            {% endif %}
         </ul>
 </nav>
 <article>

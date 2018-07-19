@@ -7,7 +7,7 @@ from django.views.generic.edit import FormView
 from django.db.models import Q
 from django.urls import reverse_lazy
 
-from common_data.utilities import ExtraContext, load_config, extract_period
+from common_data.utilities import ExtraContext, extract_period
 from common_data.forms import PeriodReportForm
 from invoicing.models import Invoice
 import models 
@@ -96,7 +96,7 @@ class BalanceSheet(TemplateView):
             'total_l_and_e': equity_total + current_liabilities_total + \
                 long_term_liabilities_total
         })
-        context.update(load_config())
+        #insert config !!!
         return context
 
 
@@ -143,7 +143,7 @@ class IncomeStatement(TemplateView):
         total_expenses = reduce(lambda x,y: x + y, 
             expense_totals.values(), decimal.Decimal(0.0))
 
-        context.update(load_config())
+        #insert config
 
         context.update({
             'start': start,

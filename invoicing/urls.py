@@ -42,7 +42,7 @@ report_urls = [
 
 urlpatterns = [
     url(r'^$', views.Home.as_view(), name="home"),
-    url(r'^config/?$', views.ConfigView.as_view(), name="config"),
+    url(r'^config/(?P<pk>[\d]+)/?$', views.ConfigView.as_view(), name="config"),
     url(r'^create-customer$', views.CustomerCreateView.as_view(), name='create-customer'),
     url(r'^quick-customer$', views.QuickCustomerCreateView.as_view(), name='quick-customer'),
     url(r'^update-customer/(?P<pk>[\w]+)$', views.CustomerUpdateView.as_view(), name='update-customer'),
@@ -73,6 +73,7 @@ urlpatterns = [
     url(r'^credit-note-create/?$', views.CreditNoteCreateView.as_view(), name='credit-note-create'),
     url(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), name='credit-note-list'),
     url(r'^credit-note-detail/(?P<pk>[\w]+)/?$', views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
+    
     
 ] +  customer_router.urls + invoice_router.urls + \
     payment_router.urls + sales_rep_router.urls +  invoice_item_router.urls + \

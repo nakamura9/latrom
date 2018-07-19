@@ -63,6 +63,7 @@ urlpatterns = [
     url(r'^transfer-order-list/?$', views.TransferOrderListView.as_view(), name='transfer-order-list'),
     url(r'^transfer-order-detail/(?P<pk>[\d]+)/?$', views.TransferOrderDetailView.as_view(), name='transfer-order-detail'),
     url(r'^receive-transfer/(?P<pk>[\d]+)/?$', views.TransferOrderReceiveView.as_view(), name='receive-transfer'),
-
+    url(r'^inventory-controller-list/?$', views.InventoryControllerListView.as_view(), name='inventory-controller-list'),
+    url(r'^create-inventory-controller/?$', views.InventoryControllerCreateView.as_view(), name='create-inventory-controller'),
 ] + item_router.urls + order_router.urls + order_item_router.urls + \
     report_urls +  warehouse_router.urls + stock_adjustment_router.urls

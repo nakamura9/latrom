@@ -8,7 +8,19 @@ from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 from django.contrib.auth.models import User
 
+class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
+    automate_payroll_for = forms.ModelMultipleChoiceField(
+        models.Employee.objects.all(), 
+        widget = forms.CheckboxSelectMultiple
+    )
+    #when running payroll - a message must be raised that the hours of 
+    #hourly workers must be calculated first
+    class Meta:
+        model = models.EmployeesSettings
+        fields = "__all__"
 
+
+#named benefits on the front end
 class AllowanceForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active",

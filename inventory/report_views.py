@@ -4,7 +4,6 @@ import os
 from django.views.generic import TemplateView
 
 import models 
-from common_data.utilities import load_config
 
 class InventoryReport(TemplateView):
     template_name = os.path.join('inventory', 'reports', 'inventory_report.html')
@@ -13,7 +12,7 @@ class InventoryReport(TemplateView):
         context = super(InventoryReport, self).get_context_data(*args, **kwargs)
         context['items'] = models.WareHouseItem.objects.all()
         context['date'] = datetime.date.today()
-        context.update(load_config())
+        #insert config
         return context
 
 
@@ -24,5 +23,5 @@ class OutstandingOrderReport(TemplateView):
         context = super(OutstandingOrderReport, self).get_context_data(*args, **kwargs)
         context['orders'] = models.Order.objects.all()
         context['date'] = datetime.date.today()
-        context.update(load_config())
+        #insert config
         return context

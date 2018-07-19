@@ -6,7 +6,7 @@ from django.views.generic import TemplateView, DetailView
 from django.urls import reverse_lazy
 from django.db.models import Q
 
-from common_data.utilities import ExtraContext, load_config, extract_period
+from common_data.utilities import ExtraContext, extract_period
 import models 
 import forms
 
@@ -45,7 +45,7 @@ class CustomerStatement(TemplateView):
             'invoices': invoices,
             'payments': payments
         })
-        context.update(load_config())
+        context.update(models.SalesConfig.objects.first().__dict__)
         return context
         
 
@@ -63,5 +63,5 @@ class InvoiceAgingReport(TemplateView):
             'invoice_count': credit_invoices.count(),
             'outstanding_invoices': len(outstanding_invoices)
         })
-        context.update(load_config())
+        context.update(models.SalesConfig.objects.first().__dict__)
         return context

@@ -20,7 +20,7 @@ import models
 import filters
 import forms
 from inventory.models import Item
-from common_data.utilities import ExtraContext, load_config, apply_style, ModelViewGroup
+from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -193,20 +193,7 @@ class AccountConfigView(LoginRequiredMixin, FormView):
     form_class = forms.ConfigForm
     template_name = os.path.join('accounting', 'config.html')
     success_url = reverse_lazy('accounting:dashboard')
-    
-    def get_initial(self):
-        return load_config()
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-            config = load_config()
-            new_config = dict(config)
-            new_config.update(request.POST.dict())
-            json.dump(new_config, open('config.json', 'w'))
-
-        return super(AccountConfigView, self).post(request)
+    # change this
 
 class NonInvoicedCashSale(LoginRequiredMixin, FormView):
     '''
@@ -224,7 +211,6 @@ class NonInvoicedCashSale(LoginRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         resp = super(NonInvoicedCashSale, self).post(request, *args, **kwargs)
         total = 0
-        config = load_config()
         form =self.form_class(request.POST)
         
         #clean data
@@ -320,10 +306,23 @@ class ExpenseViewGroup(ModelViewGroup):
 ####################################################
 #                  Bookeeper                       #
 ####################################################
+#####################################################
+#               Inventory Controller                #
+#####################################################
 
-class BookeeperCreateView(CreateView):
-    pass
+class BookkeeperCreateView(CreateView):
+    form_class = forms.BookkeeperForm
+    template_name = CREATE_TEMPLATE
+    success_url = reverse_lazy('accounting:bookkeeper-list')
+    extra_context = {
+        'title': 'Assign A New Bookkeeper to the system'
+    }
 
-class BookkeeperListView(FilterView):
-    pass
+class BookkeeperListView(ListView):
+    queryset = models.Bookkeeper.objects.all()
+    template_name = os.path.join('accounting', 'bookkeeper_list.html')
+    extra_context = {
+        'title': 'List of Bookkeepers',
+        'new_link': reverse_lazy('accounting:create-bookkeeper')
+    }
 

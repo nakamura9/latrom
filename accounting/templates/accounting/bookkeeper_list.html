@@ -1,0 +1,16 @@
+{% extends "common_data/unfiltered_list_template.html" %}
+{% block list_headings %}
+<tr>
+    <th>Employee Number</th>
+    <th>Full Name</th>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for bk in object_list %}
+<tr>
+    <td>{{bk.employee.pk}}</td>
+    <td>{{bk.employee}}</td>
+</tr>
+{% endfor %}
+{% endblock list_content %}

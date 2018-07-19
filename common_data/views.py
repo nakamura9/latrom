@@ -4,7 +4,8 @@ from django.views.generic import TemplateView
 import os
 from django.urls import reverse_lazy
 from accounting.models import Journal
-from utilities import load_config
+from invoicing.models import SalesConfig
+
 
 class WorkFlowView(TemplateView):
     template_name = os.path.join("common_data", "workflow.html")
@@ -14,4 +15,4 @@ class ReactTest(TemplateView):
 
 
 def config_JSON_API(request):
-    return JsonResponse(load_config())
+    return JsonResponse(SalesConfig.objects.first().__dict__)

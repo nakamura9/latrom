@@ -1,0 +1,22 @@
+{% extends "window.html" %} {% load render_bundle from webpack_loader %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Employee Management Dashboard</h1>
+    <p class="lead">Control panel for adding employees, running payroll and other employee related functions</p>
+    <hr class="my-2">
+</div>
+{% csrf_token %}
+
+<div class="container">
+        <div class="row">
+                <div id="payroll-table"></div>
+            </div>
+            <!--Add pay date to payroll-->
+</div>
+{% render_bundle 'payroll' %}
+<script>
+    $(document).ready(() => {
+        $('#id_start_date').datepicker();
+        $('#id_end_date').datepicker();
+    });
+</script>
+{% endblock content %}

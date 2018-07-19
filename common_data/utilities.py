@@ -91,33 +91,15 @@ class ExtraContext(object):
 
 def apply_style(context):
     styles = {
-            "1": "simple",
-            "2": "blue",
-            "3": "steel",
-            "4": "verdant",
-            "5": "warm"
+            1: "simple",
+            2: "blue",
+            3: "steel",
+            4: "verdant",
+            5: "warm"
             }
-    context['style'] = styles[context["invoice_template"]]
+    context['style'] = styles[context["document_theme"]]
     return context 
 
-def load_config():
-    if settings.TEST_RUN_MODE:
-        file_name = settings.TEST_CONFIG_FILE
-    else:
-        file_name = settings.CONFIG_FILE
-   
-
-    if not os.path.exists(file_name):
-        f = open(file_name, 'w')
-        f.close()
-    config_file = open(file_name, 'r')
-    try:
-        CONFIG = json.load(config_file)
-    except Exception as e:
-        CONFIG = {}
-    config_file.close()
-
-    return CONFIG
 
 class Modal(object):
     '''for every modal use a object that contains the trigger link id, the modal form the modal action

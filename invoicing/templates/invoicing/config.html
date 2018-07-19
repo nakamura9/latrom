@@ -1,328 +1,89 @@
-{% extends "window.html" %} {% block content %} {% load render_bundle from webpack_loader %}
-{% load static %}
-{% for error in form.errors %}
-    <div class="alert alert-warning alert-dismissable">
-        {{error}}
-        <button type="button" data-dismiss="alert" class="close">
-            &times;
-        </button>
+{% extends "window.html" %} {% load static %} {% load crispy_forms_tags %} {% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Invoicing configuration</h1>
+        <p>Modify aspects of invoice forms and reporting</p>
+        <input class="btn btn-success" type="submit" value="Submit changes" />
     </div>
-    {% endfor %}
-<form method="POST" action="" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <div class="jumbotron">
-        <div class="container">
-            <h1 class="display-3">Invoicing configuration</h1>
-            <p>Modify aspects of invoice forms and reporting</p>
-            <input class="btn btn-success" type="submit" value="Submit changes" />
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table class="table">
+                            {% crispy form %}
+                        </table>
+                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                    </form>
+                </div>
+
+            </div>
         </div>
-    </div>
-
-
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" href="#general" aria-controls="general" data-toggle="tab">Accounting Details</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#invoice" aria-controls="tab" data-toggle="tab">Invoice Template</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#business-details" aria-controls="tab" data-toggle="tab">Business Details</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#tax" aria-controls="tab" data-toggle="tab">Tax</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#page-layout" aria-controls="tab" data-toggle="tab">Page Layout</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#payment-methods" aria-controls="tab" data-toggle="tab">Payment Methods</a>
-        </li>
-    </ul>
-
-    <!-- Tab panes -->
-
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="general">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            <label for="">Currency</label>
-                        </td>
-                        <td>{{form.currency}}</td>
-                    </tr>
-                    <!--
-                    <tr>
-                        <td><label for="">Default Invoice Credit Account</label></td>
-                        <td>{{form.invoice_account}}</td>
-                    </tr>
-                    <tr>
-                        <td><label for="">Default Invoice Debit Account</label></td>
-                        <td>{{form.sales_account}}</td>
-                    </tr>
-       
-                        <td><label for="">Invoice Transactional Journal</label></td>
-                        <td>{{form.invoice_journal}}</td>
-                    </tr>
-                    <tr>
-                            <td><label for="">Payment Transactional Journal</label></td>
-                            <td>{{form.payment_journal}}</td>
-                        </tr>
-                    -->
-                </tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="invoice">
-            <h4>Select Invoice template</h4>
-            {{form.invoice_template}}
-
-            <div class="card card-info">
-                <div class="card-heading">
+        <div class="col-sm-4">
+            <div class="card ">
+                <div class="card-header">
                     <h3 class="card-title">Template Preview</h3>
                 </div>
                 <div class="card-body">
                     <img id="template-preview" class="img" src="" alt="template preview image" />
                 </div>
             </div>
-
-        </div>
-        <div class="tab-pane fade" id="business-details">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            <label for="">Business Name</label>
-                        </td>
-                        <td>{{form.business_name}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="">Registered Number</label>
-                        </td>
-                        <td>{{form.registration_number}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="">Business Address</label>
-                        </td>
-                        <td>{{form.business_address}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="">Contact Details</label>
-                        </td>
-                        <td>{{form.contact_details}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="">Logo source File</label>
-                        </td>
-                        <td>{{form.logo}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <script type="text/javascript">
-                $(document).ready(function(){
-                    $('input[type="file"]').attr({
-                        'onchange': 'upload_img(this)'
-                    });
-                })
-                function upload_img(input){
-                    if(input.files && input.files[0]){
-                        var reader = new FileReader();
-                        reader.onload = function(e){
-                            $('#id-logo-preview').attr('src', e.target.result);
-                        }
-
-                        reader.readAsDataURL(input.files[0]);
-                    }
-                }
-            </script>
-
             <div class="card card-info">
-                <div class="card-heading">
-                    <h3 class="card-title">Logo Preview</h3>
+                <div class="card-header">
+                    <h4 class="card-title">Logo Preview</h4>
                 </div>
                 <div class="card-body">
-                    <img id="id-logo-preview" width="300" height="200" class="img" src="{{logo}}" alt="logo image" />
+                    <img id="id-logo-preview" width="300" height="200" class="img" src="" alt="logo image" />
                 </div>
-            </div>
-
-        </div>
-        <div class="tab-pane fade" id="tax">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            <label for="">Default tax rate</label>
-                        </td>
-                        <td>{{form.tax_rate}}</td>
-                    </tr>
-                    <!--
-                    <tr>
-                        <td>
-                            <label for="">Item prices are tax inclusive</label>
-                        </td>
-                        <td>{{form.tax_inclusive}}</td>
-                    </tr>
-                -->
-                    <tr>
-                        <td>
-                            <label for="">Show Tax information on invoices</label>
-                        </td>
-                        <td>{{form.tax_column}}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Tax rates:</h4>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tax-modal" >Add</button>
-            
-            <table class="table table-striped">
-                <thead>
-                    <th>
-                        <td>Name</td>
-                        <td>Rate</td>
-                    </th>
-                </thead>
-                <tbody id='tax-rate-table'>
-                    {% for tax in taxes %}
-                    <tr>
-                        <td>
-                            <button type="button" class="btn btn-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                        <td>{{tax.name}}</td>
-                        <td>{{tax.rate}}%</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="page-layout">
-            <table>
-                <tbody>
-                        <tr>
-                                <td><label for="">Invoice Title</label></td>
-                                <td>{{form.invoice_title}}</td>
-                            </tr>
-                        <tr>
-                                <td><label for="">Default Payment Terms</label></td>
-                                <td>{{form.default_terms}}</td>
-                            </tr>
-                            <tr>
-                                    <td><label for="">Default Invoice Comments</label></td>
-                                    <td>{{form.default_invoice_comments}}</td>
-                                </tr>
-                    <tr>
-                        <th>Include Billing address?</th>
-                        <td>{{form.include_billing}}</td>
-                    </tr>
-                    <tr>
-                        <th>Include Shipping address?</th>
-                        <td>{{form.include_shipping}}</td>
-                    </tr>
-                    <tr>
-                        <th>Include Business address?</th>
-                        <td>{{form.include_business_address}}</td>
-                    </tr>
-                    <tr>
-                        <th>Include Discount Column?</th>
-                        <td>{{form.include_discount_column}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="payment-methods">
-            <h3>Configure payment methods</h3>
-            <p>Zimswitch</p>
-            <p>Ecocash</p>
-            <p>RTGS</p>
-            <p>Payroll</p>
-        </div>
-    </div>
-</form>
-
-
-<!-- Modals -->
-
-
-<!-- Modal -->
-<div class="modal fade" id="tax-modal" tabindex="-1" role="dialog" aria-labelledby="tax-modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-                <h4 class="modal-title" id="tax-modal-title">Add Tax Rate</h4>
-            </div>
-            <div class="modal-body">
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>Name</th>
-                            <td><input class="form-control" type="text" id='input-tax-name-id'></td>
-                        </tr>
-                        <tr>
-                                <th>Rate</th>
-                                <td><input class="form-control" type="number" id='input-tax-rate-id'></td>
-                            </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="createTax()">Save</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    //for tax modal
-    function createTax(){
-        var data = {
-            'name': $("#input-tax-name-id").val(),
-            'rate': $("#input-tax-rate-id").val(),
-            'csrfmiddlewaretoken': '{{csrf_token}}'
-        }
-        $.ajax({
-            method: 'POST',
-            url: '/accounting/api/tax/',
-            data: data
-        }).then(function(){
-            $("#tax-rate-table").append('<tr><td></td><td>' + data.name + '</td><td>' + data.rate + ' %</td></tr>');
-            $("#tax-modal").modal('toggle');
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //implement get logo function
+        $('input[type="file"]').attr({
+            'onchange': 'upload_img(this)'
         });
+    })
+
+    function upload_img(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#id-logo-preview').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
-    // for inovoice template 
+    // for invoice template 
     var templates = [
         "{% static 'common_data/images/template-previews/simple.png' %}",
         "{% static 'common_data/images/template-previews/blue.png' %}",
         "{% static 'common_data/images/template-previews/steel.png' %}",
         "{% static 'common_data/images/template-previews/verdant.png' %}",
         "{% static 'common_data/images/template-previews/dayglow.png' %}"
-        ];
-    
-    function setTemplate(){
-        var temp = $('#id_invoice_template').val();
+    ];
+
+    function setTemplate() {
+        var temp = $('#id_document_theme').val();
         $("#template-preview").attr({
-            'src': templates[temp-1]
+            'src': templates[temp - 1]
         });
     }
-    
-    $(document).ready(function(){        
+
+    $(document).ready(function () {
         setTemplate();
-        $("#id_invoice_template").change(setTemplate);
+        $("#id_document_theme").change(setTemplate);
     })
-
-
-
 </script>
+
 {% endblock %}

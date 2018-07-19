@@ -46,6 +46,8 @@ other_urls = [
     url(r'^delete-commission/(?P<pk>[\w]+)/?$', views.CommissionDeleteView.as_view(), name='delete-commission'),
     url(r'^update-commission/(?P<pk>[\w]+)/?$', views.CommissionUpdateView.as_view(), name='update-commission'),
     url(r'^util-list/?$', views.UtilsListView.as_view(), name='util-list'),
+    url(r'^config/(?P<pk>[\d]+)/?$', views.PayrollConfig.as_view(), name='config'),
+    url(r'^manual-config/?$', views.ManualPayrollConfig.as_view(), name='manual-config'),
     
 ]
 

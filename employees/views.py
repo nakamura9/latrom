@@ -21,7 +21,7 @@ import filters
 import forms
 from inventory.models import Item
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, load_config, apply_style, ModelViewGroup
+from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -31,6 +31,19 @@ class DashBoard(LoginRequiredMixin, ExtraContext, TemplateView):
     extra_context = {
         'employees': models.Employee.objects.all()
     }
+
+class PayrollConfig(ExtraContext, UpdateView):
+    model = models.EmployeesSettings
+    template_name = CREATE_TEMPLATE
+    success_url = reverse_lazy("employees:dashboard")
+    form_class = forms.EmployeesSettingsForm
+    extra_context = {
+        'title': 'Configure automated Payroll'
+    }
+
+class ManualPayrollConfig(TemplateView):
+    template_name = os.path.join('employees', 'manual_config.html')
+    
 
 #############################################################
 #                 Employee  Views                            #
@@ -203,7 +216,6 @@ class PayslipView(LoginRequiredMixin, DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(PayslipView, self).get_context_data(*args, **kwargs)
         context['title'] = 'Pay Slip'
-        context.update(load_config())
         return context
 
 class PayslipListView(LoginRequiredMixin, ExtraContext, FilterView):

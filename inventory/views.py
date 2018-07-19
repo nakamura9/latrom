@@ -202,7 +202,7 @@ class OrderDetailView(LoginRequiredMixin, ExtraContext, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(OrderDetailView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        #insert config
         return apply_style(context)
 
 ################################################
@@ -276,7 +276,7 @@ class GoodsReceivedVoucherView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(GoodsReceivedVoucherView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        #insert config
         return apply_style(context)
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
@@ -295,18 +295,7 @@ class ConfigView(LoginRequiredMixin, FormView):
     template_name = os.path.join('inventory', 'config.html')
     form_class = forms.ConfigForm
     success_url = reverse_lazy('inventory:home')
-    
-    def get_initial(self):
-        return load_config()
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            config = load_config()
-            new_config = dict(config)
-            new_config.update(request.POST.dict())
-            json.dump(new_config, open('config.json', 'w'))
-        return super(ConfigView, self).post(request)
+    #change this page
 
 @login_required
 def create_stock_receipt_from_order(request, pk):
@@ -478,8 +467,19 @@ class TransferOrderReceiveView(ExtraContext, UpdateView):
 #               Inventory Controller                #
 #####################################################
 
-class InventoryControllerCreateView(CreateView):
-    pass
+class InventoryControllerCreateView(ExtraContext, CreateView):
+    form_class = forms.InventoryControllerForm
+    template_name = CREATE_TEMPLATE
+    success_url =  reverse_lazy('inventory:inventory-controller-list')
+    extra_context = {
+        'title': 'Assign new Inventory Controller'
+    }
+    
 
-class InventoryControllerListView(FilterView):
-    pass
+class InventoryControllerListView(ExtraContext, ListView):
+    queryset = models.InventoryController.objects.all()
+    template_name = os.path.join('inventory', 'inventory_controller_list.html')
+    extra_context = {
+        'title': 'List of Inventory Controllers',
+        'new_link': reverse_lazy('inventory:create-inventory-controller')
+    }

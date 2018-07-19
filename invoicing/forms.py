@@ -1,6 +1,5 @@
 
 from django import forms
-from common_data.utilities import load_config
 from common_data.forms import BootstrapMixin, PeriodReportForm
 from accounting.models import Account, Journal
 import models
@@ -9,38 +8,41 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit
 from crispy_forms.bootstrap import TabHolder, Tab
 
-class ConfigForm(forms.Form):
-    business_name = forms.CharField(required=False)
-    business_address = forms.CharField(widget=forms.Textarea, required=False)
-    contact_details = forms.CharField(widget=forms.Textarea, required=False)
-    currency = forms.ChoiceField(choices=[("$", "Dollars")])
-    '''invoice_account = forms.ModelChoiceField(Account.objects.all())
-    invoice_credit_account = forms.ModelChoiceField(Account.objects.all())
-    sales_account = forms.ModelChoiceField(Account.objects.all())
-    invoice_journal = forms.ModelChoiceField(Journal.objects.all())
-    payment_journal = forms.ModelChoiceField(Journal.objects.all())
-    '''
-    logo = forms.FileField(required = False)
-    include_billing = forms.BooleanField(required=False)
-    invoice_title = forms.CharField(required=False)
-    include_shipping = forms.BooleanField(required=False)
-    include_business_address = forms.BooleanField(required=False)
-    include_discount_column = forms.BooleanField(required=False)
-    tax_rate = forms.CharField(widget=forms.NumberInput)
-    tax_inclusive = forms.BooleanField(required=False)
-    tax_column = forms.BooleanField(required=False)
-    invoice_template = forms.ChoiceField(choices=[("1", "Simple"),("2", "Blue"),("3", "Steel"),("4", "Verdant"),("5", "Warm"),])
-    registration_number = forms.CharField(required=False)
-    default_terms = forms.CharField(required=False)
-    default_invoice_comments = forms.CharField(widget=forms.Textarea,required=False)
-
+class SalesConfigForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.SalesConfig
+        fields = "__all__"        
     def __init__(self, *args, **kwargs):
-        super(ConfigForm, self).__init__(*args, **kwargs)
-        for field in self.fields:
-            field = self.fields.get(field)
-            field.widget.attrs['class'] ="form-control"
-            
+        super(SalesConfigForm, self).__init__(*args, **kwargs)
 
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+            Tab('Document Fields', 
+                'default_invoice_comments',
+                'default_credit_note_comments',
+                'default_quotation_comments',
+                'default_terms',
+                ),
+            Tab('Page Layout',
+                'sales_tax',
+                'include_tax_in_invoice',
+                'include_shipping_address',
+                'document_theme',
+                ''),
+            Tab('Financial Data Presentation',
+                'currency',
+                'appy_price_multiplier',
+                'price_multiplier',
+                ),
+            Tab('Business Information',
+                'logo',
+                'business_address',
+                'business_name',
+                'business_registration_number',
+                'payment_details',
+                'contact_details')
+        ))
 class CustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'account']

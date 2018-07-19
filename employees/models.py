@@ -7,7 +7,32 @@ from decimal import Decimal as D
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from common_data.models import Person
+from common_data.models import Person, SingletonModel
+
+class EmployeesSettings(SingletonModel):
+    PAYROLL_DATE_CHOICES = [(i, i) for i in range(28, 1)]
+    PAYROLL_CYCLE_CHOICES = [('weekly', 'Weekly'), ('bi-monthly', 'Bi-monthly'), ('monthly', 'Monthly')]
+    payroll_date_one = models.PositiveSmallIntegerField(
+        choices = PAYROLL_DATE_CHOICES
+        )
+    payroll_date_two = models.PositiveSmallIntegerField(
+        choices = PAYROLL_DATE_CHOICES
+    )
+    payroll_date_three = models.PositiveSmallIntegerField(
+        choices = PAYROLL_DATE_CHOICES
+    )
+    payroll_date_four = models.PositiveSmallIntegerField(
+        choices = PAYROLL_DATE_CHOICES
+    )
+    payroll_cycle = models.CharField(
+        max_length=12, 
+        choices = PAYROLL_CYCLE_CHOICES
+        )
+    automate_payroll_for = models.ManyToManyField('employees.Employee')
+    require_verification_before_posting_payslips = models.BooleanField(
+        default=True
+        )
+    salary_follows_profits = models.BooleanField(default=True)
 
 class Employee(Person):
     '''
@@ -58,6 +83,17 @@ class Employee(Person):
         return reduce(lambda x, y: x + y, [i.gross_pay \
              for i in slips], 0)    
 
+    @property
+    def is_sales_rep(self):
+        return hasattr(self, 'salesrepresentative')
+
+    @property
+    def is_inventory_controller(self):
+        return hasattr(self, 'inventory_controller')
+
+    @property
+    def is_bookkeeper(self):
+        return hasattr(self, 'bookkeeper')
 
 class Allowance(models.Model):
     '''simple object that tracks a fixed allowance as part of a pay

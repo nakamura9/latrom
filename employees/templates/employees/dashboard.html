@@ -5,8 +5,6 @@
     <p class="lead">Control panel for adding employees, running payroll and other employee related functions</p>
     <hr class="my-2">
 </div>
-{% csrf_token %}
-
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
@@ -30,9 +28,14 @@
                                 <a href="{% url 'employees:create-pay-grade' %}">Add Pay Grade</a>
                             </li>
                             <li class="list-group-item">
-                                    <a href="{% url 'employees:create-payroll-tax' %}">Add Payroll Tax</a>
-                                </li>
+                                <a href="{% url 'employees:create-payroll-tax' %}">Add Payroll Tax</a>
+                            </li>
+                            <li class="list-group-item">
+
+                                <a href="{% url 'employees:util-list' %}">List Utility objects</a>
+                            </li>
                         </ul>
+
                     </div>
                 </div>
                 <div class="card bg-primary text-white">
@@ -80,14 +83,21 @@
             <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                            <h4 class="card-title">Employee Roles</h4>
+                        <h4 class="card-title">Employee Roles</h4>
                     </div>
-                    
+
                     <div class="card-body">
-                        
+
                         <ul class="list-group">
-                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-sales-rep' %}">Add Sales Rep</a></li>
-                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">List and Review Sales Reps</a></li>
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'inventory:inventory-controller-list' %}">List and Review Inventory Controllers</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">List and Review Sales Representatives</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'accounting:bookkeeper-list' %}">List and Review Sales Bookkeepers </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -99,24 +109,17 @@
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="{% url 'employees:util-list' %}">Settings</a>
+                                <a href="{% url 'employees:config' pk=1 %}">Automated Payroll Configuration</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:manual-config' %}">Manual Payroll Config</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-
-    </div>
-    <div class="row">
-        <div id="payroll-table"></div>
     </div>
 </div>
-{% render_bundle 'payroll' %}
-<script>
-    $(document).ready(() => {
-        $('#id_start_date').datepicker();
-        $('#id_end_date').datepicker();
-    });
-</script>
 {% endblock content %}

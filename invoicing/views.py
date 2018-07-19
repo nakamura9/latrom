@@ -16,7 +16,7 @@ from django.urls import reverse_lazy, reverse
 from django.conf import settings
 import forms
 
-from common_data.utilities import ExtraContext, apply_style,load_config, Modal
+from common_data.utilities import ExtraContext, apply_style, Modal
 from inventory.forms import QuickItemForm
 from accounting.forms import TaxForm
 from inventory.models import Item
@@ -129,7 +129,7 @@ class CreditNoteDetailView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, *args, **kwargs):
         context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = 'Credit Note'
         return apply_style(context)
 
@@ -248,7 +248,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
         'invoice.html')
     def get_context_data(self, *args, **kwargs):
         context = super(InvoiceDetailView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = context.get('invoice_title', "Invoice")
         return apply_style(context)
 
@@ -276,9 +276,17 @@ class InvoiceCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     template_name = os.path.join("invoicing", "invoice_create.html")
     form_class = forms.InvoiceForm
     success_url = reverse_lazy("invoicing:home")
+
+    def get_initial(self):
+        config = SalesConfig.objects.first()
+        return {
+            'terms': config.default_terms,
+            'comments': config.default_invoice_comments
+        }
+
     def get_context_data(self, *args, **kwargs):
         context = super(InvoiceCreateView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         apply_style(context)
         return context
 
@@ -361,7 +369,7 @@ class QuoteCreateView(LoginRequiredMixin, ExtraContext, CreateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(QuoteCreateView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         apply_style(context)
         return context
 
@@ -410,7 +418,7 @@ class QuoteDetailView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, *args, **kwargs):
         context = super(QuoteDetailView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = 'Quotation'
         return apply_style(context)
 
@@ -444,7 +452,7 @@ class ReceiptDetailView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, *args, **kwargs):
         context = super(ReceiptDetailView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = 'Receipt'
         return apply_style(context)
 
@@ -456,7 +464,7 @@ class InvoiceReceiptDetailView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, *args, **kwargs):
         context = super(InvoiceReceiptDetailView, self).get_context_data(*args, **kwargs)
-        context.update(load_config())
+        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = 'Receipt'
         return apply_style(context)
 
@@ -466,38 +474,13 @@ class InvoiceReceiptDetailView(LoginRequiredMixin, DetailView):
 #########################################################
 
 
-class ConfigView(LoginRequiredMixin, FormView):
+class ConfigView(LoginRequiredMixin, UpdateView):
     template_name = os.path.join("invoicing", "config.html")
-    form_class = forms.ConfigForm
+    form_class = forms.SalesConfigForm
+    model = SalesConfig
+    success_url = reverse_lazy('invoicing:home')
     
-    def get_context_data(self):
-        context = super(ConfigView, self).get_context_data()
-        config = load_config() 
-        if config.get('logo', None):
-            context['logo']='/media/logo/' + config['logo']
-        return context
-
-    def get_initial(self):
-        return load_config()
-
-    def post(self, request):
-        data = request.POST.dict()
-        del data["csrfmiddlewaretoken"]
-        config = load_config()
-        if config.get('logo', '') != "" and data.get('logo', '') == "":
-            data['logo'] = config['logo']
-        if  request.FILES.get('logo', None):
-            file = request.FILES['logo']
-            filename = file.name
-            path = os.path.join(settings.MEDIA_ROOT, 'logo', filename)
-            data['logo'] = filename
-            with open(path, 'wb+') as img:
-                for chunk in file.chunks():
-                    img.write(chunk)
-            
-        json.dump(data, open("config.json", 'w'))
-        return HttpResponseRedirect(reverse_lazy("invoicing:home"))
-
+    
 @login_required
 def create_payment_from_invoice(request, pk=None):
     invoice = get_object_or_404(Invoice, pk=pk)
