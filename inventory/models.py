@@ -336,6 +336,7 @@ class Order(models.Model):
     supplier_invoice_number = models.CharField(max_length=32, blank=True, default="")
     bill_to = models.CharField(max_length=128, blank=True, default="")
     ship_to = models.ForeignKey('inventory.WareHouse')
+    tax = models.ForeignKey('accounting.Tax', null=True)
     tracking_number = models.CharField(max_length=64, blank=True, default="")
     notes = models.TextField(blank=True, default="")
     status = models.CharField(max_length=16, choices=[

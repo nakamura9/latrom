@@ -9,7 +9,7 @@ import decimal
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView,  FormView
 from django.http import HttpResponseRedirect
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
@@ -22,10 +22,21 @@ import forms
 from inventory.models import Item
 from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
 
+class BookkeeperCheckMixin(UserPassesTestMixin):
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        elif hasattr(self.request.user, 'employee') and \
+                self.request.user.employee.is_bookkeeper:
+            return True
+        else:
+            return False
+
+
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
-class Dashboard(LoginRequiredMixin, TemplateView):
+class Dashboard(BookkeeperCheckMixin, TemplateView):
     template_name = os.path.join('accounting', 'dashboard.html')
 
 #############################################################
@@ -35,7 +46,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 # update and delete removed for security, only adjustments can alter the state 
 # of an entry 
 
-class JournalEntryCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class JournalEntryCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     '''This type of journal entry has only one credit and one debit'''
     template_name = CREATE_TEMPLATE
     model = models.JournalEntry
@@ -43,7 +54,7 @@ class JournalEntryCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {"title": "Create New Journal Entry"}
 
-class ComplexEntryView(LoginRequiredMixin, ExtraContext, CreateView):
+class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
     '''This type of journal entry can have any number of 
     credits and debits. The front end page uses react to dynamically 
     alter the content of page hence the provided data from react is 
@@ -74,7 +85,7 @@ class ComplexEntryView(LoginRequiredMixin, ExtraContext, CreateView):
 
         return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
 
-class JournalEntryDetailView(LoginRequiredMixin, DetailView):
+class JournalEntryDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'transaction_detail.html')
     model = models.JournalEntry
 
@@ -86,7 +97,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AccountSerializer
 
 
-class AccountTransferPage(LoginRequiredMixin, ExtraContext, CreateView):
+class AccountTransferPage(BookkeeperCheckMixin, ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:dashboard')
     form_class = forms.SimpleJournalEntryForm
@@ -94,14 +105,14 @@ class AccountTransferPage(LoginRequiredMixin, ExtraContext, CreateView):
         'title': 'Transfer between Accounts'
     }
 
-class AccountCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
     form_class = forms.AccountForm
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {"title": "Create New Account"}
 
-class AccountUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class AccountUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
     form_class = forms.AccountUpdateForm
@@ -109,12 +120,12 @@ class AccountUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Account"}
 
 
-class AccountDetailView(LoginRequiredMixin, DetailView):
+class AccountDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'account_detail.html')
     model = models.Account 
     
 
-class AccountListView(LoginRequiredMixin, ExtraContext, FilterView):
+class AccountListView(BookkeeperCheckMixin, ExtraContext, FilterView):
     template_name = os.path.join('accounting', 'account_list.html')
     filterset_class = filters.AccountFilter
     paginate_by = 10
@@ -132,7 +143,7 @@ class TaxViewset(viewsets.ModelViewSet):
     queryset = models.Tax.objects.all()
     serializer_class = serializers.TaxSerializer
 
-class TaxUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class TaxUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
     form_class = forms.TaxForm
     model= models.Tax
     template_name = os.path.join('common_data','create_template.html')
@@ -141,7 +152,7 @@ class TaxUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
         'title': 'Editing Existing Tax'
     }
 
-class TaxCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     form_class = forms.TaxForm
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
@@ -149,12 +160,12 @@ class TaxCreateView(LoginRequiredMixin, ExtraContext, CreateView):
         'title': 'Add Taxes For Invoices'
     }
 
-class TaxDeleteView(LoginRequiredMixin, DeleteView):
+class TaxDeleteView(BookkeeperCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('employees:util-list')
     model = models.Tax
 
-class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
+class DirectPaymentFormView(BookkeeperCheckMixin, ExtraContext, FormView):
     '''Uses a simple form view as a wrapper for a transaction in the journals
     for transactions involving two accounts.
     '''
@@ -186,7 +197,7 @@ class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
             )
         return resp
 
-class AccountConfigView(LoginRequiredMixin, UpdateView):
+class AccountConfigView(BookkeeperCheckMixin, UpdateView):
     '''
     Tabbed Configuration view for accounts 
     '''
@@ -195,7 +206,7 @@ class AccountConfigView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('accounting:dashboard')
     model = models.AccountingSettings
 
-class NonInvoicedCashSale(LoginRequiredMixin, FormView):
+class NonInvoicedCashSale(BookkeeperCheckMixin, FormView):
     '''
     A transaction handled entirely in the accounting part of the application
     No invoice is generated but the relevant accounts are transacted on and 
@@ -248,7 +259,7 @@ class NonInvoicedCashSale(LoginRequiredMixin, FormView):
             )
         return resp
 
-class DirectPaymentList(LoginRequiredMixin, ExtraContext, TemplateView):
+class DirectPaymentList(BookkeeperCheckMixin, ExtraContext, TemplateView):
     template_name = os.path.join('accounting', 'direct_payment_list.html')
     extra_context = {
         'entries': lambda : models.JournalEntry.objects.filter(
@@ -259,18 +270,18 @@ class DirectPaymentList(LoginRequiredMixin, ExtraContext, TemplateView):
 #                    Journal Views                         #
 #############################################################
 
-class JournalCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class JournalCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
     model = models.Journal
     form_class = forms.JournalForm
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {"title": "Create New Journal"}
 
-class JournalDetailView(LoginRequiredMixin, DetailView):
+class JournalDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'journal_detail.html')
     model = models.Journal
 
-class JournalListView(LoginRequiredMixin, ExtraContext, FilterView):
+class JournalListView(BookkeeperCheckMixin, ExtraContext, FilterView):
     template_name = os.path.join('accounting', 'journal_list.html')
     filterset_class = filters.JournalFilter
     paginate_by = 10

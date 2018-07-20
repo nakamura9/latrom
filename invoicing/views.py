@@ -5,7 +5,7 @@ import json
 import urllib
 
 from django.views.generic import TemplateView, ListView, DetailView, FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
@@ -24,7 +24,18 @@ from models import *
 import filters
 import serializers
 
-class Home(LoginRequiredMixin, TemplateView):
+
+class SalesRepCheckMixin(UserPassesTestMixin):
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        elif hasattr(self.request.user, 'employee') and \
+                self.request.user.employee.is_sales_rep:
+            return True
+        else:
+            return False
+
+class Home(SalesRepCheckMixin, TemplateView):
     template_name = os.path.join("invoicing", "home.html")
 
 #########################################
@@ -37,7 +48,7 @@ class CustomerAPIViewSet(viewsets.ModelViewSet):
 
 #No customer list, overlooked!
 
-class CustomerCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class CustomerCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     extra_context = {"title": "Create New Customer"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
@@ -45,7 +56,7 @@ class CustomerCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.CustomerForm
 
 
-class QuickCustomerCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class QuickCustomerCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     extra_context = {"title": "Create New Customer"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
@@ -53,7 +64,7 @@ class QuickCustomerCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.QuickCustomerForm
 
 
-class CustomerUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class CustomerUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Customer"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
@@ -61,7 +72,7 @@ class CustomerUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class CustomerListView(LoginRequiredMixin, ExtraContext, FilterView):
+class CustomerListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "List of Customers",
                     "new_link": reverse_lazy("invoicing:create-customer")}
     template_name = os.path.join("invoicing", "customer_list.html")
@@ -72,7 +83,7 @@ class CustomerListView(LoginRequiredMixin, ExtraContext, FilterView):
         return Customer.objects.all().order_by('name')
 
 
-class CustomerDeleteView(LoginRequiredMixin, DeleteView):
+class CustomerDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = Customer
     success_url = reverse_lazy('invoicing:customer-list')
@@ -81,7 +92,7 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
 #           Customer Views              #
 #########################################
 
-class CreditNoteCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     '''Credit notes are created along with react on the front end.
     each note tracks each invoice item and returns the quantity 
     of the item that was returned. The data is shared as a single 
@@ -105,7 +116,7 @@ class CreditNoteCreateView(LoginRequiredMixin, ExtraContext, CreateView):
         return resp
 
 
-class CreditNoteUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class CreditNoteUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Credit Note"}
     template_name = os.path.join("invoicing", "create_credit_note.html")
     model = CreditNote
@@ -113,7 +124,7 @@ class CreditNoteUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class CreditNoteListView(LoginRequiredMixin, ExtraContext, FilterView):
+class CreditNoteListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "List of Credit Notes",
                     "new_link": reverse_lazy("invoicing:credit-note-create")}
     template_name = os.path.join("invoicing", "credit_note_list.html")
@@ -123,7 +134,7 @@ class CreditNoteListView(LoginRequiredMixin, ExtraContext, FilterView):
     def get_queryset(self):
         return CreditNote.objects.all().order_by('date')
 
-class CreditNoteDetailView(LoginRequiredMixin, DetailView):
+class CreditNoteDetailView(SalesRepCheckMixin, DetailView):
     template_name = os.path.join('invoicing', 'credit_note.html')
     model = CreditNote
     
@@ -143,31 +154,31 @@ class PaymentAPIViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = serializers.PaymentsSerializer
 
-class PaymentDeleteView(LoginRequiredMixin, DeleteView):
+class PaymentDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join("common_data", "delete_template.html")
     model = Payment
     success_url = reverse_lazy("invoicing:invoices-list")
 
-class PaymentCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class PaymentCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     extra_context = {"title": "Create New Payment"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Payment
     success_url = reverse_lazy("invoicing:home")
     form_class = forms.PaymentForm
 
-class PaymentUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class PaymentUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Payment"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Payment
     form_class = forms.PaymentUpdateForm #some fields missing!
     success_url = reverse_lazy("invoicing:home")
 
-class SalesRepDeleteView(LoginRequiredMixin, DeleteView):
+class SalesRepDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join("common_data", "delete_template.html")
     model = SalesRepresentative
     success_url = reverse_lazy("invoicing:invoices-list")
 
-class PaymentListView(LoginRequiredMixin, ExtraContext, FilterView):
+class PaymentListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "List of Payments",
                     "new_link": reverse_lazy("invoicing:create-payment")}
     template_name = os.path.join("invoicing", "payment_list.html")
@@ -182,7 +193,7 @@ class PaymentListView(LoginRequiredMixin, ExtraContext, FilterView):
 #           Sales Rep Views             #
 #########################################
 
-class SalesRepCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class SalesRepCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     extra_context = {"title": "Add New Sales Rep."}
     template_name = os.path.join("common_data", "create_template.html")
     model = SalesRepresentative
@@ -190,7 +201,7 @@ class SalesRepCreateView(LoginRequiredMixin, ExtraContext, CreateView):
     form_class = forms.SalesRepForm
 
 
-class SalesRepUpdateView(LoginRequiredMixin,ExtraContext, UpdateView):
+class SalesRepUpdateView(SalesRepCheckMixin,ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Sales Rep."}
     template_name = os.path.join("common_data", "create_template.html")
     model = SalesRepresentative
@@ -198,7 +209,7 @@ class SalesRepUpdateView(LoginRequiredMixin,ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class SalesRepListView(LoginRequiredMixin, ExtraContext, FilterView):
+class SalesRepListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "List of Sales Representatives",
                     "new_link": reverse_lazy("invoicing:create-sales-rep")}
     template_name = os.path.join("invoicing", "sales_rep_list.html")
@@ -226,12 +237,12 @@ class InvoiceItemAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.InvoiceItemSerializer
 
 
-class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
+class InvoiceDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join("common_data", "delete_template.html")
     model = Invoice
     success_url = reverse_lazy("invoicing:invoices-list")
 
-class InvoiceListView(LoginRequiredMixin, ExtraContext, FilterView):
+class InvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "Invoice List",
                     "new_link": reverse_lazy("invoicing:create-invoice")}
     template_name = os.path.join("invoicing", "invoice_list.html")
@@ -242,7 +253,7 @@ class InvoiceListView(LoginRequiredMixin, ExtraContext, FilterView):
         return Invoice.objects.filter(active=True).order_by('date_issued')
     
 
-class InvoiceDetailView(LoginRequiredMixin, DetailView):
+class InvoiceDetailView(SalesRepCheckMixin, DetailView):
     model = Invoice
     template_name = os.path.join("invoicing", "invoice_templates",
         'invoice.html')
@@ -253,7 +264,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
         return apply_style(context)
 
         
-class InvoiceCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class InvoiceCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -308,7 +319,7 @@ class InvoiceCreateView(LoginRequiredMixin, ExtraContext, CreateView):
 
         return resp
 
-class InvoiceUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class InvoiceUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     '''An update view is similar to a create view but it allows the 
     user to remove existing items from a quote using the list 
     of hidden inputs called 'removed_items[]'. '''
@@ -344,7 +355,7 @@ class QuoteItemAPIViewSet(viewsets.ModelViewSet):
     queryset = QuoteItem.objects.all()
     serializer_class = serializers.QuoteItemSerializer
 
-class QuoteCreateView(LoginRequiredMixin, ExtraContext, CreateView):
+class QuoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -384,7 +395,7 @@ class QuoteCreateView(LoginRequiredMixin, ExtraContext, CreateView):
         return resp
 
 
-class QuoteUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
+class QuoteUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     '''An update view is similar to a create view but it allows the 
     user to remove existing items from a quote using the list 
     of hidden inputs called 'removed_items[]'. '''
@@ -411,7 +422,7 @@ class QuoteUpdateView(LoginRequiredMixin, ExtraContext, UpdateView):
         
         return resp
 
-class QuoteDetailView(LoginRequiredMixin, DetailView):
+class QuoteDetailView(SalesRepCheckMixin, DetailView):
     model = Quote
     template_name = os.path.join("invoicing", "quote_templates",
         'quote.html')
@@ -423,7 +434,7 @@ class QuoteDetailView(LoginRequiredMixin, DetailView):
         return apply_style(context)
 
 
-class QuoteListView(LoginRequiredMixin, ExtraContext, FilterView):
+class QuoteListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {
         "title": "Quotation List",
         "new_link": reverse_lazy("invoicing:create-quote")
@@ -435,7 +446,7 @@ class QuoteListView(LoginRequiredMixin, ExtraContext, FilterView):
     def get_queryset(self):
         return Quote.objects.all().order_by('date')
     
-class QuoteDeleteView(LoginRequiredMixin, DeleteView):
+class QuoteDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join("common_data", "delete_template.html")
     model = Quote
     success_url = reverse_lazy("invoicing:quote-list")
@@ -445,7 +456,7 @@ class QuoteDeleteView(LoginRequiredMixin, DeleteView):
 #               Receipt Views           #
 #########################################
 
-class ReceiptDetailView(LoginRequiredMixin, DetailView):
+class ReceiptDetailView(SalesRepCheckMixin, DetailView):
     model = Payment
     template_name = os.path.join("invoicing", "receipt_templates",
         'receipt.html')
@@ -457,7 +468,7 @@ class ReceiptDetailView(LoginRequiredMixin, DetailView):
         return apply_style(context)
 
 
-class InvoiceReceiptDetailView(LoginRequiredMixin, DetailView):
+class InvoiceReceiptDetailView(SalesRepCheckMixin, DetailView):
     model = Invoice
     template_name = os.path.join("invoicing", "receipt_templates",
         'invoice_receipt.html')
@@ -474,7 +485,7 @@ class InvoiceReceiptDetailView(LoginRequiredMixin, DetailView):
 #########################################################
 
 
-class ConfigView(LoginRequiredMixin, UpdateView):
+class ConfigView(SalesRepCheckMixin, UpdateView):
     template_name = os.path.join("invoicing", "config.html")
     form_class = forms.SalesConfigForm
     model = SalesConfig

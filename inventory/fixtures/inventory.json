@@ -5,5 +5,38 @@
         "fields": {
             "inventory_valuation_method": 1
         }
+    },
+    {
+        "model": "inventory.UnitOfMeasure",
+        "pk": 1,
+        "fields": {
+            "name": "ea",
+            "description": "ea for 'each'."
+        }
+    },
+    {
+        "model": "inventory.UnitOfMeasure",
+        "pk": 2,
+        "fields": {
+            "name": "m",
+            "description": "Meter."
+        }
+    }
+    ,
+    {
+        "model": "inventory.UnitOfMeasure",
+        "pk": 3,
+        "fields": {
+            "name": "lt",
+            "description": "Litre."
+        }
+    },
+    {
+        "model": "inventory.UnitOfMeasure",
+        "pk": 4,
+        "fields": {
+            "name": "kg",
+            "description": "Kilogram."
+        }
     }
 ]
