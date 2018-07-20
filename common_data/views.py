@@ -15,4 +15,7 @@ class ReactTest(TemplateView):
 
 
 def config_JSON_API(request):
-    return JsonResponse(SalesConfig.objects.first().__dict__)
+    return JsonResponse(SalesConfig.get_config_dict())
+
+def get_logo_url(request):
+    return JsonResponse({'url': SalesConfig.logo_url() })

@@ -1,0 +1,9 @@
+[
+    {
+        "model": "accounting.AccountingSettings",
+        "pk": "1",
+        "fields": {
+            "start_of_financial_year": "2018-01-01"
+        }
+    }
+]

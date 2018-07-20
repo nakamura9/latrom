@@ -7,7 +7,11 @@ from decimal import Decimal as D
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from common_data.models import Person
+from common_data.models import Person, SingletonModel
+
+class AccountingSettings(SingletonModel):
+    start_of_financial_year = models.DateField()
+    use_default_chart_of_accounts = models.BooleanField(default=True)
 
 class Bookkeeper(models.Model):
     '''Model that gives employees access to the bookkeeping function of the 

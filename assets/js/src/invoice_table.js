@@ -179,7 +179,7 @@ class EntryRow extends Component {
             url: '/base/api/config',
             method:'get'
         }).then( res =>{
-            this.setState({show_tax: res.tax_column});
+            this.setState({show_tax: res.include_tax_in_invoice});
         });
 
     }

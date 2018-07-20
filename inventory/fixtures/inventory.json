@@ -1,5 +1,9 @@
 [
     {
-        "model": 
+        "model": "inventory.InventorySettings",
+        "pk": 1,
+        "fields": {
+            "inventory_valuation_method": 1
+        }
     }
 ]

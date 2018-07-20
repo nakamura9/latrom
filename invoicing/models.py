@@ -41,6 +41,21 @@ class SalesConfig(SingletonModel):
     include_tax_in_invoice = models.BooleanField(default=True)
     business_registration_number = models.CharField(max_length=32,blank=True)
 
+    @classmethod
+    def get_config_dict(cls):
+        d = cls.objects.first().__dict__
+        del d['_state']
+        return d
+
+    @classmethod
+    def logo_url(cls):
+        conf = cls.objects.first()
+        print conf
+
+        if conf.logo:
+            print conf.logo.url
+            return conf.logo.url
+        return ""
 
 class Customer(models.Model):
     '''The customer model represents business clients to whom products are 
@@ -124,6 +139,7 @@ class ContactPerson(Person):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+#change 
 INVOICE_TYPES = [
     ('cash', 'Cash Invoice'),
     ('credit', 'Credit Based')

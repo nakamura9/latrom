@@ -186,14 +186,14 @@ class DirectPaymentFormView(LoginRequiredMixin, ExtraContext, FormView):
             )
         return resp
 
-class AccountConfigView(LoginRequiredMixin, FormView):
+class AccountConfigView(LoginRequiredMixin, UpdateView):
     '''
     Tabbed Configuration view for accounts 
     '''
     form_class = forms.ConfigForm
     template_name = os.path.join('accounting', 'config.html')
     success_url = reverse_lazy('accounting:dashboard')
-    # change this
+    model = models.AccountingSettings
 
 class NonInvoicedCashSale(LoginRequiredMixin, FormView):
     '''

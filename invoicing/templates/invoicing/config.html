@@ -47,7 +47,13 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //implement get logo function
+        $.ajax({
+            url: "/base/logo-url",
+            method:"get"
+        }).then(res => {
+            $("#id-logo-preview").attr({src: res.url });
+        })
+        
         $('input[type="file"]').attr({
             'onchange': 'upload_img(this)'
         });

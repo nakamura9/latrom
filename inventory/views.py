@@ -291,9 +291,10 @@ class UnitDeleteView(LoginRequiredMixin, DeleteView):
     model = models.UnitOfMeasure
     success_url = reverse_lazy('invoicing.item-list')
 
-class ConfigView(LoginRequiredMixin, FormView):
+class ConfigView(LoginRequiredMixin, UpdateView):
     template_name = os.path.join('inventory', 'config.html')
     form_class = forms.ConfigForm
+    model = models.InventorySettings
     success_url = reverse_lazy('inventory:home')
     #change this page
 

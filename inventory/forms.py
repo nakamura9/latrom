@@ -16,8 +16,11 @@ VALUATION_OPTIONS = [
         ('averaging', 'Averaging'),
         ('lcm', 'Lower of Cost or Market'),
     ]
-class ConfigForm(BootstrapMixin, forms.Form):
-    inventory_valuation = forms.ChoiceField(choices=VALUATION_OPTIONS)
+class ConfigForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.InventorySettings
+
 
 class SupplierForm(forms.ModelForm, BootstrapMixin):
     class Meta:

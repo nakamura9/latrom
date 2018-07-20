@@ -9,15 +9,11 @@ from crispy_forms.bootstrap import TabHolder, Tab
 from django.contrib.auth.models import User
 from inventory.models import WareHouse
 
-class ConfigForm(BootstrapMixin, forms.Form):
-    start_of_financial_year = forms.DateField()
-    use_default_account_names = forms.BooleanField()
-    direct_payment_journal = forms.ModelChoiceField(models.Journal.objects.all())
-    cash_sale_account = forms.ModelChoiceField(
-        models.Account.objects.all())
-    direct_payment_account = forms.ModelChoiceField(
-        models.Account.objects.all())
-
+class ConfigForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.AccountingSettings
+        fields = "__all__"
+        
 class AssetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"

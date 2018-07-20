@@ -11,7 +11,49 @@ from invoicing.models import Invoice, InvoiceItem
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
 
-
+class InventorySettings(SingletonModel):
+    INVENTORY_VALUATION_METHODS = [
+        (1, 'Averaging'),
+        (2, 'FIFO'),
+        (3, 'LIFO'),
+        (4, 'Last order price')
+    ]
+    PRICING_METHODS = [
+        (1, 'Direct Pricing'),
+        (2, 'Margin'),
+        (3, 'Markup')
+    ]
+    DOCUMENT_THEME_CHOICES = [
+        (1, 'Simple'),
+        (2, 'Blue'),
+        (3, 'Steel'),
+        (4, 'Verdant'),
+        (5, 'Warm')
+    ]
+    INVENTORY_CHECK_FREQUENCY = [
+        (1, 'Monthly'),
+        (2, 'Quarterly'),
+        (3, 'Bi-Annually'),
+        (4, 'Annually')
+    ]
+    INVENTORY_CHECK_DATE = [
+        (i, i) for i in range(28, 1)
+    ]
+    inventory_valuation_method = models.PositiveSmallIntegerField(
+        choices = INVENTORY_VALUATION_METHODS, default=1
+    )
+    item_sales_pricing_method= models.PositiveSmallIntegerField(
+        choices=PRICING_METHODS, default=1
+    )
+    order_template_theme = models.PositiveSmallIntegerField(
+        choices=DOCUMENT_THEME_CHOICES, default=1
+    )
+    inventory_check_frequency = models.PositiveSmallIntegerField(
+        choices=INVENTORY_CHECK_FREQUENCY, default=1
+    )
+    inventory_check_date = models.PositiveSmallIntegerField(
+        choices=INVENTORY_CHECK_DATE, default=1
+    )
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
@@ -54,11 +96,7 @@ class Supplier(models.Model):
         super(Supplier, self).save(*args, **kwargs)
         
 
-PRICING_CHOICES = [
-    (0, 'Manual'),
-    (1, 'Margin'),
-    (2, 'Markup')
-]
+
 
 class Item(models.Model):
     '''The most basic element of inventory. Represents tangible products that are sold.
@@ -78,6 +116,11 @@ class Item(models.Model):
     description in the last 30 days
     
     '''
+    PRICING_CHOICES = [
+    (0, 'Manual'),
+    (1, 'Margin'),
+    (2, 'Markup')
+]
     item_name = models.CharField(max_length = 32)
     code = models.AutoField(primary_key=True)
     unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="", null=True)

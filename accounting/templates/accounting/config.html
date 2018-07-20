@@ -1,64 +1,27 @@
-{% extends "window.html" %}
-{% block content %}
-<form method="POST" action="">
-    {% csrf_token %}
-        <div class="jumbotron">
-                <h1 class="display-3">Accounting Configuration</h1>
-                <p class="lead">List of settings for Accounts</p>
-                <hr class="my-2">
-                <p class="lead">
-                    <button class="btn btn-success btn-lg" type="submit">Submit Changes</button>
-                </p>
-                
-            </div>
-            <hr class="my-2" />
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" href="#general" aria-controls="general" data-toggle="tab">General Settings</a>
-            </li>
-            <li class="nav-item">
-                    <a class="nav-link" href="#accounts" aria-controls="accounts" data-toggle="tab">Default Accounts</a>
-                </li>
-    </ul>
-    <div class="tab-content">
-            <div class="tab-pane fade show active" id="general">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <label for="">Start Of Financial Year</label>
-                            </td>
-                            <td>{{form.start_of_financial_year}}</td>
-                        </tr>
-                        <tr>
-                            <td><label for="">Use Default Account Names?</label></td>
-                            <td>{{form.use_default_account_names}}</td>
-                        </tr>
-                        <tr>
-                            <td><label for="">Direct Payment Journal</label></td>
-                            <td>{{form.direct_payment_journal}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade show" id="accounts">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <label for="">Default Cash Sale Account</label>
-                                </td>
-                                <td>{{form.cash_sale_account}}</td>
-                            </tr>
-                            <tr>
-                                <td><label for="">Direct Payment Default Account</label></td>
-                                <td>{{form.direct_payment_account}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+{% extends "window.html" %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Accounting Configuration</h1>
+    <p class="lead">List of settings for Accounts</p>
+    <hr class="my-2">
+
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Options</h4>
+                    <form method="POST" action="">
+                            {% csrf_token %} {{form.as_p}}
+                        <button class="btn btn-primary">Submit</button>
+                        </form>
                 </div>
-    </div>    
-</form>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+
 
 {% endblock content %}
