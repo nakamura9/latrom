@@ -1,10 +1,67 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView, DeleteView, ListView
+from django.views.generic.edit import CreateView, UpdateView
 import os
 from django.urls import reverse_lazy
 from accounting.models import Journal
 from invoicing.models import SalesConfig
+from django_filters.views import FilterView
+import filters
+from utilities import ExtraContext
+#from crudbuilder.abstract import BaseCrudBuilder
+import models 
+import forms 
+
+CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
+
+#########################################################
+#                  Organization Views                   #
+#########################################################
+'''class OrganizationCRUD(BaseCrudBuilder):
+    model = models.Organization
+    search_fields = ['legal_name']
+    tables2_fields = ('legal_name',)
+    tables2_css_class = "table"
+    login_required=True'''
+
+class OrganizationCreateView(ExtraContext, CreateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.OrganizationForm
+    success_url = reverse_lazy('invoicing:home')
+    extra_context = {
+        'title': 'Add Organization'
+    }
+
+class OrganizationUpdateView(ExtraContext, UpdateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.OrganizationForm
+    model = models.Organization
+    success_url = reverse_lazy('invoicing:home')
+    extra_context = {
+        'title': 'Update Organization details'
+    }
+
+
+class OrganizationDetailView(ExtraContext, DetailView):
+    template_name = os.path.join('common_data', 'organization','detail.html')
+    model = models.Organization
+    
+
+class OrganizationListView(ExtraContext, FilterView):
+    template_name = os.path.join('common_data', 'organization', 'list.html')
+    queryset = models.Organization.objects.all()
+    filterset_class = filters.OrganizationFilter
+    extra_context = {
+        'title': 'Organization List',
+        'new_link': reverse_lazy('base:organization-create')
+    }
+
+
+
+#########################################################
+#                    Individual Views                   #
+#########################################################
 
 
 class WorkFlowView(TemplateView):

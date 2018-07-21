@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'autofixture',
 ]
+#'django_tables2','crudbuilder',
+LOGIN_REQUIRED_FOR_CRUD = True
+PROJECT_NAME = 'Smart business solutions'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY =True

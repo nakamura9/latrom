@@ -1,4 +1,5 @@
 from django import forms
+import models
 
 class BootstrapMixin(forms.Form):
     """This class intergrates bootstrap into select form fields
@@ -22,3 +23,9 @@ class PeriodReportForm(BootstrapMixin, forms.Form):
     default_periods = forms.ChoiceField(choices=PERIOD_CHOICES)
     start_period = forms.DateField(required=False)
     end_period = forms.DateField(required=False)
+
+
+class OrganizationForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.Organization

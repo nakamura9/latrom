@@ -52,6 +52,11 @@ class Organization(models.Model):
     def __str__(self):
         return self.legal_name
 
+    @property 
+    def members(self):
+        return self.individual_set.all()
+
+
 class SingletonModel(models.Model):
     class Meta:
         abstract = True

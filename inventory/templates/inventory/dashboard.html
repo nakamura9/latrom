@@ -57,11 +57,10 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
+                            
+                        <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a></li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:supplier-create' %}">Create New Supplier</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:supplier-list'%} ">List Suppliers</a>
+                                <a href="{% url 'inventory:supplier-list'%} ">Manage Suppliers</a>
                             </li>
                             <!--
                                 <li class="list-group-item">
