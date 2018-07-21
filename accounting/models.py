@@ -385,6 +385,7 @@ class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', null=True)
+    bill = models.ForeignKey('invoicing.Bill', null=True)#not required
     
     def create_entry(self):
         j = JournalEntry.objects.create(
@@ -401,16 +402,25 @@ class Expense(AbstractExpense):
 
     def save(self, *args, **kwargs):
         flag = self.pk
+        if self.billable and self.customer == None:
+            raise ValueError('A billable expense needs a customer')
         super(Expense, self).save(*args, **kwargs)
         if flag is None:
             self.create_entry()
 
 
-EXPENSE_CYCLE_CHOICES = [(1, 'Daily'), (7, 'Weekly'), (14, 'Bi- Monthly'), 
-    (30, 'Monthly'), (90, 'Quarterly'), (182, 'Bi-Annually'), (365, 'Annually')]
+
 
 class RecurringExpense(AbstractExpense):
-    cycle = models.IntegerField(choices=EXPENSE_CYCLE_CHOICES, null=True)
+    EXPENSE_CYCLE_CHOICES = [
+        (1, 'Daily'), 
+        (7, 'Weekly'), 
+        (14, 'Bi- Monthly'), 
+        (30, 'Monthly'), 
+        (90, 'Quarterly'), 
+        (182, 'Bi-Annually'), 
+        (365, 'Annually')]
+    cycle = models.IntegerField(choices=EXPENSE_CYCLE_CHOICES, default=30)
     expiration_date = models.DateField(null=True)
     start_date = models.DateField(null=True)
     last_created_date = models.DateField(null=True)

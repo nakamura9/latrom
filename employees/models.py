@@ -49,9 +49,10 @@ class Employee(Person):
     employee_number = models.AutoField(primary_key=True)
     hire_date = models.DateField()
     title = models.CharField(max_length=32)
-    pay_grade = models.ForeignKey('employees.PayGrade', null=True)
+    pay_grade = models.ForeignKey('employees.PayGrade', default=1)
     leave_days = models.FloatField(default=0)
-    user = models.OneToOneField('auth.User', null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField('auth.User', null=True,
+         on_delete=models.CASCADE)#not all are users
     active = models.BooleanField(default=True)
     
     def delete(self):
@@ -95,6 +96,8 @@ class Employee(Person):
     def is_bookkeeper(self):
         return hasattr(self, 'bookkeeper')
 
+
+#Change to benefits 
 class Allowance(models.Model):
     '''simple object that tracks a fixed allowance as part of a pay
     grade'''
@@ -109,12 +112,6 @@ class Allowance(models.Model):
         '''prevents deletion of objects'''
         self.active = False
         self.save()
-
-# for model Deduction
-DEDUCTION_METHODS = ((0, 'Rated'), (1, 'Fixed'))
-DEDUCTION_TRIGGERS = ((0, 'All Income'), 
-    (1, 'Taxable Income'), 
-    (2, 'Tax'))
 
 class Deduction(models.Model):
     '''
@@ -132,6 +129,12 @@ class Deduction(models.Model):
     based on the rules defined in the model. 
 
     '''
+    DEDUCTION_METHODS = ((0, 'Rated'), (1, 'Fixed'))
+    DEDUCTION_TRIGGERS = (
+        (0, 'All Income'), 
+        (1, 'Taxable Income'), 
+        (2, 'Tax')
+    )
     name = models.CharField(max_length=32)
     method = models.IntegerField(choices=DEDUCTION_METHODS)
     trigger = models.IntegerField(choices = DEDUCTION_TRIGGERS,
@@ -191,8 +194,8 @@ class PayGrade(models.Model):
 
     properties
     -----------
-    total_allowances - returns the numerical total of the applied allowance for a 
-        particular employee
+    total_allowances - returns the numerical total of the applied allowance for 
+    a particular employee
     
     '''
     name = models.CharField(max_length=16)
@@ -201,7 +204,8 @@ class PayGrade(models.Model):
     hourly_rate = models.FloatField(default=0)
     overtime_rate = models.FloatField(default=0)
     overtime_two_rate = models.FloatField(default=0)
-    commission = models.ForeignKey('employees.CommissionRule', null=True, blank=True)
+    commission = models.ForeignKey('employees.CommissionRule', 
+        null=True, blank=True)
     allowances = models.ManyToManyField('employees.Allowance', blank=True)
     deductions = models.ManyToManyField('employees.Deduction', blank=True)
     payroll_taxes = models.ManyToManyField('employees.PayrollTax', blank=True)
@@ -240,7 +244,7 @@ class Payslip(models.Model):
     '''
     start_period = models.DateField()
     end_period = models.DateField()
-    employee = models.ForeignKey('employees.Employee', null=True)
+    employee = models.ForeignKey('employees.Employee')
     normal_hours = models.FloatField()
     overtime_one_hours = models.FloatField()
     overtime_two_hours = models.FloatField()
@@ -378,7 +382,7 @@ class PayrollTax(models.Model):
         return TaxBracket.objects.filter(payroll_tax =self).order_by('upper_boundary')
 
 class TaxBracket(models.Model):
-    payroll_tax = models.ForeignKey('employees.PayrollTax', null=True)
+    payroll_tax = models.ForeignKey('employees.PayrollTax')
     lower_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     upper_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     rate = models.DecimalField(max_digits=5, decimal_places=2)

@@ -2,14 +2,12 @@
 <tr>
     <td class="info">Full Name</td>
     <td class="info">Address</td>
-    <td class="info">Phone #</td>
     <td class="info">Actions</td>
 </tr>
 {% endblock %} {% block list_content %} {% for customer in object_list %}
 <tr>
-    <td>{{customer.name}}</td>
+    <td>{{customer}}</td>
     <td>{{customer.billing_address}}</td>
-    <td>{{customer.phone}}</td>
     <td>
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"

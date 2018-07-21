@@ -27,7 +27,7 @@ class SalesConfig(SingletonModel):
     default_quotation_comments = models.TextField(blank=True)
     default_credit_note_comments = models.TextField(blank=True)
     default_terms = models.TextField(blank=True)
-    sales_tax = models.ForeignKey('accounting.Tax', null=True)
+    sales_tax = models.ForeignKey('accounting.Tax', null=True, blank="True")
     include_shipping_address = models.BooleanField(default=False)
     business_address = models.TextField(blank=True)
     logo = models.ImageField(null=True,upload_to="logo/")
@@ -57,23 +57,33 @@ class SalesConfig(SingletonModel):
             return conf.logo.url
         return ""
 
+
 class Customer(models.Model):
     '''The customer model represents business clients to whom products are 
     sold. Customers are typically businesses and the fields reflect that 
     likelihood. Individuals however can also be represented.
     Customers can have accounts if store credit is extended to them.'''
-    name = models.CharField(max_length=64, default="")
-    tax_clearance = models.CharField(max_length=64, default="", blank=True)
-    business_address = models.TextField(default= "", blank=True)
+    #make sure it can only be one or the other not both
+    organization = models.OneToOneField('common_data.Organization', null=True,
+        blank=True, unique=True)
+    individual = models.OneToOneField('common_data.Individual', null=True,
+        blank=True,)    
     billing_address = models.TextField(default= "", blank=True)
     banking_details = models.TextField(default= "", blank=True)
-    contact_person = models.ForeignKey('invoicing.ContactPerson', null=True, blank=True)
     active = models.BooleanField(default=True)
-    website = models.CharField(default= "",max_length=64, blank=True)
-    email=models.CharField(default= "",max_length=64, blank=True)
-    phone = models.CharField(default= "",max_length=64, blank=True)
-    account = models.ForeignKey('accounting.Account', null=True, blank=True)
-    
+    account = models.ForeignKey('accounting.Account', null=True)#created in save method
+
+    @property
+    def name(self):
+        if self.organization:
+            return self.organization.legal_name
+        else:
+            return str(self.individual)
+
+    @property
+    def is_organization(self):
+        return self.organization != None
+
     def delete(self):
         self.active = False
         self.save()
@@ -122,28 +132,115 @@ class Customer(models.Model):
         
         return age_list
 
-class ContactPerson(Person):
-    '''inherits from the base person class in common data
-    represents clients of the business with entry specific details.
-    the customer can also have an account with the business for credit 
-    purposes
-    A customer may be a stand alone individual or part of a business organization.
-    '''
-    phone_two = models.CharField(max_length = 16,blank=True , default="")
-    other_details = models.TextField(blank=True, default="")
-    
-    def delete(self):
-        self.active = False
-        self.save()
-
-    def __str__(self):
-        return self.first_name + " " + self.last_name
-
 #change 
 INVOICE_TYPES = [
     ('cash', 'Cash Invoice'),
     ('credit', 'Credit Based')
     ]
+
+DEFAULT_TAX = 1
+DEFAULT_SALES_REP = 1
+DEFAULT_CUSTOMER = 1
+
+class AbstractSale(models.Model):
+    SALE_STATUS = [
+        ('quotation', 'Quotation'),
+        ('draft', 'Draft'),
+        ('received', 'Sent'),
+        ('paid', 'Paid In Full'),
+        ('paid-partially', 'Paid Partially'),
+        ('reversed', 'Reversed'),
+    ]
+    status = models.CharField(max_length=16, choices=SALE_STATUS)
+    customer = models.ForeignKey("invoicing.Customer", default=DEFAULT_CUSTOMER)
+    salesperson = models.ForeignKey('invoicing.SalesRepresentative', 
+        default=DEFAULT_SALES_REP)
+    active = models.BooleanField(default=True)
+    date_issued = models.DateField( default=timezone.now)
+    due= models.DateField( default=timezone.now)
+    date= models.DateField(default=timezone.now)
+    discount = models.DecimalField(max_digits=6, decimal_places=2)
+    tax = models.ForeignKey('accounting.Tax', blank="True", null=True)
+    terms = models.CharField(max_length = 128, blank=True)
+    comments = models.TextField(blank=True)
+    
+    def delete(self):
+        self.active = False
+        self.save()
+    
+
+class SalesInvoice(AbstractSale):
+    '''used to charge for finished products'''
+    DEFAULT_WAREHOUSE = 1 #make fixture
+    purchase_order_number = models.CharField(blank=True, max_length=32)
+    ship_from = models.ForeignKey('inventory.WareHouse',
+         default=DEFAULT_WAREHOUSE)
+
+    def add_item(self, item, quantity, discount):
+        self.salesinvoiceline_set.create(
+            item=item, 
+            quantity=quantity,
+            discount=discount
+        )
+
+class SalesInvoiceLine(models.Model):
+    invoice = models.ForeignKey('invoicing.SalesInvoice')
+    item = models.ForeignKey("inventory.Item")
+    quantity = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
+    returned_quantity = models.FloatField(default=0.0)
+    returned = models.BooleanField(default=False)
+
+    
+class ServiceInvoice(AbstractSale):
+    '''Used to charge clients for a service'''
+    pass
+
+class ServiceInvoiceLine(models.Model):
+    invoice = models.ForeignKey('invoicing.ServiceInvoice')
+    service = models.ForeignKey('invoicing.Service')
+    hours = models.DecimalField(max_digits=6, decimal_places=2)
+    
+
+class Service(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    #should cover expenses
+    flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
+    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
+
+
+class Bill(AbstractSale):
+    '''Used to recover billable expenses'''
+    def get_billable_expenses(self):
+        return self.customer.expense_set.filter(bill__isnull=True)
+            
+class BillLine(models.Model):
+    date = models.DateField()
+    description = models.CharField(max_length=255)
+    bill = models.ForeignKey('invoicing.Bill')
+    expense = models.ForeignKey('accounting.Expense')
+
+class CombinedInvoice(AbstractSale):
+    '''Basic Invoice format with description and amount fields 
+    that combines the features of sales, services and bills'''
+    pass
+
+class CombinedInvoiceLine(models.Model):
+    LINE_CHOICES = [
+        (1, 'item'),
+        (2, 'service'),
+        (3, 'expense'),
+    ]
+    expense = models.ForeignKey('accounting.Expense', null=True)
+    service = models.ForeignKey('invoicing.Service', null=True)
+    item = models.ForeignKey("inventory.Item", null=True)
+    line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
+
+    @property
+    def description(self):
+        pass
 
 class Invoice(models.Model):
     '''Represents the document sent by a selling party to a buyer.
@@ -168,16 +265,16 @@ class Invoice(models.Model):
     '''
     type_of_invoice = models.CharField(max_length=12, 
         choices=INVOICE_TYPES, default='cash')
-    customer = models.ForeignKey("invoicing.Customer", null=True)
+    customer = models.ForeignKey("invoicing.Customer", default=1)
     date_issued = models.DateField( default=timezone.now)
     due_date = models.DateField( default=timezone.now)
     date_paid = models.DateField(default=timezone.now)
-    ship_from = models.ForeignKey('inventory.WareHouse', null=True)
+    ship_from = models.ForeignKey('inventory.WareHouse')
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
     number = models.AutoField(primary_key = True)
-    tax = models.ForeignKey('accounting.Tax', null=True)
-    salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
+    tax = models.ForeignKey('accounting.Tax', null=True, blank="True")
+    salesperson = models.ForeignKey('invoicing.SalesRepresentative')
     active = models.BooleanField(default=True)
     purchase_order_number = models.CharField(blank=True, max_length=32)
     
@@ -200,7 +297,7 @@ class Invoice(models.Model):
     def total(self):
         return self.subtotal + self.tax_amount
 
-    def add_item(self, item, quantity,discount):
+    def add_item(self, item, quantity, discount):
         self.invoiceitem_set.create(
             item=item, 
             quantity=quantity,
@@ -297,8 +394,8 @@ class InvoiceItem(models.Model):
     returned_value - value of goods returned to store
     
     '''
-    invoice = models.ForeignKey('invoicing.Invoice', null=True)
-    item = models.ForeignKey("inventory.Item", null=True)
+    invoice = models.ForeignKey('invoicing.Invoice')
+    item = models.ForeignKey("inventory.Item")
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
@@ -339,6 +436,7 @@ class InvoiceItem(models.Model):
     def returned_value(self):
         return self.price * decimal.Decimal(self.returned_quantity)
 
+
 class SalesRepresentative(models.Model):
     '''Really just a dummy class that points to an employee. 
     allows sales and commission to be tracked.
@@ -348,7 +446,7 @@ class SalesRepresentative(models.Model):
     sales - takes two dates as arguments and returns the 
     amount sold exclusive of tax. Used in commission calculation
     '''
-    employee = models.OneToOneField('employees.Employee', null=True)
+    employee = models.OneToOneField('employees.Employee')
     number = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
 
@@ -379,7 +477,7 @@ class Payment(models.Model):
     ---------
     create_entry - returns the journal entry that debits the customer account
         and credits the sales account. Should also impact tax accounts'''
-    invoice = models.ForeignKey("invoicing.Invoice", null=True)
+    invoice = models.ForeignKey("invoicing.Invoice")
     amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
     method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
@@ -388,7 +486,7 @@ class Payment(models.Model):
                                         ("ecocash", "EcoCash")],
                                         default='transfer')
     reference_number = models.AutoField(primary_key=True)
-    sales_rep = models.ForeignKey("invoicing.SalesRepresentative", null=True)
+    sales_rep = models.ForeignKey("invoicing.SalesRepresentative")
     comments = models.TextField(default="Thank you for your business")
     def __str__(self):
         return 'PMT' + str(self.pk)
@@ -458,11 +556,11 @@ class Quote(models.Model):
 
     '''
     date = models.DateField(default=datetime.date.today)
-    customer = models.ForeignKey('invoicing.Customer', null=True)
+    customer = models.ForeignKey('invoicing.Customer')
     number = models.AutoField(primary_key = True)
-    salesperson = models.ForeignKey('invoicing.SalesRepresentative', null=True)
+    salesperson = models.ForeignKey('invoicing.SalesRepresentative')
     comments = models.TextField(null = True, blank=True)
-    tax = models.ForeignKey('accounting.Tax', null=True)
+    tax = models.ForeignKey('accounting.Tax', null=True, blank="True")
     invoiced = models.BooleanField(default=False)
     
 
@@ -526,8 +624,8 @@ class QuoteItem(models.Model):
     update_price - changes the price of the product based on the value
     stored in the inventory.
     '''
-    quote = models.ForeignKey('invoicing.Quote', null=True)
-    item = models.ForeignKey('inventory.Item', null=True)
+    quote = models.ForeignKey('invoicing.Quote')
+    item = models.ForeignKey('inventory.Item')
     quantity = models.FloatField()
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)

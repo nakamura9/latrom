@@ -5,5 +5,13 @@
         "fields": {
             "start_of_financial_year": "2018-01-01"
         }
+    },
+    {
+        "model": "accounting.Tax",
+        "pk": 1,
+        "fields": {
+            "name": "VAT",
+            "rate": 14
+        }
     }
 ]

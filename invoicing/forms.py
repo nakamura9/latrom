@@ -51,7 +51,7 @@ class CustomerForm(forms.ModelForm, BootstrapMixin):
 
 class QuickCustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = ['name', 'business_address', 'phone']
+        fields = ['individual', 'organization', 'billing_address']
         model = models.Customer
 
 

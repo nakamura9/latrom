@@ -10,5 +10,23 @@
             "payroll_cycle": "monthly",
             "require_verification_before_posting_payslips": true
         }
+    },
+    {
+        "model": "employees.PayGrade",
+        "pk": 1,
+        "fields": {
+            "name": "Default"
+        }
+    },
+    {
+        "model": "employees.Employee",
+        "pk": 1,
+        "fields": {
+            "first_name": "First",
+            "last_name": "Last",
+            "hire_date": "2018-01-01",
+            "title": "Employee",
+            "pay_grade": 1
+        }
     }
 ]

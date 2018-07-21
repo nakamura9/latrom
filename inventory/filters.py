@@ -31,8 +31,8 @@ class SupplierFilter(django_filters.FilterSet):
     class Meta:
         model = Supplier
         fields = {
-            'name': ['icontains'],
-            'contact_person': ['icontains']
+            'organization': ['exact'],
+            'individual': ['exact']
         }
 
 

@@ -38,5 +38,13 @@
             "name": "kg",
             "description": "Kilogram."
         }
+    },
+    {
+        "model": "inventory.Warehouse",
+        "pk": 1,
+        "fields": {
+            "name": "Default Warehouse",
+            "address": "Default Location"
+        }
     }
 ]

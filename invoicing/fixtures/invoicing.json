@@ -7,5 +7,20 @@
             "document_theme": 1,
             "currency": "$"
         }
+    },
+    {
+        "model": "invoicing.Customer",
+        "pk": 1,
+        "fields": {
+            "individual": 1
+            
+        }
+    },
+    {
+        "model": "invoicing.SalesRepresentative",
+        "pk": 1,
+        "fields": {
+            "employee": 1
+        }
     }
 ]

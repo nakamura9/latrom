@@ -80,7 +80,7 @@ class CustomerListView(SalesRepCheckMixin, ExtraContext, FilterView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Customer.objects.all().order_by('name')
+        return Customer.objects.all().order_by('pk')
 
 
 class CustomerDeleteView(SalesRepCheckMixin, DeleteView):

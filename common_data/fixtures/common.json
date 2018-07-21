@@ -1,0 +1,17 @@
+[
+    {
+        "model": "common_data.Individual",
+        "pk": 1,
+        "fields": {
+            "first_name": "Default",
+            "last_name": "Individual"
+        }
+    },
+    {
+        "model": "common_data.Organization",
+        "pk": 1,
+        "fields": {
+            "legal_name": "Default Organization"
+        }
+    }
+]

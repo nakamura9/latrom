@@ -63,27 +63,36 @@ class InventoryController(models.Model):
     employee = models.ForeignKey('employees.Employee')
 
 
-
 class Supplier(models.Model):
     '''The businesses and individuals that provide the organization with 
     products it will sell. Basic features include contact details address and 
     contact people.
     The account of the supplier is for instances when orders are made on credit.'''
-    name = models.CharField(max_length=64)
-    contact_person = models.CharField(max_length=64, blank=True, default="")
-    physical_address = models.CharField(max_length=128, blank=True, default="")
-    telephone = models.CharField(max_length=16, blank=True, default="")
-    email = models.EmailField(max_length=64, blank=True, default="")
-    website = models.CharField(max_length=64, blank=True, default="")
+    # one or the other 
+    organization = models.OneToOneField('common_data.Organization', null=True)
+    individual = models.OneToOneField('common_data.Individual', null=True)
     active = models.BooleanField(default=True)
-    account = models.ForeignKey('accounting.Account', null=True)
+    account = models.ForeignKey('accounting.Account',blank=True)
 
+    @property
+    def name(self):
+        if self.organization:
+            return self.organization.legal_name
+        else:
+            return self.individual.full_name
+
+    @property
+    def is_organization(self):
+        return self.organization != None
+
+        
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
         if self.pk is None:
             n_suppliers = Supplier.objects.all().count()
+            #will overwrite if error occurs
             self.account = Account.objects.create(
                 name= "Supplier: %s" % self.name,
                 id = 2100 + n_suppliers,
@@ -123,7 +132,7 @@ class Item(models.Model):
 ]
     item_name = models.CharField(max_length = 32)
     code = models.AutoField(primary_key=True)
-    unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default="", null=True)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default=1)
     
     pricing_method = models.IntegerField(choices=PRICING_CHOICES, default=0)
     direct_price = models.DecimalField(max_digits=9, decimal_places=2)
@@ -336,13 +345,14 @@ class Order(models.Model):
     supplier_invoice_number = models.CharField(max_length=32, blank=True, default="")
     bill_to = models.CharField(max_length=128, blank=True, default="")
     ship_to = models.ForeignKey('inventory.WareHouse')
-    tax = models.ForeignKey('accounting.Tax', null=True)
+    tax = models.ForeignKey('accounting.Tax', default=1)
     tracking_number = models.CharField(max_length=64, blank=True, default="")
-    notes = models.TextField(blank=True, default="")
-    status = models.CharField(max_length=16, choices=[
-        ('received', 'Received'),
-        ('draft', 'Draft'),
-        ('submitted', 'Submitted')
+    notes = models.ForeignKey('common_data.Note' ,blank=True, default="")
+    status = models.CharField(max_length=24, choices=[
+        ('received-partially', 'Partially Received'),
+        ('received', 'Received in Total'),
+        ('draft', 'Internal Draft'),
+        ('submitted', 'Submitted to Supplier')
     ])
     active = models.BooleanField(default=True)
     received_to_date = models.FloatField(default=0.0)
@@ -358,6 +368,16 @@ class Order(models.Model):
     def total(self):
         return reduce(lambda x, y: x + y , [item.subtotal for item in self.items], 0)
 
+    @property
+    def subtotal(self):
+        return self.total - self.tax_amount
+
+    @property
+    def tax_amount(self):
+        if self.tax:
+            return self.total * (D(self.tax.rate) / D(100))
+        return D(0.0)
+    
     @property
     def received_total(self):
         return reduce(lambda x, y: x + y , [item.received_total for item in self.items], 0)
@@ -385,11 +405,10 @@ class Order(models.Model):
                     memo = self.notes,
                     journal = Journal.objects.get(pk=4)
                 )
-        j.simple_entry(
-                    self.total,
-                    Account.objects.get(pk=2000), #accounts payable
-                    self.supplier.account, # since we owe the supplier
-                )
+        j.credit(self.subtotal, Account.objects.get(pk=2000))#accounts payable
+        j.debit(self.total, self.supplier.account) # since we owe the supplier
+        j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+
     def create_immediate_entry(self):
         j = JournalEntry.objects.create(
                 date = self.issue_date,
@@ -397,11 +416,9 @@ class Order(models.Model):
                 memo=self.notes,
                 journal = Journal.objects.get(pk=4)
             )
-        j.simple_entry(
-                self.total,
-                Account.objects.get(pk=1004),#inventory
-                Account.objects.get(pk=4006),#purchases account
-            )
+        j.credit(self.subtotal, Account.objects.get(pk=1004))#inventory
+        j.debit(self.total, Account.objects.get(pk=4006))#purchases account
+        j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
 
     def receive(self):
         if self.status != 'received':
@@ -431,11 +448,9 @@ class OrderItem(models.Model):
     received_total - returns the cash value of the items received
     subtotal - returns the cash value of the items ordered
     '''
-    order = models.ForeignKey('inventory.Order', null=True)
-    item = models.ForeignKey('inventory.item', null=True)
+    order = models.ForeignKey('inventory.Order')
+    item = models.ForeignKey('inventory.item')
     quantity = models.FloatField()
-    #change and move this to the item
-    #make changes to the react app as well
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
 
@@ -511,9 +526,9 @@ class StockReceipt(models.Model):
     create_entry - method only called for instances where inventory 
     is paid for on receipt as per order terms.
     '''
-    order = models.ForeignKey('inventory.Order', null=True)
-    #received_by = models.ForeignKey('employees.Employee', 
-    #    null=True, limit_choices_to=Q(user__isnull=False))
+    order = models.ForeignKey('inventory.Order')
+    received_by = models.ForeignKey('employees.Employee', 
+        default=1, limit_choices_to=Q(user__isnull=False))
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)
@@ -603,7 +618,7 @@ class WareHouse(models.Model):
 class WareHouseItem(models.Model):
     item = models.ForeignKey('inventory.Item')
     quantity = models.FloatField()
-    warehouse = models.ForeignKey('inventory.Warehouse', null=True)
+    warehouse = models.ForeignKey('inventory.Warehouse', default=1)
     verified = models.BooleanField(default=False)
     #verification expires after the next inventory check date
 
@@ -627,7 +642,7 @@ class WareHouseItem(models.Model):
 #might need to rename
 class InventoryCheck(models.Model):
     date = models.DateField()
-    next_adjustment_date = models.DateField(null=True)
+    next_adjustment_date = models.DateField(null=True)#not required
     adjusted_by = models.ForeignKey('employees.Employee')
     warehouse = models.ForeignKey('inventory.WareHouse')
     comments = models.TextField()
@@ -667,8 +682,8 @@ class TransferOrder(models.Model):
     expected_completion_date = models.DateField()
     issuing_inventory_controller = models.ForeignKey('employees.Employee',
         related_name='issuing_inventory_controller')
-    receiving_inventory_controller = models.ForeignKey('employees.Employee', null=True)
-    actual_completion_date =models.DateField(null=True)
+    receiving_inventory_controller = models.ForeignKey('employees.Employee', default=1)
+    actual_completion_date =models.DateField(null=True)#provided later
     source_warehouse = models.ForeignKey('inventory.WareHouse',
         related_name='source_warehouse')
     receiving_warehouse = models.ForeignKey('inventory.WareHouse')
