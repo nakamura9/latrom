@@ -1,0 +1,67 @@
+{% extends "window.html" %} {% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Services Dashboard</h1>
+    <p class="lead">Control panel for listing services offered, assigning technicians work orders  and other service related functions</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Listed Services</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item ">
+                                <a href="{% url 'services:create-service' %}">Create Service</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'services:list-services' %}">Manage Listed Services</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">WorkOrders</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:create-employee' %}">
+                                    Add Work Order
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:list-employees' %}">
+                                    List and Manage Work Orders
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Reports</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="">Services History</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="">Technician utilization report</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-2">
+        </div>
+    </div>
+</div>
+{% endblock content %}

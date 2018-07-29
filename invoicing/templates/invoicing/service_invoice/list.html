@@ -1,0 +1,31 @@
+{% extends "common_data/list_template.html" %}
+{% block list_headings %}
+<tr>
+    <th>Date</th>
+    <th>Customer</th>
+    <th>Total</th>
+    <th>Actions</th>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for inv in object_list %}
+<tr>
+    <td>{{inv.date}}</td>
+    <td>{{inv.customer}}</td>
+    <td>{{inv.total | floatformat:2 }}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-detail' pk=inv.pk %}">Detail</a>
+                <a class="dropdown-item disabled" href="#">Change Status</a>
+                </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock list_content %}

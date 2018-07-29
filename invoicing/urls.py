@@ -39,7 +39,24 @@ report_urls = [
              name='invoice-aging'),
 ]
 
+sales_urls = [
+    url(r'^create-sales-invoice/?$', views.SalesInvoiceCreateView.as_view(), name='create-sales-invoice'),
+    url(r'^sales-invoice-detail/(?P<pk>[\d]+)/?$', views.SalesInvoiceDetailView.as_view(), name='sales-invoice-detail'),
+    url(r'^sales-invoice-list/?$', views.SalesInvoiceListView.as_view(), name='sales-invoice-list'),
+]
 
+service_urls = [
+    url(r'^create-service-invoice/?$', views.ServiceInvoiceCreateView.as_view(), name='create-service-invoice'),
+    url(r'^service-invoice-detail/(?P<pk>[\d]+)/?$', views.ServiceInvoiceDetailView.as_view(), name='service-invoice-detail'),
+    url(r'^service-invoice-list/?$', views.ServiceInvoiceListView.as_view(), name='service-invoice-list'),
+]
+
+bill_urls = [
+    url(r'^create-bill/?$', views.BillCreateView.as_view(), name='create-bill'),
+    url(r'^bill-detail/(?P<pk>[\d]+)/?$', views.BillDetailView.as_view(), name='bill-detail'),
+    url(r'^bill-list/?$', views.BillListView.as_view(), name='bill-list'),
+
+]
 urlpatterns = [
     url(r'^$', views.Home.as_view(), name="home"),
     url(r'^config/(?P<pk>[\d]+)/?$', views.ConfigView.as_view(), name="config"),
@@ -73,8 +90,10 @@ urlpatterns = [
     url(r'^credit-note-create/?$', views.CreditNoteCreateView.as_view(), name='credit-note-create'),
     url(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), name='credit-note-list'),
     url(r'^credit-note-detail/(?P<pk>[\w]+)/?$', views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
+    url(r'^api/config/(?P<pk>[\d]+)/?$', views.ConfigAPIView.as_view(), name='api-config')
     
     
 ] +  customer_router.urls + invoice_router.urls + \
     payment_router.urls + sales_rep_router.urls +  invoice_item_router.urls + \
-    quote_router.urls + quote_item_router.urls + report_urls
+    quote_router.urls + quote_item_router.urls + report_urls + sales_urls + \
+    bill_urls + service_urls

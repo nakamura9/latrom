@@ -2,14 +2,15 @@
 from __future__ import unicode_literals
 
 import datetime
-import decimal
+from decimal import Decimal as D
 
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
 from common_data.models import Person
-from accounting.models import Account, Journal, JournalEntry, Tax, Debit, Credit
+from services.models import Service
+from accounting.models import Account, Journal, JournalEntry, Tax, Expense
 from employees.models import Employee
 from common_data.models import SingletonModel
 
@@ -93,7 +94,7 @@ class Customer(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            n_customers = Customer.objects.all().count()
+            n_customers = Customer.objects.all().count() + 1
             self.account = Account.objects.create(
                 name= "Customer: %s" % self.name,
                 balance =0,
@@ -146,7 +147,7 @@ class AbstractSale(models.Model):
     SALE_STATUS = [
         ('quotation', 'Quotation'),
         ('draft', 'Draft'),
-        ('received', 'Sent'),
+        ('sent', 'Sent'),
         ('paid', 'Paid In Full'),
         ('paid-partially', 'Paid Partially'),
         ('reversed', 'Reversed'),
@@ -156,10 +157,9 @@ class AbstractSale(models.Model):
     salesperson = models.ForeignKey('invoicing.SalesRepresentative', 
         default=DEFAULT_SALES_REP)
     active = models.BooleanField(default=True)
-    date_issued = models.DateField( default=timezone.now)
     due= models.DateField( default=timezone.now)
     date= models.DateField(default=timezone.now)
-    discount = models.DecimalField(max_digits=6, decimal_places=2)
+    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     tax = models.ForeignKey('accounting.Tax', blank="True", null=True)
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
@@ -167,6 +167,23 @@ class AbstractSale(models.Model):
     def delete(self):
         self.active = False
         self.save()
+    
+    @property
+    def total(self):
+        return self.subtotal + self.tax_amount
+
+    @property
+    def tax_amount(self):
+        if self.tax:
+            return self.subtotal * D((self.tax.rate / 100.0))
+        return 0
+
+    @property
+    def subtotal(self):
+        raise NotImplementedError()
+
+    def __str__(self):
+        return 'SINV' + str(self.pk)
     
 
 class SalesInvoice(AbstractSale):
@@ -176,49 +193,134 @@ class SalesInvoice(AbstractSale):
     ship_from = models.ForeignKey('inventory.WareHouse',
          default=DEFAULT_WAREHOUSE)
 
-    def add_item(self, item, quantity, discount):
+    def add_item(self, item, quantity):
         self.salesinvoiceline_set.create(
             item=item, 
             quantity=quantity,
-            discount=discount
+            price=item.unit_sales_price,
+            invoice=self
         )
+
+    @property
+    def subtotal(self):
+        return reduce(lambda x, y: x+ y, 
+            [i.subtotal for i in self.salesinvoiceline_set.all()], 0)
+
+    def update_inventory(self):
+        #called in views.py
+        for line in self.salesinvoiceline_set.all():
+            #check if ship_from has the item in sufficient quantity
+             self.ship_from.decrement_item(line.item, line.quantity)
+
+    def create_cash_entry(self):
+        j = JournalEntry.objects.create(
+                reference='INV' + str(self.pk),
+                memo= 'Auto generated Entry from sales invoice.',
+                date=self.date,
+                journal =Journal.objects.get(pk=1)#Sales Journal
+            )
+        j.credit(self.total, Account.objects.get(pk=4009))#inventory
+        j.debit(self.subtotal, Account.objects.get(pk=4000))#sales
+        if self.tax_amount > D(0):
+            j.debit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+
+            return j
+
+    def create_credit_entry(self):
+        j = JournalEntry.objects.create(
+            reference='INV' + str(self.pk),
+            memo= 'Auto generated Entry from sales invoice on credit.',
+            date=self.date,
+            journal =Journal.objects.get(pk=3)#Sales Journal
+        )
+            
+        j.credit(self.total, Account.objects.get(pk=4009))#inventory
+        j.debit(self.total, self.customer.account)#customer account
+            
+        return j
 
 class SalesInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.SalesInvoice')
     item = models.ForeignKey("inventory.Item")
-    quantity = models.IntegerField(default=0)
+    quantity = models.FloatField(default=0.0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
     returned_quantity = models.FloatField(default=0.0)
     returned = models.BooleanField(default=False)
 
+    @property
+    def subtotal(self):
+        return D(self.quantity) * self.price
+
     
 class ServiceInvoice(AbstractSale):
     '''Used to charge clients for a service'''
-    pass
+
+    def add_line(self, service_id, hours):
+        service = Service.objects.get(pk=service_id)
+        self.serviceinvoiceline_set.create(
+            service=service,
+            hours=hours)
+
+    @property
+    def subtotal(self):
+        return reduce(lambda x,y: x + y, 
+            [i.total for i in self.serviceinvoiceline_set.all() ], 0)
 
 class ServiceInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.ServiceInvoice')
-    service = models.ForeignKey('invoicing.Service')
+    service = models.ForeignKey('services.Service')
     hours = models.DecimalField(max_digits=6, decimal_places=2)
     
-
-class Service(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    #should cover expenses
-    flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
-    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
-
+    @property
+    def total(self):
+        return self.service.flat_fee + (self.service.hourly_rate * self.hours)
 
 class Bill(AbstractSale):
     '''Used to recover billable expenses'''
+    customer_reference = models.CharField(max_length=255, blank=True)
     def get_billable_expenses(self):
         return self.customer.expense_set.filter(bill__isnull=True)
+
+    def add_line(self, expense_id):
+        expense = Expense.objects.get(pk=expense_id)
+        self.billline_set.create(
+            expense=expense
+        )
+    @property
+    def subtotal(self):
+        return reduce(lambda x, y: x + y, 
+            [e.expense.amount for e in self.billline_set.all()], 0)
+    
+    def create_cash_entry(self):
+        j = JournalEntry.objects.create(
+                reference='BILL' + str(self.pk),
+                memo= 'Auto generated Entry from Bill to customer.',
+                date=self.date,
+                journal =Journal.objects.get(pk=1)#Sales Journal
+            )
+            #check these accounts
+        j.credit(self.total, Account.objects.get(pk=4009))#inventory
+        j.debit(self.subtotal, Account.objects.get(pk=4000))#sales
+        if self.tax_amount > D(0):
+            j.debit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+
+            return j
+
+    def create_credit_entry(self):
+        j = JournalEntry.objects.create(
+            reference='INV' + str(self.pk),
+            memo= 'Auto generated Entry from unpaid bill from customer.',
+            date=self.date,
+            journal =Journal.objects.get(pk=3)#Sales Journal
+        )
+                #check these accounts
+        j.credit(self.total, Account.objects.get(pk=4009))#inventory
+        j.debit(self.total, self.customer.account)#customer account
+            
+        return j
             
 class BillLine(models.Model):
-    date = models.DateField()
-    description = models.CharField(max_length=255)
     bill = models.ForeignKey('invoicing.Bill')
     expense = models.ForeignKey('accounting.Expense')
 
@@ -234,7 +336,7 @@ class CombinedInvoiceLine(models.Model):
         (3, 'expense'),
     ]
     expense = models.ForeignKey('accounting.Expense', null=True)
-    service = models.ForeignKey('invoicing.Service', null=True)
+    service = models.ForeignKey('services.Service', null=True)
     item = models.ForeignKey("inventory.Item", null=True)
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
 
@@ -310,7 +412,7 @@ class Invoice(models.Model):
     @property
     def tax_amount(self):
         if self.tax:
-            return self.subtotal * decimal.Decimal((self.tax.rate / 100.0))
+            return self.subtotal * D((self.tax.rate / 100.0))
         return 0
 
     def __str__(self):
@@ -434,7 +536,7 @@ class InvoiceItem(models.Model):
 
     @property
     def returned_value(self):
-        return self.price * decimal.Decimal(self.returned_quantity)
+        return self.price * D(self.returned_quantity)
 
 
 class SalesRepresentative(models.Model):
@@ -520,7 +622,7 @@ class Payment(models.Model):
             # will now work for partial payments
             j.debit(self.amount, self.invoice.customer.account)
             # calculate tax as a proportion of the amount paid
-            tax_amount = self.amount * decimal.Decimal(self.invoice.tax.rate / 100.0)
+            tax_amount = self.amount * D(self.invoice.tax.rate / 100.0)
             # sales account
             j.credit(self.amount - tax_amount, Account.objects.get(pk=4000))
             # tax
@@ -570,7 +672,7 @@ class Quote(models.Model):
 
     @property
     def tax_amount(self):
-        return self.subtotal * decimal.Decimal(self.tax.rate /100.0)
+        return self.subtotal * D(self.tax.rate /100.0)
 
     @property
     def subtotal(self):
@@ -638,12 +740,12 @@ class QuoteItem(models.Model):
     
     @property
     def total_without_discount(self):
-        return self.price * decimal.Decimal(self.quantity)
+        return self.price * D(self.quantity)
     
     @property
     def subtotal(self):
         return self.total_without_discount - \
-            (self.total_without_discount * decimal.Decimal((self.discount / decimal.Decimal(100.0))))
+            (self.total_without_discount * D((self.discount / D(100.0))))
 
     def update_price(self):
         self.price = self.item.unit_sales_price

@@ -18,6 +18,9 @@
             <li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>
             {% endif %}
             {% if request.user.is_superuser %}
+            <li>
+                <a href="{% url 'services:dashboard' %}" class="nav-link">Services</a>
+            </li>
             <li><a class="nav-link" href="{% url 'employees:dashboard' %}">Employees</a></li>
             {% endif %}
         </ul>

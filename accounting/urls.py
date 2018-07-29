@@ -12,6 +12,9 @@ account_router.register(r'^api/account', views.AccountViewSet)
 assets = views.AssetViewGroup()
 expenses = views.ExpenseViewGroup()
 
+expense_router = routers.DefaultRouter()
+expense_router.register(r'^api/expense', views.ExpenseAPIView)
+
 report_urls = [
     url(r'^balance-sheet/?$', report_views.BalanceSheet.as_view(), name='balance-sheet'),
     url(r'^income-statement/?$', report_views.IncomeStatement.as_view(), name='income-statement'),
@@ -64,5 +67,5 @@ journal_urls = [
 urlpatterns =[
     url(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls +  misc_urls + account_urls  + journal_urls + \
-    entry_urls  + account_router.urls + assets.urls + expenses.urls +\
-    report_urls
+    entry_urls  + account_router.urls + assets.urls + expenses.urls + \
+    report_urls + expense_router.urls

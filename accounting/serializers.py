@@ -13,3 +13,7 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
         
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Expense
+        fields = "__all__"

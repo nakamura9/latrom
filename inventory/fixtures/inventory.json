@@ -46,5 +46,12 @@
             "name": "Default Warehouse",
             "address": "Default Location"
         }
+    },
+    {
+        "model": "inventory.Supplier",
+        "pk": 1,
+        "fields": {
+            "organization": 1
+        }
     }
 ]

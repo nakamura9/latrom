@@ -1,0 +1,34 @@
+{% extends "common_data/list_template.html" %}
+{% block contents %}
+
+{% block list_headings %}
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Actions</th>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for s in object_list %}
+<tr>
+    <td>{{s.name}}</td>
+    <td>{{s.description}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="{% url 'services:service-details' pk=s.pk %}" class="dropdown-item">Detail</a>
+                <a class="dropdown-item" href="{% url 'services:service-update' pk=s.pk %}">Update</a>
+                <a class="dropdown-item" href="#">Remove Service Listing</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock list_content %}
+
+{% endblock contents %}

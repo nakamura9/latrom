@@ -11,34 +11,34 @@
     <div class="card-deck">
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Quotations</h4>
+                    <h4 class="card-title">Sales Invoices</h4>
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-quote' %}">Create New Quotation</a></li>
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:quote-list' %}">List Quotations</a></li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-sales-invoice' %}">Create Sales Invoice</a></li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-invoice-list' %}">List Sales Invoices</a></li>
                     </ul>
                 </div>
             </div>
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Invoices</h4>
+                    <h4 class="card-title">Service Invoices</h4>
                 </div>
                 <div class="card-body">
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-invoice' %}">Create New Invoice</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoices-list' %}">List Invoices</a></li>
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-service-invoice' %}">Create Service Invoice</a></li>
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:service-invoice-list' %}">List Service Invoices</a></li>
                     
                     
                 </div>
             </div>
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                      <h4 class="card-title">Payments</h4>
+                      <h4 class="card-title">Bill Customers</h4>
                 </div>
                 <div class="card-body">
                       <ul class="list-group">
-                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-payment' %}">Apply Payment</a></li>
-                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:payments-list' %}">List Payments and Receipts</a></li>
+                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-bill' %}">Create Bill</a></li>
+                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bill-list' %}">List Bills</a></li>
                           
                       </ul>
                 </div>
@@ -48,23 +48,24 @@
     <div class="card-deck">
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Returns</h4>
+                    <h4 class="card-title">Combined Invoices</h4>
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:credit-note-create' %}">Create Credit note</a></li>
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:credit-note-list' %}">Credit note List</a></li>
+                            <li class="list-group-item"><a class="card-link" href="">Create Combined Invoice</a></li>
+                            <li class="list-group-item"><a class="card-link" href="">List Combined Invoices </a></li>
                     </ul>
                 </div>
             </div>
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h4 class="card-title">Clients</h4>
+                    <h4 class="card-title">Customers</h4>
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
                         <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a></li>
-                        <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:customers-list' %}">Manage Clients</a></li>
+                        <li class="list-group-item"><a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a></li>
+                        <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:customers-list' %}">Manage Customers</a></li>
                     </ul>
                 </div>
             </div>

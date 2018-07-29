@@ -23,6 +23,15 @@ class InvoiceFilter(django_filters.FilterSet):
             'type_of_invoice': ['exact'],
         }
 
+class AbstractInvoiceFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.SalesInvoice
+        fields = {
+            'date': ['icontains'],
+            'customer': ['exact'],
+            'salesperson': ['exact'],
+        }
+
 class SalesRepFilter(django_filters.FilterSet):
     class Meta:
         model = models.SalesRepresentative

@@ -49,81 +49,6 @@ class TableContent extends Component{
     }
 }
 
-class OrderTableEntry extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            inputs: {}
-        }
-    }
-    insertHandler(){
-        this.props.insertHandler(this.state.inputs);
-    }
-    inputHandler(event){
-        var name= event.target.name;
-        var value = event.target.value;
-        var newVals = this.state.inputs;
-        newVals[name] = value;
-        this.setState({inputs: newVals});
-    }
-
-    itemSelectHandler(event){
-        this.inputHandler(event);
-        let pk = event.target.value;
-        
-        $.ajax({
-            method: "GET",
-            url: "/inventory/api/item/" + pk + "/"
-        }).then(res => {
-            $("input[name='description']").val(res.description);
-            $("input[name='order_price']").val(res.unit_purchase_price);
-            $("input[name='unit']").val(res.unit);
-            
-            this.setState({
-                inputs :{
-                    item_name: res.code,
-                    description: res.description,
-                    order_price: res.unit_purchase_price,
-                    unit: res.unit 
-                }
-            });
-        })
-    }
-
-    render(){
-        return(
-            <tfoot>
-                <tr>
-                    <td></td>
-                    <td>
-                        <AsyncSelect url="/inventory/api/item/"
-                            handleChange={this.itemSelectHandler.bind(this)} />
-                    </td>
-                    {this.props.fields.map((field, index) => (
-                        <td key={index}><input type="text"
-                               name={field} 
-                               className="form-control"
-                               onChange={event => (this.inputHandler(event))} />
-                        </td>
-                    ))}
-                    
-                </tr>
-                <tr>
-                    <td colSpan={this.props.fields.length + 1}></td>
-                    <td>
-                    <button type="button" 
-                    className="btn btn-primary btn-lg"
-                    onClick={this.insertHandler.bind(this)}>Insert</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td colSpan='6'style={{textAlign: 'right'}}><b>Total:</b></td>
-                    <td>{this.props.total}</td>
-                </tr>
-            </tfoot>
-        );
-    }
-}
 
 class AsyncSelect extends Component{
     constructor(props){
@@ -166,4 +91,4 @@ class AsyncSelect extends Component{
     }
 }
 
-export { TableContent, OrderTableEntry, Heading};
+export { TableContent, AsyncSelect, Heading};

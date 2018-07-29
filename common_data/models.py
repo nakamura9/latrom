@@ -39,7 +39,6 @@ class Note(models.Model):
     note = models.TextField()
 
 
-
 class Organization(models.Model):
     legal_name = models.CharField(max_length=255)
     business_address = models.TextField(blank=True)

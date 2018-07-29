@@ -1,0 +1,31 @@
+{% extends "common_data/list_template.html" %}
+{% block list_headings %}
+<tr>
+    <td>Full Name</td>
+    <td>Organization</td>
+    <td>Phone</td>
+    <td>Actions</td>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for o in object_list %}
+    <tr>
+        <td>{{o}}</td>
+        <td>{{o.organization}}</td>
+        <td>{{o.phone}}</td>
+        <td>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item" href="{% url 'base:individual-update' pk=o.pk %}">Update</a>
+                    <a class="dropdown-item" href="{% url 'base:individual-detail' pk=o.pk %}">Detail</a>
+                    </div>
+            </div>
+        </td>
+    </tr>
+{% endfor %}
+{% endblock list_content %}

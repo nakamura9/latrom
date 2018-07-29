@@ -1,0 +1,83 @@
+{% extends "common_data/page.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block prepage %}
+<div class="jumbotron">
+    <h1 class="display-3">Billables Invoice</h1>
+    <p class="lead">Create Invoices for the billable expenses incurred in providing services to customers</p>
+    <hr class="my-2">
+</div>
+{% endblock prepage %}
+
+{% block page_contents %}
+
+    <table class="table">
+            <form action="" method="POST">
+                {% csrf_token %}
+        <tbody>
+            <tr>
+                <td colspan="2"><center><h1>Bill</h1></center></td>
+            </tr>
+            <tr>
+                <td>
+                    <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
+                </td>
+                <td>
+                    <h4><b>{{business_name}}</b></h4>
+                    {% if include_business_address %}
+                        {{business_address | linebreaks}}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p>Customer</p>
+                    <p>{{form.customer}}</p>
+                    <p>Status</p>
+                    <p>{{form.status}}</p>
+                </td>
+                <td>
+                    <p>Date</p>
+                    <p>{{form.date}}</p>
+                    <p>Due</p>
+                    <p>{{form.due}}</p>
+                    <p>Sales Representative</p>
+                    <p>{{form.salesperson}}</p>
+                    <p>Customer Reference</p>
+                    <p>{{form.customer_reference}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="{{style}}-footer-cell">
+                        <div class="{{style}}-footer-cell-heading">
+                                                    Terms:
+                        </div>
+                        <div class="{{style}}-footer-cell-contents">
+                            {{form.terms}}
+                        </div>
+                    </div>
+                    <div class="{{style}}-footer-cell">
+                        <div class="{{style}}-footer-cell-heading">
+                            Comments:
+                        </div>
+                        <div class="{{style}}-footer-cell-contents">
+                            {{form.comments}}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Submit</button>
+                </td>
+            </tr>
+        </tbody>
+        </form>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <div id="bill-contents"></div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+{% render_bundle 'invoicing' %}
+{% endblock page_contents %}

@@ -14,6 +14,14 @@ urlpatterns = [
     url(r'^organization/update/(?P<pk>[\d]+)/?$', views.OrganizationUpdateView.as_view(), 
         name='organization-update'),
     url(r'^organization/detail/(?P<pk>[\d]+)/?$', views.OrganizationDetailView.as_view(), 
-        name='organization-detail')  
+        name='organization-detail'),
+    url(r'^individual/create/?$', views.IndividualCreateView.as_view(), 
+        name='individual-create'),
+    url(r'^individual/list/?$', views.IndividualListView.as_view(), 
+        name='individual-list'),
+    url(r'^individual/update/(?P<pk>[\d]+)/?$', views.IndividualUpdateView.as_view(), 
+        name='individual-update'),
+    url(r'^individual/detail/(?P<pk>[\d]+)/?$', views.IndividualDetailView.as_view(), 
+        name='individual-detail')  
     #url(r'^crud/', include(urls)),
 ]

@@ -63,6 +63,38 @@ class OrganizationListView(ExtraContext, FilterView):
 #                    Individual Views                   #
 #########################################################
 
+class IndividualCreateView(ExtraContext, CreateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.IndividualForm
+    success_url = reverse_lazy('invoicing:home')
+    extra_context = {
+        'title': 'Add Individual'
+    }
+
+class IndividualUpdateView(ExtraContext, UpdateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.IndividualForm
+    model = models.Individual
+    success_url = reverse_lazy('invoicing:home')
+    extra_context = {
+        'title': 'Update Individual details'
+    }
+
+
+class IndividualDetailView(ExtraContext, DetailView):
+    template_name = os.path.join('common_data', 'individual','detail.html')
+    model = models.Individual
+    
+
+class IndividualListView(ExtraContext, FilterView):
+    template_name = os.path.join('common_data', 'individual', 'list.html')
+    queryset = models.Individual.objects.all()
+    filterset_class = filters.IndividualFilter
+    extra_context = {
+        'title': 'List of Individuals',
+        'new_link': reverse_lazy('base:organization-create')
+    }
+
 
 class WorkFlowView(TemplateView):
     template_name = os.path.join("common_data", "workflow.html")

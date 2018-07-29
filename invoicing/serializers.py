@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import *
 from inventory.serializers import ItemSerializer
+from accounting.serializers import TaxSerializer, ExpenseSerializer
 
 class PaymentsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +15,7 @@ class SalesRepsSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
 class CustomerSerializer(serializers.ModelSerializer):
+    expense_set = ExpenseSerializer(many=True)
     class Meta:
         model = Customer
         fields = "__all__"
@@ -43,4 +45,10 @@ class QuoteSerializer(serializers.ModelSerializer):
     customer = CustomerSerializer(many=False)
     class Meta:
         model = Quote
+        fields = "__all__"
+
+class ConfigSerializer(serializers.ModelSerializer):
+    sales_tax = TaxSerializer(many=False)
+    class Meta:
+        model = SalesConfig
         fields = "__all__"

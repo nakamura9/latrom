@@ -72,7 +72,7 @@ class Supplier(models.Model):
     organization = models.OneToOneField('common_data.Organization', null=True)
     individual = models.OneToOneField('common_data.Individual', null=True)
     active = models.BooleanField(default=True)
-    account = models.ForeignKey('accounting.Account',blank=True)
+    account = models.ForeignKey('accounting.Account',blank=True, null=True)
 
     @property
     def name(self):
@@ -333,13 +333,14 @@ class Order(models.Model):
     receive - quickly generates a stock receipt where all items are 
         marked fully received 
     '''
+    ORDER_TYPE_CHOICES = [
+        (0, 'Cash Order'),
+        (1, 'Deffered Payment Order'),
+        (2, 'Pay on Receipt') ]
     
     expected_receipt_date = models.DateField()
     issue_date = models.DateField()
-    type_of_order = models.IntegerField(choices=[
-        (0, 'Cash Order'),
-        (1, 'Deffered Payment Order'),
-        (2, 'Pay on Receipt') ], default=0)
+    type_of_order = models.IntegerField(choices=ORDER_TYPE_CHOICES, default=0)
     deferred_date = models.DateField(blank=True, null=True)
     supplier = models.ForeignKey('inventory.supplier', blank=True, null=True)
     supplier_invoice_number = models.CharField(max_length=32, blank=True, default="")
@@ -347,7 +348,7 @@ class Order(models.Model):
     ship_to = models.ForeignKey('inventory.WareHouse')
     tax = models.ForeignKey('accounting.Tax', default=1)
     tracking_number = models.CharField(max_length=64, blank=True, default="")
-    notes = models.ForeignKey('common_data.Note' ,blank=True, default="")
+    notes = models.TextField()
     status = models.CharField(max_length=24, choices=[
         ('received-partially', 'Partially Received'),
         ('received', 'Received in Total'),
@@ -528,7 +529,7 @@ class StockReceipt(models.Model):
     '''
     order = models.ForeignKey('inventory.Order')
     received_by = models.ForeignKey('employees.Employee', 
-        default=1, limit_choices_to=Q(user__isnull=False))
+        default=1)
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)

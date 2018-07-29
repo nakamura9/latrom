@@ -5,17 +5,10 @@ var BundleTracker = require("webpack-bundle-tracker");
 module.exports = {
     context: __dirname,
     entry:  {
-        quotes: './js/quotes',
+        accounting: './js/accounting',
         invoicing: './js/invoicing',
-        orders: './js/orders',
-        payroll: './js/payroll',
-        direct_purchase: './js/direct_purchase',
-        compound_transaction: './js/compound_transaction',
-        stock_receipt: './js/stock_receipt',
-        credit_note: './js/credit_note',
-        tax_brackets: './js/tax_brackets',
-        inventory_check: './js/inventory_check',
-        transfer_order: './js/transfer_order',
+        employees: './js/employees',
+        inventory: './js/inventory',
     },
     output: {
         path: path.resolve('./bundles/'),
@@ -33,7 +26,7 @@ module.exports = {
                 loader: 'babel-loader',
                 exclude: /node_modules/,
                 query: {
-                    presets: ['react']
+                    presets: ['stage-2','react']//stage 2 for class level attrs and autobind
                 }
             }
         ]

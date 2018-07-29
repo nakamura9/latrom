@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'inventory',
     'employees',
     'accounting',
+    'services',
     'django_filters',
     'crispy_forms',
     'autofixture',

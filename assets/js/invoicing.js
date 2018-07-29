@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import InvoiceTable from './src/invoice_table';
-import SearchWidget from './src/search_widget';
 import $ from 'jquery';
-
-var populated = document.getElementById('populated-item-table');
+import InvoiceTable from './invoices/simple_invoice_table';
+import SalesInvoiceForm from './invoices/sales_invoice';
+import BillTable from './invoices/bill';
+import ServiceLineTable from './invoices/service_invoice';
+import CreditNoteTable from './invoices/credit_note';
 
 function addHandler(item, count){
     $("<input>")
@@ -57,6 +58,14 @@ function populatedHandler(widget){
     });
 }
 
+const populated = document.getElementById('populated-item-table');
+const inv = document.getElementById('item-table');
+const sales = document.getElementById('sales-invoice-contents');
+const bill = document.getElementById('bill-contents');
+const services = document.getElementById('service-invoice-contents');
+const creditNote = document.getElementById('credit-note-table');
+const directPurchase =  document.getElementById('direct-purchase-table');
+
 if(populated){
     ReactDOM.render(<InvoiceTable 
         populated={true} 
@@ -65,9 +74,20 @@ if(populated){
         removeHandler={removeHandler}
         url="/invoicing/api/invoice/" />, 
         document.getElementById('populated-item-table'));
-}else{
+}else if(inv){
+    
     ReactDOM.render(<InvoiceTable populated={false} 
         addHandler={addHandler} 
         removeHandler={removeHandler}
-        url="/invoicing/api/invoice/" />, document.getElementById('item-table'));
+        url="/invoicing/api/invoice/" />, inv);
+}else if(sales){
+    ReactDOM.render(<SalesInvoiceForm />, sales);
+}else if(bill){
+    ReactDOM.render(<BillTable />, bill);
+}else if(services){
+    ReactDOM.render(<ServiceLineTable />, services);
+}else if(creditNote){
+    ReactDOM.render(<CreditNoteTable />, creditNote)
+}else if(directPurchase){
+    ReactDOM.render(<PurchaseTable />, directPurchase);
 }

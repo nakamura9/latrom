@@ -1,0 +1,34 @@
+{% extends "window.html" %} {% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Service Listing</h1>
+    <p class="lead">Review details and features of a service offering</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'services:service-update' pk=object.pk %}" role="button">Edit Listing</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <p class="card-text">Name:</p>
+                    <p class="card-text">{{object.name}}</p>
+                    <p class="card-text">Description:</p>
+                    <p class="card-text">{{object.description}}</p>
+                    <p class="card-text">Flat fee:</p>
+                    <p class="card-text">{{object.flat_fee}}</p>
+                    <p class="card-text">Hourly rate:</p>
+                    <p class="card-text">{{object.hourly_rate}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+
+{% endblock content %}

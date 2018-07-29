@@ -105,13 +105,16 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     'supplier',
                     'status'
                     ),
-                Tab('Payment', 
+                Tab('Payment',
+                'tax',
                 'type_of_order',
                 'deferred_date'),
                 Tab('Shipping and Notes', 
                     'bill_to', 
                     'ship_to',
                     'tracking_number',
+                    'supplier_invoice_number',
+
                     'notes'),
             )
             )

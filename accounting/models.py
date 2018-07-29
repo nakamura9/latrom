@@ -385,7 +385,6 @@ class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', null=True)
-    bill = models.ForeignKey('invoicing.Bill', null=True)#not required
     
     def create_entry(self):
         j = JournalEntry.objects.create(

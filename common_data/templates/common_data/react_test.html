@@ -1,6 +1,5 @@
 {% extends "window.html" %}
 {% block content %}
-{% load render_bundle from webpack_loader %}
 <input id="page-token" value="{{csrf_token}}" type="hidden"/>
 <div class="container">
     <div class="row">
@@ -15,5 +14,4 @@
 </div>
 
 
-{% render_bundle 'test_features' %}
 {% endblock %}

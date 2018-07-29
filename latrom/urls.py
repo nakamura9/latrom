@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^accounting/', include("accounting.urls", namespace="accounting")),
     url(r'^inventory/', include("inventory.urls", namespace="inventory")),
     url(r'^employees/', include("employees.urls", namespace="employees")),
+    url(r'^services/', include("services.urls", namespace="services")),
     url(r'^', include('django.contrib.auth.urls'))
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

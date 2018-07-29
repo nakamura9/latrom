@@ -1,0 +1,91 @@
+{% extends "window.html" %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Individual Details</h1>
+    <p class="lead">View Recorded Data on a person associated with the business as well as their organization and recent activities</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'base:individual-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Details</h4>
+                        <table class="table">
+                                <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <h5>Photo:</h5>
+                                                    <img src="" alt="Photo thumbnail">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Full Name</th>
+                                                <td>{{object}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email</th>
+                                                <td>{{object.business_address}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone</th>
+                                                <td>
+                                                    <a>{{object.phone}}</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Organization</h4>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Legal Name</th>
+                                    <td>{{object.organization.legal_name}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Address</th>
+                                    <td>{{object.organization.business_address}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Website</th>
+                                    <td>
+                                        <a>{{object.organization.website}}</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Activities</h4>
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <td>Date</td>
+                                    <td>Activity</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3">No Recent Activities yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

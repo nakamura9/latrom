@@ -297,6 +297,10 @@ class JournalListView(BookkeeperCheckMixin, ExtraContext, FilterView):
 #                  Assets and Expenses                  #
 #########################################################
 
+class ExpenseAPIView(viewsets.ModelViewSet):
+    queryset = models.Expense.objects.all()
+    serializer_class = serializers.ExpenseSerializer
+
 class AssetViewGroup(ModelViewGroup):
     model = models.Asset
     create_form = forms.AssetForm
@@ -317,9 +321,6 @@ class ExpenseViewGroup(ModelViewGroup):
 ####################################################
 #                  Bookeeper                       #
 ####################################################
-#####################################################
-#               Inventory Controller                #
-#####################################################
 
 class BookkeeperCreateView(CreateView):
     form_class = forms.BookkeeperForm
