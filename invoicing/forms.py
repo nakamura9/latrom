@@ -94,6 +94,12 @@ class BillForm(forms.ModelForm, BootstrapMixin):
         exclude = "active", 'discount'
         model = models.Bill
 
+class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "active", 'discount'
+        model = models.CombinedInvoice
+
+
 class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'type_of_invoice','saleseperson', 'customer', 'date_issued', 'due_date']

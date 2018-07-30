@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {AsyncSelect} from '../src/base_table';
+import {AsyncSelect, Heading, TableContent} from '../src/base_table';
 import $ from 'jquery';
 
 export default class OrderTable extends Component{

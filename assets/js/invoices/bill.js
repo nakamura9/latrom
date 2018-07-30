@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import axios from 'axios';
+import {DeleteButton, SearchableWidget} from '../src/common';
 
 export default class BillTable extends Component{
     
@@ -19,7 +21,7 @@ export default class BillTable extends Component{
         var decomposed = expense.split('-');
         var pk = decomposed[0];
         var name = decomposed[1];
-        $.ajax({
+        axios({
             url: '/accounting/api/expense/' + pk,
             method: 'GET'
         }).then(res => {
@@ -27,7 +29,7 @@ export default class BillTable extends Component{
             newItems.push({
                 pk: pk,
                 name: name,
-                amount: res.amount
+                amount: res.data.amount
             });
             this.setState({'items': newItems});
             this.updateForm();
@@ -65,10 +67,9 @@ export default class BillTable extends Component{
                     {this.state.items.map((item, i) =>(
                         <tr key={i}>
                             <td>
-                                <button className="btn btn-danger"
-                                    onClick={() => this.removeExpense(i)}>
-                                    <i className='fas fa-trash'></i>
-                                </button>
+                                <DeleteButton 
+                                    handler={this.removeExpense}
+                                    index={i} />
                             </td>
                             <td>{item.name}</td>
                             <td>{item.amount}</td>
@@ -100,12 +101,11 @@ class EntryRow extends Component{
 
     setCustomer = (evt) => {
         var customer = evt.target.value;
-        $.ajax({
+        axios({
             url: '/invoicing/api/customer/' + customer,
             method: 'GET'
-        }).then(res => {
-            console.log(res);
-            this.setState({'items': res.expense_set});
+        }).then(res => {;
+            this.setState({'items': res.data.expense_set});
         })
     }
 
@@ -134,8 +134,12 @@ class EntryRow extends Component{
 
         </td>
         <td>
-            <button className="btn btn-secondary"
-                onClick={this.clickHandler.bind(this)}>Insert</button>
+            <button 
+                className="btn btn-secondary"
+                onClick={this.clickHandler.bind(this)}
+                type="button">
+                    Insert
+            </button>
         </td>
     </tr> 
         var hasNoBillables = <tr>

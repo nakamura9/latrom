@@ -55,8 +55,14 @@ bill_urls = [
     url(r'^create-bill/?$', views.BillCreateView.as_view(), name='create-bill'),
     url(r'^bill-detail/(?P<pk>[\d]+)/?$', views.BillDetailView.as_view(), name='bill-detail'),
     url(r'^bill-list/?$', views.BillListView.as_view(), name='bill-list'),
-
 ]
+
+combined_invoice_urls = [
+    url(r'^create-combined-invoice/?$', views.CombinedInvoiceCreateView.as_view(), name='create-combined-invoice'),
+    url(r'^combined-invoice-detail/(?P<pk>[\d]+)/?$', views.CombinedInvoiceDetailView.as_view(), name='bill-detail'),
+    url(r'^combined-invoice-list/?$', views.CombinedInvoiceListView.as_view(), name='combined-invoice-list'),
+]
+
 urlpatterns = [
     url(r'^$', views.Home.as_view(), name="home"),
     url(r'^config/(?P<pk>[\d]+)/?$', views.ConfigView.as_view(), name="config"),
@@ -96,4 +102,4 @@ urlpatterns = [
 ] +  customer_router.urls + invoice_router.urls + \
     payment_router.urls + sales_rep_router.urls +  invoice_item_router.urls + \
     quote_router.urls + quote_item_router.urls + report_urls + sales_urls + \
-    bill_urls + service_urls
+    bill_urls + service_urls + combined_invoice_urls

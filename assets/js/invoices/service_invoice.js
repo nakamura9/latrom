@@ -1,18 +1,11 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import {Totals, DeleteButton, SearchableWidget} from '../src/common';
 
 export default class ServiceLineTable extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
+    state = {
             lines: [],
-            total: 0.00,
-            subtotal: 0.00,
-            taxRate: 0.00,
-            tax: 0.00,
-            total: 0.00
-        };    
-    }
+        } 
     
     componentDidMount(){
         $('<input>').attr({
@@ -37,8 +30,7 @@ export default class ServiceLineTable extends Component{
             url: '/services/api/service/'+ pk,
             method: 'GET'
         }).then(res =>{
-            console.log(res);
-            let newLines = this.state.lines;
+            let newLines = [...this.state.lines];
             let line = {
                 id: res.id,
                 name: res.name,
@@ -49,35 +41,19 @@ export default class ServiceLineTable extends Component{
             };
             newLines.push(line);
             this.setState({lines: newLines}, () => {
-                this.updateTotal();
                 this.updateForm();
             });
         });
     }
 
     removeLine(index){
-        let newLines = this.state.lines;
+        let newLines = [...this.state.lines];
         newLines.splice(index, 1);
         this.setState({lines: newLines}, ()=>{
-            this.updateTotal();
             this.updateForm();
         });
     }
 
-    updateTotal(){
-        console.log('updated');
-        let subtotal = this.state.lines.reduce((x, y) => {
-            return(x + y.total);
-        }, 0);
-
-        let tax = subtotal * (this.state.taxRate /100.0);
-        let total = subtotal + tax;
-        this.setState({
-            subtotal: subtotal,
-            tax: tax,
-            total: total
-        });
-    }
 
     updateForm(){
         $('#id_item_list').val(
@@ -101,44 +77,40 @@ export default class ServiceLineTable extends Component{
                 </thead>
                 <tbody>
                 {this.state.lines.map((line, i) => (
-                    <tr key={i}>
-                        <td>
-                            <button className="btn btn-danger"
-                                onClick={() => this.removeLine(i)}>
-                                <i className="fas fa-trash"></i>
-                            </button>
-                        </td>
-                        <td>{line.name} + Fixed fee: ${line.fixedFee} </td>
-                        <td>{line.rate}</td>
-                        <td>{line.hours}</td>
-                        <td>{line.total}</td>
-                    </tr>
+                    <ServiceLine 
+                        index={i}
+                        key={i}
+                        line={line}
+                        handler={this.removeLine}/>
                 ))}
-                </tbody>
-                <tfoot>
                 <EntryRow insertLine={this.insertLine.bind(this)}/>
-                <tr>
-                    <th colSpan={4}>Subtotal</th>
-                    <td>{this.state.subtotal.toFixed(2)}</td>
-                </tr>
-                <tr>
-                    <th colSpan={4}>Tax</th>
-                    <td>{this.state.tax.toFixed(2)}</td>
-                </tr>
-                <tr>
-                    <th colSpan={4}>Total</th>
-                    <td>{this.state.total.toFixed(2)}</td>
-                </tr>
-            </tfoot>
+                </tbody>
+                <Totals 
+                    span={5}
+                    list={this.state.lines}
+                    lineTotalVar={"total"}/>
             </table>
         );
     }
 }
 
+const ServiceLine = (props) => {
+    return(<tr>
+        <td>
+            <DeleteButton 
+                index={props.index}
+                handler={props.handler}/>
+        </td>
+        <td>{props.line.name} + Fixed fee: ${props.line.fixedFee} </td>
+        <td>{props.line.rate}</td>
+        <td>{props.line.hours}</td>
+        <td>{props.line.total.toFixed(2)}</td>
+    </tr>);
+}
+
 class EntryRow extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
+    
+    state = {
             currentRate : 0.00,
             services: [],
             inputs: {
@@ -146,8 +118,7 @@ class EntryRow extends Component{
                 hours: ''
             }
         }
-    }
-
+    
     componentDidMount(){
         $.ajax({
             url: '/services/api/service/',
@@ -187,26 +158,39 @@ class EntryRow extends Component{
         }, 
         currentRate:0.00});
     }
+    onSelect = (value) =>{
+        let newInputs = {...this.state.inputs};
+        newInputs['service'] = value;
+        this.setState({inputs: newInputs});
+        const decomposed = value.split('-')[0];
+        const pk = decomposed[0];
+        $.ajax({
+            url: '/services/api/service/'+ pk,
+            method: 'GET'
+        }).then(res =>{
+            this.setState({currentRate: res.hourly_rate});
+        });
+
+    }
+
+    onClear = () =>{
+        this.setState({inputs: {
+            service: '',
+            hours: ''
+        }})
+    }
     
     render(){
         return(
                 <tr>
                     <td style={{width: "10%"}}></td>
                     <td style={{width: "50%"}}>
-                        <input type="text" 
-                            list="service-list"
-                            className="form-control"
-                            name="service" 
-                            onChange={this.handleServiceChange.bind(this)}
-                            value={this.state.inputs.service}/>
-                            <datalist id="service-list">
-                                {this.state.services.map((service, i) => {
-                                    return(<option key={i}>
-                                        {service.id}-{service.name}
-                                        </option>)
-                                })}
-                                
-                            </datalist>
+                        <SearchableWidget 
+                            dataURL="/services/api/service/"
+                            displayField="name"
+                            idField="id"
+                            onClear={this.onClear}
+                            onSelect={this.onSelect}/>
                     </td>
                     <td style={{width: "10%"}}>{this.state.currentRate}</td>
                     <td style={{width: "15%"}}>
@@ -217,9 +201,10 @@ class EntryRow extends Component{
                             onChange={this.handleHoursChange.bind(this)}/>
                     </td>
                     <td style={{width: "15%"}}>
-                        <button className="btn btn-primary"
-                                onClick={this.handleButtonClick.bind(this)}
-                            >
+                        <button 
+                            className="btn btn-primary"
+                            onClick={this.handleButtonClick.bind(this)}
+                            type="button">
                             Insert
                         </button>
                     </td>

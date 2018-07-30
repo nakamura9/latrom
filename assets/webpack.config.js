@@ -2,6 +2,7 @@ var path = require("path");
 var webpack = require("webpack");
 var BundleTracker = require("webpack-bundle-tracker");
 
+//calendar: './js/src/calendar'
 module.exports = {
     context: __dirname,
     entry:  {

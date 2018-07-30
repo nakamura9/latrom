@@ -6,6 +6,7 @@ import SalesInvoiceForm from './invoices/sales_invoice';
 import BillTable from './invoices/bill';
 import ServiceLineTable from './invoices/service_invoice';
 import CreditNoteTable from './invoices/credit_note';
+import CombinedTable from './invoices/combined_invoice';
 
 function addHandler(item, count){
     $("<input>")
@@ -65,6 +66,7 @@ const bill = document.getElementById('bill-contents');
 const services = document.getElementById('service-invoice-contents');
 const creditNote = document.getElementById('credit-note-table');
 const directPurchase =  document.getElementById('direct-purchase-table');
+const combinedInvoce = document.getElementById('combined-invoice-contents');
 
 if(populated){
     ReactDOM.render(<InvoiceTable 
@@ -90,4 +92,6 @@ if(populated){
     ReactDOM.render(<CreditNoteTable />, creditNote)
 }else if(directPurchase){
     ReactDOM.render(<PurchaseTable />, directPurchase);
+}else if(combinedInvoce){
+    ReactDOM.render(<CombinedTable />, combinedInvoce);
 }
