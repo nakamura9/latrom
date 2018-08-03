@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
 import {Totals, DeleteButton, SearchableWidget} from '../src/common';
-
+import axios from 'axios';
 export default class ServiceLineTable extends Component{
     state = {
             lines: [],

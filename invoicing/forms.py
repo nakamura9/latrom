@@ -60,74 +60,51 @@ class SalesRepForm(forms.ModelForm, BootstrapMixin):
         exclude = 'active',
         model = models.SalesRepresentative
 
-class PaymentForm(forms.ModelForm, BootstrapMixin):
-    invoice = forms.ModelChoiceField(
-        models.Invoice.objects.filter(type_of_invoice ='credit'))
-    class Meta:
-        fields = '__all__'
-        model = models.Payment
-
-
-class PaymentUpdateForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['invoice', 'amount']
-        model = models.Payment
-
-
-class InvoiceForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = "active", 
-        model = models.Invoice
 
 class SalesInvoiceForm(forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = "active", 
         model = models.SalesInvoice
 
+
+class SalesInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['customer', 'active'] 
+        model = models.SalesInvoice
+
+class SalesInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
+    sales_invoice = forms.ModelChoiceField(
+        models.SalesInvoice.objects.all(), widget=forms.HiddenInput
+        )
+    
+    payment_for = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = ['service_invoice', 'bill', 'combined_invoice']
+        model = models.Payment
+
+
 class ServiceInvoiceForm(forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = "active", 
         model = models.ServiceInvoice
 
 class BillForm(forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = "active", 'discount'
         model = models.Bill
 
 class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = "active", 'discount'
         model = models.CombinedInvoice
 
 
-class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'type_of_invoice','saleseperson', 'customer', 'date_issued', 'due_date']
-        model = models.Invoice
-
-class QuoteForm(forms.ModelForm, BootstrapMixin):
-    def __init__(self, *args, **kwargs):
-        super(QuoteForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            TabHolder(
-            Tab('Details', 
-                'date',
-                'customer',
-                'salesperson',
-                'tax'),
-            Tab('Comments',
-                'comments')
-        ))
-        self.helper.add_input(Submit('submit', 'Submit'))
-    
-    class Meta:
-        fields = ["date","customer", "comments", 'tax', 'salesperson']
-        model = models.Quote
-        
-
 class CreditNoteForm( forms.ModelForm, BootstrapMixin):
-    invoice = forms.ModelChoiceField(models.Invoice.objects.exclude(customer__account__isnull=True))
+    invoice = forms.ModelChoiceField(models.SalesInvoice.objects.all(), widget=forms.HiddenInput)
     class Meta:
         fields = '__all__'
         model = models.CreditNote

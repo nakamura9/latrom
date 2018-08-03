@@ -1,0 +1,38 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr class="info">
+    <td>Date</td>
+    <td>ID</td>
+    <td>Customer</td>
+    <td>Total</td>
+    <td>Status</td>
+</tr>
+{% endblock %} {% block list_content %} 
+{% for inv in object_list %}
+<tr>
+    <td>{{inv.date}}</td>
+    <td>{{inv.pk}}</td>
+    <td>{{inv.customer}}</td>
+    <td>{{inv.total}}</td>
+    <td>{{inv.status}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <!--
+                    <a href="" class="dropdown-item">
+                    <i class="fas fa-file"></i> Update
+                </a>
+                
+                -->
+                <a class="dropdown-item" href="{% url 'invoicing:combined-invoice-detail' pk=inv.pk %}">
+                    <i class="fas fa-trash"></i> Detail
+                </a>
+            </div>
+        </div>
+
+    </td>
+</tr>
+{% endfor %} {% endblock %}

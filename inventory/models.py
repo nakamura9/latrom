@@ -7,7 +7,6 @@ import rest_framework
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
-from invoicing.models import Invoice, InvoiceItem
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
 
@@ -177,8 +176,7 @@ class Item(models.Model):
         averaging- calculating the overall stock value on the average of all
         the values during the period under consderation.
         '''
-        if self.quantity == 0:
-            return 0
+        return 0
 
         #dates under consideration 
         TODAY  = datetime.date.today()
@@ -212,11 +210,7 @@ class Item(models.Model):
             [i.received_total for i in ordered_in_last_month], 0)
         
         #get the number of sold items in the last 30 days
-        sold_in_last_month = InvoiceItem.objects.filter(
-            Q(item=self)
-            & Q(invoice__date_issued__gte = START)
-            & Q(invoice__date_issued__lte =TODAY))
-
+        sold_in_last_month = None
         #calculate the number of items sold in that period
         sold_quantity = reduce(lambda x, y: x + y, 
             [i.quantity for i in sold_in_last_month], 0)
@@ -274,6 +268,7 @@ class Item(models.Model):
 
     @property
     def sales_to_date(self):
+        return 0 #!!fix
         items = InvoiceItem.objects.filter(item=self)
         total_sales = reduce(lambda x,y: x + y, [item.quantity * item.price for item in items], 0)
         return total_sales
@@ -295,11 +290,13 @@ class Item(models.Model):
         epoch = datetime.date.today() - datetime.timedelta(days=30)
 
         #from invoices
-        items= [Event(i.invoice.due_date, 
+        items= []
+        #fix 
+        '''[Event(i.invoice.due_date, 
             "removed %d items from inventory as part of invoice #%d." % (i.quantity, i.invoice.pk)) \
                 for i in InvoiceItem.objects.filter(Q(item=self) 
                     & Q(invoice__date_issued__gte= epoch))]
-        
+        '''
         # from orders
         orders = [Event(o.order.issue_date, 
             "added %d items to inventory from purchase order #%d." % (o.received, o.order.pk)) \
@@ -633,6 +630,8 @@ class WareHouseItem(models.Model):
 
     def decrement(self, amt):
         amount = float(amt)
+        print self.quantity
+        print amount
         if self.quantity < amount:
             raise ValueError('Cannot have a quantity less than zero')
         self.quantity -= amount

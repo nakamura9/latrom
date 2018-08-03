@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {DeleteButton, SearchableWidget} from '../src/common';
+import EntryWidget from './combinedInvoice/entry_widget';
+
 
 export default class CombinedTable extends Component{
     state = {
@@ -19,30 +21,18 @@ export default class CombinedTable extends Component{
             name: 'item_list'
         }).appendTo('form');
     }
-    addExpense = (expense) => {
-        var decomposed = expense.split('-');
-        var pk = decomposed[0];
-        var name = decomposed[1];
-        axios({
-            url: '/accounting/api/expense/' + pk,
-            method: 'GET'
-        }).then(res => {
-            let newItems = this.state.items;
-            newItems.push({
-                pk: pk,
-                name: name,
-                amount: res.data.amount
-            });
-            this.setState({'items': newItems});
-            this.updateForm();
-        });
+    
+    insertHandler = (data) =>{
+        let newItems = [...this.state.items];
+        newItems.push(data);
+        this.setState({items: newItems}, this.updateForm);
     }
 
-    removeExpense = (id) => {
-        let newItems = this.state.items;
-        newItems.splice(id, 1);
-        this.setState({'items': newItems});
-        this.updateForm()
+    deleteHandler = (index) =>{
+        let newItems = [...this.state.items];
+        newItems.splice(index, 1);
+        this.setState({items: newItems}, this.updateForm);
+        
     }
 
     updateForm = () => {
@@ -50,6 +40,7 @@ export default class CombinedTable extends Component{
             encodeURIComponent(JSON.stringify(this.state.items))
         );
     }
+
     render(){
         return(
             <table className="table">
@@ -66,18 +57,32 @@ export default class CombinedTable extends Component{
                     </tr>
                 </thead>
                 <tbody>
-                    {this.state.items.map((item, i) =>(
-                        <tr key={i}>
-                            <td>
-                                <DeleteButton 
-                                    handler={this.removeExpense}
-                                    index={i} />
-                            </td>
-                            <td>{item.name}</td>
-                            <td>{item.amount}</td>
-                        </tr>
-                    ))}
-                <EntryRow addExpense={this.addExpense.bind(this)}/>
+                    {this.state.items.map((item, i) =>{
+                        let line;
+                        if(item.lineType === "sale"){
+                            line = <SaleLine 
+                                        {...item.data}
+                                        key={i}
+                                        index={i}
+                                        handler={this.deleteHandler}/>
+                        }else if(item.lineType === "service"){
+                            line = <ServiceLine  
+                                        {...item.data}
+                                        key={i}
+                                        index={i}
+                                        handler={this.deleteHandler}/>
+                        }else{
+                            line = <BillableLine  
+                                        {...item.data}
+                                        key={i}
+                                        index={i}
+                                        handler={this.deleteHandler}/>
+                        }
+                        return(line);
+                    }
+                    )}
+                <EntryWidget 
+                    insertHandler={this.insertHandler}/>
                 </tbody>
                 <tfoot>
                     <tr>
@@ -98,119 +103,53 @@ export default class CombinedTable extends Component{
     }
 }
 
-class EntryRow extends Component{
-    state = {
-        selectedLineType: ''
-    }
-    handleRadioChange = (evt) => {
-        this.setState({selectedLineType: evt.target.value})
-    }
-    render(){
-        let renderedForm;
-        if(this.state.selectedLineType === 'sale'){
-            renderedForm = (
-                <tr>
-                    <td>
-                        <input 
-                            type="text" 
-                            placeholder="Select Product..."
-                            className="form-control"/>
-                    </td>
-                    <td>
-                        <input 
-                            type="text"
-                            placeholder="Quantity..."
-                            className="form-control"/>
-                    </td>
-                    <td>
-                        <button className="btn btn-primary">Insert</button>
-                    </td>
-                </tr>
-            );
-        }else if(this.state.selectedLineType === 'service'){
-            renderedForm = (
-                <tr>
-                    <td>
-                        <input 
-                            type="text" 
-                            placeholder="Select Service..."
-                            className="form-control"/>
-                    </td>
-                    <td>
-                        <input 
-                            type="text"
-                            placeholder="Hours..."
-                            className="form-control"/>
-                    </td>
-                    <td>
-                        <button className="btn btn-primary">Insert</button>
-                    </td>
-                </tr>
-            );
-        }else if(this.state.selectedLineType === "billable"){
-            //billable
-            renderedForm = (
-                <tr>
-                    <td colSpan={2}>
-                        <input 
-                            type="text" 
-                            placeholder="Select Billable Expense..."
-                            className="form-control"/>
-                    </td>
-                    <td>
-                        <button className="btn btn-primary">Insert</button>
-                    </td>
-                </tr>
-            );            
-        }else{
-            renderedForm = (
-                <tr>
-                    <th colSpan={3}>
-                        Select a Line type
-                    </th>
-                </tr>)
-        }
-        return(
-                <tr>
-                    <td colSpan={3}>
-                        <h3>Invoice Lines</h3>
-                        <h6>Choose between a product sale, service or billable expense and enter the appropriate details</h6>
-                        <hr />
-                        <div >
-                            <label 
-                                className="radio-inline" 
-                                style={{marginLeft: "30px"}}>
-                                <input 
-                                    type="radio" 
-                                    name="line_type"
-                                    value="sale"
-                                    onChange={this.handleRadioChange} />Sale
-                            </label>
-                            <label 
-                                className="radio-inline" 
-                                style={{marginLeft: "30px"}}>
-                                <input 
-                                    type="radio" 
-                                    name="line_type"
-                                    value="service"
-                                    onChange={this.handleRadioChange} />Service
-                            </label>
-                            <label 
-                                className="radio-inline" 
-                                style={{marginLeft: "30px"}}>
-                                <input 
-                                    type="radio" 
-                                    name="line_type"
-                                    value="billable"
-                                    onChange={this.handleRadioChange} />Billable
-                            </label>
-                        </div>
-                        <div>
-                            {renderedForm}
-                        </div>
-                    </td>
-                </tr>
-            
-        );
-    }
+const SaleLine = (props) =>{
+    let total = props.price * parseFloat(props.quantity);
+    return(
+        <tr>
+            <td>
+                <DeleteButton 
+                    index={props.index}
+                    handler={props.handler}/>
+            </td>
+            <td>
+                {props.quantity} x {
+                    props.item.split('-')[1]
+                } @ ${props.price.toFixed(2)} each.
+            </td>
+            <td>{total.toFixed(2)}</td>
+        </tr>
+    )
+}
+
+const ServiceLine = (props) =>{
+    let total = (props.hours * props.rate) + props.flatFee;
+    return(
+        <tr>
+            <td>
+                <DeleteButton
+                    index={props.index}
+                    handler={props.handler}/>
+            </td>
+            <td>{
+                props.service.split('-')[1]
+            } - Flat Fee: ${props.flatFee} + {props.hours}Hrs x @ ${props.rate} /Hr</td>
+            <td>{total}</td>
+        </tr>
+    )
+}
+
+const BillableLine = (props) =>{
+    console.log(props);
+    return(
+        <tr>
+            <td>
+                <DeleteButton 
+                    index={props.index}
+                    handler={props.handler}/>
+            </td>
+            <td>{props.description}</td>
+            <td>{props.amount}</td>
+        </tr>
+    )
 }

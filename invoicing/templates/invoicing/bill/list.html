@@ -21,12 +21,6 @@
                 Actions
             </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
-                <!--
-                    <a href="" class="dropdown-item">
-                    <i class="fas fa-file"></i> Update
-                </a>
-                
-                -->
                 <a class="dropdown-item" href="{% url 'invoicing:bill-detail' pk=inv.pk %}">
                     <i class="fas fa-trash"></i> Detail
                 </a>
@@ -38,4 +32,6 @@
 
     </td>
 </tr>
+
+
 {% endfor %} {% endblock %}

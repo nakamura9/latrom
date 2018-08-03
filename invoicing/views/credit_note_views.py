@@ -23,7 +23,7 @@ from inventory.models import Item
 from invoicing.models import CreditNote
 from invoicing import filters
 from invoicing import serializers
-from views import SalesRepCheckMixin
+from common import SalesRepCheckMixin
 
 
 #########################################
@@ -40,16 +40,22 @@ class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     database side of things.
     '''
     extra_context = {"title": "Create New Credit Note"}
-    template_name = os.path.join("invoicing", "create_credit_note.html")
+    template_name = os.path.join("invoicing", "sales_invoice", 
+        "credit_note", "create.html")
     model = CreditNote
     form_class = forms.CreditNoteForm
-    success_url = reverse_lazy("invoicing:home")
+    success_url = reverse_lazy("invoicing:credit-note-list")
 
-    def post(self, request):
-        resp = super(CreditNoteCreateView, self).post(request)
+    def get_initial(self):
+        return {
+            'invoice': self.kwargs['pk']
+        }
+
+    def post(self, request, *args, **kwargs):
+        resp = super(CreditNoteCreateView, self).post(request, *args, **kwargs)
         data = json.loads(urllib.unquote(request.POST['returned-items']))
         for key in data.keys():
-            iitem = InvoiceItem.objects.get(pk=key)
+            iitem = SalesInvoiceLine.objects.get(pk=key)
             iitem._return(data[key])
         return resp
 

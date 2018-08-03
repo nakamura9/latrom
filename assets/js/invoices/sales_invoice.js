@@ -41,6 +41,30 @@ export default class SalesInvoiceForm extends Component{
                 this.setState({taxRate: res.sales_tax});
             }
         );
+        //check if the page is an update
+        let URL = window.location.href;
+        let decomposed = URL.split('/');
+        let tail = decomposed[decomposed.length - 1];
+        console.log(tail);
+        if(tail !== 'create-sales-invoice'){
+            axios({
+                url: '/invoicing/api/sales-invoice/' + tail,
+                method: 'GET',
+            }).then(res =>{
+                console.log(res);
+                let itemList = res.data.salesinvoiceline_set.map((line) =>{
+                    return {
+                        item_name: line.item.code + '-' + line.item.item_name,
+                        unit_price: line.item.unit_sales_price,
+                        quantity: line.quantity,
+                        subtotal: parseFloat(line.quantity) * 
+                            parseFloat(line.item.unit_sales_price)
+                    }
+                })
+                this.setState({items: itemList});
+            });
+        }
+        //get item_list 
     }
 
     updateForm(){
@@ -96,7 +120,7 @@ const SalesLine = (props) => {
                     handler={props.handler}
                     index={props.index}/>
             </td>
-            <td>{props.item.item_name}</td>
+            <td>{props.item.item_name.split('-')[1]}</td>
             <td>{props.item.unit_price.toFixed(2)}</td>
             <td>{props.item.quantity}</td>
             <td>{props.item.subtotal.toFixed(2)}</td>
@@ -134,7 +158,6 @@ class EntryRow extends Component{
     }
 
     onSelect =(value) =>{
-        console.log(value);
         const decomposed = value.split('-');
         const pk = decomposed[0];
         const item_name = decomposed[1];
@@ -145,7 +168,7 @@ class EntryRow extends Component{
             console.log(res.data);
             let newInputs = {...this.state.inputs};
             newInputs['unit_price'] = res.data.unit_sales_price;
-            newInputs['item_name'] = item_name;
+            newInputs['item_name'] = value;
             this.setState({inputs: newInputs});
         });
         }

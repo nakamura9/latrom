@@ -13,6 +13,7 @@ from services.models import Service
 from accounting.models import Account, Journal, JournalEntry, Tax, Expense
 from employees.models import Employee
 from common_data.models import SingletonModel
+import inventory
 
 
 class SalesConfig(SingletonModel):
@@ -160,7 +161,7 @@ class AbstractSale(models.Model):
     due= models.DateField( default=timezone.now)
     date= models.DateField(default=timezone.now)
     discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    tax = models.ForeignKey('accounting.Tax', blank="True", null=True)
+    tax = models.ForeignKey('accounting.Tax', blank=True, null=True)
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
     
@@ -171,6 +172,14 @@ class AbstractSale(models.Model):
     @property
     def total(self):
         return self.subtotal + self.tax_amount
+
+    @property
+    def total_paid(self):
+        return reduce(lambda x,y: x + y, 
+            [p.amount for p in self.payment_set.all()], 0)
+
+    def total_due(self):
+        return self.total - self.total_paid
 
     @property
     def tax_amount(self):
@@ -194,6 +203,7 @@ class SalesInvoice(AbstractSale):
          default=DEFAULT_WAREHOUSE)
 
     def add_item(self, item, quantity):
+        print quantity
         self.salesinvoiceline_set.create(
             item=item, 
             quantity=quantity,
@@ -327,7 +337,37 @@ class BillLine(models.Model):
 class CombinedInvoice(AbstractSale):
     '''Basic Invoice format with description and amount fields 
     that combines the features of sales, services and bills'''
-    pass
+    def add_line(self, data):
+        if data['lineType'] == 'sale':
+            pk, name = data['data']['item'].split('-')
+            item = inventory.models.Item.objects.get(pk=pk)
+            self.combinedinvoiceline_set.create(
+                line_type=1,#item
+                quantity_or_hours= data['data']['quantity'],
+                item=item
+            )
+        
+        elif data['lineType'] == 'service':
+            pk, name = data['data']['service'].split('-')
+            service = Service.objects.get(pk=pk)
+            self.combinedinvoiceline_set.create(
+                line_type=2,#service
+                quantity_or_hours= data['data']['hours'],
+                service=service
+            )
+
+        elif data['lineType'] == 'billable':
+            pk, name = data['data']['billable'].split('-')
+            expense = Expense.objects.get(pk=pk)
+            self.combinedinvoiceline_set.create(
+                line_type=3,#expense
+                expense=expense
+            )
+
+    @property
+    def subtotal(self):
+        return reduce(lambda x, y: x + y,
+            [i.subtotal for i in self.combinedinvoiceline_set.all()], 0)
 
 class CombinedInvoiceLine(models.Model):
     LINE_CHOICES = [
@@ -335,208 +375,42 @@ class CombinedInvoiceLine(models.Model):
         (2, 'service'),
         (3, 'expense'),
     ]
+    invoice = models.ForeignKey('invoicing.CombinedInvoice', default=1)
     expense = models.ForeignKey('accounting.Expense', null=True)
     service = models.ForeignKey('services.Service', null=True)
     item = models.ForeignKey("inventory.Item", null=True)
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
+    quantity_or_hours = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
 
-    @property
-    def description(self):
-        pass
-
-class Invoice(models.Model):
-    '''Represents the document sent by a selling party to a buyer.
-    It outlines the items purchased, their cost and other features
-    such as the seller's information and the buyers information.
-    An aggregate relationship with the InvoiceItem class. 
-    
-    methods
-    ----------
-    create_payment - used only for credit invoices creates a complete
-        payment for the invoice object.
-    create_entry - journal entry created where the sales and tax accounts are 
-        credited and the inventory account is debited
-    update_inventory - decrements each item in the inventory
-
-    properties
-    ------------
-    subtotal - returns the sale value of the invoice
-    total - returns the price inclusive of tax
-    tax_amount - returns the amount of tax due on an invoice
-    
-    '''
-    type_of_invoice = models.CharField(max_length=12, 
-        choices=INVOICE_TYPES, default='cash')
-    customer = models.ForeignKey("invoicing.Customer", default=1)
-    date_issued = models.DateField( default=timezone.now)
-    due_date = models.DateField( default=timezone.now)
-    date_paid = models.DateField(default=timezone.now)
-    ship_from = models.ForeignKey('inventory.WareHouse')
-    terms = models.CharField(max_length = 128, blank=True)
-    comments = models.TextField(blank=True)
-    number = models.AutoField(primary_key = True)
-    tax = models.ForeignKey('accounting.Tax', null=True, blank="True")
-    salesperson = models.ForeignKey('invoicing.SalesRepresentative')
-    active = models.BooleanField(default=True)
-    purchase_order_number = models.CharField(blank=True, max_length=32)
-    
-    @property
-    def paid_in_full(self):
-        payments = Payment.objects.filter(invoice=self)
-        return reduce(lambda x, y:x + y, [p.amount for p in payments], 0) == \
-            self.total
-
-    def delete(self):
-        self.active = False
-        self.save()
+    def __str__(self):
+        if self.line_type == 1:
+            return '[ITEM] {} x {} @ ${}{}'.format(
+                self.quantity_or_hours,
+                str(self.item).split('-')[1],
+                self.item.unit_sales_price,
+                self.item.unit
+            )
+        elif self.line_type == 2:
+            return '[SERVICE] {} Flat fee: ${} + {}Hrs @ ${}/Hr'.format(
+                self.service.name,
+                self.service.flat_fee,
+                self.quantity_or_hours,
+                self.service.hourly_rate
+            )
+        elif self.line_type ==3:
+            return '[BILLABE EXPENSE] %s' % self.expense.description
 
     @property
     def subtotal(self):
-        return reduce(lambda x, y: x+ y, 
-            [i.subtotal for i in self.invoiceitem_set.all()], 0)
-       
-    @property
-    def total(self):
-        return self.subtotal + self.tax_amount
+        if self.line_type == 1:
+            return self.item.unit_sales_price * self.quantity_or_hours
+        elif self.line_type == 2:
+            return self.service.flat_fee + \
+                 (self.service.hourly_rate * self.quantity_or_hours)
+        elif self.line_type ==3:
+            return self.expense.amount
 
-    def add_item(self, item, quantity, discount):
-        self.invoiceitem_set.create(
-            item=item, 
-            quantity=quantity,
-            discount=discount
-        )
-    def remove_item(self, item_pk):
-        # remove an item from an invoice
-        pass
-
-    @property
-    def tax_amount(self):
-        if self.tax:
-            return self.subtotal * D((self.tax.rate / 100.0))
         return 0
-
-    def __str__(self):
-        if self.type_of_invoice == "cash":
-            return 'CINV' + str(self.pk)
-        else: 
-            return 'DINV' + str(self.pk)
-        
-    @property
-    def overdue(self):
-        if self.paid_in_full:
-            return 0
-        today = datetime.date.today()
-        if today < self.due_date:
-            return 0
-        else:
-            delta = today- self.due_date
-        return delta.days
-    
-    def create_payment(self):
-        if self.type_of_invoice == 'credit':
-            pmt = Payment.objects.create(invoice=self,
-                amount=self.total,
-                date=self.date_issued,
-                sales_rep = self.salesperson,
-            )
-            return pmt
-        else:
-            raise ValueError('The invoice Type specified cannot have' + 
-                'separate payments, change to "credit" instead.')
-    
-    def create_entry(self):
-        if self.type_of_invoice == "cash":
-            j = JournalEntry.objects.create(
-                reference='INV' + str(self.pk),
-                memo= 'Auto generated Entry from cash invoice.',
-                date=self.date_issued,
-                journal =Journal.objects.get(pk=1)#Sales Journal
-            )
-            j.credit(self.total, Account.objects.get(pk=4009))#inventory
-            j.debit(self.subtotal, Account.objects.get(pk=4000))#sales
-            j.debit(self.tax_amount,Account.objects.get(pk=2001))#sales tax
-
-            return j
-        else:
-            j = JournalEntry.objects.create(
-                reference='INV' + str(self.pk),
-                memo= 'Auto generated Entry from cash invoice.',
-                date=self.date_issued,
-                journal =Journal.objects.get(pk=3)#Sales Journal
-            )
-            j.credit(self.total, Account.objects.get(pk=4009))#inventory
-            j.debit(self.total, self.customer.account)#sales
-            
-            return j
-
-    def update_inventory(self):
-        #called in views.py
-        for item in self.invoiceitem_set.all():
-            #check if ship_from has the item in sufficient quantity
-             self.ship_from.decrement_item(item.item, item.quantity)
-
-class InvoiceItem(models.Model):
-    '''Items listed as part of an invoice. Records the price for that 
-    particular invoice and the discount offered as well as the quantity
-    returned to the business.Part of an aggregate with invoice.
-
-    methods
-    -----------
-    update_price - can be used to reflect the new unit sales 
-        price when a change happens in inventory as a result of
-        an order
-    _return - returns some or all of the ordered quantity to the business
-        as a result of some error or shortcoming in the product.
-    
-    properties
-    -----------
-    total_without_discount - the value of the ordered items without 
-        a discount applied
-    subtotal - value inclusive of discount
-    returned_value - value of goods returned to store
-    
-    '''
-    invoice = models.ForeignKey('invoicing.Invoice')
-    item = models.ForeignKey("inventory.Item")
-    quantity = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
-    returned_quantity = models.FloatField(default=0.0)
-    returned = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.item.item_name + " * " + str(self.quantity)
-
-    @property
-    def total_without_discount(self):
-        return self.quantity * self.price
-
-    @property
-    def subtotal(self):
-        return self.total_without_discount - \
-            (self.total_without_discount * (self.discount / 100))
-
-    def save(self, *args, **kwargs):
-        super(InvoiceItem, self).save(*args, **kwargs)
-        # the idea is to save a snapshot of the price the moment
-        # the invoice was created
-        if not self.price:
-            self.price = self.item.unit_sales_price
-            self.save()
-
-    def update_price(self):
-        self.price = self.item.unit_sales_price
-        self.save()            
-
-    def _return(self, quantity):
-        self.returned_quantity  = float(quantity)
-        if self.returned_quantity > 0:
-            self.returned =True
-        self.save()
-
-    @property
-    def returned_value(self):
-        return self.price * D(self.returned_quantity)
 
 
 class SalesRepresentative(models.Model):
@@ -566,192 +440,6 @@ class SalesRepresentative(models.Model):
 
         return reduce(lambda x, y: x + y, [i.subtotal for i in invoices], 0)
 
-
-class Payment(models.Model):
-    '''Model represents payments made by credit customers only!
-    These transactions are currently implemented to require full payment 
-    of each invoice. Support for multiple payments for a single invoice
-    may be considered as required by clients.
-    Information stored include data about the invoice, the amount paid 
-    and other notable comments
-    
-    methods
-    ---------
-    create_entry - returns the journal entry that debits the customer account
-        and credits the sales account. Should also impact tax accounts'''
-    invoice = models.ForeignKey("invoicing.Invoice")
-    amount = models.DecimalField(max_digits=6,decimal_places=2)
-    date = models.DateField()
-    method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
-                                        ("transfer", "Transfer"),
-                                        ("debit card", "Debit Card"),
-                                        ("ecocash", "EcoCash")],
-                                        default='transfer')
-    reference_number = models.AutoField(primary_key=True)
-    sales_rep = models.ForeignKey("invoicing.SalesRepresentative")
-    comments = models.TextField(default="Thank you for your business")
-    def __str__(self):
-        return 'PMT' + str(self.pk)
-
-    @property
-    def due(self):
-        return self.invoice.total - self.amount
-
-
-    def delete(self):
-        self.active = False
-        self.save()
-
-    def create_entry(self):
-        j = JournalEntry.objects.create(
-                reference='PMT' + str(self.pk),
-                memo= 'Auto generated journal entry from payment.',
-                date=self.date,
-                journal =Journal.objects.get(pk=3)
-            )
-        
-        # split into sales tax and sales
-        if not self.invoice.tax:
-            j.simple_entry(
-                self.amount,
-                self.invoice.customer.account,
-                Account.objects.get(
-                    pk=4000),#sales account
-            )
-        else:
-            # will now work for partial payments
-            j.debit(self.amount, self.invoice.customer.account)
-            # calculate tax as a proportion of the amount paid
-            tax_amount = self.amount * D(self.invoice.tax.rate / 100.0)
-            # sales account
-            j.credit(self.amount - tax_amount, Account.objects.get(pk=4000))
-            # tax
-            j.credit(tax_amount, Account.objects.get(pk=2001))
-            
-
-    def save(self, *args, **kwargs):
-        flag = self.pk
-        if self.invoice.type_of_invoice == "cash":
-            raise ValueError('Only Credit Invoices can create payments')
-        else:
-            # to prevent a transaction during an update
-            super(Payment, self).save(*args, **kwargs)
-            if flag is None:
-                self.create_entry()
-
-class Quote(models.Model):
-    '''Model that represents a quotation set to a client for 
-    some product. This model is similar in structure to an invoice 
-    the difference being it does not affect the chart of accounts or
-    the inventory. Forms an aggregate with QuoteItem
-    
-    methods
-    ----------
-    create_invoice - uses the data from the quotation to create an invoice
-        based on the quote including the quoted prices!
-    
-    properties
-    -----------
-    total - returns the sale value and the tax 
-    subtotal - returns the sale value of the quoted items
-    tax_amount -returns the amount of tax due for the quoted items.
-
-    '''
-    date = models.DateField(default=datetime.date.today)
-    customer = models.ForeignKey('invoicing.Customer')
-    number = models.AutoField(primary_key = True)
-    salesperson = models.ForeignKey('invoicing.SalesRepresentative')
-    comments = models.TextField(null = True, blank=True)
-    tax = models.ForeignKey('accounting.Tax', null=True, blank="True")
-    invoiced = models.BooleanField(default=False)
-    
-
-    @property
-    def total(self):
-        return self.subtotal + self.tax_amount 
-
-    @property
-    def tax_amount(self):
-        return self.subtotal * D(self.tax.rate /100.0)
-
-    @property
-    def subtotal(self):
-        return reduce((lambda x,y: x + y), 
-            [i.subtotal for i in self.quoteitem_set.all()])
-
-    def __str__(self):
-        return 'QUO' + str(self.number)
-
-    def add_item(self, item, quantity, discount):
-        self.quoteitem_set.create(
-                quantity=quantity,
-                item=item,
-                discount=discount)
-
-    def create_invoice(self):
-        if not self.invoiced:
-            #only one should exist
-            Invoice.objects.create(
-                customer=self.customer,
-                date_issued=self.date,
-                comments = self.comments,
-                tax=self.tax,
-                salesperson=self.salesperson,
-                terms = "Please contact the supplier for details regarding payment terms.",
-            )
-            inv = Invoice.objects.latest('pk')
-            for item in self.quoteitem_set.all():
-                inv.invoiceitem_set.create(
-                    item=item.item,
-                    quantity=item.quantity,
-                    price=item.price,# set this way to ensure invoice price matches quote price
-                    discount=item.discount
-                )
-            self.invoiced = True
-            self.save()
-            return inv
-
-class QuoteItem(models.Model):
-    '''Part of Quotations in aggregate form. similar to invoice item 
-    in that it maintains a link to an invoice item and maintains its own price
-    and discount values.
-    
-    properties
-    -----------
-    total_without_discount - returns the full value of quoted item.
-    subtotal - includes the discount subtracted from the full value.
-    
-    methods
-    -----------
-    update_price - changes the price of the product based on the value
-    stored in the inventory.
-    '''
-    quote = models.ForeignKey('invoicing.Quote')
-    item = models.ForeignKey('inventory.Item')
-    quantity = models.FloatField()
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
-
-    def save(self, *args, **kwargs):
-        super(QuoteItem, self).save(*args, **kwargs)
-        if not self.price:
-            self.price = self.item.unit_sales_price
-            self.save()
-    
-    @property
-    def total_without_discount(self):
-        return self.price * D(self.quantity)
-    
-    @property
-    def subtotal(self):
-        return self.total_without_discount - \
-            (self.total_without_discount * D((self.discount / D(100.0))))
-
-    def update_price(self):
-        self.price = self.item.unit_sales_price
-        self.save()
-
-
 class CreditNote(models.Model):
     """A document sent by a seller to a customer notifying them
     that a credit has been made to their account against goods returned
@@ -770,7 +458,7 @@ class CreditNote(models.Model):
         are to be written off."""
     
     date = models.DateField()
-    invoice = models.ForeignKey('invoicing.Invoice')
+    invoice = models.ForeignKey('invoicing.SalesInvoice')
     comments = models.TextField()
 
     @property
@@ -799,3 +487,85 @@ class CreditNote(models.Model):
         if not self.pk is None:
             return
         self.create_entry()
+
+
+class Payment(models.Model):
+    '''Model represents payments made by credit customers only!
+    These transactions are currently implemented to require full payment 
+    of each invoice. Support for multiple payments for a single invoice
+    may be considered as required by clients.
+    Information stored include data about the invoice, the amount paid 
+    and other notable comments
+    
+    methods
+    ---------
+    create_entry - returns the journal entry that debits the customer account
+        and credits the sales account. Should also impact tax accounts'''
+    PAYMENT_FOR_CHOICES = [
+        (0, 'Sales'),
+        (1, 'Service'),
+        (2, 'Bill'),
+        (3, 'Combined')
+    ]
+    payment_for = models.PositiveSmallIntegerField(
+        choices = PAYMENT_FOR_CHOICES
+        )
+    #only one of the four is selected
+    sales_invoice = models.ForeignKey("invoicing.SalesInvoice", null=True)
+    service_invoice = models.ForeignKey("invoicing.ServiceInvoice", null=True)
+    bill = models.ForeignKey("invoicing.Bill", null=True)
+    combined_invoice = models.ForeignKey("invoicing.CombinedInvoice", null=True)
+    amount = models.DecimalField(max_digits=6,decimal_places=2)
+    date = models.DateField()
+    method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
+                                        ("transfer", "Transfer"),
+                                        ("debit card", "Debit Card"),
+                                        ("ecocash", "EcoCash")],
+                                        default='transfer')
+    reference_number = models.AutoField(primary_key=True)
+    sales_rep = models.ForeignKey("invoicing.SalesRepresentative")
+    comments = models.TextField(default="Thank you for your business")
+
+    def __str__(self):
+        return 'PMT' + str(self.pk)
+
+    @property
+    def due(self):
+        return self.invoice.total - self.amount
+
+
+    def delete(self):
+        self.active = False
+        self.save()
+    
+    @property
+    def invoice(self):
+        options = dict(self.PAYMENT_FOR_CHOICES)
+        return options[self.payment_for]
+
+    def create_entry(self):
+        j = JournalEntry.objects.create(
+                reference='PMT' + str(self.pk),
+                memo= 'Auto generated journal entry from payment.',
+                date=self.date,
+                journal =Journal.objects.get(pk=3)
+            )
+        
+        # split into sales tax and sales
+        if not self.invoice.tax:
+            j.simple_entry(
+                self.amount,
+                self.invoice.customer.account,
+                Account.objects.get(
+                    pk=4000),#sales account
+            )
+        else:
+            # will now work for partial payments
+            j.debit(self.amount, self.invoice.customer.account)
+            # calculate tax as a proportion of the amount paid
+            tax_amount = self.amount * D(self.invoice.tax.rate / 100.0)
+            # sales account
+            j.credit(self.amount - tax_amount, Account.objects.get(pk=4000))
+            # tax
+            j.credit(tax_amount, Account.objects.get(pk=2001))
+            

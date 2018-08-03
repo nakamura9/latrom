@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 
 from common_data.utilities import ExtraContext, extract_period
 from common_data.forms import PeriodReportForm
-from invoicing.models import Invoice
+
 import models 
 import forms 
 
@@ -126,13 +126,11 @@ class IncomeStatement(TemplateView):
                     e.amount
 
         # only for received invoices
-        invoices = Invoice.objects.filter(Q(due_date__gte=start)
-            & Q(due_date__lte=end))
+        #!! insert invoices
         #include non cash sales
 
         #sales tax
-        net_sales = reduce(lambda x, y: x +y, 
-            [i.subtotal for i in invoices], 0)
+        net_sales = 0 #fix
 
         # modify accounts to support interest
         

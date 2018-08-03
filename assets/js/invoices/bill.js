@@ -118,33 +118,35 @@ class EntryRow extends Component{
     }
     
     render(){
-        var hasBillables =<tr>
-        <td colSpan={2}>      
-            <input type="text"
-                className="form-control"
-                list="expense-datalist"
-                onChange={this.inputHandler.bind(this)}
-                />
-                <datalist id="expense-datalist">
-                    {this.state.items.map((item, i) =>(
-                        <option key={i}>{item.id + '-' + item.description}</option>
-                    ))}
-                    
-                </datalist>
+        const hasBillables =(
+            <tr>
+                <td colSpan={2}>      
+                    <input type="text"
+                        className="form-control"
+                        list="expense-datalist"
+                        onChange={this.inputHandler.bind(this)}
+                        />
+                        <datalist id="expense-datalist">
+                            {this.state.items.map((item, i) =>(
+                                <option key={i}>{item.id + '-' + item.description}</option>
+                            ))}
+                            
+                        </datalist>
 
-        </td>
-        <td>
-            <button 
-                className="btn btn-secondary"
-                onClick={this.clickHandler.bind(this)}
-                type="button">
-                    Insert
-            </button>
-        </td>
-    </tr> 
-        var hasNoBillables = <tr>
-        <td colSpan={3}>The selected customer has no billables</td>
-      </tr> 
+                </td>
+                <td>
+                    <button 
+                        className="btn btn-secondary"
+                        onClick={this.clickHandler.bind(this)}
+                        type="button">
+                            Insert
+                    </button>
+                </td>
+            </tr>);
+        const hasNoBillables = (
+            <tr>
+                <td colSpan={3}>The selected customer has no billables</td>
+            </tr>); 
         return(
             this.state.items.length === 0 ? hasNoBillables : hasBillables
         );

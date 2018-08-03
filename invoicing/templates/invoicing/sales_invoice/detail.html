@@ -1,4 +1,4 @@
-{% extends "common_data/page.html" %} {% block page_contents %}
+{% extends "invoicing/invoice_templates/common.html" %} {% block page_contents %}
 <style>
     #page-layout {
         width: 100%;
@@ -19,7 +19,7 @@
         <tr>
             <td colspan="2" id="title">
                 <h1>
-                    Sales Invoice
+                    Sales {% if object.status == 'quotation' %}Quotation{% else %} Invoice {% endif %}{% if object.status == 'draft' %}(Draft){% endif %}
                 </h1>
             </td>
         </tr>

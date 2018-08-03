@@ -15,8 +15,17 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-sales-invoice' %}">Create Sales Invoice</a></li>
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-invoice-list' %}">List Sales Invoices</a></li>
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'invoicing:create-sales-invoice' %}">
+                                    Create Sales Invoice
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="#" class="card-link">
+                                    Create Sales Quotation
+                                </a>
+                            </li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-invoice-list' %}">Manage Sales Invoices</a></li>
                     </ul>
                 </div>
             </div>
@@ -25,8 +34,17 @@
                     <h4 class="card-title">Service Invoices</h4>
                 </div>
                 <div class="card-body">
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-service-invoice' %}">Create Service Invoice</a></li>
-                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:service-invoice-list' %}">List Service Invoices</a></li>
+                    <li class="list-group-item">
+                        <a class="card-link" href="{% url 'invoicing:create-service-invoice' %}">
+                            Create Service Invoice
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                            <a href="#" class="card-link">
+                                Create Service Quotation
+                            </a>
+                        </li>
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:service-invoice-list' %}">Manage Service Invoices</a></li>
                     
                     
                 </div>
@@ -38,7 +56,7 @@
                 <div class="card-body">
                       <ul class="list-group">
                           <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-bill' %}">Create Bill</a></li>
-                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bill-list' %}">List Bills</a></li>
+                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bill-list' %}">Managed Bills to customers</a></li>
                           
                       </ul>
                 </div>
@@ -53,7 +71,13 @@
                 <div class="card-body">
                     <ul class="list-group">
                             <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-combined-invoice' %}">Create Combined Invoice</a></li>
-                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:combined-invoice-list' %}">List Combined Invoices </a></li>
+                            
+                            <li class="list-group-item">
+                                    <a href="#" class="card-link">
+                                        Create Combined Quotation
+                                    </a>
+                                </li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:combined-invoice-list' %}">Manage Combined Invoices </a></li>
                     </ul>
                 </div>
             </div>

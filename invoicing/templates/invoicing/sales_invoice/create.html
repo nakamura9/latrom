@@ -10,9 +10,11 @@
 {% endblock prepage %}
 
 {% block page_contents %}
-
+    <div>
+        {{form.errors}}
+    </div>
     <table class="table">
-            <form action="" method="POST">
+            <form action="" method="POST" id="invoice-form">
                 {% csrf_token %}
         <tbody>
             <tr>
@@ -35,8 +37,6 @@
                     <p>{{form.customer}}</p>
                     <p>Ship From</p>
                     <p>{{form.ship_from}}</p>
-                    <p>Status</p>
-                    <p>{{form.status}}</p>
                     <p>Discount</p>
                     <p>{{form.discount}}</p>
                 </td>
@@ -74,12 +74,34 @@
                             {{form.comments}}
                         </div>
                     </div>
-                    <button class="btn btn-primary">Submit</button>
+                    <div class="dropdown open">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" >
+                                    Submit as...
+                                </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="draft">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="quotation">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="sent">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="paid">
+                            
+                        </div>
+                    </div>
                 </td>
             </tr>
         </tbody>
         </form>
     </table>
-
 {% render_bundle 'invoicing' %}
 {% endblock page_contents %}

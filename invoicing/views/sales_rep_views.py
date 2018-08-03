@@ -15,7 +15,7 @@ from common_data.utilities import ExtraContext
 from invoicing.models import SalesRepresentative
 from invoicing import filters
 from invoicing import serializers
-from views import SalesRepCheckMixin
+from common import SalesRepCheckMixin
 
 #########################################
 #           Sales Rep Views             #
@@ -51,3 +51,7 @@ class SalesRepsAPIViewSet(viewsets.ModelViewSet):
     queryset = SalesRepresentative.objects.all()
     serializer_class = serializers.SalesRepsSerializer
 
+class SalesRepDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join("common_data", "delete_template.html")
+    model = SalesRepresentative
+    success_url = reverse_lazy("invoicing:invoices-list")
