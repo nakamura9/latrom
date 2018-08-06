@@ -1,0 +1,59 @@
+{% extends "window.html" %}
+
+{% block content %}
+<div class="jumbotron">
+        <h1 class="display-3">Sales Invoice Returns</h1>
+        <p class="lead">List of returns for the sales invoice.</p>
+        <hr class="my-2">
+        <p>Actions</p>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{% url 'invoicing:credit-note-create' pk=invoice.pk %}" >Add Returns</a>
+        </p>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Invoice Details</h4>
+                        <p class="card-text">Invoice Number: {{invoice.id}}</p>
+                        <p class="card-text">Invoice Date: {{invoice.date}}</p>
+                        <p class="card-text">Invoice Due: {{invoice.due}}</p>
+                        <p class="card-text">Invoice Total: {{invoice.total}}</p>
+                        <p class="card-text">Total Returned: {{invoice.returned_total}}</p></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th>Date</th>
+                            <th>Credit Note</th>
+                            <th>Number of Items</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for return in object_list %}
+                            <tr>
+                                <td>{{return.date}}</td>
+                                <td><a href="{% url 'invoicing:credit-note-detail' pk=return.pk %}">{{return.id | stringformat:'06d' }}</a></td>
+                                <td>{{return.returned_items.count}}</td>
+                                <td>{{return.returned_total}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total</th>
+                            <td>{{invoice.returned_total}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+

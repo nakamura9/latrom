@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {DeleteButton, SearchableWidget} from '../src/common';
+import {DeleteButton, SearchableWidget, Totals} from '../src/common';
 import EntryWidget from './combinedInvoice/entry_widget';
 
 
@@ -39,6 +39,21 @@ export default class CombinedTable extends Component{
         $('#id_item_list').val(
             encodeURIComponent(JSON.stringify(this.state.items))
         );
+    }
+
+    subtotalReducer(x, y){
+        if(y.lineType === 'sale'){
+            let total = y.data.price * parseFloat(y.data.quantity);
+            
+            return (x + total);
+        }else if(y.lineType === 'service'){
+            let total = parseFloat((y.data.rate) * parseFloat(y.data.hours)) + 
+                parseFloat(y.data.flatFee);
+            return (x + total);
+        }else{
+            //billable
+            return (x + parseFloat(y.data.amount));
+        }
     }
 
     render(){
@@ -84,20 +99,10 @@ export default class CombinedTable extends Component{
                 <EntryWidget 
                     insertHandler={this.insertHandler}/>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <th colSpan={2}>Subtotal</th>
-                        <td>{this.state.subtotal}</td>
-                    </tr>
-                    <tr>
-                        <th colSpan={2}>Tax</th>
-                        <td>{this.state.tax}</td>
-                    </tr>
-                    <tr>
-                        <th colSpan={2}>Total</th>
-                        <td>{this.state.total}</td>
-                    </tr>
-                </tfoot>
+                <Totals 
+                    span={3}
+                    list={this.state.items}
+                    subtotalReducer={this.subtotalReducer}/>
             </table>
         );
     }
@@ -123,7 +128,8 @@ const SaleLine = (props) =>{
 }
 
 const ServiceLine = (props) =>{
-    let total = (props.hours * props.rate) + props.flatFee;
+    let total = (parseFloat(props.hours) * parseFloat(props.rate)) +
+         parseFloat(props.flatFee);
     return(
         <tr>
             <td>
@@ -134,13 +140,12 @@ const ServiceLine = (props) =>{
             <td>{
                 props.service.split('-')[1]
             } - Flat Fee: ${props.flatFee} + {props.hours}Hrs x @ ${props.rate} /Hr</td>
-            <td>{total}</td>
+            <td>{total.toFixed(2)}</td>
         </tr>
     )
 }
 
 const BillableLine = (props) =>{
-    console.log(props);
     return(
         <tr>
             <td>
@@ -149,7 +154,7 @@ const BillableLine = (props) =>{
                     handler={props.handler}/>
             </td>
             <td>{props.description}</td>
-            <td>{props.amount}</td>
+            <td>{parseFloat(props.amount).toFixed(2)}</td>
         </tr>
     )
 }

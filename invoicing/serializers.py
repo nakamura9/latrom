@@ -29,7 +29,7 @@ class SalesInvoiceLineSerializer(serializers.ModelSerializer):
     item = ItemSerializer(many=False)
     class Meta:
         model = SalesInvoiceLine
-        fields = ['item', 'quantity']
+        fields = ['item', 'quantity', 'id']
 
 class SalesInvoiceSerializer(serializers.ModelSerializer):
     salesinvoiceline_set = SalesInvoiceLineSerializer(many=True)

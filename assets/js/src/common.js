@@ -37,10 +37,8 @@ class Totals extends Component{
     componentDidUpdate(prevProps, prevState){
         if(prevProps.list !== this.props.list){
             //update totals 
-            let subtotal = this.props.list.reduce((x,y) =>(
-                x + y[this.props.lineTotalVar]
-            ), 0);
-            
+            let subtotal = this.props.list.reduce(this.props.subtotalReducer, 0);
+            console.log(subtotal);
             let taxAmount;
             if(this.state.taxObj){
                 taxAmount = subtotal * (this.state.taxObj.rate / 100);
@@ -91,7 +89,7 @@ class Totals extends Component{
 Totals.propTypes = {
     span: PropTypes.number.isRequired,
     list: PropTypes.array.isRequired,
-    lineTotalVar: PropTypes.string.isRequired
+    subtotalReducer: PropTypes.func.isRequired
 }
 
 class SearchableWidget extends Component {

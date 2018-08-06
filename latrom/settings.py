@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'django_filters',
     'crispy_forms',
     'autofixture',
+    'wkhtmltopdf',
 ]
 #'django_tables2','crudbuilder',
 LOGIN_REQUIRED_FOR_CRUD = True
@@ -142,6 +144,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
 )
+STATIC_ROOT = os.path.join(BASE_DIR, 'common_data', 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
@@ -160,3 +163,21 @@ WEBPACK_LOADER = {
 CONFIG_FILE = 'config.json'
 TEST_CONFIG_FILE = 'test.json'
 TEST_RUN_MODE = False 
+
+#change for each installation
+#WKHTMLTOPDF_CMD = os.path.join(BASE_DIR, 'wkhtmltopdf', 'bin')
+
+WKHTMLTOPDF_CMD_OPTIONS = {
+    'quiet': True,
+}
+
+#EMAIL
+
+config_file = open(os.path.join(BASE_DIR, 'global_config.json'))
+email_config = json.load(config_file)
+
+EMAIL_HOST = email_config['email_host']
+EMAIL_PORT =email_config['email_port']
+EMAIL_HOST_USER = email_config['email_user']
+EMAIL_HOST_PASSWORD = email_config['email_password']
+EMAIL_USE_TLS = True

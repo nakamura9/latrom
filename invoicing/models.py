@@ -81,6 +81,12 @@ class Customer(models.Model):
             return self.organization.legal_name
         else:
             return str(self.individual)
+    @property
+    def customer_email(self):
+        if self.is_organization:
+            return self.organization.email
+        else:
+            return self.individual.email
 
     @property
     def is_organization(self):
@@ -199,6 +205,7 @@ class SalesInvoice(AbstractSale):
     '''used to charge for finished products'''
     DEFAULT_WAREHOUSE = 1 #make fixture
     purchase_order_number = models.CharField(blank=True, max_length=32)
+    #add has returns field
     ship_from = models.ForeignKey('inventory.WareHouse',
          default=DEFAULT_WAREHOUSE)
 
@@ -210,6 +217,11 @@ class SalesInvoice(AbstractSale):
             price=item.unit_sales_price,
             invoice=self
         )
+
+    @property
+    def returned_total(self):
+        return reduce(lambda x,y: x + y, 
+            [i.returned_total for i in self.creditnote_set.all()], 0)
 
     @property
     def subtotal(self):
@@ -256,11 +268,28 @@ class SalesInvoiceLine(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
     returned_quantity = models.FloatField(default=0.0)
-    returned = models.BooleanField(default=False)
+    returned = models.BooleanField(default=False)#why???
 
     @property
     def subtotal(self):
         return D(self.quantity) * self.price
+
+    def _return(self, quantity):
+        self.returned_quantity += float(quantity)
+        self.returned = True #why???
+        self.save()
+
+    @property
+    def returned_value(self):
+        if self.price == D(0.0):
+            return self.item.unit_sales_price * D(self.returned_quantity)
+        return self.price * D(self.returned_quantity)
+
+    def save(self, *args, **kwargs):
+        super(SalesInvoiceLine, self).save(*args, **kwargs)
+        if self.price == 0.0 and self.item.unit_sales_price != D(0.0):
+            self.price = self.item.unit_sales_price
+            self.save()
 
     
 class ServiceInvoice(AbstractSale):
@@ -463,7 +492,7 @@ class CreditNote(models.Model):
 
     @property
     def returned_items(self):
-        return self.invoice.invoiceitem_set.filter(returned=True)
+        return self.invoice.salesinvoiceline_set.filter(returned=True)
         
     @property
     def returned_total(self):

@@ -107,7 +107,9 @@ export default class SalesInvoiceForm extends Component{
                 <Totals
                     span={5}
                     list={this.state.items}
-                    lineTotalVar="subtotal"/>
+                    subtotalReducer={function(x, y){
+                        return (x + y.subtotal);
+                    }}/>
             </table>
         );
     }

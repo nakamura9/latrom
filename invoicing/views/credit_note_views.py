@@ -14,13 +14,13 @@ from django_filters.views import FilterView
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
-from invoicing import forms
 
+from invoicing import forms
 from common_data.utilities import ExtraContext, apply_style, Modal
 from inventory.forms import QuickItemForm
 from accounting.forms import TaxForm
 from inventory.models import Item
-from invoicing.models import CreditNote
+from invoicing.models import CreditNote, SalesInvoiceLine, SalesConfig
 from invoicing import filters
 from invoicing import serializers
 from common import SalesRepCheckMixin
@@ -44,7 +44,7 @@ class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
         "credit_note", "create.html")
     model = CreditNote
     form_class = forms.CreditNoteForm
-    success_url = reverse_lazy("invoicing:credit-note-list")
+    success_url = reverse_lazy("invoicing:sales-invoice-list")
 
     def get_initial(self):
         return {
@@ -53,10 +53,15 @@ class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(CreditNoteCreateView, self).post(request, *args, **kwargs)
+
+        if not self.object:
+            return resp
+
         data = json.loads(urllib.unquote(request.POST['returned-items']))
         for key in data.keys():
             iitem = SalesInvoiceLine.objects.get(pk=key)
             iitem._return(data[key])
+
         return resp
 
 
@@ -68,6 +73,18 @@ class CreditNoteUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
+class CreditNoteDetailView(SalesRepCheckMixin, DetailView):
+    template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'detail.html')
+    model = CreditNote
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
+        context.update(SalesConfig.objects.first().__dict__)
+        context['title'] = 'Credit Note'
+        return apply_style(context)
+
+#Deprecated
+#credit notes now accessed on an invoice by invoice basis
 class CreditNoteListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "List of Credit Notes",
                     "new_link": reverse_lazy("invoicing:credit-note-create")}
@@ -77,14 +94,3 @@ class CreditNoteListView(SalesRepCheckMixin, ExtraContext, FilterView):
 
     def get_queryset(self):
         return CreditNote.objects.all().order_by('date')
-
-class CreditNoteDetailView(SalesRepCheckMixin, DetailView):
-    template_name = os.path.join('invoicing', 'credit_note.html')
-    model = CreditNote
-    
-    def get_context_data(self, *args, **kwargs):
-        context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        context['title'] = 'Credit Note'
-        return apply_style(context)
-

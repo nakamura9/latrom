@@ -88,7 +88,9 @@ export default class ServiceLineTable extends Component{
                 <Totals 
                     span={5}
                     list={this.state.lines}
-                    lineTotalVar={"total"}/>
+                    subtotalReducer={function(x, y){
+                        return(x + y.total);
+                    }}/>
             </table>
         );
     }

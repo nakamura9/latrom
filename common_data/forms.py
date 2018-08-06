@@ -34,3 +34,15 @@ class IndividualForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Individual
+
+class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
+    #not showing password on update view
+    #email_password = forms.CharField(widget=forms.PasswordInput)
+    class Meta:
+        fields = "__all__"
+        model = models.GlobalConfig
+
+class SendMailForm(BootstrapMixin, forms.Form):
+    recepient = forms.EmailField()
+    subject = forms.CharField()
+    content = forms.CharField(widget=forms.Textarea)

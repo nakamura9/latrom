@@ -13,5 +13,12 @@
         "fields": {
             "legal_name": "Default Organization"
         }
+    },
+    {
+        "model": "common_data.GlobalConfig",
+        "pk": 1,
+        "fields": {
+            "email_host": ""
+        }
     }
 ]

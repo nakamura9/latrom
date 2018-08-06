@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.generic import TemplateView, DetailView, DeleteView, ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 import os
 from django.urls import reverse_lazy
 from accounting.models import Journal
@@ -9,21 +9,16 @@ from invoicing.models import SalesConfig
 from django_filters.views import FilterView
 import filters
 from utilities import ExtraContext
-#from crudbuilder.abstract import BaseCrudBuilder
 import models 
 import forms 
+from django.template import loader
+from django.core.mail import send_mail
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 #########################################################
 #                  Organization Views                   #
 #########################################################
-'''class OrganizationCRUD(BaseCrudBuilder):
-    model = models.Organization
-    search_fields = ['legal_name']
-    tables2_fields = ('legal_name',)
-    tables2_css_class = "table"
-    login_required=True'''
 
 class OrganizationCreateView(ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
@@ -102,9 +97,39 @@ class WorkFlowView(TemplateView):
 class ReactTest(TemplateView):
     template_name = os.path.join("common_data", "react_test.html")
 
+class GlobalConfigView(ExtraContext, UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.GlobalConfig
+    form_class = forms.GlobalConfigForm
+    success_url = reverse_lazy('invoicing:home')#need a better page
+    extra_context = {
+        'title': 'Configure global application features'
+    }
 
 def config_JSON_API(request):
     return JsonResponse(SalesConfig.get_config_dict())
 
 def get_logo_url(request):
     return JsonResponse({'url': SalesConfig.logo_url() })
+
+
+class SendEmail(ExtraContext, FormView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.SendMailForm
+    success_url= reverse_lazy('invoicing:home')
+    extra_context = {
+        'title': 'Compose New Email'
+    }
+
+    def post(self, request):
+        resp = super(SendEmail, self).post(request)
+        form = self.form_class(request.POST)
+        config = models.GlobalConfig.objects.first()
+        if form.is_valid():
+            send_mail(
+                form.cleaned_data['subject'],
+                form.cleaned_data['content'],
+                config.email_user,
+                [form.cleaned_data['recepient']])
+            return resp
+        return resp

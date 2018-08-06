@@ -6,3 +6,4 @@ htmlcov/
 env/
 media/*.*
 media/
+wkhtmltopdf/

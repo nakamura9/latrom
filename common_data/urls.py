@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 import views
+from pdf_creator import generate_pdf
 #from crudbuilder import urls
 
 urlpatterns = [
@@ -22,6 +23,10 @@ urlpatterns = [
     url(r'^individual/update/(?P<pk>[\d]+)/?$', views.IndividualUpdateView.as_view(), 
         name='individual-update'),
     url(r'^individual/detail/(?P<pk>[\d]+)/?$', views.IndividualDetailView.as_view(), 
-        name='individual-detail')  
+        name='individual-detail'),
+    url(r'^config/(?P<pk>[\d]+)/?$', views.GlobalConfigView.as_view(), 
+        name='config'),
+    url(r'^email/?$', views.SendEmail.as_view(), 
+        name='email'),
     #url(r'^crud/', include(urls)),
 ]

@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+import os
+import json
+from latrom import settings
 
 class Person(models.Model):
     first_name = models.CharField(max_length =32)
@@ -71,3 +74,18 @@ class SingletonModel(models.Model):
     def load(cls):
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
+
+class GlobalConfig(SingletonModel):
+    email_host = models.CharField(max_length=32, blank=True, default="")
+    email_port = models.IntegerField(null=True)
+    email_user = models.CharField(max_length=32, blank=True, default="")
+    email_password = models.CharField(max_length=255, blank=True, default="")
+
+    def save(self, *args, **kwargs):
+        super(GlobalConfig, self).save(*args, **kwargs)
+        #serialize and store in json file so settings.py can access
+        json_config = os.path.join(settings.BASE_DIR, 'global_config.json')
+        with open(json_config, 'w+') as fil:
+            fields = self.__dict__
+            del fields['_state']
+            json.dump(fields, fil)

@@ -5,10 +5,11 @@ import json
 import urllib
 
 from django.views.generic import TemplateView, DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from rest_framework import viewsets
+from django.core.mail import EmailMessage
 
 from invoicing import forms
 from common_data.utilities import ExtraContext, apply_style
@@ -17,8 +18,10 @@ from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers
 from invoicing.views.common import  SalesRepCheckMixin
-
-
+from wkhtmltopdf.views import PDFTemplateView
+from wkhtmltopdf import utils as pdf_tools
+from common_data.forms import SendMailForm
+from common_data.models import GlobalConfig 
 
 class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "Sales Invoice List",
@@ -165,6 +168,7 @@ class SalesInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.SalesInvoiceSerializer
     queryset = SalesInvoice.objects.all()
 
+
 class SalesInvoicePaymentView(ExtraContext, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
@@ -179,6 +183,7 @@ class SalesInvoicePaymentView(ExtraContext, CreateView):
             'sales_invoice': self.kwargs['pk'],
             'payment_for': 0
             }
+
 
 class SalesInvoicePaymentDetailView(ListView):
     template_name = os.path.join('invoicing', 'sales_invoice', 
@@ -195,3 +200,88 @@ class SalesInvoicePaymentDetailView(ListView):
         )
         context['invoice'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
         return context
+
+
+class SalesInvoiceReturnsDetailView(ListView):
+    template_name = os.path.join('invoicing', 'sales_invoice', 
+        'credit_note', 'detail_list.html')
+
+    def get_queryset(self):
+        return CreditNote.objects.filter(invoice=SalesInvoice.objects.get(
+            pk=self.kwargs['pk']
+        ))
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(SalesInvoiceReturnsDetailView, self).get_context_data(
+            *args, **kwargs
+        )
+        context['invoice'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
+        return context
+
+
+class SalesInvoicePDFView(PDFTemplateView):
+    template_name = os.path.join("invoicing", "sales_invoice",
+        'pdf.html')
+    file_name = 'sales_invoice.pdf'
+    def get_context_data(self, *args, **kwargs):
+        context = super(SalesInvoicePDFView, self).get_context_data(*args, **kwargs)
+        context.update(SalesConfig.objects.first().__dict__)
+        context['object'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
+        return apply_style(context)
+
+class SalesInvoiceEmailSendView(ExtraContext, FormView):
+    form_class = SendMailForm
+    template_name = os.path.join('common_data', 'create_template.html')
+    success_url = reverse_lazy('invoicing:sales-invoice-list')
+    extra_context = {
+        'title': 'Send Invoice as PDF attatchment'
+    }
+
+    def get_initial(self):
+        inv = SalesInvoice.objects.get(pk=self.kwargs['pk'])
+        
+        return {
+            'recepient': inv.customer.customer_email
+        }
+    def post(self,request, *args, **kwargs):
+        resp = super(SalesInvoiceEmailSendView, self).post(
+            request, *args, **kwargs)
+        form = self.form_class(request.POST)
+        
+        if not form.is_valid():
+            return resp
+        
+        config = GlobalConfig.objects.get(pk=1)
+        msg = EmailMessage(
+            subject=form.cleaned_data['subject'],
+            body = form.cleaned_data['content'],
+            from_email=config.email_user,
+            to=[form.cleaned_data['recepient']]
+        )
+        #create pdf from the command line
+        template = os.path.join("invoicing", "sales_invoice",
+            'pdf.html')
+        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
+    
+        context = {
+            'object': SalesInvoice.objects.get(pk=self.kwargs['pk'])
+        }
+        context.update(SalesConfig.objects.first().__dict__)
+        options = {
+            'output': out_file
+        }
+        try:
+            pdf_tools.render_pdf_from_template(
+                template, None, None, 
+                apply_style(context),
+                cmd_options=options)
+        except:
+            raise Exception('Error occured creating pdf')
+
+        if os.path.isfile(out_file):
+            msg.attach_file(out_file)
+            msg.send()
+            os.remove(out_file)
+
+        # if the message is successful delete it.
+        return resp

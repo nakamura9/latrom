@@ -35,6 +35,7 @@
         <li><a style="color:white;" href="/login">Login</a></li>
         <li><a style="color:white;" href="#">About</a></li>
         <li style="color:white;">{{request.user.username}} is logged in.</li>
+        <li><a style="color:white;" href="{% url 'base:config' pk=1 %}">Global Settings</a></li>
     </ul>
 </footer>
 <script type="text/javascript">
