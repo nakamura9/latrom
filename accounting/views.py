@@ -157,7 +157,17 @@ class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
     extra_context = {
-        'title': 'Add Taxes For Invoices'
+        'title': 'Add Global Taxes'
+    }
+
+
+class TaxListView(BookkeeperCheckMixin, ExtraContext, FilterView):
+    filterset_class = filters.TaxFilter
+    template_name = os.path.join('accounting','tax_list.html')
+    paginate_by =10
+    extra_context = {
+        'title': 'Tax List',
+        'new_link': reverse_lazy('accounting:create-tax')
     }
 
 class TaxDeleteView(BookkeeperCheckMixin, DeleteView):

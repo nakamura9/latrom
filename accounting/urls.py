@@ -45,6 +45,7 @@ misc_urls = [
     name='transfer'),
     url(r'^non-invoiced-cash-sale/?$', views.NonInvoicedCashSale.as_view() ,name='non-invoiced-cash-sale'),
     url(r'^create-tax/?$', views.TaxCreateView.as_view(), name='create-tax'),
+    url(r'^tax-list/?$', views.TaxListView.as_view(), name='tax-list'),
     url(r'^delete-tax/(?P<pk>[\w]+)/?$', views.TaxDeleteView.as_view(), name='delete-tax'),
     url(r'^update-tax/(?P<pk>[\w]+)/?$', views.TaxUpdateView.as_view(), name='update-tax'),
     url(r'^config/(?P<pk>[\d]+)/?$', views.AccountConfigView.as_view(), name='config'),

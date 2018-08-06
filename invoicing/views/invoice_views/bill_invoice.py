@@ -64,7 +64,9 @@ class BillCreateView(SalesRepCheckMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(BillCreateView, self).post(request, *args, **kwargs)
-        inv = Bill.objects.latest("pk")
+        if not self.object:
+            return resp
+        inv = self.object
         data = request.POST.get("item_list", None)
         items = json.loads(urllib.unquote(data))
         for item in items:

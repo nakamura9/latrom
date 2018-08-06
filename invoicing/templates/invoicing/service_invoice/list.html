@@ -3,6 +3,7 @@
 <tr>
     <th>Date</th>
     <th>Customer</th>
+    <th>Status</th>
     <th>Total</th>
     <th>Actions</th>
 </tr>
@@ -13,6 +14,7 @@
 <tr>
     <td>{{inv.date}}</td>
     <td>{{inv.customer}}</td>
+    <td>{{inv.status}}</td>
     <td>{{inv.total | floatformat:2 }}</td>
     <td>
         <div class="dropdown">
@@ -21,9 +23,29 @@
                         Actions
                     </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
-                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-detail' pk=inv.pk %}">Detail</a>
-                <a class="dropdown-item disabled" href="#">Change Status</a>
-                </div>
+                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-detail' pk=inv.pk %}">
+                    <i class="fas fa-eye"></i>Detail</a>
+                <a class="dropdown-item" href="{% if inv.status == 'draft' or inv.status == 'quotation' %}{% url 'invoicing:service-draft-update' pk=inv.pk %}{% else %}{% url 'invoicing:service-invoice-update' pk=inv.pk %}{% endif %}" >
+                        <i class="fas fa-edit"></i>Update</a>
+                
+                <h6 class="dropdown-header">Payments</h6>
+                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-payment' pk=inv.pk %}">
+                    <i class="fas fa-money-bill-alt"></i> Apply Payment
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-payment-detail' pk=inv.pk %}">
+                        <i class="fas fa-list-ol"></i> View Payments
+                    </a>
+                    <h6 class="dropdown-header">Other</h6>
+                
+                <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-pdf' pk=inv.pk %}">
+                    <i class="fas fa-file-pdf"></i> Create PDF
+                </a>
+
+                <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-email' pk=inv.pk %}">
+                        <i class="fas fa-at"></i> Send Email
+                    </a>
+
+            </div>
         </div>
     </td>
 </tr>

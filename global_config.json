@@ -1,7 +1,1 @@
-{
-    "email_password": "cirfwrkxmrkuspzr",
-    "email_port": 587,
-    "email_user": "kandoroc@gmail.com",
-    "id": 1,
-    "email_host": "smtp.gmail.com"
-}
+{"email_password": "cirfwrkxmrkuspzr", "email_port": 587, "email_user": "kandoroc@gmail.com", "id": 1, "email_host": "smtp.gmail.com"}

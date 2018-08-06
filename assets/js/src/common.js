@@ -31,6 +31,7 @@ class Totals extends Component{
             method: "GET",
             url: "/invoicing/api/config/1"
         }).then(res =>{
+            console.log(res);
             this.setState({taxObj: res.data.sales_tax})
         })
     }

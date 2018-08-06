@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
 import json
@@ -22,6 +22,33 @@ from wkhtmltopdf.views import PDFTemplateView
 from wkhtmltopdf import utils as pdf_tools
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig 
+
+def process_data(items, inv):
+    if items:
+        print items
+        items = json.loads(urllib.unquote(items))
+        print items
+        for item in items:
+
+            pk, name = item['item_name'].split('-')
+            inv.add_item(Item.objects.get(pk=pk), 
+                item['quantity'])
+    
+    # moved here because the invoice item data must first be 
+    # saved in the database before inventory and entries 
+    # can be created
+    if inv.status in ['draft', 'quotation']:
+        pass
+    elif inv.status == 'sent': 
+        pass
+        #inv.update_inventory()
+        #inv.create_credit_entry()
+    elif inv.status == 'paid':
+        pass
+        #inv.update_inventory()
+        #inv.create_cash_entry()
+    else:
+        pass
 
 class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
     extra_context = {"title": "Sales Invoice List",
@@ -56,7 +83,7 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
             
     template_name = os.path.join("invoicing","sales_invoice", "create.html")
     form_class = forms.SalesInvoiceForm
-    success_url = reverse_lazy("invoicing:home")
+    success_url = reverse_lazy("invoicing:sales-invoice-list")
     model = SalesInvoice
 
     def get_initial(self):
@@ -80,28 +107,7 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
         inv = self.object
         
         items = request.POST.get("item_list", None)
-        if items:
-            items = json.loads(urllib.unquote(items))
-            print items
-            for item in items:
-
-                pk, name = item['item_name'].split('-')
-                inv.add_item(Item.objects.get(pk=pk), 
-                    item['quantity'])
-        
-        # moved here because the invoice item data must first be 
-        # saved in the database before inventory and entries 
-        # can be created
-        if inv.status in ['draft', 'quotation']:
-            pass
-        elif inv.status == 'sent': 
-            inv.update_inventory()
-            inv.create_credit_entry()
-        elif inv.status == 'paid':
-            inv.update_inventory()
-            inv.create_cash_entry()
-        else:
-            pass
+        process_data(items, inv)
 
         return resp
 
@@ -126,26 +132,8 @@ class SalesDraftUpdateView(UpdateView):
             line.delete()
         #create new lines 
         items = request.POST.get("item_list", None)
-        if items:
-            items = json.loads(urllib.unquote(items))
-            for item in items:
-                pk, name = item['item_name'].split('-')
-                self.object.add_item(Item.objects.get(pk=pk), 
-                    item['quantity'])
         
-        # moved here because the invoice item data must first be 
-        # saved in the database before inventory and entries 
-        # can be created
-        if self.object.status in ['draft', 'quotation']:
-            pass
-        elif self.object.status == 'sent': 
-            self.object.update_inventory()
-            self.object.create_credit_entry()
-        elif inv.status == 'paid':
-            self.object.update_inventory()
-            self.object.create_cash_entry()
-        else:
-            pass
+        process_data(items, self.object)
 
         return resp
 

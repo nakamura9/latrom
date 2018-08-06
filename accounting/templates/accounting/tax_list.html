@@ -1,0 +1,32 @@
+{% extends "common_data/list_template.html" %}
+
+{% block list_headings %}
+<tr class="bg-primary">
+    <td>Name</td>
+    <td>Rate</td>
+    <td>Actions</td>
+</tr>
+
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for item in object_list %}
+<tr>
+    <td>{{item.name}}</td>
+    <td>{{item.rate}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'accounting:update-tax' pk=item.pk %}">Update</a>
+                <a class="dropdown-item" href="{% url 'accounting:delete-tax' pk=item.pk %}">Delete</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+
+{% endblock list_content %}

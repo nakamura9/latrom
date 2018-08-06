@@ -18,3 +18,10 @@ class AccountFilter(django_filters.FilterSet):
             'name': ['icontains'],
             'type': ['exact']
         }
+
+class TaxFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Tax
+        fields = {
+            'name': ['icontains']
+        }

@@ -65,7 +65,11 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(CombinedInvoiceCreateView, self).post(request, *args, **kwargs)
-        inv = CombinedInvoice.objects.latest("pk")
+        
+        if not self.object:
+            return resp
+            
+        inv = self.object
         items = request.POST.get("item_list", None)
         
         if items:

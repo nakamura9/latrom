@@ -45,7 +45,7 @@ export default class SalesInvoiceForm extends Component{
         let URL = window.location.href;
         let decomposed = URL.split('/');
         let tail = decomposed[decomposed.length - 1];
-        console.log(tail);
+        
         if(tail !== 'create-sales-invoice'){
             axios({
                 url: '/invoicing/api/sales-invoice/' + tail,
@@ -64,7 +64,6 @@ export default class SalesInvoiceForm extends Component{
                 this.setState({items: itemList});
             });
         }
-        //get item_list 
     }
 
     updateForm(){

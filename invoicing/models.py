@@ -41,6 +41,7 @@ class SalesConfig(SingletonModel):
     payment_details = models.TextField(blank=True)
     contact_details = models.TextField(blank=True)
     include_tax_in_invoice = models.BooleanField(default=True)
+    include_units_in_sales_invoice = models.BooleanField(default=True)
     business_registration_number = models.CharField(max_length=32,blank=True)
 
     @classmethod

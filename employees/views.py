@@ -278,7 +278,10 @@ class PayrollTaxCreateView(AdministratorCheckMixin, CreateView):
     def post(self, request):
         resp = super(PayrollTaxCreateView, self).post(request)
         brackets = json.loads(urllib.unquote(request.POST['brackets']))
-        payroll_tax = models.PayrollTax.objects.latest('pk')
+        if not self.object:
+            return resp
+        
+        payroll_tax = self.object
 
         for b in brackets:
             payroll_tax.add_bracket(b['lower_limit'], b['upper_limit'],

@@ -22,9 +22,32 @@ export default class ServiceLineTable extends Component{
                 this.setState({taxRate: parseFloat(res.sales_tax.rate)});
             }
         );
+        //check if the page is an update
+        let URL = window.location.href;
+        let decomposed = URL.split('/');
+        let tail = decomposed[decomposed.length - 1];
+        if(tail !== 'create-service-invoice'){
+            axios({
+                url: '/invoicing/api/service-invoice/' + tail,
+                method: 'GET',
+            }).then(res =>{
+                let itemList = res.data.serviceinvoiceline_set.map((line) =>{
+                    return {
+                        id: line.service.id,
+                        name: line.service.name,
+                        rate: line.service.hourly_rate,
+                        hours: line.hours,
+                        fixedFee: line.service.flat_fee,
+                        total: (parseFloat(line.service.hourly_rate) * 
+                            parseFloat(line.hours)) + parseFloat(line.service.flat_fee)
+                    }
+                })
+                this.setState({lines: itemList});
+            });
+        }
     }
     
-    insertLine(data){
+    insertLine = (data) =>{
         let pk = data['service'].split('-')[0];
         $.ajax({
             url: '/services/api/service/'+ pk,
@@ -46,7 +69,7 @@ export default class ServiceLineTable extends Component{
         });
     }
 
-    removeLine(index){
+    removeLine =(index) =>{
         let newLines = [...this.state.lines];
         newLines.splice(index, 1);
         this.setState({lines: newLines}, ()=>{
@@ -55,7 +78,7 @@ export default class ServiceLineTable extends Component{
     }
 
 
-    updateForm(){
+    updateForm = () =>{
         $('#id_item_list').val(
             encodeURIComponent(
                 JSON.stringify(this.state.lines)
@@ -83,7 +106,7 @@ export default class ServiceLineTable extends Component{
                         line={line}
                         handler={this.removeLine}/>
                 ))}
-                <EntryRow insertLine={this.insertLine.bind(this)}/>
+                <EntryRow insertLine={this.insertLine}/>
                 </tbody>
                 <Totals 
                     span={5}
@@ -130,7 +153,7 @@ class EntryRow extends Component{
         });
     }
 
-    handleServiceChange(evt){
+    handleServiceChange = (evt) =>{
         // first check if the service is in the list
 
         let newInputs = this.state.inputs;
@@ -147,12 +170,12 @@ class EntryRow extends Component{
         });
     }
 
-    handleHoursChange(evt){
+    handleHoursChange = (evt) => {
         let newInputs = this.state.inputs;
         newInputs['hours'] = evt.target.value;
         this.setState({inputs: newInputs});
     }
-    handleButtonClick(){
+    handleButtonClick = () => {
         this.props.insertLine(this.state.inputs)
         this.setState({inputs: {
             service: '',
@@ -200,12 +223,12 @@ class EntryRow extends Component{
                             className="form-control"
                             name="hours"
                             value={this.state.inputs.hours}
-                            onChange={this.handleHoursChange.bind(this)}/>
+                            onChange={this.handleHoursChange}/>
                     </td>
                     <td style={{width: "15%"}}>
                         <button 
                             className="btn btn-primary"
-                            onClick={this.handleButtonClick.bind(this)}
+                            onClick={this.handleButtonClick}
                             type="button">
                             Insert
                         </button>

@@ -75,8 +75,8 @@
                             <td style="width:10%;">Qty</td>
                             <td style="width:50%;">Description</td>
                             <td style="width:15%;">Unit Price</td>
-                            {% if include_discount_column %}
-                            <td>Discount Rate (%)</td>
+                            {% if include_units_in_sales_invoice %}
+                            <td>Unit</td>
                             {% endif %}
                             <td style="width:15%;">Total</td>
                         </tr>
@@ -87,6 +87,9 @@
                             <td>{{item.quantity}}</td>
                             <td>{{item.item.item_name}}</td>
                             <td>{{item.price | floatformat:2 }}</td>
+                            {% if include_units_in_sales_invoice %}
+                            <td>{{item.item.unit}}</td>
+                            {% endif %}
                             <td>{{item.subtotal | floatformat:2 }}</td>
 
                         </tr>
@@ -96,28 +99,28 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            {% if include_discount_column %}
+                            {% if include_units_in_sales_invoice %}
                             <td></td>
                             {% endif %}
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
                                 <b>SubTotal:</b>
                             </td>
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
                         {% if tax_column %}
                         <tr>
-                            <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
                                 <b>Tax Due @{{object.tax.rate}}%:</b>
                             </td>
                             <td>{{object.tax_amount | floatformat:2 }}</td>
                         </tr>
 
                         <tr>
-                            <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
+                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
                                 <b>Total:</b>
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>

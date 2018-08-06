@@ -27,6 +27,7 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
             Tab('Page Layout',
                 'sales_tax',
                 'include_tax_in_invoice',
+                'include_units_in_sales_invoice',
                 'include_shipping_address',
                 'document_theme',
                 ),
@@ -47,7 +48,6 @@ class CustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'account']
         model = models.Customer
-
 
 class QuickCustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -84,8 +84,23 @@ class SalesInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
         model = models.Payment
 
 
+class ServiceInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
+    service_invoice = forms.ModelChoiceField(
+        models.ServiceInvoice.objects.all(), widget=forms.HiddenInput
+        )
+    
+    payment_for = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = ['sales_invoice', 'bill', 'combined_invoice']
+        model = models.Payment
+
 class ServiceInvoiceForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = "active", 
+        model = models.ServiceInvoice
+
+class ServiceInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "active", 
         model = models.ServiceInvoice

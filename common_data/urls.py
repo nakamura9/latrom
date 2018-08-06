@@ -1,6 +1,5 @@
 from django.conf.urls import url, include
 import views
-from pdf_creator import generate_pdf
 #from crudbuilder import urls
 
 urlpatterns = [

@@ -138,10 +138,10 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView):
     def post(self, request, *args, **kwargs):
         resp = super(OrderCreateView, self).post(request, *args, **kwargs)
         items = request.POST.getlist("items[]")
-        try:
-            order = models.Order.objects.latest('pk')
-        except:
-            return resp
+        if not self.object:
+           return resp
+
+        order = self.object
             
         for item in items:
             data = json.loads(urllib.unquote(item))
