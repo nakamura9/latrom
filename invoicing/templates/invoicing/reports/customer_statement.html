@@ -64,11 +64,15 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td style="border-bottom: 1mm solid black;" class="cell" colspan="5">Balance Brought Forward: </td>
+                                <td style="border-bottom: 1mm solid black;" class="cell">0.00</td>
+                            </tr>
                             {% for inv in invoices %}
                             <tr>
-                                <td class="cell">{{inv.date_issued}}</td>
-                                <td class="cell">{{inv.due_date}}</td>
-                                <td class="cell">Invoice {{inv.pk | stringformat:"06d"}}</td>
+                                <td class="cell">{{inv.date}}</td>
+                                <td class="cell">{{inv.due}}</td>
+                                <td class="cell">{{inv}}</td>
                                 <td class="cell">{{inv.total | floatformat:2}}</td>
                                 <td class="cell">
                                     {% if inv.type_of_invoice == 'cash' %} {{inv.total | floatformat:2}} {% else %} 0.00 {% endif %}

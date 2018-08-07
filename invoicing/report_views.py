@@ -1,5 +1,6 @@
 import os
 import datetime
+import itertools
 
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic import TemplateView, DetailView
@@ -9,6 +10,7 @@ from django.db.models import Q
 from common_data.utilities import ExtraContext, extract_period
 import models 
 import forms
+from models import AbstractSale
 
 class CustomerReportFormView(ExtraContext, FormView):
     extra_context = {
@@ -29,15 +31,15 @@ class CustomerStatement(TemplateView):
         
         start, end = extract_period(kwargs)
         
-        invoices = models.Invoice.objects.filter(
-            Q(customer=customer) & Q(date_issued__gte=start)
-            & Q(date_issued__lte = end)
-        )
-        payments = models.Payment.objects.filter(
-            Q(invoice__customer=customer) & Q(date__gte=start)
+        #invoices 
+        invoices = AbstractSale.abstract_filter(Q(Q(status='sent') | Q(status='paid')) &
+            Q(Q(date__gte=start) & Q(date__lte = end)))
+        
+        payments = models.Payment.objects.filter( Q(date__gte=start)
             & Q(date__lte = end)
         )
-        
+        invoices = sorted(invoices,
+            key=lambda inv: inv.date)
         context.update({
             'customer': customer,
             'start': start,
@@ -54,14 +56,12 @@ class InvoiceAgingReport(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(InvoiceAgingReport, self).get_context_data(*args, **kwargs)
-        credit_invoices = models.Invoice.objects.filter(
-                type_of_invoice='credit')
-        outstanding_invoices = [i for i in credit_invoices \
-            if not i.paid_in_full]
+        credit_invoices = AbstractSale.abstract_filter(Q(status='sent') | Q(status='paid'))
+        outstanding_invoices = AbstractSale.abstract_filter(Q(status='sent'))
         context.update({
             'customers': models.Customer.objects.all(),
-            'invoice_count': credit_invoices.count(),
-            'outstanding_invoices': len(outstanding_invoices)
+            'invoice_count': len([credit_invoices]),
+            'outstanding_invoices': len([outstanding_invoices])
         })
         context.update(models.SalesConfig.objects.first().__dict__)
         return context

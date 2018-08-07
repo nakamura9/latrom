@@ -1,0 +1,58 @@
+{% extends "window.html" %}
+
+{% block content %}
+<div class="jumbotron">
+        <h1 class="display-3">Invoice Payments</h1>
+        <p class="lead">List of payments to date for the </p>
+        <hr class="my-2">
+        <p>Actions</p>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{% url 'invoicing:combined-invoice-payment' pk=invoice.pk %}" >Add Payment</a>
+        </p>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Invoice Details</h4>
+                        <p class="card-text">Invoice Number: {{invoice.id}}</p>
+                        <p class="card-text">Invoice Date: {{invoice.date}}</p>
+                        <p class="card-text">Invoice Due: {{invoice.due}}</p>
+                        <p class="card-text">Invoice Total: {{invoice.total}}</p>
+                        <p class="card-text">Total Paid: {{invoice.total_paid}}</p>
+                        <p class="card-text">Total Due: {{invoice.total_due}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th>Date</th>
+                            <th>Sales Representatitve</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in object_list %}
+                            <tr>
+                                <td>{{payment.date}}</td>
+                                <td>{{payment.sales_rep}}</td>
+                                <td>{{payment.amount}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">Total</th>
+                            <td>{{invoice.total_paid}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+

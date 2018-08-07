@@ -50,6 +50,33 @@ class ServiceInvoiceSerializer(serializers.ModelSerializer):
         model = ServiceInvoice
         fields = ['serviceinvoiceline_set', 'customer', 'id']
 
+class BillLineSerializer(serializers.ModelSerializer):
+    expense = ExpenseSerializer(many=False)
+    class Meta:
+        model = BillLine
+        fields = "__all__"
 
+
+class BillSerializer(serializers.ModelSerializer):
+    billline_set = BillLineSerializer(many=True)
+    class Meta:
+        model = Bill
+        fields = ['billline_set', 'customer', 'id']
+
+
+class CombinedInvoiceLineSerializer(serializers.ModelSerializer):
+    expense = ExpenseSerializer(many=False)
+    item = ItemSerializer(many=False)
+    service = ServiceSerializer(many=False)
+    class Meta:
+        model = CombinedInvoiceLine
+        fields = "__all__"
+
+
+class CombinedInvoiceSerializer(serializers.ModelSerializer):
+    combinedinvoiceline_set = CombinedInvoiceLineSerializer(many=True)
+    class Meta:
+        model = CombinedInvoice
+        fields = ['combinedinvoiceline_set', 'customer', 'id']
 
 

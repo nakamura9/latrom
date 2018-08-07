@@ -30,7 +30,7 @@ class EntryWidget extends Component{
         this.setState({selectedLineType: evt.target.value})
     }
 
-    //product methods 
+    //sale methods 
     handleProductSelect = (value) =>{
         let newInputs = {...this.state.inputs};
         newInputs['item'] = value;

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {AsyncSelect, Heading, TableContent} from '../src/base_table';
+import {SearchableWidget, Totals, Aux, DeleteButton} from '../src/common';
 import $ from 'jquery';
+import axios from 'axios';
 
 export default class OrderTable extends Component{
     constructor(props){
@@ -13,182 +14,194 @@ export default class OrderTable extends Component{
     }
 
     componentDidMount(){
-        if(this.props.populated){
-            var url = window.location.href;
-            var url_elements = url.split("/");
-            var pk = url_elements[url_elements.length - 1];
-
-            $.ajax({
-                url: '/inventory/api/order/' + pk + "/",
-                method: 'GET'
-            }).then(res => {
-                console.log(res);
-                var i=0;
-                var newContents = this.state.contents
-                var entries = res.orderitem_set;
-                for(i in entries){
-                    newContents.push({
-                        'item_name': entries[i].item.code + 
-                                        ' - ' + entries[i].item.item_name,
-                        'description': entries[i].item.unit_price,
-                        'quantity': entries[i].quantity,
-                        'order_price': entries[i].order_price,                'unit': entries[i].item.unit
-                    });
-                }
-                this.setState({contents: newContents})
-            });
-        }
-    }
-    
-    insertHandler(vals){
-        var newContents = this.state.contents;
-        newContents.push(vals);
-        var total = newContents.reduce((a, b) =>{
-            return a + (b.quantity * b.order_price);
-        }, 0);
-        this.setState({
-            contents: newContents,
-            total: total
-            });
-
+        //set up the hidden input 
         $('<input>').attr({
             type: 'hidden',
-            name: 'items[]',
-            id: "item_" + vals.item_name,//pk
-            value: encodeURIComponent(JSON.stringify(vals))
+            name: 'items',
+            id: "id_items" ,
+            value: ""
         }).appendTo('form');
-    }
-    
-    removeHandler(id){
-        var newContents = this.state.contents;
-        //id index of array
-        console.log('called');
-        if($('#item_' + id + 1).length){
-            $('#item_' + id + 1).remove();
-        }else{
-            console.log('no item');
-            if(this.props.populated){
-                // identify existing elements and remove them.
-                console.log('populated');
-                $("<input>").attr({
-                    "type": "hidden",
-                    "name": "removed_items[]",
-                    "id": "removed_item_" + id,
-                    "value": this.state.contents[id].item_name
-                    }).appendTo("form");
-            }
-        }
-        var total = newContents.reduce((a, b) =>{
-            return(a + (b.order_price * b.quantity));
-        }, 0);
-        
-        this.setState({
-            contents: newContents,
-            total: total
+        //check if an update occured
+        var url = window.location.href;
+        var url_elements = url.split("/");
+        var tail = url_elements[url_elements.length - 1];
+        if(tail !== 'order-create'){
+            axios({
+                url: '/inventory/api/order/' + tail + "/",
+                method: 'GET'
+            }).then(res => {
+                let newContents = res.data.orderitem_set.map((item, i) =>{
+                    return({
+                        pk: item.item.code,
+                        name: item.item.item_name,
+                        quantity: item.quantity,
+                        order_price: item.order_price,
+                        subtotal: item.order_price * item.quantity
+                    })
+                })
+                this.setState({contents: newContents}, this.updateForm)
             });
-
-        newContents.splice(id, 1);
-    }
-
-    subtotalHandler(row){
-        return(row.order_price * row.quantity);
+        }
     }
     
+    insertHandler = (vals) => {
+        var newContents = [...this.state.contents];
+        newContents.push({
+            ...vals,
+        subtotal: vals.quantity * vals.order_price});
+        this.setState({contents: newContents}, this.updateForm);
+
+        }
+
+    updateForm =() =>{
+        $('#id_items').val(
+            encodeURIComponent(
+                JSON.stringify(this.state.contents)
+            )
+        );
+    }
+    
+    removeHandler = (id) => {
+        var newContents = [...this.state.contents];
+        newContents.splice(id, 1);
+        this.setState({contents: newContents}, this.updateForm);
+    }
+
     render(){
-        var entry_field_names = ['description', 'quantity', 'order_price', 'unit']
-        var field_names = ['item_name'].concat(entry_field_names);
+        let headStyle = {
+            color: "white",
+            backgroundColor: 'black',
+            borderRight: '1px solid white',
+            padding: '15px'
+        }
         return(
             <table>
-                <Heading fields={this.props.fields}/>
-                <TableContent contents={this.state.contents}
-                    fields={field_names}
-                    removeHandler={this.removeHandler.bind(this)}
-                    subtotalHandler={this.subtotalHandler.bind(this)}/>
-                <OrderTableEntry total={this.state.total} 
-                    fields={entry_field_names}  
-                    insertHandler={this.insertHandler.bind(this)} />
+                <thead>
+                    <tr >
+                        <td style={{
+                            ...headStyle,
+                            width:'10%'
+                            }}></td>
+                        <th style={{
+                            ...headStyle,
+                            width:'50%'
+                            }}>Item</th>
+                        <th style={{
+                            ...headStyle,
+                            width:'10%'
+                            }}>Quantity</th>
+                        <th style={{
+                            ...headStyle,
+                            width:'15%'
+                            }}>Order Price</th>
+                        <th style={{
+                            ...headStyle,
+                            width:'15%'
+                            }}>Line Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.state.contents.map((item, i) =>{
+                        return(
+                            <tr key={i}>
+                                <td>
+                                    <DeleteButton 
+                                        handler={this.removeHandler}
+                                        index={i}/>
+                                </td>
+                                <td>{item.name}</td>
+                                <td>{item.quantity}</td>
+                                <td>{item.order_price}</td>
+                                <td>{item.subtotal}</td>
+                            </tr>
+                        )
+                    })}
+                <OrderTableEntry 
+                    insertHandler={this.insertHandler} />
+                </tbody>
+                
+                <Totals 
+                    span={5}
+                    list={this.state.contents}
+                    subtotalReducer={function(x, y){
+                        return(x + y.subtotal);
+                    }}/>
             </table>
         )
     }
 }
 
 class OrderTableEntry extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            inputs: {}
+    state = {
+        inputs: {
+            quantity: 0,
+            order_price: 0
         }
     }
-    insertHandler(){
+    
+    insertHandler =() =>{
         this.props.insertHandler(this.state.inputs);
     }
-    inputHandler(event){
+
+    inputHandler =(event) =>{
         var name= event.target.name;
         var value = event.target.value;
-        var newVals = this.state.inputs;
+        var newVals = {...this.state.inputs};
         newVals[name] = value;
         this.setState({inputs: newVals});
     }
 
-    itemSelectHandler(event){
-        this.inputHandler(event);
-        let pk = event.target.value;
-        
-        $.ajax({
-            method: "GET",
-            url: "/inventory/api/item/" + pk + "/"
-        }).then(res => {
-            $("input[name='description']").val(res.description);
-            $("input[name='order_price']").val(res.unit_purchase_price);
-            $("input[name='unit']").val(res.unit);
-            
-            this.setState({
-                inputs :{
-                    item_name: res.code,
-                    description: res.description,
-                    order_price: res.unit_purchase_price,
-                    unit: res.unit 
-                }
-            });
-        })
+    onSearchableSelect =(val) =>{
+        let newInputs = {...this.state.inputs};
+        let pk;
+        let name;
+        [pk, name] = val.split('-');
+        newInputs['name'] = name;
+        newInputs['pk'] = pk;
+        this.setState({inputs:newInputs});
+    }
+
+    onSearchableClear =() =>{
+        let newInputs = {...this.state.inputs};
+        newInputs['name'] = "";
+        this.setState({inputs:newInputs});
     }
 
     render(){
         return(
-            <tfoot>
+            <Aux>
                 <tr>
-                    <td></td>
-                    <td>
-                        <AsyncSelect url="/inventory/api/item/"
-                            handleChange={this.itemSelectHandler.bind(this)} />
+                    <td colSpan={2}>
+                        <SearchableWidget 
+                            dataURL="/inventory/api/item"
+                            idField="code"
+                            displayField="item_name"
+                            onSelect={this.onSearchableSelect}
+                            onClear={this.onSearchableClear}/>
                     </td>
-                    {this.props.fields.map((field, index) => (
-                        <td key={index}><input type="text"
-                               name={field} 
-                               className="form-control"
-                               onChange={event => (this.inputHandler(event))} />
-                        </td>
-                    ))}
-                    
-                </tr>
-                <tr>
-                    <td colSpan={this.props.fields.length + 1}></td>
+                    <td>
+                        <input 
+                            name="quantity"
+                            type="text"
+                            className="form-control"
+                            value={this.state.inputs.quantity}
+                            onChange={this.inputHandler}/>
+                    </td>
+                    <td>
+                        <input 
+                            name="order_price"
+                            type="text"
+                            className="form-control"
+                            value={this.state.inputs.order_price}
+                            onChange={this.inputHandler}/>
+                    </td>
                     <td>
                     <button type="button" 
                     className="btn btn-primary btn-lg"
-                    onClick={this.insertHandler.bind(this)}>Insert</button>
+                    onClick={this.insertHandler}>Insert</button>
                     </td>
                 </tr>
-                <tr>
-                    <td colSpan='6'style={{textAlign: 'right'}}><b>Total:</b></td>
-                    <td>{this.props.total}</td>
-                </tr>
-            </tfoot>
+            </Aux>
         );
     }
 }
-
-
-
-
-    

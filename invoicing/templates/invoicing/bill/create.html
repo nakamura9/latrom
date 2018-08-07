@@ -10,7 +10,7 @@
 {% endblock prepage %}
 
 {% block page_contents %}
-
+    {{form.errors}}
     <table class="table">
             <form action="" method="POST">
                 {% csrf_token %}
@@ -30,11 +30,12 @@
                 </td>
             </tr>
             <tr>
-                <td valign="top">
+                <td colspan="2">
+                    {% if include_customer %}
                     <p>Customer</p>
+                    {% endif %}
                     <p>{{form.customer}}</p>
-                </td>
-                <td>
+                    
                     <p>Date</p>
                     <p>{{form.date}}</p>
                     <p>Due</p>
@@ -68,7 +69,30 @@
                             {{form.comments}}
                         </div>
                     </div>
-                    <button class="btn btn-primary">Submit</button>
+                    <div class="dropdown open">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" >
+                                    Submit as...
+                                </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="draft">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="quotation">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="sent">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="paid">
+                            
+                        </div>
+                    </div>
                 </td>
             </tr>
         </tbody>

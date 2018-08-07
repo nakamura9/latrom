@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
+export const Aux = (props) => props.children;
+
 const DeleteButton = (props) => {
         return(
             <button
@@ -31,7 +33,6 @@ class Totals extends Component{
             method: "GET",
             url: "/invoicing/api/config/1"
         }).then(res =>{
-            console.log(res);
             this.setState({taxObj: res.data.sales_tax})
         })
     }
@@ -39,7 +40,7 @@ class Totals extends Component{
         if(prevProps.list !== this.props.list){
             //update totals 
             let subtotal = this.props.list.reduce(this.props.subtotalReducer, 0);
-            console.log(subtotal);
+            
             let taxAmount;
             if(this.state.taxObj){
                 taxAmount = subtotal * (this.state.taxObj.rate / 100);

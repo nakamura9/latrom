@@ -111,11 +111,42 @@ class BillForm(forms.ModelForm, BootstrapMixin):
         exclude = "active", 'discount'
         model = models.Bill
 
+class BillUpdateForm(forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
+    customer = forms.ModelChoiceField(models.Customer.objects.all(), widget=forms.HiddenInput)
+    class Meta:
+        exclude = "active", 'discount',
+        model = models.Bill
+
+class BillPaymentForm(forms.ModelForm, BootstrapMixin):
+    bill = forms.ModelChoiceField(
+        models.Bill.objects.all(), widget=forms.HiddenInput
+        )
+    payment_for = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = ['sales_invoice', 'service_invoice', 'combined_invoice']
+        model = models.Payment
+
 class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'discount'
+        exclude = "active", 
         model = models.CombinedInvoice
+
+class CombinedInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "active", 
+        model = models.CombinedInvoice
+
+class CombinedInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
+    combined_invoice = forms.ModelChoiceField(
+        models.CombinedInvoice.objects.all(), widget=forms.HiddenInput
+        )
+    
+    payment_for = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = ['service_invoice', 'bill', 'sales_invoice']
+        model = models.Payment
 
 
 class CreditNoteForm( forms.ModelForm, BootstrapMixin):

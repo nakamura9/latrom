@@ -14,7 +14,7 @@ from accounting.models import Account, Journal, JournalEntry, Tax, Expense
 from employees.models import Employee
 from common_data.models import SingletonModel
 import inventory
-
+import itertools
 
 class SalesConfig(SingletonModel):
     DOCUMENT_THEME_CHOICES = [
@@ -77,6 +77,11 @@ class Customer(models.Model):
     account = models.ForeignKey('accounting.Account', null=True)#created in save method
 
     @property
+    def invoices(self):
+        return AbstractSale.abstract_filter(Q(customer=self))
+    
+
+    @property
     def name(self):
         if self.organization:
             return self.organization.legal_name
@@ -115,9 +120,8 @@ class Customer(models.Model):
 
     @property
     def credit_invoices(self):
-        return [i for i in Invoice.objects.filter(
-            Q(type_of_invoice='credit') & Q(customer=self)) \
-            if not i.paid_in_full]
+        return [i for i in self.invoices \
+            if i.status == 'sent']
         
     @property
     def age_list(self):
@@ -172,6 +176,24 @@ class AbstractSale(models.Model):
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
     
+    @property
+    def overdue(self):
+        TODAY = timezone.now().date()
+        if self.due < TODAY:
+            return (self.due - TODAY).days
+        return 0
+        
+    @staticmethod
+    def abstract_filter(filter):
+        '''wrap all filters in one Q object and pass it to this function'''
+        sales = SalesInvoice.objects.filter(filter)
+        service = ServiceInvoice.objects.filter(filter)
+        bill = Bill.objects.filter(filter)
+        combined = CombinedInvoice.objects.filter(filter)
+        invoices = itertools.chain(sales, service, bill, combined)
+
+        return invoices
+
     def delete(self):
         self.active = False
         self.save()
@@ -200,6 +222,14 @@ class AbstractSale(models.Model):
 
     def __str__(self):
         return 'SINV' + str(self.pk)
+
+    def save(self, *args, **kwargs):
+        super(AbstractSale, self).save(*args, **kwargs)
+        config = SalesConfig.objects.first()
+        if self.tax is None and config.sales_tax is not None:
+            self.tax = config.sales_tax
+            self.save() 
+        
     
 
 class SalesInvoice(AbstractSale):
@@ -455,6 +485,8 @@ class SalesRepresentative(models.Model):
     employee = models.OneToOneField('employees.Employee')
     number = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
+    can_reverse_invoices = models.BooleanField(default=True)
+    can_offer_discounts = models.BooleanField(default=True)
 
     def delete(self):
         self.active = False

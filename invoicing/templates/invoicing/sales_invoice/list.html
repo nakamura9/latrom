@@ -12,7 +12,7 @@
     <td>{{inv.date}}</td>
     <td>{{inv.pk}}</td>
     <td>{{inv.customer}}</td>
-    <td>{{inv.total}}</td>
+    <td>{{inv.total | floatformat:2}}</td>
     <td>{{inv.status}}</td>
     <td>
         <div class="dropdown">
@@ -21,12 +21,6 @@
                 Actions
             </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
-                    
-                {% if inv.status == 'quotation' %}
-                    <a href="" class="dropdown-item">
-                        Create Invoice From Quotation
-                    </a>
-                {% endif %}
                 <!-- can only edit unsubmitted invoices -->
                 
                 <a class="dropdown-item" href="{% if inv.status == 'quotation' or inv.status == 'draft' %} {% url 'invoicing:sales-draft-update' pk=inv.pk %} {% else %} {% url 'invoicing:sales-invoice-update' pk=inv.pk %} {% endif %}">

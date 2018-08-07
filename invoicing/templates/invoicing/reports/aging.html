@@ -59,10 +59,12 @@
                     </thead>
                     <tbody>
                         {% for c in customers %}
-                            <td>{{c}}</td>
+                            <tr>
+                                <td>{{c}}</td>
                             {% for count in c.age_list %}
                                 <td>{{count}}</td>
                             {% endfor %}
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>

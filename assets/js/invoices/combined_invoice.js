@@ -20,6 +20,53 @@ export default class CombinedTable extends Component{
             id: 'id_item_list',
             name: 'item_list'
         }).appendTo('form');
+
+         //check if the page is an update
+         let URL = window.location.href;
+         let decomposed = URL.split('/');
+         let tail = decomposed[decomposed.length - 1];
+         
+         if(tail !== 'create-combined-invoice'){
+             axios({
+                 url: '/invoicing/api/combined-invoice/' + tail,
+                 method: 'GET',
+             }).then(res =>{
+                 console.log(res);
+                 let itemList = res.data.combinedinvoiceline_set.map((line) =>{
+                    let lineMappings = {
+                        1: 'sale',
+                        2: 'service',
+                        3: 'billable'
+                    };
+                    let data;
+                    if(line.line_type === 1){
+                        data = {
+                            item: line.item.code + '-' + line.item.item_name,
+                            quantity: line.quantity_or_hours,
+                            price: line.item.unit_sales_price
+                        };
+                    }else if (line.line_type === 2){
+                        data = {
+                            service: line.service.id + '-' + line.service.name,
+                            hours: line.quantity_or_hours,
+                            rate: line.service.hourly_rate,
+                            flatFee: line.service.flat_fee
+                        }
+                    }else if (line.line_type === 3){
+                        data = {
+                            billable: line.expense.id + '-' +line.expense.description,
+                            description: line.expense.description,
+                            amount: line.expense.amount 
+                        }
+                    }
+                    return {
+                        lineType: lineMappings[line.line_type],
+                        data: data
+                     }
+                 })
+                 this.setState({items: itemList}, this.updateForm);
+             });
+        }
     }
     
     insertHandler = (data) =>{

@@ -37,11 +37,11 @@
                     </a>
                     <h6 class="dropdown-header">Other</h6>
                 
-                <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-pdf' pk=inv.pk %}">
+                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-pdf' pk=inv.pk %}">
                     <i class="fas fa-file-pdf"></i> Create PDF
                 </a>
 
-                <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-email' pk=inv.pk %}">
+                <a class="dropdown-item" href="{% url 'invoicing:service-invoice-email' pk=inv.pk %}">
                         <i class="fas fa-at"></i> Send Email
                     </a>
 

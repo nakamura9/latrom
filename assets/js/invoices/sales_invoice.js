@@ -61,7 +61,7 @@ export default class SalesInvoiceForm extends Component{
                             parseFloat(line.item.unit_sales_price)
                     }
                 })
-                this.setState({items: itemList});
+                this.setState({items: itemList}, this.updateForm);
             });
         }
     }

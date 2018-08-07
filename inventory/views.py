@@ -19,6 +19,8 @@ import models
 import serializers
 import filters
 from common_data.utilities import *
+from common_data.models import GlobalConfig 
+from invoicing.models import SalesConfig
 
 class InventoryControllerCheckMixin(UserPassesTestMixin):
     def test_func(self):
@@ -137,17 +139,17 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(OrderCreateView, self).post(request, *args, **kwargs)
-        items = request.POST.getlist("items[]")
+        items = json.loads(urllib.unquote(request.POST["items"]))
+        print items
         if not self.object:
            return resp
 
         order = self.object
             
-        for item in items:
-            data = json.loads(urllib.unquote(item))
+        for data in items:
             order.orderitem_set.create(
                 item=models.Item.objects.get(
-                    pk=data['item_name']),
+                    pk=data['pk']),
                     quantity=data['quantity'],
                     order_price=data['order_price'])   
         
@@ -168,19 +170,15 @@ class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext, UpdateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(OrderUpdateView, self).post(request, *args, **kwargs)
-        items = request.POST.getlist("items[]")
-        order = self.get_object()
-
-        for item in items:
-            data = json.loads(urllib.unquote(item))
+        items = json.loads(urllib.unquote(request.POST["items"]))
+        order = self.object
+        print items
+        for data in items:
             order.orderitem_set.create(
                 item=models.Item.objects.get(
-                    pk=data['item_name']),
+                    pk=data['pk']),
                     quantity=data['quantity'],
                     order_price=data['order_price'])
-
-        for pk in request.POST.getlist("removed_items[]"):
-            models.OrderItem.objects.get(pk=pk).delete()
 
         #create adjustment transaction if the amount changes
         return resp
@@ -215,7 +213,7 @@ class OrderDetailView(InventoryControllerCheckMixin, ExtraContext, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(OrderDetailView, self).get_context_data(*args, **kwargs)
-        #insert config
+        context.update(SalesConfig.objects.first().__dict__)
         return apply_style(context)
 
 ################################################
@@ -289,7 +287,7 @@ class GoodsReceivedVoucherView(InventoryControllerCheckMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(GoodsReceivedVoucherView, self).get_context_data(*args, **kwargs)
-        #insert config
+        context.update(SalesConfig.objects.first().__dict__)
         return apply_style(context)
 
 class CategoryCreateView(InventoryControllerCheckMixin, CreateView):

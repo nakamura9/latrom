@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {DeleteButton, SearchableWidget} from '../src/common';
+import {DeleteButton, SearchableWidget, Totals} from '../src/common';
 
 export default class BillTable extends Component{
     
     state = {
-        total: 0.0,
         items: []
     }
 
@@ -16,6 +15,27 @@ export default class BillTable extends Component{
             id: 'id_item_list',
             name: 'item_list'
         }).appendTo('form');
+
+        //check if the page is an update
+        let URL = window.location.href;
+        let decomposed = URL.split('/');
+        let tail = decomposed[decomposed.length - 1];
+        
+        if(tail !== 'create-bill'){
+            axios({
+                url: '/invoicing/api/bill/' + tail,
+                method: 'GET',
+            }).then(res =>{
+                let itemList = res.data.billline_set.map((item) =>{
+                    return {
+                        pk: item.expense.id,
+                        name: item.expense.description,
+                        amount: parseFloat(item.expense.amount),
+                        }
+                })
+                this.setState({items: itemList}, this.updateForm);
+            });
+        }
     }
     addExpense = (expense) => {
         var decomposed = expense.split('-');
@@ -25,22 +45,21 @@ export default class BillTable extends Component{
             url: '/accounting/api/expense/' + pk,
             method: 'GET'
         }).then(res => {
-            let newItems = this.state.items;
+            let newItems = [...this.state.items];
             newItems.push({
                 pk: pk,
                 name: name,
-                amount: res.data.amount
+                amount: parseFloat(res.data.amount)
             });
-            this.setState({'items': newItems});
-            this.updateForm();
+            this.setState({items: newItems}, this.updateForm);
         });
     }
 
     removeExpense = (id) => {
-        let newItems = this.state.items;
+        let newItems = [...this.state.items];
         newItems.splice(id, 1);
-        this.setState({'items': newItems});
-        this.updateForm()
+        this.setState({'items': newItems}, this.updateForm);
+        
     }
 
     updateForm = () => {
@@ -77,12 +96,13 @@ export default class BillTable extends Component{
                     ))}
                 <EntryRow addExpense={this.addExpense.bind(this)}/>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <th colSpan={2}>Total</th>
-                        <td>{this.state.total}</td>
-                    </tr>
-                </tfoot>
+                <Totals 
+                    span={3}
+                    list={this.state.items}
+                    subtotalReducer={function(x, y){
+                        console.log('calculated');
+                        return(x + y.amount);
+                    }}/>
             </table>
         );
     }
@@ -94,13 +114,7 @@ class EntryRow extends Component{
         selected: ''
     }
 
-    componentDidMount(){
-        document.getElementById('id_customer').addEventListener(
-            'change', this.setCustomer.bind(this))
-    }
-
-    setCustomer = (evt) => {
-        var customer = evt.target.value;
+    requestItems = (customer) =>{
         axios({
             url: '/invoicing/api/customer/' + customer,
             method: 'GET'
@@ -108,9 +122,26 @@ class EntryRow extends Component{
             this.setState({'items': res.data.expense_set});
         })
     }
+    componentDidMount(){
+        //initialize 
+        let customer = document.getElementById('id_customer').value;
+        this.requestItems(customer);
+        
+        
+        //listen for changes
+        document.getElementById('id_customer').addEventListener(
+            'change', this.setCustomer.bind(this))
+    }
+
+    setCustomer = (evt) => {
+        var customer = evt.target.value;
+        this.requestItems(customer);
+    }
 
     clickHandler = () => {
         this.props.addExpense(this.state.selected);
+        this.setState({selected: ""});
+        
     }
 
     inputHandler = (evt) => {
@@ -125,6 +156,7 @@ class EntryRow extends Component{
                         className="form-control"
                         list="expense-datalist"
                         onChange={this.inputHandler.bind(this)}
+                        value={this.state.selected}
                         />
                         <datalist id="expense-datalist">
                             {this.state.items.map((item, i) =>(

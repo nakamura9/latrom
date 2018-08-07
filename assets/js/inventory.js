@@ -4,7 +4,7 @@ import OrderTable from './inventory/orders';
 import ItemReceiptTable from './inventory/stock_receipt';
 import TransferItems from './inventory/transfer_order';
 
-const orderFields = ['Item Name', 'Description', 'Quantity', 'Order Price', 'Unit', 'Subtotal'];
+const orderFields = ['Item', 'Quantity', 'Order Price','Subtotal'];
 const newOrder = document.getElementById('root');
 const updatedOrder = document.getElementById("populated-root"); 
 const inventoryCheck =  document.getElementById('inventory-checker');
