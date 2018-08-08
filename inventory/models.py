@@ -507,6 +507,7 @@ class UnitOfMeasure(models.Model):
 class Category(models.Model):
     '''Used to organize inventory'''
     name = models.CharField(max_length=64)
+    parent = models.ForeignKey('inventory.Category', blank=True, null=True)
     description = models.TextField(default="")
 
     def __str__(self):

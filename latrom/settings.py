@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
+    'generic_scaffold'
 ]
 #'django_tables2','crudbuilder',
 LOGIN_REQUIRED_FOR_CRUD = True

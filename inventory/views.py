@@ -21,6 +21,7 @@ import filters
 from common_data.utilities import *
 from common_data.models import GlobalConfig 
 from invoicing.models import SalesConfig
+from generic_scaffold import CrudManager
 
 class InventoryControllerCheckMixin(UserPassesTestMixin):
     def test_func(self):
@@ -290,12 +291,18 @@ class GoodsReceivedVoucherView(InventoryControllerCheckMixin, DetailView):
         context.update(SalesConfig.objects.first().__dict__)
         return apply_style(context)
 
+
+class CategoryCRUD(CrudManager):
+    model = models.Category
+    prefix = 'category-'
+    app_name = 'inventory'
 class CategoryCreateView(InventoryControllerCheckMixin, CreateView):
     form_class = forms.CategoryForm
     model = models.Category
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "create_template.html")
     extra_context = {"title": "Category"}
+
 
 class UnitDeleteView(InventoryControllerCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')

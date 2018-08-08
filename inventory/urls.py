@@ -3,6 +3,8 @@ import views
 import report_views
 from rest_framework import routers
 
+category_crud = views.CategoryCRUD()
+
 item_router = routers.DefaultRouter()
 item_router.register(r'^api/item', views.ItemAPIView)
 order_router = routers.DefaultRouter()
@@ -66,4 +68,5 @@ urlpatterns = [
     url(r'^inventory-controller-list/?$', views.InventoryControllerListView.as_view(), name='inventory-controller-list'),
     url(r'^create-inventory-controller/?$', views.InventoryControllerCreateView.as_view(), name='create-inventory-controller'),
 ] + item_router.urls + order_router.urls + order_item_router.urls + \
-    report_urls +  warehouse_router.urls + stock_adjustment_router.urls
+    report_urls +  warehouse_router.urls + stock_adjustment_router.urls + \
+    category_crud.get_url_patterns()
