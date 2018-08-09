@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 import views
+from calendar_api import get_calendar
 #from crudbuilder import urls
 
 urlpatterns = [
@@ -27,5 +28,7 @@ urlpatterns = [
         name='config'),
     url(r'^email/?$', views.SendEmail.as_view(), 
         name='email'),
-    #url(r'^crud/', include(urls)),
+    url(r'^calendar/?$', views.ReactCalendar.as_view(), 
+        name='calendar'),
+    url(r'api/calendar/', get_calendar, name='calendar-api')
 ]

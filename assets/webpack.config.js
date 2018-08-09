@@ -2,7 +2,7 @@ var path = require("path");
 var webpack = require("webpack");
 var BundleTracker = require("webpack-bundle-tracker");
 
-//calendar: './js/src/calendar'
+
 module.exports = {
     context: __dirname,
     entry:  {
@@ -10,6 +10,7 @@ module.exports = {
         invoicing: './js/invoicing',
         employees: './js/employees',
         inventory: './js/inventory',
+        calendar: './js/calendar'
     },
     output: {
         path: path.resolve('./bundles/'),

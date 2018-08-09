@@ -1,0 +1,11 @@
+{% extends "window.html" %}
+
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<h1>React Calendar</h1>
+
+<div id="calendar-root">
+
+</div>
+{% render_bundle 'calendar' %}
+{% endblock content %}
