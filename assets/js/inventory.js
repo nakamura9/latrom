@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import OrderTable from './inventory/orders';
 import ItemReceiptTable from './inventory/stock_receipt';
 import TransferItems from './inventory/transfer_order';
+import InventoryChecker from './inventory/inventory_check';
 
 const orderFields = ['Item', 'Quantity', 'Order Price','Subtotal'];
 const newOrder = document.getElementById('root');

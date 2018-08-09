@@ -16,7 +16,7 @@ class AccountingSettings(SingletonModel):
 class Bookkeeper(models.Model):
     '''Model that gives employees access to the bookkeeping function of the 
     software such as order creation and the like.'''
-    employee = models.ForeignKey('employees.Employee') 
+    employee = models.ForeignKey('employees.Employee', null=True) 
 
 class Transaction(models.Model):
     '''
@@ -318,7 +318,7 @@ class Asset(models.Model):
     description = models.TextField(blank=True)
     category = models.IntegerField(choices=ASSET_CHOICES)
     initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account')
+    debit_account = models.ForeignKey('accounting.Account', null=True)
     depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
