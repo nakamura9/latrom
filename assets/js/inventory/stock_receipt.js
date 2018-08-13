@@ -12,9 +12,8 @@ export default class ItemReceiptTable extends Component{
         }
     }
     componentDidMount(){
-        var orderNode = ReactDOM.findDOMNode(
-            document.getElementById('id_order'));
-        orderNode.addEventListener('change', this.populate.bind(this));
+        let order = document.getElementById('id_order').value;
+        this.populate(order)
         $('<input>').attr({
             'name': 'received-items',
             'type': 'hidden',
@@ -34,9 +33,9 @@ export default class ItemReceiptTable extends Component{
         
     }
     
-    populate(evt){
+    populate = (order) =>{
         $.ajax({
-            url: '/inventory/api/order/' + evt.target.value,
+            url: '/inventory/api/order/' + order,
             'method': 'GET'
         }).then(
             res => {

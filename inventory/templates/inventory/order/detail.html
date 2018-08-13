@@ -28,8 +28,8 @@
 {% block content_headings %}
 <tr>
     <td >Qty</td>
-    <td >Item</td>
     <td  style="width:300px;">Description</td>
+    <td>Unit</td>
     <td >Unit Price</td>
     <td >Total</td>
 </tr>
@@ -39,7 +39,7 @@
 <tr>
     <td >{{item.quantity}}</td>
     <td >{{item.item.item_name}}</td>
-    <td >{{item.item.description}}</td>
+    <td>{{item.item.unit}}</td>
     <td >{{item.item.unit_purchase_price}}</td>
     <td >{{item.subtotal}}</td>
 </tr>

@@ -29,6 +29,16 @@
                 <a class="dropdown-item" href="{% url 'inventory:warehouse-delete' pk=w.pk %}">
                         <i class="fas fa-trash"></i>Close
                 </a>
+                
+                <h6 class="dropdown-header">Verify Inventory</h6>
+                <a class="dropdown-item" href="{% url 'inventory:create-inventory-check' pk=w.pk %}">
+                        <i class="fas fa-trash"></i>Check Inventory
+                </a>
+                
+                <h6 class="dropdown-header">Scrap</h6>
+                <a class="dropdown-item" href="{% url 'inventory:create-inventory-check' pk=w.pk %}">
+                    <i class="fas fa-trash"></i>Scrap Inventory
+            </a>
             </div>
         </div>
     </td>

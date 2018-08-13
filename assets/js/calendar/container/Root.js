@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import Month from '../components/Month';
-import Week from '../components/Week';
-import Day from '../components/Day/Day';
+import Month from '../components/Month/Month';
+import WeekView from '../components/Week/WeekView';
+import DayView from '../components/Day/DayView';
 import axios from 'axios';
 
 export default class CalendarRoot extends Component{
@@ -9,6 +9,7 @@ export default class CalendarRoot extends Component{
         view: 'month',
         nextView: 'month',
         data: [],
+        period: '',
         current: 0
     }
     componentDidMount(){
@@ -31,6 +32,7 @@ export default class CalendarRoot extends Component{
         }).then(res =>{
             this.setState({
                 data: res.data.data,
+                period: res.data.period,
                 view:this.state.nextView
             });
         });
@@ -45,22 +47,21 @@ export default class CalendarRoot extends Component{
     // current and the view 
     render(){
         let view = null;
-        console.log(this.state.data);
         switch(this.state.view){
             case 'month':
-                view=<Month weeks={this.state.data}/>
+                view=<Month 
+                    weeks={this.state.data}
+                    period={this.state.period}/>
                 break;
             case 'week':
                 view = (
-                    <table>
-                        <tbody>
-                            <Week days={this.state.data}/>
-                        </tbody>
-                    </table>
+                    <WeekView 
+                        days={this.state.data}
+                        period={this.state.period}/>            
                 )
                 break;
             case 'day':
-                view= <Day data={this.state.data}/>
+                view= <DayView data={this.state.data}/>
                 break;
             default:
                 view=<h1>Loading View...</h1>

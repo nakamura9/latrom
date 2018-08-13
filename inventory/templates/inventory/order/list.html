@@ -1,0 +1,60 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info">Order #</td>
+    <td class="info">Issue Date</td>
+    <td class="info">Status</td>
+    <td class="info">Supplier</td>
+    <td class="info"># of Items</td>
+    <td class="info">Total Cost</td>
+    <td class="info">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} {% for order in object_list %}
+<tr>
+    <td>{{order.pk}}</td>
+    <td>{{order.issue_date}}</td>
+    <td>{{order.status}}</td>
+    <td>{{order.supplier}}</td>
+    <td>{{order.orderitem_set.all.count}}</td>
+    <td>{{order.total}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+
+                <a href="{% url 'inventory:order-update' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-file"></i> Update
+                </a>
+                <a href="{% url 'inventory:order-detail' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                <a href="{% url 'inventory:order-delete' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+                <a href="{% url 'inventory:order-status' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> Status
+                    <!--Change this ! -->
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'inventory:stock-receipt-create' pk=order.pk %}">
+                    <i class="fas fa-share-square"></i> Receive order</a>
+                {% if order.stockreceipt_set.all.count > 0 %}
+                <a href="{% url 'inventory:goods-received' pk=order.stockreceipt_set.first.pk %}" class="dropdown-item">View Goods Received Note</a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'inventory:order-pdf' pk=order.pk %}" class="dropdown-item">
+                        <i class="fas fa-eye"></i> Generate PDF
+                        <!--Change this ! -->
+                    </a>
+                    <a href="{% url 'inventory:order-email' pk=order.pk %}" class="dropdown-item">
+                            <i class="fas fa-eye"></i> Send Email
+                            <!--Change this ! -->
+                        </a>
+            </div>
+        </div>
+
+    </td>
+</tr>
+{% endfor %} {% endblock %}

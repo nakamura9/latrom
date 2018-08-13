@@ -3,35 +3,36 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
 export default class InventoryChecker extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
+    state = {
             items : [],
+            adjustments: [],
             warehouse: "",
             nextPage: 2,
             pages: 1
         }
-    }
-
+    
     componentDidMount(){
         let url = window.location.href;
         let url_elements = url.split('/');
-        console.log(url_elements);
         let warehouse = url_elements[url_elements.length - 1]
         this.setState({
             warehouse: warehouse,
         });
-        console.log(warehouse);
         $.ajax({
             'url': '/inventory/api/warehouse-items/'+ warehouse,
             'method': 'GET',
         }).then(res => {
-            console.log(res);
             this.setState({
                 items: res.results,
                 pages:res.count
             });
         });
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'adjustments',
+            value: '',
+            id: 'id_adjustments'
+        }).appendTo('form');
     }
 
     nextPage(evt){
@@ -54,8 +55,22 @@ export default class InventoryChecker extends Component {
                 });
             });
         }
-        
     }
+
+    updateForm = () =>{
+        $('#id_adjustments').val(
+            encodeURIComponent(
+                JSON.stringify(this.state.adjustments)
+            ));
+        console.log(this.state.adjustments)
+    }
+
+    adjustInventory = (data) => {
+        let newAdjustments = [...this.state.adjustments];
+        newAdjustments.push(data);
+        this.setState({adjustments: newAdjustments}, this.updateForm);
+    }
+
     render(){
         return(
             <div>
@@ -75,8 +90,10 @@ export default class InventoryChecker extends Component {
                     <td colSpan={4} style={{textAlign:'center'}}><b>Select a populated warehouse</b></td>
                   </tr>
                 : this.state.items.map((item, i) => (
-                    <WareHouseItem data={item} 
-                    key={i}/>
+                    <WareHouseItem 
+                        data={item} 
+                        key={i}
+                        adjust={this.adjustInventory}/>
                 ))
             }
             </tbody>
@@ -111,7 +128,7 @@ class WareHouseItem extends Component{
     }
     createAdjustment(){
         let note = prompt('Create Acompanying Note:');
-        let url = window.location.href;
+        /*let url = window.location.href;
         let url_elements = url.split('/');
         $.ajax({
             'url': '/inventory/api/stock-adjustment/',
@@ -125,7 +142,14 @@ class WareHouseItem extends Component{
             }
         }).then(() =>{
             this.setState({'verified': true});
+        })*/
+        this.props.adjust({
+            warehouse_item: this.props.data.id,
+            adjustment: this.props.data.quantity - this.state.value,
+            note: note,
         })
+        this.setState({'verified': true})
+
     }
 
     render(){

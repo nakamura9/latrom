@@ -125,6 +125,8 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         
         
 class StockReceiptForm(forms.ModelForm, BootstrapMixin):
+    order = forms.ModelChoiceField(models.Order.objects.all(),     
+        widget=forms.HiddenInput)
     class Meta:
         exclude = 'fully_received',
         model= models.StockReceipt
@@ -152,6 +154,7 @@ class WareHouseForm(forms.ModelForm, BootstrapMixin):
         model = models.WareHouse
 
 class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
+    warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), widget=forms.HiddenInput)
     class Meta:
         fields = "__all__"
         model = models.InventoryCheck

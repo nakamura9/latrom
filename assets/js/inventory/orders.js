@@ -164,6 +164,7 @@ class OrderTableEntry extends Component{
     onSearchableClear =() =>{
         let newInputs = {...this.state.inputs};
         newInputs['name'] = "";
+        newInputs['pk'] = "";
         this.setState({inputs:newInputs});
     }
 

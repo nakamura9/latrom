@@ -2,6 +2,9 @@ import calendar
 import datetime
 from dateutil.relativedelta import relativedelta
 from django.http import JsonResponse
+from django.db.models import Q
+from inventory.models import InventoryCheck
+from invoicing.models import AbstractSale
 
 '''
 request body
@@ -11,24 +14,29 @@ request body
 }
 '''
 
+def get_filters(start, end, field="date"):
+    lt = field + '__lte'
+    gt = field + '__gte'
+    return(Q(Q(lt = end) & Q(gt = start)))
+
 def get_calendar(request):
     TODAY = datetime.date.today()
-    print request.GET
+    user = request.user
     views = {
         'month': get_month_views, 
         'week': get_week_views,
         'day': get_day_view
     }
-    data_array = views[request.GET.get('view')](
-        int(request.GET.get('current'))
+    data_array, period = views[request.GET.get('view')](
+        int(request.GET.get('current')), user
     )
     payload = {
-        'data': data_array
+        'data': data_array,
+        'period': period
     }
-    print payload
     return JsonResponse(payload)
 
-def get_month_views(current):
+def get_month_views(current, user):
     '''returns a list of weeks'''
     TODAY = datetime.date.today()
     current_date = TODAY + relativedelta(months=current)
@@ -36,40 +44,71 @@ def get_month_views(current):
     array = c.monthdatescalendar(
         current_date.year,
         current_date.month)
-    return [[get_day(date) for date in week] for week in array]
+    period_string = current_date.strftime('%B, %Y')
+    return [[get_day(date, user) for date in week] for week in array], period_string
 
-def get_week_views(current):
+def get_week_views(current, user):
     '''returns a list of days'''
     TODAY = datetime.date.today()
     current_date = TODAY + relativedelta(weeks=current)
-    print current_date
     curr_weekday = current_date.weekday()
     array = [current_date + datetime.timedelta(days=i) \
         for i in (range(0 - curr_weekday, 7-curr_weekday))]
-    return [get_day(date) for date in array]
+    year, week, wkday = current_date.isocalendar()
+    period_string = "%d, (%s) %d" % (week, current_date.strftime('%B'), year)
+    return [get_day(date, user) for date in array], period_string
 
-def get_day_view(current):
+def get_day_view(current, user):
     '''returns a list of events'''
     TODAY = datetime.date.today()
     current_date = TODAY + datetime.timedelta(current)
-    return get_day(current_date)
+    data = get_day(current_date, user)
+    return data, ''
 
 
-def get_day(date):
+def get_day(date, user):
+    print dir(user)
+    events = []
+    if hasattr(user,'employee'):
+        print 'true'
+        if user.is_sales_rep:
+            events += get_sales_events(date)
+        if user.is_inventory_controller:
+            events += get_inventory_events(date)
+        if user.is_bookkeeper:
+            events += get_accounting_events(date)
+    elif user.is_superuser:
+        events += get_accounting_events(date) + get_inventory_events(date) + \
+            get_sales_events(date)
+    print events
     return {
         'day': date.day,
-        'events': []
+        'date': date,
+        'events': events
     }
 
-def get_inventory_events():
+def get_inventory_events(date):
+    #order due dates 
+    #inventory_checks
+    #
+    checks = InventoryCheck.objects.filter(date=date)
+    return [{
+        'label': 'Inventory Check',
+        'icon': 'check'
+    } for c in checks]
+
     pass
 
 
-def get_sales_events():
-    pass
+def get_sales_events(date):
+    invoices = AbstractSale.abstract_filter(Q(due=date))
+    return [{
+        'label': 'Invoice Due',
+        'icon': 'receipt'
+    } for c in invoices]
 
-def get_employees_events():
-    pass
+def get_employees_events(date):
+    return []
 
-def get_accounting_events():
-    pass
+def get_accounting_events(date):
+    return []

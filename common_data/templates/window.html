@@ -17,6 +17,7 @@
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
             <li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>
             {% endif %}
+            <li><a class="nav-link" href="{% url 'base:calendar' %}">Calendar</a></li>
             {% if request.user.is_superuser %}
             <li>
                 <a href="{% url 'services:dashboard' %}" class="nav-link">Services</a>

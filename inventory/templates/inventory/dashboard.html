@@ -24,11 +24,7 @@
                                 <a href="{% url 'inventory:item-create' %}">Create New Item</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:item-list' %}">Inventory Item List</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:transfer-order-list' %}">
-                                    Inventory Transfer History </a>
+                                <a href="{% url 'inventory:item-list' %}">Manage Inventory Items</a>
                             </li>
                         </ul>
                     </div>
@@ -43,10 +39,7 @@
                                 <a href="{% url 'inventory:order-create' %}">Create New Purchase Order</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:order-list' %}">List Orders</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:stock-receipt-create' %}">Receive order</a>
+                                <a href="{% url 'inventory:order-list' %}">Manage Orders</a>
                             </li>
                         </ul>
                     </div>
@@ -59,13 +52,12 @@
                         <ul class="list-group">
                             
                         <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a></li>
+                        
+                        <li class="list-group-item"><a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a></li>
                             <li class="list-group-item">
                                 <a href="{% url 'inventory:supplier-list'%} ">Manage Suppliers</a>
                             </li>
-                            <!--
-                                <li class="list-group-item">
-                                    <a href="">Supplier Reports</a>
-                                </li>-->
+                            
                         </ul>
                     </div>
                 </div>
@@ -102,15 +94,8 @@
                             </li>
 
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:warehouse-list' %}">WareHouse List</a>
+                                <a href="{% url 'inventory:warehouse-list' %}"> Manage Warehouses</a>
                             </li>
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:inventory-check-list' %}">
-                                    Review and Create Inventory Checks
-                                </a>
-                            </li>
-
                         </ul>
                     </div>
                 </div>

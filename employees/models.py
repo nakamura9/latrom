@@ -167,6 +167,10 @@ class Deduction(models.Model):
         objects'''
         self.active = False
         self.save()
+'''
+class PayrollOfficer(models.Model):
+    employee = models.OneToOneField('employees.Employee)
+'''
 
 class CommissionRule(models.Model):
     '''simple model for giving sales representatives commission based on 

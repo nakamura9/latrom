@@ -84,6 +84,13 @@ class Supplier(models.Model):
     def is_organization(self):
         return self.organization != None
 
+    @property
+    def supplier_email(self):
+        if self.is_organization:
+            return self.organization.email
+        else:
+            return self.individual.email
+
         
     def __str__(self):
         return self.name
@@ -132,7 +139,7 @@ class Item(models.Model):
     item_name = models.CharField(max_length = 32)
     code = models.AutoField(primary_key=True)
     unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default=1)
-    
+    sku = models.CharField(max_length=16, blank=True)
     pricing_method = models.IntegerField(choices=PRICING_CHOICES, default=0)
     direct_price = models.DecimalField(max_digits=9, decimal_places=2)
     margin = models.DecimalField(max_digits=9, decimal_places=2, default=0)
@@ -496,13 +503,29 @@ class OrderItem(models.Model):
         return D(self.quantity) * self.order_price
 
 class UnitOfMeasure(models.Model):
-    '''Simple class for representing units of inventory.'''
+    '''Class for arepresenting units of inventory.
+    can be a base unit where no calculations are required.
+    can also be a derived unit where the quantity is calculated back into the base unit for each element.'''
     name = models.CharField(max_length=64)
     description = models.TextField(default="")
+    is_derived = models.BooleanField(default = False)
+    base_unit = models.ForeignKey('inventory.UnitOfMeasure', null=True, blank=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+
+class DerivedUnitStage(models.Model):
+    OPERATIONS = [
+        (0, 'sum'),
+        (1, 'difference'),
+        (2, 'product'),
+        (3, 'ratio')
+        ]
+    stage_number = models.PositiveSmallIntegerField()
+    operation = models.PositiveSmallIntegerField(choices=OPERATIONS)
+    value = models.FloatField()
+    unit = models.ForeignKey('inventory.UnitOfMeasure')
 
 class Category(models.Model):
     '''Used to organize inventory'''
@@ -705,3 +728,28 @@ class TransferOrderLine(models.Model):
     item = models.ForeignKey('inventory.Item')
     quantity = models.FloatField()
     transfer_order = models.ForeignKey('inventory.TransferOrder')
+
+
+class InventoryScrappingRecord(models.Model):
+    date = models.DateField()
+    controller = models.ForeignKey('inventory.InventoryController')
+    warehouse = models.ForeignKey('inventory.WareHouse')
+    comments = models.TextField(blank=True)
+
+
+class InventoryScrappingRecordLine(models.Model):
+    item = models.ForeignKey('inventory.Item')
+    quantity = models.FloatField()
+    scrapping_record = models.ForeignKey('inventory.InventoryScrappingRecord')
+
+
+class StorageMedia(models.Model):
+    name = models.CharField(max_length = 255)
+    warehouse = models.ForeignKey('inventory.WareHouse')
+    location = models.ForeignKey('inventory.StorageMedia', null=True, blank=True)
+    description = models.TextField()
+    unit = models.ForeignKey('inventory.UnitOfMeasure')
+    length = models.FloatField(default=0.0)
+    width = models.FloatField(default=0.0)
+    height = models.FloatField(default=0.0)
+    capacity = models.FloatField(default=0.0)
