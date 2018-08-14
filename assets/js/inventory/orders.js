@@ -148,6 +148,7 @@ class OrderTableEntry extends Component{
         var value = event.target.value;
         var newVals = {...this.state.inputs};
         newVals[name] = value;
+        console.log(newVals);
         this.setState({inputs: newVals});
     }
 
@@ -185,7 +186,6 @@ class OrderTableEntry extends Component{
                             name="quantity"
                             type="text"
                             className="form-control"
-                            value={this.state.inputs.quantity}
                             onChange={this.inputHandler}/>
                     </td>
                     <td>
@@ -193,7 +193,6 @@ class OrderTableEntry extends Component{
                             name="order_price"
                             type="text"
                             className="form-control"
-                            value={this.state.inputs.order_price}
                             onChange={this.inputHandler}/>
                     </td>
                     <td>
