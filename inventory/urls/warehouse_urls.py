@@ -23,5 +23,18 @@ warehouse_urls = [
     url(r'^api/unpaginated-warehouse-items/(?P<warehouse>[\d]+)/?$', 
         views.UnpaginatedWareHouseItemListAPIView.as_view(), 
     name='unpaginated-warehouse-items'),
+    url(r'^storage-media-detail/(?P<pk>[\w]+)/?$', 
+        views.StorageMediaDetailView.as_view(), name='storage-media-detail'),
+    url(r'^storage-media-update/(?P<pk>[\w]+)/?$', 
+        views.StorageMediaUpdateView.as_view(), name='storage-media-update'),
+    url(r'^storage-media-create/(?P<pk>[\w]+)/?$',
+        views.StorageMediaCreateView.as_view(), name='storage-media-create'),
+    url(r'^storage-media-list/(?P<pk>[\w]+)/?$',
+        views.StorageMediaListView.as_view(), name='storage-media-list'),
+    url(r'^api/storage-media/(?P<pk>[\w]+)/?$', 
+        views.StorageMediaListAPIView.as_view()),
+    url(r'^api/storage-media/?$', 
+        views.StorageMediaListAPIView.as_view())
+    
 ]  +  warehouse_router.urls
 

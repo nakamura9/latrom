@@ -11,7 +11,9 @@ const week = (props) => {
             {props.days.map((day, i) =>(
                 <td key={i}
                     style={cellStyle}>
-                    <Day data={day} view='month'/>
+                    <Day 
+                        data={day} 
+                        view='month'/>
                 </td>
             ))}
         </tr>

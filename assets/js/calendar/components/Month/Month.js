@@ -7,10 +7,11 @@ const month = (props) =>{
         borderCollapse:"collapse",
         border:"1px solid black"
     };
-    return(
-        <Aux>
-        <h3>Month: {props.period}</h3>
-        <table>
+    let contents = null;
+    if(props.weeks.length === 0){
+        contents = <h3>Loading Data...</h3>
+    }else{
+        contents = (<table>
             <thead>
                 <tr>
                     <th style={cellStyle}>Monday</th>
@@ -24,10 +25,17 @@ const month = (props) =>{
             </thead>
             <tbody>
             {props.weeks.map((week, i)=>(
-                <Week key={i} days={week} />
+                <Week 
+                    key={i} 
+                    days={week}/>
             ))}
             </tbody>
-        </table>
+        </table>);
+    }
+    return(
+        <Aux>
+        <h3>Month: {props.period}</h3>
+        {contents}
         </Aux>
     );
 }

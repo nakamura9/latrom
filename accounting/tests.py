@@ -252,7 +252,7 @@ class ViewTests(TestCase):
                 'sold_from': self.warehouse.pk,
                 'items[]': urllib.quote(
                     json.dumps({
-                        'code': self.item.pk,
+                        'id': self.product.pk,
                         'quantity':1,
                         'discount': 10
                         })

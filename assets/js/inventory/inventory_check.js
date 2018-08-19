@@ -30,7 +30,7 @@ export default class InventoryChecker extends Component {
         $('<input>').attr({
             type: 'hidden',
             name: 'adjustments',
-            value: '',
+            value: encodeURIComponent(JSON.stringify([])),
             id: 'id_adjustments'
         }).appendTo('form');
     }
@@ -158,7 +158,7 @@ class WareHouseItem extends Component{
                 <td>
                     <input type="checkbox" checked={this.state.verified} />
                 </td>
-                <td>{this.props.data.item.item_name}</td>
+                <td>{this.props.data.product.name}</td>
                 <td>{this.props.data.quantity}</td>
                 <td>
                     <input type="number"

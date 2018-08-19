@@ -1,14 +1,13 @@
 import React from 'react';
 import Event from '../Event';
 
-
 const day = (props) => {
     let dayWrapper = null;
     
     if (props.view === 'month'){
         dayWrapper={
-            minWidth: "150px",
-            minHeight: "100px",
+            minWidth: "200px",
+            minHeight: "150px",
             padding:"5px"
         }
     }else if (props.view === 'week'){
@@ -20,10 +19,23 @@ const day = (props) => {
     }else{
         dayWrapper={
             minWidth: "150px",
-            minHeight: "100px",
+            minHeight: "150px",
             padding:"5px"
         }
     }
+    let eventList = null;
+    const nEvents = props.data.events.length;
+    if ( nEvents > 2){
+        eventList = props.data.events.splice(0, 2);
+        eventList.push({
+            icon: 'share',
+            label:  '+ ' + (nEvents - 2) + ' more event(s)'
+        });
+    }else{
+        eventList = props.data.events;
+    }
+    //on click handler for date numbers
+
     return(
         <div style={dayWrapper}>
             <div style={{
@@ -32,11 +44,13 @@ const day = (props) => {
                 height:'30px'
             }}>
                 <span style={{float:'right'}}>
-                    <h4>{props.data.day}</h4>
+                    <h4>
+                        {props.data.day}
+                    </h4>
                 </span>
             </div>
             <div>
-                {props.data.events.map((event, i) =>(
+                {eventList.map((event, i) =>(
                     <Event key={i} data={event}/>
                 ))}
             </div>

@@ -16,9 +16,6 @@ from django.core.mail import send_mail
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
-class ReactCalendar(TemplateView):
-    template_name = os.path.join('common_data','calendar.html')
-
 #########################################################
 #                  Organization Views                   #
 #########################################################

@@ -1,0 +1,43 @@
+{% extends "window.html" %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Current Agenda</h1>
+    <p class="lead">View a focused ordered set of events for planning the next few days of work</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'planner:event-create' %}" role="button">Create New Event</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+
+            <div style="overflow-x: scroll">
+                {% for event in object_list %}
+                <div class="card bg-success text-white" style="width:25%;">
+                    <div class="card-body">
+                        <h4 class="card-title">Title: {{event.label}}</h4>
+                        <h5>Description:</h5>
+                        <p class="card-text">{{event.description}}</p>
+                        <hr />
+                        <h5>Participants:</h5>
+                        <ul>
+                            {% for p in event.participants.all %}
+                            <li>{{p}}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="btn-group">
+                            <button class="btn">Edit</button>
+                            <button class="btn">Delete</button>
+                            <button class="btn">Complete</button>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endblock content %}

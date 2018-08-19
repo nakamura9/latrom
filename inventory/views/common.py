@@ -76,7 +76,7 @@ class UnitCreateView(InventoryControllerCheckMixin, CreateView):
 class UnitDeleteView(InventoryControllerCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.UnitOfMeasure
-    success_url = reverse_lazy('invoicing.item-list')
+    success_url = reverse_lazy('invoicing.product-list')
 
 class ConfigView(InventoryControllerCheckMixin, UpdateView):
     template_name = os.path.join('inventory', 'config.html')
@@ -88,6 +88,24 @@ class ConfigView(InventoryControllerCheckMixin, UpdateView):
 class CategoryCreateView(InventoryControllerCheckMixin, CreateView):
     form_class = forms.CategoryForm
     model = models.Category
-    success_url = reverse_lazy('inventory:home')
-    template_name = CREATE_TEMPLATE
-    extra_context = {"title": "Category"}
+    success_url = reverse_lazy('inventory:category-list')
+    template_name = os.path.join('inventory', 'category', 'create.html')
+
+class CategoryUpdateView(InventoryControllerCheckMixin, UpdateView):
+    form_class = forms.CategoryForm
+    model = models.Category
+    success_url = reverse_lazy('inventory:category-list')
+    template_name = os.path.join('inventory', 'category','update.html')
+
+class CategoryListView(InventoryControllerCheckMixin, TemplateView):
+    template_name = os.path.join('inventory', 'category', 'list.html')
+
+class CategoryDetailView(InventoryControllerCheckMixin, DetailView):
+    template_name = os.path.join('inventory', 'category', 'detail.html')
+    model = models.Category
+
+class CategoryListAPIView(ListAPIView):
+    serializer_class = serializers.CategorySerializer
+
+    def get_queryset(self):
+        return models.Category.objects.filter(parent=None)

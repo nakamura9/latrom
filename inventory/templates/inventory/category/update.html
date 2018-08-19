@@ -1,0 +1,49 @@
+{% extends "window.html" %} 
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Update category</h1>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            {% block other %}{% endblock %}
+        </div>
+        <div class="col-sm-6">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table class="table">
+                            {{form.as_p}}
+                        </table>
+                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+                <h5>Current Parent Category: {{object.parent}}</h5>
+                <button class="btn" onclick="displayParentChangeView()">Change</button>
+                <script>
+                    $(document).ready(function(){
+                        $('#category-select-widget').hide();
+                    });
+                    function displayParentChangeView(){
+                        $('#category-select-widget').show();
+                    }
+                </script>
+                <div id="category-select-widget">
+                    </div>
+        </div>
+    </div>
+
+</div>
+{% render_bundle "widgets" %}
+{% endblock %}

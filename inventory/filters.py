@@ -4,12 +4,12 @@ from models import *
 import django_filters
 from django.db import models
 
-class ItemFilter(django_filters.FilterSet):
+class ProductFilter(django_filters.FilterSet):
     
     class Meta:
-        model = Item
+        model = Product
         fields = {
-            'item_name': ['icontains'],
+            'name': ['icontains'],
             'unit': ['exact'],
             'supplier': ['exact'],
             'category': ['exact'],

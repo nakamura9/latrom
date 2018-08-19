@@ -10,8 +10,8 @@ from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from invoicing import forms
 
-from common_data.utilities import ExtraContext, apply_style
-from inventory.models import Item
+from common_data.utilities import ExtraContext, ConfigMixin, apply_style
+from inventory.models import Product
 from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers
@@ -24,8 +24,6 @@ from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 
 def process_data(data, inv):
-    print 'data'
-    print data
     items = json.loads(urllib.unquote(data))
     for item in items:
         inv.add_line(item['pk'])
@@ -56,17 +54,13 @@ class BillListView(SalesRepCheckMixin, ExtraContext, FilterView):
         return Bill.objects.filter(active=True).order_by('date')
     
 
-class BillDetailView(SalesRepCheckMixin, DetailView):
+class BillDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     model = Bill
     template_name = os.path.join("invoicing", "bill",
         'detail.html')
-    def get_context_data(self, *args, **kwargs):
-        context = super(BillDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        return apply_style(context)
 
         
-class BillCreateView(SalesRepCheckMixin, CreateView):
+class BillCreateView(SalesRepCheckMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -85,8 +79,6 @@ class BillCreateView(SalesRepCheckMixin, CreateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(BillCreateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
         context.update({'include_customer': True})
         return context
 
@@ -99,7 +91,7 @@ class BillCreateView(SalesRepCheckMixin, CreateView):
         process_data(data, inv)
         return resp
 
-class BillDraftUpdateView(SalesRepCheckMixin, UpdateView):
+class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -116,13 +108,6 @@ class BillDraftUpdateView(SalesRepCheckMixin, UpdateView):
             'terms': config.default_terms,
             'comments': config.default_invoice_comments
         }
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(BillDraftUpdateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(BillDraftUpdateView, self).post(request, *args, **kwargs)
@@ -189,15 +174,14 @@ class BillPaymentDetailView(ListView):
         return context
 
 
-class BillPDFView(PDFTemplateView):
+class BillPDFView(ConfigMixin, PDFTemplateView):
     template_name = os.path.join("invoicing", "bill",
         'pdf.html')
     file_name = 'bill.pdf'
     def get_context_data(self, *args, **kwargs):
         context = super(BillPDFView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['object'] = Bill.objects.get(pk=self.kwargs['pk'])
-        return apply_style(context)
+        return context
 
 class BillEmailSendView(ExtraContext, FormView):
     form_class = SendMailForm

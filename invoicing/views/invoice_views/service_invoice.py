@@ -16,7 +16,7 @@ from common_data.models import GlobalConfig
 from django.core.mail import EmailMessage
 from rest_framework import viewsets
 
-from common_data.utilities import ExtraContext, apply_style
+from common_data.utilities import ExtraContext, ConfigMixin, apply_style
 from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers
@@ -29,7 +29,6 @@ from common_data.forms import SendMailForm
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.unquote(items))
-        print items
         for item in items:
             inv.add_line(item['id'], item['hours'])
                 
@@ -60,14 +59,10 @@ class ServiceInvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
         return ServiceInvoice.objects.filter(active=True).order_by('date')
     
 
-class ServiceInvoiceDetailView(SalesRepCheckMixin, DetailView):
+class ServiceInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     model = ServiceInvoice
     template_name = os.path.join("invoicing", "service_invoice",
         'detail.html')
-    def get_context_data(self, *args, **kwargs):
-        context = super(ServiceInvoiceDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        return apply_style(context)
 
 class ServiceInvoiceUpdateView(ExtraContext, UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
@@ -77,7 +72,7 @@ class ServiceInvoiceUpdateView(ExtraContext, UpdateView):
     extra_context = {
         'title': 'Update Service Invoice'
     }
-class ServiceInvoiceCreateView(SalesRepCheckMixin, CreateView):
+class ServiceInvoiceCreateView(SalesRepCheckMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -95,11 +90,6 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, CreateView):
             'comments': config.default_invoice_comments
         }
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(ServiceInvoiceCreateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(ServiceInvoiceCreateView, self).post(request, *args, **kwargs)
@@ -115,7 +105,7 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, CreateView):
         return resp
 
 
-class ServiceDraftUpdateView(SalesRepCheckMixin, UpdateView):
+class ServiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -127,11 +117,6 @@ class ServiceDraftUpdateView(SalesRepCheckMixin, UpdateView):
     success_url = reverse_lazy("invoicing:service-invoice-list")
     model = ServiceInvoice
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(ServiceDraftUpdateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(ServiceDraftUpdateView, self).post(request, *args, **kwargs)
@@ -183,15 +168,14 @@ class ServiceInvoicePaymentDetailView(ListView):
         return context
 
 
-class ServiceInvoicePDFView(PDFTemplateView):
+class ServiceInvoicePDFView(ConfigMixin, PDFTemplateView):
     template_name = os.path.join("invoicing", "service_invoice",
         'pdf.html')
     file_name = 'service_invoice.pdf'
     def get_context_data(self, *args, **kwargs):
         context = super(ServiceInvoicePDFView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['object'] = ServiceInvoice.objects.get(pk=self.kwargs['pk'])
-        return apply_style(context)
+        return context
 
 class ServiceInvoiceEmailSendView(ExtraContext, FormView):
     form_class = SendMailForm

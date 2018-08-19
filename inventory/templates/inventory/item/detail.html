@@ -4,7 +4,7 @@
     <p class="lead">Information concerning stock items. </p>
     <hr class="my-2">
     <p class="lead">
-        <a class="btn btn-success btn-lg" href="{% url 'inventory:item-update' pk=item.pk %}" role="button">Edit</a>
+        <a class="btn btn-success btn-lg" href="{% url 'inventory:product-update' pk=object.pk %}" role="button">Edit</a>
     </p>
 </div>
 
@@ -26,8 +26,8 @@
                         <h4 class="card-title">Basic Information</h4>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">Name: {{object.item_name}}</p>
-                        <p class="card-text">Code: {{object.code}}</p>
+                        <p class="card-text">Name: {{object.name}}</p>
+                        <p class="card-text">Code: {{object.id}}</p>
                         <p class="card-text">Category: {{object.category}}</p>
                         <p class="card-text">Description: {{object.description}}</p>
                     </div>
@@ -53,7 +53,7 @@
                         <h4 class="card-title">Supplier Information</h4>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">Name: {{object.supplier.name}}</p>
+                        <p class="card-text">Name: {{object.supplier}}</p>
                         <p class="card-text">Address: {{object.supplier.physical_address}}</p>
                     </div>
                 </div>

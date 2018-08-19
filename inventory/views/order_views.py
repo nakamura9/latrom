@@ -37,7 +37,38 @@ class OrderAPIView(ModelViewSet):
     serializer_class = serializers.OrderSerializer
 
 
-class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView):
+class OrderPOSTMixin(object):
+    def post(self, request, *args, **kwargs):
+        update_flag = self.get_object()
+        resp = super(OrderPOSTMixin, self).post(request, *args, **kwargs)
+        items = json.loads(urllib.unquote(request.POST["items"]))
+        if not self.object:
+           return resp
+
+        order = self.object
+        if update_flag:
+            for i in self.object.orderitem_set.all():
+                i.delete()
+
+        for data in items:
+            order.orderitem_set.create(
+                product=models.Product.objects.get(
+                    pk=data['pk']),
+                    quantity=data['quantity'],
+                    order_price=data['order_price'])   
+        
+        #create transaction after loading all the items
+        #vary based on order status
+        
+        if not update_flag: 
+            if order.type_of_order == 0:#cash
+                order.create_immediate_entry()
+            elif order.type_of_order == 1:
+                order.create_deffered_entry()
+
+        return resp        
+
+class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, OrderPOSTMixin, CreateView):
     '''The front end page combines with react to create a dynamic
     table for entering items in the form.
     The two systems communicate of json encoded strings 
@@ -56,57 +87,21 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView):
             'form': forms.SupplierForm
         }),
         Modal(**{
-            'title': 'Quick Item',
-            'action': reverse_lazy('inventory:item-create'),
-            'form': forms.QuickItemForm
+            'title': 'Quick Product',
+            'action': reverse_lazy('inventory:product-create'),
+            'form': forms.QuickProductForm
         })]}
 
-    def post(self, request, *args, **kwargs):
-        resp = super(OrderCreateView, self).post(request, *args, **kwargs)
-        items = json.loads(urllib.unquote(request.POST["items"]))
-        print items
-        if not self.object:
-           return resp
-
-        order = self.object
-            
-        for data in items:
-            order.orderitem_set.create(
-                item=models.Item.objects.get(
-                    pk=data['pk']),
-                    quantity=data['quantity'],
-                    order_price=data['order_price'])   
-        
-        #create transaction after loading all the items
-        if order.type_of_order == 0:#cash
-            order.create_immediate_entry()
-        elif order.type_of_order == 1:
-            order.create_deffered_entry()
-
-        return resp
+    
 
 
-class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext, UpdateView):
+class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext, 
+        OrderPOSTMixin,UpdateView):
     form_class = forms.OrderForm
     model = models.Order
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("inventory", "order", "update.html")
     extra_context = {"title": "Update Existing Purchase Order"}
-
-    def post(self, request, *args, **kwargs):
-        resp = super(OrderUpdateView, self).post(request, *args, **kwargs)
-        items = json.loads(urllib.unquote(request.POST["items"]))
-        order = self.object
-        print items
-        for data in items:
-            order.orderitem_set.create(
-                item=models.Item.objects.get(
-                    pk=data['pk']),
-                    quantity=data['quantity'],
-                    order_price=data['order_price'])
-
-        #create adjustment transaction if the amount changes
-        return resp
 
 
 class OrderListView(InventoryControllerCheckMixin, ExtraContext, FilterView):
@@ -131,17 +126,13 @@ class OrderDeleteView(InventoryControllerCheckMixin, DeleteView):
     success_url = reverse_lazy('inventory:order-list')
 
 
-class OrderDetailView(InventoryControllerCheckMixin, ExtraContext, DetailView):
+class OrderDetailView(InventoryControllerCheckMixin, ExtraContext, 
+        ConfigMixin, DetailView):
     model = models.Order
     template_name = os.path.join('inventory', 'order', 'detail.html')
     extra_context = {
         'title': 'Purchase Order',
     }
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(OrderDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        return apply_style(context)
 
 
 class OrderItemAPIView(ModelViewSet):
@@ -150,15 +141,14 @@ class OrderItemAPIView(ModelViewSet):
 
 
 #pdf and email
-class OrderPDFView(PDFTemplateView):
+class OrderPDFView(ConfigMixin, PDFTemplateView):
     template_name = os.path.join("inventory", "order",
         'pdf.html')
     file_name = 'order.pdf'
     def get_context_data(self, *args, **kwargs):
         context = super(OrderPDFView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['object'] = models.Order.objects.get(pk=self.kwargs['pk'])
-        return apply_style(context)
+        return context
 
 class OrderEmailSendView(ExtraContext, FormView):
     form_class = SendMailForm

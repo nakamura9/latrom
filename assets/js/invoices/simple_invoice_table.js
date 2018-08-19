@@ -136,7 +136,7 @@ class InvoiceTable extends Component{
                         fields={["quantity", "description","price", 'discount',]} 
                         removeHandler={this.removeItem.bind(this)}
                         subtotalHandler={this.subtotalHandler}/>    
-                    <EntryRow url="/inventory/api/item" 
+                    <EntryRow url="/inventory/api/product" 
                             addItem={this.addItem.bind(this)}
                             contents={this.state.items}
                             tax_rate={this.state.tax_rate}
@@ -193,7 +193,7 @@ class EntryRow extends Component {
             var decomposed = value.split('-');
             var pk = decomposed[0];
             $.ajax({
-                url: '/inventory/api/item/' + pk,
+                url: '/inventory/api/product/' + pk,
                 method:'get'
             }).then(res => {
             this.setState({curr_item: res})

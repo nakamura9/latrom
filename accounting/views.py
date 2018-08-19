@@ -19,7 +19,7 @@ import serializers
 import models 
 import filters
 import forms
-from inventory.models import Item
+from inventory.models import Product
 from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
 
 class BookkeeperCheckMixin(UserPassesTestMixin):
@@ -239,13 +239,14 @@ class NonInvoicedCashSale(BookkeeperCheckMixin, FormView):
             for item in request.POST.getlist('items[]'):
                 data = json.loads(urllib.unquote(item))
                 quantity = float(data['quantity'])
-                item = Item.objects.get(pk=data['code'])
+                #item-fix
+                product = Product.objects.get(pk=data['id'])
                 #update inventory
                 warehouse =form.cleaned_data['sold_from']
-                if warehouse.has_item(item):
-                    warehouse.decrement_item(item, quantity)
+                if warehouse.has_item(product):
+                    warehouse.decrement_item(product, quantity)
                 
-                amount_sold = item.unit_sales_price * decimal.Decimal(quantity) 
+                amount_sold = product.unit_sales_price * decimal.Decimal(quantity) 
                 discount = amount_sold * decimal.Decimal(float(data['discount']) / 100.0)
                 total += amount_sold - discount
                 # record discounts in accounts

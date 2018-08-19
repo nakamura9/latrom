@@ -1,0 +1,31 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Create New Storage Medium</h1>
+    <p class="lead">Use storage media to compartmentalize inventory storage according to its physical location within a warehouse</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Storage Medium Form</h4>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <p>Parent Storage Medium</p>
+                        <div id="storage-media-select-widget"></div>
+                    <button class="btn">Submit</button>
+                    </form>    
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+{% render_bundle 'widgets' %}
+{% endblock %}

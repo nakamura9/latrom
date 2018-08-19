@@ -32,8 +32,8 @@ export default class OrderTable extends Component{
             }).then(res => {
                 let newContents = res.data.orderitem_set.map((item, i) =>{
                     return({
-                        pk: item.item.code,
-                        name: item.item.item_name,
+                        pk: item.product.id,
+                        name: item.product.name,
                         quantity: item.quantity,
                         order_price: item.order_price,
                         subtotal: item.order_price * item.quantity
@@ -103,17 +103,11 @@ export default class OrderTable extends Component{
                 <tbody>
                     {this.state.contents.map((item, i) =>{
                         return(
-                            <tr key={i}>
-                                <td>
-                                    <DeleteButton 
-                                        handler={this.removeHandler}
-                                        index={i}/>
-                                </td>
-                                <td>{item.name}</td>
-                                <td>{item.quantity}</td>
-                                <td>{item.order_price}</td>
-                                <td>{item.subtotal}</td>
-                            </tr>
+                            <OrderLine 
+                                key={i}
+                                data={item}
+                                handler={this.removeHandler}
+                                index={i}/>
                         )
                     })}
                 <OrderTableEntry 
@@ -129,6 +123,22 @@ export default class OrderTable extends Component{
             </table>
         )
     }
+}
+
+const OrderLine = (props) =>{
+    return(
+        <tr >
+            <td>
+                <DeleteButton 
+                    handler={props.handler}
+                    index={props.index}/>
+            </td>
+            <td>{props.data.name}</td>
+            <td>{props.data.quantity}</td>
+            <td>{parseFloat(props.data.order_price).toFixed(2)}</td>
+            <td>{props.data.subtotal.toFixed(2)}</td>
+        </tr>
+    );
 }
 
 class OrderTableEntry extends Component{
@@ -148,7 +158,6 @@ class OrderTableEntry extends Component{
         var value = event.target.value;
         var newVals = {...this.state.inputs};
         newVals[name] = value;
-        console.log(newVals);
         this.setState({inputs: newVals});
     }
 
@@ -175,25 +184,27 @@ class OrderTableEntry extends Component{
                 <tr>
                     <td colSpan={2}>
                         <SearchableWidget 
-                            dataURL="/inventory/api/item"
-                            idField="code"
-                            displayField="item_name"
+                            dataURL="/inventory/api/product"
+                            idField="id"
+                            displayField="name"
                             onSelect={this.onSearchableSelect}
                             onClear={this.onSearchableClear}/>
                     </td>
                     <td>
                         <input 
                             name="quantity"
-                            type="text"
+                            type="number"
                             className="form-control"
-                            onChange={this.inputHandler}/>
+                            onChange={this.inputHandler}
+                            value={this.state.inputs.quantity}/>
                     </td>
                     <td>
                         <input 
                             name="order_price"
-                            type="text"
+                            type="number"
                             className="form-control"
-                            onChange={this.inputHandler}/>
+                            onChange={this.inputHandler}
+                            value={this.state.inputs.order_price}/>
                     </td>
                     <td>
                     <button type="button" 

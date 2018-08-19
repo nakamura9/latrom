@@ -10,7 +10,8 @@ module.exports = {
         invoicing: './js/invoicing',
         employees: './js/employees',
         inventory: './js/inventory',
-        calendar: './js/calendar'
+        calendar: './js/calendar',
+        widgets: './js/widgets'
     },
     output: {
         path: path.resolve('./bundles/'),

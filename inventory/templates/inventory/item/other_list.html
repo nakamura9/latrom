@@ -14,7 +14,7 @@
         <div class="card-body">
             <ul class="list-group">
                 <li class="list-group-item">
-                    <a href="{% url 'inventory:item-create' %}">Create New Item</a>
+                    <a href="{% url 'inventory:product-create' %}">Create New Item</a>
                 </li>
                 <li class="list-group-item">
                     <a href="{% url 'inventory:warehouse-list' %}">WareHouse List</a>
@@ -113,13 +113,13 @@
                 Actions
             </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
-                <a class="dropdown-item" href="{% url 'inventory:item-detail'  pk=item.pk  %}">
+                <a class="dropdown-item" href="{% url 'inventory:product-detail'  pk=item.pk  %}">
                     <i class="fas fa-eye"></i> Detail
                 </a>
-                <a class="dropdown-item" href="{% url 'inventory:item-update'  pk=item.pk  %}">
+                <a class="dropdown-item" href="{% url 'inventory:product-update'  pk=item.pk  %}">
                     <i class="fas fa-file"></i> Update
                 </a>
-                <a class="dropdown-item" href="{% url 'inventory:item-delete' pk=item.pk %}">
+                <a class="dropdown-item" href="{% url 'inventory:product-delete' pk=item.pk %}">
                     <i class="fas fa-trash"></i> Delete
                 </a>
 

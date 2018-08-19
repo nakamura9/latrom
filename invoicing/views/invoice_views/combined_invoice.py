@@ -11,8 +11,8 @@ from django.urls import reverse_lazy
 from invoicing import forms
 from rest_framework import viewsets
 
-from common_data.utilities import ExtraContext, apply_style
-from inventory.models import Item
+from common_data.utilities import ExtraContext, ConfigMixin, apply_style
+from inventory.models import Product
 from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers
@@ -28,7 +28,6 @@ from django.core.mail import EmailMessage
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.unquote(items))
-        print items
         for item in items:
             inv.add_line(item)
             
@@ -60,17 +59,13 @@ class CombinedInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CombinedInvoiceSerializer
     queryset = CombinedInvoice.objects.all()
 
-class CombinedInvoiceDetailView(SalesRepCheckMixin, DetailView):
+class CombinedInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     model = CombinedInvoice
     template_name = os.path.join("invoicing", "combined_invoice",
         'detail.html')
-    def get_context_data(self, *args, **kwargs):
-        context = super(CombinedInvoiceDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        return apply_style(context)
 
         
-class CombinedInvoiceCreateView(SalesRepCheckMixin, CreateView):
+class CombinedInvoiceCreateView(SalesRepCheckMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -83,17 +78,11 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, CreateView):
 
     def get_initial(self):
         config = SalesConfig.objects.first()
-        print 'init'
         return {
             'terms': config.default_terms,
             'comments': config.default_invoice_comments
         }
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(CombinedInvoiceCreateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(CombinedInvoiceCreateView, self).post(request, *args, **kwargs)
@@ -116,7 +105,7 @@ class CombinedInvoiceUpdateView(ExtraContext, UpdateView):
         'title': 'Update Combined Invoice'
     }
 
-class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, UpdateView):
+class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -127,12 +116,6 @@ class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, UpdateView):
     form_class = forms.CombinedInvoiceForm
     success_url = reverse_lazy("invoicing:combined-invoice-list")
     model = CombinedInvoice
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(CombinedInvoiceDraftUpdateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(CombinedInvoiceDraftUpdateView, self).post(request, *args, **kwargs)
@@ -184,15 +167,14 @@ class CombinedInvoicePaymentDetailView(ListView):
         return context
 
 
-class CombinedInvoicePDFView(PDFTemplateView):
+class CombinedInvoicePDFView(ConfigMixin, PDFTemplateView):
     template_name = os.path.join("invoicing", "combined_invoice",
         'pdf.html')
     file_name = 'combined_invoice.pdf'
     def get_context_data(self, *args, **kwargs):
         context = super(CombinedInvoicePDFView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['object'] = CombinedInvoice.objects.get(pk=self.kwargs['pk'])
-        return apply_style(context)
+        return context
 
 class CombinedInvoiceEmailSendView(ExtraContext, FormView):
     form_class = SendMailForm

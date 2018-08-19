@@ -1,0 +1,35 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info">Date</td>
+    <td class="info">Title</td>
+    <td class="info">Number of Participants</td>
+    <td class="info">Actions</td>
+</tr>
+{% endblock %} 
+{% block list_content %} 
+{% for event in object_list %}
+<tr>
+    <td>{{event.date}}</td>
+    <td>{{event.label}}</td>
+    <td>{{event.participants.all.count}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'planner:event-detail' pk=event.id %}">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                <a class="dropdown-item" href="{% url 'planner:event-update' pk=event.id %}">
+                    <i class="fas fa-file"></i> Update
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+
+            </div>
+        </div>
+</tr>
+{% endfor %} {% endblock %}

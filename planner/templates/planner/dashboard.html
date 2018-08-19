@@ -1,0 +1,59 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Event Planner</h1>
+    <p class="lead">Manage and review events related to business tasks as well a schedule events for future dates.</p>
+    <hr class="my-2">
+    <p>Quick Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="Jumbo action link" role="button">Create New Event</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body bg-primary text-white">
+                        <h4 class="card-title">Calendar</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'planner:calendar' %}">View Calendar</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'planner:agenda' %}">View Agenda</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h4 class="card-title">Events</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'planner:event-create' %}">Create Event</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'planner:event-list' %}">Manage Events</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h4 class="card-title">Configuration</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'planner:config' pk=1 %}">Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

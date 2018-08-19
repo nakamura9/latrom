@@ -1,17 +1,17 @@
 from rest_framework import serializers
 from models import *
 
-class ItemSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Item
+        model = Product
         fields = ['unit_sales_price', 'unit_purchase_price', 'quantity',
-            'code', 'item_name', 'description']
+            'id', 'name', 'description']
 
 class WareHouseItemSerializer(serializers.ModelSerializer):
-    item = ItemSerializer(many=False)
+    product = ProductSerializer(many=False)
     class Meta:
         model = WareHouseItem
-        fields = "__all__"
+        fields = ['product', 'name', 'id', 'quantity', 'warehouse', 'location']
 
 
 class WareHouseSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class WareHouseSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    item = ItemSerializer(many=False)
+    product = ProductSerializer(many=False)
     class Meta:
         fields = "__all__"
         model = OrderItem
@@ -36,3 +36,27 @@ class StockAdjustmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockAdjustment
         fields = "__all__"
+
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+class CategorySerializer(serializers.ModelSerializer):
+    children = RecursiveField(many=True)
+    class Meta:
+        model = Category
+        fields = "__all__"
+
+
+class StorageMediaSerializer(serializers.ModelSerializer):
+    children = RecursiveField(many=True)
+    class Meta:
+        model = StorageMedia
+        #fields = "__all__"
+        exclude = "location",
+
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = ['id', 'name']

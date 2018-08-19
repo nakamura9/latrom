@@ -9,7 +9,7 @@ const event = (props) =>{
         }
     let style = {
         margin: '2px',
-        padding: '2px',
+        padding: '5px',
         color: 'white',
         backgroundColor: 'slateblue'
     };
@@ -17,7 +17,7 @@ const event = (props) =>{
         <div style={style}>
             <div>
                 <i className={"fas fa-" + props.data.icon}></i>
-                <span>{props.data.label}</span>
+                <span style={{margin: "0px 5px"}}>{props.data.label}</span>
             </div>
             {description}
         </div>

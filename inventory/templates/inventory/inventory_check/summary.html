@@ -63,7 +63,7 @@
                 <tbody>
                     {% for sa in object.adjustments %}
                     <tr>
-                        <td>{{sa.warehouse_item.item.item_name}}</td>
+                        <td>{{sa.warehouse_item.product.name}}</td>
                         <td>{{sa.prev_quantity}}</td>
                         <td>{{sa.warehouse_item.quantity}}</td>
                         <td>{{sa.adjustment}}</td>

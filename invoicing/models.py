@@ -53,10 +53,7 @@ class SalesConfig(SingletonModel):
     @classmethod
     def logo_url(cls):
         conf = cls.objects.first()
-        print conf
-
         if conf.logo:
-            print conf.logo.url
             return conf.logo.url
         return ""
 
@@ -240,12 +237,11 @@ class SalesInvoice(AbstractSale):
     ship_from = models.ForeignKey('inventory.WareHouse',
          default=DEFAULT_WAREHOUSE)
 
-    def add_item(self, item, quantity):
-        print quantity
+    def add_product(self, product, quantity):
         self.salesinvoiceline_set.create(
-            item=item, 
+            product=product, 
             quantity=quantity,
-            price=item.unit_sales_price,
+            price=product.unit_sales_price,
             invoice=self
         )
 
@@ -262,8 +258,8 @@ class SalesInvoice(AbstractSale):
     def update_inventory(self):
         #called in views.py
         for line in self.salesinvoiceline_set.all():
-            #check if ship_from has the item in sufficient quantity
-             self.ship_from.decrement_item(line.item, line.quantity)
+            #check if ship_from has the product in sufficient quantity
+             self.ship_from.decrement_product(line.product, line.quantity)
 
     def create_cash_entry(self):
         j = JournalEntry.objects.create(
@@ -294,7 +290,7 @@ class SalesInvoice(AbstractSale):
 
 class SalesInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.SalesInvoice')
-    item = models.ForeignKey("inventory.Item")
+    product = models.ForeignKey("inventory.Product")
     quantity = models.FloatField(default=0.0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
@@ -313,13 +309,13 @@ class SalesInvoiceLine(models.Model):
     @property
     def returned_value(self):
         if self.price == D(0.0):
-            return self.item.unit_sales_price * D(self.returned_quantity)
+            return self.product.unit_sales_price * D(self.returned_quantity)
         return self.price * D(self.returned_quantity)
 
     def save(self, *args, **kwargs):
         super(SalesInvoiceLine, self).save(*args, **kwargs)
-        if self.price == 0.0 and self.item.unit_sales_price != D(0.0):
-            self.price = self.item.unit_sales_price
+        if self.price == 0.0 and self.product.unit_sales_price != D(0.0):
+            self.price = self.product.unit_sales_price
             self.save()
 
     
@@ -399,12 +395,12 @@ class CombinedInvoice(AbstractSale):
     that combines the features of sales, services and bills'''
     def add_line(self, data):
         if data['lineType'] == 'sale':
-            pk, name = data['data']['item'].split('-')
-            item = inventory.models.Item.objects.get(pk=pk)
+            pk, name = data['data']['product'].split('-')
+            product = inventory.models.Product.objects.get(pk=pk)
             self.combinedinvoiceline_set.create(
-                line_type=1,#item
+                line_type=1,#product
                 quantity_or_hours= data['data']['quantity'],
-                item=item
+                product=product
             )
         
         elif data['lineType'] == 'service':
@@ -431,14 +427,14 @@ class CombinedInvoice(AbstractSale):
 
 class CombinedInvoiceLine(models.Model):
     LINE_CHOICES = [
-        (1, 'item'),
+        (1, 'product'),
         (2, 'service'),
         (3, 'expense'),
     ]
     invoice = models.ForeignKey('invoicing.CombinedInvoice', default=1)
     expense = models.ForeignKey('accounting.Expense', null=True)
     service = models.ForeignKey('services.Service', null=True)
-    item = models.ForeignKey("inventory.Item", null=True)
+    product = models.ForeignKey("inventory.Product", null=True)
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
     quantity_or_hours = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
 
@@ -446,9 +442,9 @@ class CombinedInvoiceLine(models.Model):
         if self.line_type == 1:
             return '[ITEM] {} x {} @ ${}{}'.format(
                 self.quantity_or_hours,
-                str(self.item).split('-')[1],
-                self.item.unit_sales_price,
-                self.item.unit
+                str(self.product).split('-')[1],
+                self.product.unit_sales_price,
+                self.product.unit
             )
         elif self.line_type == 2:
             return '[SERVICE] {} Flat fee: ${} + {}Hrs @ ${}/Hr'.format(
@@ -463,7 +459,7 @@ class CombinedInvoiceLine(models.Model):
     @property
     def subtotal(self):
         if self.line_type == 1:
-            return self.item.unit_sales_price * self.quantity_or_hours
+            return self.product.unit_sales_price * self.quantity_or_hours
         elif self.line_type == 2:
             return self.service.flat_fee + \
                  (self.service.hourly_rate * self.quantity_or_hours)
@@ -505,12 +501,12 @@ class SalesRepresentative(models.Model):
 class CreditNote(models.Model):
     """A document sent by a seller to a customer notifying them
     that a credit has been made to their account against goods returned
-    by the buyer. Linked to invoices. Stores a list of items returned.
+    by the buyer. Linked to invoices. Stores a list of products returned.
     
     properties
     -----------
-    returned_items - returns a queryset of all returned items for an invoice
-    returned_total - returns the numerical value of the items returned.
+    returned_products - returns a queryset of all returned products for an invoice
+    returned_total - returns the numerical value of the products returned.
     
     methods
     -----------
@@ -524,12 +520,12 @@ class CreditNote(models.Model):
     comments = models.TextField()
 
     @property
-    def returned_items(self):
+    def returned_products(self):
         return self.invoice.salesinvoiceline_set.filter(returned=True)
         
     @property
     def returned_total(self):
-        return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_items], 0)
+        return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_products], 0)
 
     def create_entry(self):
         j = JournalEntry.objects.create(

@@ -12,8 +12,8 @@ from rest_framework import viewsets
 from django.core.mail import EmailMessage
 
 from invoicing import forms
-from common_data.utilities import ExtraContext, apply_style
-from inventory.models import Item
+from common_data.utilities import ExtraContext, ConfigMixin, apply_style
+from inventory.models import Product
 from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers
@@ -25,13 +25,11 @@ from common_data.models import GlobalConfig
 
 def process_data(items, inv):
     if items:
-        print items
         items = json.loads(urllib.unquote(items))
-        print items
         for item in items:
 
-            pk, name = item['item_name'].split('-')
-            inv.add_item(Item.objects.get(pk=pk), 
+            pk, name = item['name'].split('-')
+            inv.add_item(Product.objects.get(pk=pk), 
                 item['quantity'])
     
     # moved here because the invoice item data must first be 
@@ -61,18 +59,17 @@ class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
         return SalesInvoice.objects.filter(active=True).order_by('date')
     
 
-class SalesInvoiceDetailView(SalesRepCheckMixin, DetailView):
+class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     model = SalesInvoice
     template_name = os.path.join("invoicing", "sales_invoice",
         'detail.html')
     def get_context_data(self, *args, **kwargs):
         context = super(SalesInvoiceDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = context.get('invoice_title', "Invoice")
-        return apply_style(context)
+        return context
 
         
-class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
+class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -93,11 +90,6 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
             'comments': config.default_invoice_comments
         }
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(SalesInvoiceCreateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(SalesInvoiceCreateView, self).post(request, *args, **kwargs)
@@ -112,17 +104,11 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
         return resp
 
 
-class SalesDraftUpdateView(UpdateView):
+class SalesDraftUpdateView(ConfigMixin, UpdateView):
     model = SalesInvoice
     form_class = forms.SalesInvoiceForm
     template_name = os.path.join('invoicing', 'sales_invoice','create.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(SalesDraftUpdateView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
-        apply_style(context)
-        return context
 
     def post(self, request, *args, **kwargs):
         resp = super(SalesDraftUpdateView, self).post(request, *args, **kwargs)
@@ -207,15 +193,14 @@ class SalesInvoiceReturnsDetailView(ListView):
         return context
 
 
-class SalesInvoicePDFView(PDFTemplateView):
+class SalesInvoicePDFView(ConfigMixin, PDFTemplateView):
     template_name = os.path.join("invoicing", "sales_invoice",
         'pdf.html')
     file_name = 'sales_invoice.pdf'
     def get_context_data(self, *args, **kwargs):
         context = super(SalesInvoicePDFView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['object'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
-        return apply_style(context)
+        return context
 
 class SalesInvoiceEmailSendView(ExtraContext, FormView):
     form_class = SendMailForm

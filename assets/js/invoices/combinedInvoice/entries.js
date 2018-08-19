@@ -33,7 +33,7 @@ const ProductEntry = (props) => {
         <div>
             <div style={{...inlineStyles, width:"70%"}}>
                 <SearchableWidget 
-                    dataURL="/inventory/api/item/"
+                    dataURL="/inventory/api/product/"
                     displayField="item_name"
                     idField="code"
                     onSelect={props.onSelect}

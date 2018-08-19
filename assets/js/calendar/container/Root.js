@@ -16,6 +16,13 @@ export default class CalendarRoot extends Component{
         this.setData();
     }
 
+    daySelectHandler = (date) =>{
+
+        this.setState({
+            view: 'day',
+            current: 0
+        });
+    }
     componentDidUpdate(prevProps, prevState){
         if( this.state.nextView !== prevState.nextView || 
             this.state.current !== prevState.current){
@@ -24,7 +31,7 @@ export default class CalendarRoot extends Component{
     }
     
     setData = () =>{
-        axios.get('/base/api/calendar',{
+        axios.get('/planner/api/calendar',{
             params: {
                 view: this.state.nextView,
                 current: this.state.current

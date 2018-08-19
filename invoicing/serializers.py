@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import *
-from inventory.serializers import ItemSerializer
+from inventory.serializers import ProductSerializer
 from accounting.serializers import TaxSerializer, ExpenseSerializer
 from services.serializers import ServiceSerializer
 
@@ -12,9 +12,10 @@ class SalesRepsSerializer(serializers.ModelSerializer):
     
 class CustomerSerializer(serializers.ModelSerializer):
     expense_set = ExpenseSerializer(many=True)
+
     class Meta:
         model = Customer
-        fields = "__all__"
+        fields = ['name', 'id', 'expense_set', 'organization', 'individual', 'account', 'billing_address', 'banking_details']
     
 
 
@@ -25,10 +26,10 @@ class ConfigSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class SalesInvoiceLineSerializer(serializers.ModelSerializer):
-    item = ItemSerializer(many=False)
+    product = ProductSerializer(many=False)
     class Meta:
         model = SalesInvoiceLine
-        fields = ['item', 'quantity', 'id']
+        fields = ['product', 'quantity', 'id']
 
 
 class SalesInvoiceSerializer(serializers.ModelSerializer):
@@ -66,7 +67,7 @@ class BillSerializer(serializers.ModelSerializer):
 
 class CombinedInvoiceLineSerializer(serializers.ModelSerializer):
     expense = ExpenseSerializer(many=False)
-    item = ItemSerializer(many=False)
+    product = ProductSerializer(many=False)
     service = ServiceSerializer(many=False)
     class Meta:
         model = CombinedInvoiceLine

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'employees',
     'accounting',
     'services',
+    'planner',
     'django_filters',
     'crispy_forms',
     'autofixture',

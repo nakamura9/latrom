@@ -352,7 +352,6 @@ class PayrollTax(models.Model):
         return 0
 
     def get_bracket(self, gross):
-        print gross
         for bracket in self.taxbracket_set.all():
             if bracket.lower_boundary <= gross and \
                     bracket.upper_boundary >= gross:

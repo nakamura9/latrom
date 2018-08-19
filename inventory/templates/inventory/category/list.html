@@ -1,0 +1,31 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Manage Categories</h1>
+    <p class="lead">Manage Labels used to organize inventory </p>
+    <hr class="my-2">
+    <p>Visualize Categories of inventory in the tree hierarchy in they exist in </p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:category-create' %}" role="button">Create New</a>
+    </p>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Categories</h4>
+                        <div id="category-tree-view"></div>
+                        <a href="" id="id_category_detail" class="btn btn-primary">View Detail</a>
+                        <a href="" id="id_category_update" class="btn btn-primary">Edit</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
+        </div>
+    </div>
+</div>
+{% render_bundle "widgets" %}
+{% endblock content %}

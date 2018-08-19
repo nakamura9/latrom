@@ -1,0 +1,32 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Update Event</h1>
+    <p class="lead">Provide Additional Information for an event</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="" role="button">Complete</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button class="btn">Submit</button>
+            </form>
+        </div>
+        <div class="col-sm-6">
+            <div id="participant-select">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% render_bundle 'calendar' %}
+{% endblock %}

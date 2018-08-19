@@ -23,7 +23,7 @@ class ScrappingTable extends Component{
         let newLines = [...this.state.lines];
         //get value data
         axios({
-            url: '/inventory/api/item/' + data.pk,
+            url: '/inventory/api/product/' + data.pk,
             method: 'GET'
         }).then( res =>{
             let total = res.data.unit_sales_price * data.quantity
@@ -186,11 +186,11 @@ class ScrappingEntry extends Component{
             <tr>
                 <td colSpan={2}>
                     <SearchableWidget 
-                        dataURL="/inventory/api/item"
-                        displayField="item_name"
+                        dataURL="/inventory/api/product"
+                        displayField="name"
                         onSelect={this.selectHandler}
                         onClear={this.clearHandler}
-                        idField="code"/>
+                        idField="id"/>
                 </td>
                 <td>
                     <input 

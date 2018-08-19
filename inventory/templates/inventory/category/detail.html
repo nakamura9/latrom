@@ -1,0 +1,50 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Category Details</h1>
+    <p class="lead">Information regarding the selected category as well as the objects grouped under it</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:category-update' pk=object.id %}" role="button">Edit Category</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Category Information</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Parent Category: {{object.parent}}</p>
+                    <h6>Description:</h6>
+                    <p class="card-text"></p>{{object.description}}</p>
+                    <p class="card-text">Number of items: {{object.items.count}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Items under Category</h3>
+            <table class="table">
+                <thead >
+                    <tr class="bg-primary">
+                        <th style="width:80%">Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in object.items %}
+                    <tr>
+                        <td>{{i.name}}</td>
+                        <td>{{i.quantity}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

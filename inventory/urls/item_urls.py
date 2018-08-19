@@ -2,18 +2,18 @@ from django.conf.urls import url
 from inventory import views 
 from rest_framework import routers
 
-item_router = routers.DefaultRouter()
-item_router.register(r'^api/item', views.ItemAPIView)
+product_router = routers.DefaultRouter()
+product_router.register(r'^api/product', views.ProductAPIView)
 
-item_urls = [
-    url(r'^item-create/?$', views.ItemCreateView.as_view(), name="item-create"),
-    url(r'^quick-item/?$', views.QuickItemCreateView.as_view(), 
-        name="quick-item"),
-    url(r'^item-list/?$', views.ItemListView.as_view(), name="item-list"),
-    url(r'^item-update/(?P<pk>[\w]+)/?$', views.ItemUpdateView.as_view(), 
-        name="item-update"),
-    url(r'^item-detail/(?P<pk>[\w]+)/?$', views.ItemDetailView.as_view(), 
-        name="item-detail"),
-    url(r'^item-delete/(?P<pk>[\w]+)/?$', views.ItemDeleteView.as_view(), 
-        name="item-delete")
-] + item_router.urls
+product_urls = [
+    url(r'^product-create/?$', views.ProductCreateView.as_view(), name="product-create"),
+    url(r'^quick-product/?$', views.QuickProductCreateView.as_view(), 
+        name="quick-product"),
+    url(r'^product-list/?$', views.ProductListView.as_view(), name="product-list"),
+    url(r'^product-update/(?P<pk>[\w]+)/?$', views.ProductUpdateView.as_view(), 
+        name="product-update"),
+    url(r'^product-detail/(?P<pk>[\w]+)/?$', views.ProductDetailView.as_view(), 
+        name="product-detail"),
+    url(r'^product-delete/(?P<pk>[\w]+)/?$', views.ProductDeleteView.as_view(), 
+        name="product-delete")
+] + product_router.urls

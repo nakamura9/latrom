@@ -1,0 +1,62 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Storage Media Details</h1>
+    <p class="lead">Information regarding the selected storage medium as well as the inventory it contains</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:storage-media-update' pk=object.id %}" role="button">Edit Storage Medium</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Storage Medium Details</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    {% if object.location %}
+                    <p class="card-text">Location: {{object.location}}</p>
+                    {% endif %}
+                    <h6>Description</h6>
+                    <p class="card-text"></p>{{object.description}}</p>
+                    <p class="card-text">Number of items: {{object.contents.count}}</p>
+                    <h6>Dimensions</h6>
+                    <p>Unit: {{object.unit}}</p>
+                    <p>Length: {{object.length}}</p>
+                    <p>Width: {{object.width}}</p>
+                    <p>Height: {{object.height}}</p>
+                    <p>Unit Capacity: {{object.capacity}}</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Inventory Stored in Medium</h3>
+            <table class="table">
+                <thead >
+                    <tr class="bg-primary">
+                        <th>Item Code</th>
+                        <th style="width:80%">Name</th>
+                        <th>Quantity</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in object.contents %}
+                    <tr>
+                        <td>{{i.product.pk}}</td>
+                        <td>{{i.product.name}}</td>
+                        <td>{{i.quantity}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

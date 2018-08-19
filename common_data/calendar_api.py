@@ -5,19 +5,21 @@ from django.http import JsonResponse
 from django.db.models import Q
 from inventory.models import InventoryCheck
 from invoicing.models import AbstractSale
+from l2d import List2D
+import time
 
-'''
-request body
-{
-    'current': int
-    'view': str
-}
-'''
+def reshape(data, shape):
+    i = 0
+    res = []
+    for row in range(shape[0]):
+        res.append(data[i * shape[1]: (1 + i) * shape[1]])
+        i += 1
+    return res
 
 def get_filters(start, end, field="date"):
     lt = field + '__lte'
     gt = field + '__gte'
-    return(Q(Q(lt = end) & Q(gt = start)))
+    return(Q(Q(**{lt: end}) & Q(**{gt: start})))
 
 def get_calendar(request):
     TODAY = datetime.date.today()
@@ -36,6 +38,47 @@ def get_calendar(request):
     }
     return JsonResponse(payload)
 
+def get_month_data(array):
+    '''benchmark later:
+        1. requesting the DB every day
+        2. requesting sorting the data
+        3. requesting without sorting'''
+    now = time.time()
+    l2D = List2D(array)
+    flat = l2D.flatten()
+    shape = l2D.shape
+    events = []
+    filters = get_filters(flat[0], flat[len(flat)- 1])
+    invoices = AbstractSale.abstract_filter(filters)
+    checks = InventoryCheck.objects.filter(filters)
+    events += [{
+        'label': 'Invoice Due',
+        'icon': 'receipt',
+        'date': i.date
+    } for i in invoices]
+    events += [{
+        'label': 'Inventory Check',
+        'icon': 'check',
+        'date': c.date 
+    } for c in checks]
+    events = sorted(events, lambda x,y: x['date'] < y['date'], )
+    res = [{
+        'date': i,
+        'day': i.day,
+        'events' :[]
+        } for i in flat]
+    for e in events:
+        count = 0
+        for i in flat:
+            if e['date'] == i:
+                res[count]['events'].append(e)
+                break
+            else:
+                count += 1 
+    data = reshape(res, (shape))
+    print (now - time.time())
+    return  data
+
 def get_month_views(current, user):
     '''returns a list of weeks'''
     TODAY = datetime.date.today()
@@ -45,7 +88,10 @@ def get_month_views(current, user):
         current_date.year,
         current_date.month)
     period_string = current_date.strftime('%B, %Y')
-    return [[get_day(date, user) for date in week] for week in array], period_string
+    #data = [[get_day(date, user) for date in week] for week in array]
+    #
+    #print data
+    return get_month_data(array), period_string
 
 def get_week_views(current, user):
     '''returns a list of days'''
@@ -67,10 +113,8 @@ def get_day_view(current, user):
 
 
 def get_day(date, user):
-    print dir(user)
     events = []
     if hasattr(user,'employee'):
-        print 'true'
         if user.is_sales_rep:
             events += get_sales_events(date)
         if user.is_inventory_controller:
@@ -80,7 +124,6 @@ def get_day(date, user):
     elif user.is_superuser:
         events += get_accounting_events(date) + get_inventory_events(date) + \
             get_sales_events(date)
-    print events
     return {
         'day': date.day,
         'date': date,
@@ -98,7 +141,6 @@ def get_inventory_events(date):
     } for c in checks]
 
     pass
-
 
 def get_sales_events(date):
     invoices = AbstractSale.abstract_filter(Q(due=date))

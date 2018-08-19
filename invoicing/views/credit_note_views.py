@@ -16,10 +16,10 @@ from django.urls import reverse_lazy, reverse
 from django.conf import settings
 
 from invoicing import forms
-from common_data.utilities import ExtraContext, apply_style, Modal
-from inventory.forms import QuickItemForm
+from common_data.utilities import ExtraContext, ConfigMixin, Modal
+from inventory.forms import QuickProductForm
 from accounting.forms import TaxForm
-from inventory.models import Item
+from inventory.models import Product
 from invoicing.models import CreditNote, SalesInvoiceLine, SalesConfig
 from invoicing import filters
 from invoicing import serializers
@@ -73,15 +73,14 @@ class CreditNoteUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class CreditNoteDetailView(SalesRepCheckMixin, DetailView):
+class CreditNoteDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'detail.html')
     model = CreditNote
     
     def get_context_data(self, *args, **kwargs):
         context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
-        context.update(SalesConfig.objects.first().__dict__)
         context['title'] = 'Credit Note'
-        return apply_style(context)
+        return context
 
 #Deprecated
 #credit notes now accessed on an invoice by invoice basis

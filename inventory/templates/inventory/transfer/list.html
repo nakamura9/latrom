@@ -30,9 +30,9 @@
                         <a class="dropdown-item" href="{% url 'inventory:transfer-order-detail' pk=t.pk %}"> 
                             Detail
                         </a>
-                    {% if not t.completed %}
+                    {% if not t.completed and t.receiving_warehouse.pk == pk %}
                     <a class="dropdown-item" href="{% url 'inventory:receive-transfer' pk=t.pk %}">
-                        Complete
+                        Complete Transfer
                     </a>
                     {% endif %}        
                     </div>

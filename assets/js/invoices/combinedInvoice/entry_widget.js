@@ -86,7 +86,7 @@ class EntryWidget extends Component{
         if (this.state.selectedLineType === 'sale'){
             let pk = this.state.inputs['item'].split('-')[0];
             axios({
-                url: "/inventory/api/item/" + pk,
+                url: "/inventory/api/product/" + pk,
                 method: "GET"
             }).then( res =>{
                 let data = {

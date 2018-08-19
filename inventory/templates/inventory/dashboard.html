@@ -8,7 +8,7 @@
     <h1 class="display-3">Inventory Dashboard</h1>
     <p class="lead">Manage inventory items and warehouses</p>
     <hr class="my-2">
-    
+
 </div>
 <div class="container">
     <div class="row">
@@ -16,19 +16,56 @@
             <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Items</h4>
+                        <h4 class="card-title">Products</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:item-create' %}">Create New Item</a>
+                                <a href="{% url 'inventory:product-create' %}">Create New Product</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:item-list' %}">Manage Inventory Items</a>
+                                <a href="{% url 'inventory:product-list' %}">Manage Product Inventory</a>
                             </li>
                         </ul>
                     </div>
                 </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Equipment</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:product-create' %}">Add New Equipment</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:product-list' %}">Manage Equipment Inventory</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Consumables</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:product-create' %}">Create New Consumable</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:product-list' %}">Manage Consumable Inventory</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Orders</h4>
@@ -50,36 +87,18 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
-                            
-                        <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a></li>
-                        
-                        <li class="list-group-item"><a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a></li>
+
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a>
+                            </li>
                             <li class="list-group-item">
                                 <a href="{% url 'inventory:supplier-list'%} ">Manage Suppliers</a>
                             </li>
-                            
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
-            <hr class="my-4" />
-
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title">Reports</h4>
-                        </div>
-                        <ul class="list-group">
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
-                            </li>
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -104,6 +123,23 @@
             <hr class="my-4" />
             <div class="card-deck">
                 <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Reports</h4>
+                        </div>
+                        <ul class="list-group">
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Configuration</h4>
                     </div>
@@ -112,14 +148,15 @@
                             <li class="list-group-item">
                                 <a href="{% url 'inventory:config' pk=1 %}">Settings</a>
                             </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:category-list' %}">Manage Inventory Categories</a>
+                            </li>
                         </ul>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 {% endblock %}

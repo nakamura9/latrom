@@ -1,6 +1,4 @@
-{% extends "window.html" %}
-{% load render_bundle from webpack_loader %}
-{% block contents %}
+{% extends "window.html" %} {% load render_bundle from webpack_loader %} {% block content %}
 <div class="jumbotron">
     <h1 class="display-3">Create New Scrapping Record</h1>
     <p class="lead">Scrap inventory from the system</p>
@@ -9,12 +7,22 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-4">
-            {{form.as_p}}
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Form</h4>
+                    <form method="POST">
+                        {{form.errors}}
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <button class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+
         </div>
         <div class="col-sm-8">
             <div id="scrapping-table"></div>
         </div>
     </div>
 </div>
-{% render_bundle 'inventory' %}
-{% endblock %}
+{% render_bundle 'inventory' %} {% endblock %}

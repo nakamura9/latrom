@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from invoicing import forms
 
 from common_data.utilities import ExtraContext, apply_style
-from inventory.models import Item
+from inventory.models import Product
 from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers

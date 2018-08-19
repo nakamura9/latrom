@@ -141,7 +141,7 @@ class EntryRow extends Component{
     }
     componentDidMount(){
         $.ajax({
-            url: '/inventory/api/item/',
+            url: '/inventory/api/product/',
             method: 'GET'
         }).then(res =>{
             this.setState({items: res});
@@ -163,7 +163,7 @@ class EntryRow extends Component{
         const pk = decomposed[0];
         const item_name = decomposed[1];
         axios({
-            url: '/inventory/api/item/' + pk,
+            url: '/inventory/api/product/' + pk,
             method:'get'
         }).then(res => {
             console.log(res.data);
@@ -185,7 +185,7 @@ class EntryRow extends Component{
             <tr>
                 <td colSpan={2}>
                     <SearchableWidget 
-                        dataURL="/inventory/api/item/"
+                        dataURL="/inventory/api/product/"
                         displayField="item_name"
                         idField="code"
                         onSelect={this.onSelect}

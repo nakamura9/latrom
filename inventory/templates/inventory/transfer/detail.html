@@ -72,7 +72,7 @@
                 <tbody>
                     {% for line in object.transferorderline_set.all %}
                     <tr>
-                        <td>{{line.item.item_name}}</td>
+                        <td>{{line.product.name}}</td>
                         <td>{{line.quantity}}</td>
                     </tr>
                     {% endfor  %}

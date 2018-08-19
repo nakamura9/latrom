@@ -1,0 +1,9 @@
+[
+    {
+        "model": "planner.PlannerConfig",
+        "pk": 1,
+        "fields": {
+            "number_of_agenda_items": 10
+        }
+    }
+]

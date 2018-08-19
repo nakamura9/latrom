@@ -17,9 +17,9 @@ from django.conf import settings
 from invoicing import forms
 
 from common_data.utilities import ExtraContext, apply_style, Modal
-from inventory.forms import QuickItemForm
+from inventory.forms import QuickProductForm
 from accounting.forms import TaxForm
-from inventory.models import Item
+from inventory.models import Product
 from invoicing.models import *
 from invoicing import filters
 from invoicing import serializers

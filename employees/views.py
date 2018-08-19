@@ -19,7 +19,6 @@ import serializers
 import models 
 import filters
 import forms
-from inventory.models import Item
 from accounting.models import Tax
 from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
 

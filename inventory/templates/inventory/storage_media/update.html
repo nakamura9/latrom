@@ -1,0 +1,41 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Update Storage Medium</h1>
+    <p class="lead">Use storage media to compartmentalize inventory storage according to its physical location within a warehouse</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Storage Medium Form</h4>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                    <button class="btn">Submit</button>
+                    </form>    
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <h5>Current location: {{object.location}}<h5/>
+                <button class="btn" onclick="displayParentChangeView()">Change</button>
+                <script>
+                    $(document).ready(function(){
+                        $('#storage-media-select-widget').hide();
+                    });
+                    function displayParentChangeView(){
+                        $('#storage-media-select-widget').show();
+                    }
+                </script>
+                <div id="storage-media-select-widget"></div>
+        </div>
+    </div>
+</div>
+{% render_bundle 'widgets' %}
+{% endblock %}

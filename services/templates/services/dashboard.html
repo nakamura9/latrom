@@ -19,7 +19,7 @@
                                 <a href="{% url 'services:create-service' %}">Create Service</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'services:list-services' %}">Manage Listed Services</a>
+                                <a href="{% url 'services:list-services' %}">Manage Services</a>
                             </li>
                         </ul>
 
@@ -46,21 +46,74 @@
                 </div>
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Reports</h4>
+                        <h4 class="card-title">Requisitions</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="">Services History</a>
+                                <a href="">Create Equipment Requistion</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="">Technician utilization report</a>
+                                <a href="">Create Consumable Requistion</a>
                             </li>
                         </ul>
                     </div>
                 </div>
+                
             </div>
             <hr class="my-2">
+            <div class="card-deck">
+                    <div class="card bg-primary text-white">
+                        <div class="card-header">
+                            <h4 class="card-title">Service Procedures</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item ">
+                                    <a href="{% url 'services:create-service' %}">Create New Service Procedure</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'services:list-services' %}">Manage Service Procedures</a>
+                                </li>
+                            </ul>
+    
+                        </div>
+                    </div>
+                    <div class="card bg-primary text-white">
+                        <div class="card-header">
+                            <h4 class="card-title">Groupings</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <a href="{% url 'employees:create-employee' %}">
+                                        List and Manage Service Categories
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'employees:list-employees' %}">
+                                            List and Manage Service Teams
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card bg-primary text-white">
+                        <div class="card-header">
+                            <h4 class="card-title">Reports</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <a href="">Services History</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="">Service People utilization report</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
 </div>

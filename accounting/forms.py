@@ -98,7 +98,6 @@ class JournalForm(forms.ModelForm, BootstrapMixin):
 class NonInvoicedSaleForm(BootstrapMixin,forms.Form):
     date = forms.DateField()
     sold_from = forms.ModelChoiceField(WareHouse.objects.all())
-    #items = forms.MultipleChoiceField(widget=forms.MultipleHiddenInput)
     comments = forms.CharField(widget=forms.Textarea)
 
 

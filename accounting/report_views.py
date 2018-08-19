@@ -137,7 +137,6 @@ class IncomeStatement(TemplateView):
         interest_income = 0
         total_revenue = interest_income + net_sales
         
-        print expense_totals.values()
         total_expenses = reduce(lambda x,y: x + y, 
             expense_totals.values(), decimal.Decimal(0.0))
 

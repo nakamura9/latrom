@@ -34,8 +34,8 @@ def create_test_inventory_models(cls):
             description='Test description'
         )
 
-    cls.item = models.Item.objects.create(
-            item_name='test name',
+    cls.product = models.Product.objects.create(
+            name='test name',
             unit=cls.unit,
             pricing_method=0, #KISS direct pricing
             direct_price=10,
@@ -53,7 +53,7 @@ def create_test_inventory_models(cls):
         address='Test Address'
     )
     cls.warehouse_item = models.WareHouseItem.objects.create(
-        item = cls.item,
+        product = cls.product,
         quantity =10,
         warehouse = cls.warehouse
     )
@@ -69,7 +69,7 @@ def create_test_inventory_models(cls):
         )
     cls.order_item = models.OrderItem.objects.create(
             order=cls.order,
-            item=cls.item,
+            product=cls.product,
             quantity=10
         )
     cls.stock_receipt = models.StockReceipt.objects.create(
@@ -101,9 +101,9 @@ class ModelTests(TestCase):
         )
         self.assertIsInstance(sup, models.Supplier)
 
-    def test_create_item(self):
-        item = models.Item.objects.create(
-            item_name='other test name',
+    def test_create_product(self):
+        product = models.Product.objects.create(
+            name='other test name',
             unit=self.unit,
             pricing_method=1,
             direct_price=10,
@@ -116,7 +116,7 @@ class ModelTests(TestCase):
             category = self.category,
             sub_category = self.category    
         ) 
-        self.assertIsInstance(item, models.Item)
+        self.assertIsInstance(product, models.Product)
         #and associated functions
 
     def test_create_order(self):
@@ -133,7 +133,7 @@ class ModelTests(TestCase):
         )
         models.OrderItem.objects.create(
             order=ord,
-            item=self.item,
+            product=self.product,
             quantity=1,
         )
         self.assertIsInstance(ord, models.Order)
@@ -142,7 +142,7 @@ class ModelTests(TestCase):
     def test_create_order_item(self):
         ord_item = models.OrderItem.objects.create(
             order=self.order,
-            item=self.item,
+            product=self.product,
             quantity=10,
             order_price=10
         )
@@ -177,7 +177,7 @@ class ModelTests(TestCase):
 
     def test_item_stock_value(self):
         #needs a much more complex test!
-        self.assertEqual(int(self.item.stock_value), 100)
+        self.assertEqual(int(self.product.stock_value), 100)
 
     '''
     def test_item_increment_and_decrement(self):
@@ -241,8 +241,8 @@ class ViewTests(TestCase):
         create_test_user(cls)
         create_test_inventory_models(cls)
         
-        cls.ITEM_DATA = {
-            'item_name' : 'Other Test Item',
+        cls.PRODUCT_DATA = {
+            'name' : 'Other Test Item',
             'unit' : cls.unit.pk,
             'margin' : 0.2,
             'markup' : 0.2,
@@ -279,7 +279,7 @@ class ViewTests(TestCase):
             'notes' : 'Test Note',
             'status' : 'draft',
             'items[]': urllib.quote(json.dumps({
-                'item_name': cls.item.pk,
+                'name': cls.product.pk,
                 'quantity': 10,
                 'order_price': 10
                 }))
@@ -348,56 +348,56 @@ class ViewTests(TestCase):
 
     #ITEM
 
-    def test_get_item_form(self):
-        resp = self.client.get(reverse('inventory:item-create'))
+    def test_get_product_form(self):
+        resp = self.client.get(reverse('inventory:product-create'))
         self.assertTrue(resp.status_code == 200)
 
-    def test_post_item_form(self):
-        resp = self.client.post(reverse('inventory:item-create'),
-            data=self.ITEM_DATA)
+    def test_post_product_form(self):
+        resp = self.client.post(reverse('inventory:product-create'),
+            data=self.PRODUCT_DATA)
         self.assertTrue(resp.status_code == 302)
 
-    def test_get_item_list(self):
-        resp = self.client.get(reverse('inventory:item-list'))
+    def test_get_product_list(self):
+        resp = self.client.get(reverse('inventory:product-list'))
         self.assertTrue(resp.status_code == 200)
 
-    def test_get_item_update_form(self):
-        resp = self.client.get(reverse('inventory:item-update',
+    def test_get_product_update_form(self):
+        resp = self.client.get(reverse('inventory:product-update',
             kwargs={
-                'pk': self.item.pk
+                'pk': self.product.pk
             }))
         self.assertTrue(resp.status_code == 200)
 
-    def test_post_item_update_form(self):
-        resp = self.client.post(reverse('inventory:item-update',
+    def test_post_product_update_form(self):
+        resp = self.client.post(reverse('inventory:product-update',
             kwargs={
-                'pk': self.item.pk
-            }), data=self.ITEM_DATA)
+                'pk': self.product.pk
+            }), data=self.PRODUCT_DATA)
         self.assertTrue(resp.status_code == 302)
 
-    def test_get_item_delete_form(self):
-        resp = self.client.get(reverse('inventory:item-delete',
+    def test_get_product_delete_form(self):
+        resp = self.client.get(reverse('inventory:product-delete',
             kwargs={
-                'pk': self.item.pk
+                'pk': self.product.pk
             }))
         self.assertTrue(resp.status_code == 200)
 
-    def test_post_item_delete_form(self):
-        resp = self.client.post(reverse('inventory:item-delete',
+    def test_post_product_delete_form(self):
+        resp = self.client.post(reverse('inventory:product-delete',
             kwargs={
-                'pk': models.Item.objects.latest('pk').pk
+                'pk': models.Product.objects.latest('pk').pk
             }))
         self.assertTrue(resp.status_code == 302)
 
-    def test_get_item_detail(self):
-        resp = self.client.get(reverse('inventory:item-detail',
+    def test_get_product_detail(self):
+        resp = self.client.get(reverse('inventory:product-detail',
             kwargs={
-                'pk': self.item.pk
+                'pk': self.product.pk
             }))
         self.assertTrue(resp.status_code == 200)
 
-    def test_get_quick_item_form(self):
-        resp = self.client.get(reverse('inventory:quick-item'))
+    def test_get_quick_product_form(self):
+        resp = self.client.get(reverse('inventory:quick-product'))
         self.assertTrue(resp.status_code == 200)
 
     #ORDER
