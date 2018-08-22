@@ -48,8 +48,7 @@ class ProductForm(forms.ModelForm, BootstrapMixin):
                     'margin',
                     'direct_price'),
                 Tab('Categories', 
-                    'category', 
-                    'sub_category'),
+                    'category'),
                 Tab('Dimensions', 
                     'length', 
                     'width',
@@ -63,7 +62,68 @@ class ProductForm(forms.ModelForm, BootstrapMixin):
         exclude = 'quantity',
         model = models.Product
 
-        
+class EquipmentForm(forms.ModelForm, BootstrapMixin):
+    def __init__(self, *args, **kwargs):
+        super(EquipmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Description', 
+                    'name',
+                    'description',
+                    'condition'),
+                Tab('Ordering Information',
+                    'supplier'),
+                Tab('Purchase Information', 
+                    'unit',
+                    'unit_purchase_price',
+                    'asset_data'),
+                Tab('Categories', 
+                    'category'),
+                Tab('Dimensions', 
+                    'length', 
+                    'width',
+                    'height'),
+                Tab('Image', 'image'),
+            )
+            )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+    class Meta:
+        fields = "__all__"
+        model = models.Equipment
+
+class ConsumableForm(forms.ModelForm, BootstrapMixin):
+    def __init__(self, *args, **kwargs):
+        super(ConsumableForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Description', 
+                    'name',
+                    'description',),
+                Tab('Ordering Information',
+                    'minimum_order_level',
+                    'maximum_stock_level',
+                    'supplier'),
+                Tab('Purchase Information', 
+                    'unit',
+                    'unit_purchase_price',),
+                Tab('Categories', 
+                    'category'),
+                Tab('Dimensions', 
+                    'length', 
+                    'width',
+                    'height'),
+                Tab('Image', 'image'),
+            )
+            )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+    class Meta:
+        exclude = 'quantity',
+        model = models.Consumable
+
 class ProductUpdateForm(forms.ModelForm, BootstrapMixin):
     '''identical to the other form except for not allowing quantity to be changed'''
     def __init__(self, *args, **kwargs):

@@ -4,7 +4,7 @@ from models import *
 import django_filters
 from django.db import models
 
-class ProductFilter(django_filters.FilterSet):
+class ItemFilter(django_filters.FilterSet):
     
     class Meta:
         model = Product

@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.conf import settings
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
+from item_models import Product, Equipment, Consumable
 
 
 
@@ -16,14 +17,15 @@ class WareHouse(models.Model):
     name = models.CharField(max_length=128)
     address = models.TextField()
     description = models.TextField(blank=True)
-    inventory_controller = models.ForeignKey('employees.Employee', null=True, blank=True)
+    inventory_controller = models.ForeignKey('employees.Employee', null=True, 
+        blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
 
     
     @property
-    def product_count(self):
+    def item_count(self):
         return self.all_items.count
     
     @property
@@ -41,24 +43,42 @@ class WareHouse(models.Model):
         self.get_item(item).decrement(quantity)
 
 
-    def has_item(self, item):
-        return(
-            WareHouseItem.objects.filter(product=item, warehouse=self).count() > 0
-        ) 
-            
-    
     def get_item(self, item):
-        if self.has_item(item):
-            return WareHouseItem.objects.get(product=item, warehouse=self)
+        '''can accept product consumable or equipment as an arg'''
+        if isinstance(item, Product):
+            return WareHouseItem.objects.filter(product=item, warehouse=self)
+        elif isinstance(item, Consumable):
+            return WareHouseItem.objects.filter(consumable=item, warehouse=self)
+        elif isinstance(item, Equipment):
+            return WareHouseItem.objects.filter(equipment=item, warehouse=self)
         else:
-             return None
+            return None # next code is dead for now
+            raise NotImplementedError('the selected product does not exist')
+    
+    def has_item(self, item):
+        found_item = self.get_item(item)
+        if found_item:
+            return(
+                found_item.count() > 0
+            )
+        return False 
+            
     
     def add_item(self, item, quantity):
         #check if record of item is already in warehouse
         if self.has_item(item):
             self.get_item(item).increment(quantity)
         else:
-            self.warehouseitem_set.create(product=item, quantity=quantity)
+            if isinstance(item, Product):
+                return self.warehouseitem_set.create(product=item, 
+                    quantity=quantity, item_type=1)
+            elif isinstance(item, Consumable):
+                return self.warehouseitem_set.create(consumable=item, 
+                    quantity=quantity, item_type=2)
+            elif isinstance(item, Equipment):
+                return self.warehouseitem_set.create(equipmemt=item, 
+                    quantity=quantity, item_type=3)
+            
 
     def transfer(self, other, item, quantity):
         #transfer stock from current warehouse to other warehouse
@@ -77,25 +97,46 @@ class WareHouse(models.Model):
         return self.name
 
 class WareHouseItem(models.Model):
-    product = models.ForeignKey('inventory.Product')
+    ITEM_TYPE_CHOICES = [
+        (1, 'Product'),
+        (2, 'Consumable'),
+        (3, 'Equipment')
+    ]
+    
+    item_type = models.PositiveSmallIntegerField()
+    product = models.ForeignKey('inventory.Product',null=True)
+    consumable = models.ForeignKey('inventory.Consumable',null=True)
+    equipment = models.ForeignKey('inventory.Equipment',null=True)
     quantity = models.FloatField()
     warehouse = models.ForeignKey('inventory.Warehouse', default=1)
-    location = models.ForeignKey('inventory.StorageMedia', blank=True, null=True)
+    location = models.ForeignKey('inventory.StorageMedia', blank=True, 
+        null=True)
     verified = models.BooleanField(default=False)
     #verification expires after the next inventory check date
 
+    def __init__(self, *args, **kwargs):
+        super(WareHouseItem, self).__init__(*args, **kwargs)
+        self.mapping = {
+            1: self.product,
+            2: self.consumable, 
+            3: self.equipment
+        }
+
     def increment(self, amt):
         amount = float(amt)
-        if self.quantity + amount > self.product.maximum_stock_level:
-            raise Exception('Stock level will exceed maximum allowed')
+        #fix
+        
+        #if self.quantity + amount > self.product.maximum_stock_level:
+        #    raise Exception('Stock level will exceed maximum allowed')
         self.quantity += amount
         self.save()
         return self.quantity
 
     def decrement(self, amt):
         amount = float(amt)
-        if self.quantity < amount:
-            raise ValueError('Cannot have a quantity less than zero')
+        #fix
+        #if self.quantity < amount:
+        #    raise ValueError('Cannot have a quantity less than zero')
         self.quantity -= amount
         self.save()
         # check if min stock level is exceeded
@@ -104,8 +145,11 @@ class WareHouseItem(models.Model):
     @property
     def name(self):
         #for the api
-        return self.product.name
+        return self.item.name
 
+    @property
+    def item(self):
+        return self.mapping[self.item_type]
 
 class StorageMedia(models.Model):
     name = models.CharField(max_length = 255)
@@ -125,4 +169,3 @@ class StorageMedia(models.Model):
     @property
     def contents(self):
         return WareHouseItem.objects.filter(location=self)
-        

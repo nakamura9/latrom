@@ -10,7 +10,7 @@ from django.conf import settings
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
 from warehouse_models import WareHouseItem, StorageMedia
-
+import inventory
 class Order(models.Model):
     '''The record of all purchase orders for inventory of items that 
     will eventually be sold. Contains the necessary data to update 
@@ -133,7 +133,7 @@ class Order(models.Model):
                     fully_received=True
                 )
             for item in self.orderitem_set.all():
-                product.receive(product.quantity)
+                item.receive(item.quantity)
             sr.create_entry()
     #check for deffered date with deferred type of invoice
     
@@ -153,11 +153,32 @@ class OrderItem(models.Model):
     received_total - returns the cash value of the items received
     subtotal - returns the cash value of the items ordered
     '''
+    ITEM_TYPE_CHOICES =[
+        (1, 'Product'),
+        (2, 'Consumable'),
+        (3, 'Equipment')
+        ]
     order = models.ForeignKey('inventory.Order')
-    product = models.ForeignKey('inventory.product')
+    item_type = models.PositiveSmallIntegerField(default=1, 
+        choices=ITEM_TYPE_CHOICES)
+    product = models.ForeignKey('inventory.product', null=True)
+    consumable = models.ForeignKey('inventory.consumable', null=True)
+    equipment = models.ForeignKey('inventory.equipment', null=True)
     quantity = models.FloatField()
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
+
+    def __init__(self, *args,**kwargs):
+        super(OrderItem, self).__init__(*args, **kwargs)
+        self.mapping = {
+            1: self.product,
+            2: self.consumable,
+            3: self.equipment
+        }
+
+    @property
+    def item(self):
+        return self.mapping[self.item_type]
 
     @property
     def fully_received(self):
@@ -169,39 +190,19 @@ class OrderItem(models.Model):
         n= float(n)
         self.received += n
         
-        if not self.order.ship_to.has_item(self.product):
-            #item does not yet exist
-            wh_item = WareHouseItem.objects.create(product=self.product,
-                quantity = n,
-                warehouse=self.order.ship_to)
-            if medium:
-                medium = StorageMedia.objects.get(pk=medium)
-                wh_item.location=medium
-                wh_item.save()
-        else:
-            wh_item = WareHouseItem.objects.get(
-                warehouse=self.order.ship_to, 
-                product= self.product)
-            wh_item.increment(n)
-            if medium:
-                medium = StorageMedia.objects.get(pk=medium)
-                wh_item.location=medium
-                wh_item.save()
-
-        self.product.unit_purchase_price = self.order_price
-        self.product.save()
+        wh_item = self.order.ship_to.add_item(self.item)
+        if medium:
+            medium = StorageMedia.objects.get(pk=medium)
+            wh_item.location=medium
+            wh_item.save()
+        
+        self.item.set_purchase_price(self.order_price)
+            
         self.save()
         
     def __str__(self):
-        return str(self.product) + ' -' + str(self.order_price)
+        return str(self.item) + ' -' + str(self.order_price)
 
-    def save(self, *args, **kwargs):
-        if not self.order_price:
-            self.order_price = self.product.unit_purchase_price
-        else:
-            self.product.unit_purchase_price = self.order_price
-            self.product.save()
-        super(OrderItem, self).save(*args, **kwargs)
         
     @property
     def received_total(self):
@@ -278,7 +279,7 @@ class StockAdjustment(models.Model):
 
     @property
     def adjustment_value(self):
-        return D(self.adjustment) * self.warehouse_item.product.unit_purchase_price
+        return D(self.adjustment) * self.warehouse_item.item.unit_purchase_price
 
     @property
     def prev_quantity(self):

@@ -135,7 +135,8 @@ class EntryRow extends Component{
         this.state = {
             items: [],
             inputs: {
-                unit_price:0.0
+                unit_price:0.0,
+                quantity: 0.0
             }
         };   
     }
@@ -151,7 +152,7 @@ class EntryRow extends Component{
         this.props.addItem(this.state.inputs);
     }
 
-    inputHandler(evt){
+    inputHandler = (evt) =>{
         let name = evt.target.name;
         let newInputs = {...this.state.inputs};
         newInputs[name] = evt.target.value;
@@ -186,8 +187,8 @@ class EntryRow extends Component{
                 <td colSpan={2}>
                     <SearchableWidget 
                         dataURL="/inventory/api/product/"
-                        displayField="item_name"
-                        idField="code"
+                        displayField="name"
+                        idField="id"
                         onSelect={this.onSelect}
                         onClear={this.onClear}
                     />
@@ -198,7 +199,7 @@ class EntryRow extends Component{
                     <input 
                         type="number" 
                         name="quantity"
-                        onChange={this.inputHandler.bind(this)}
+                        onChange={this.inputHandler}
                         className="form-control"
                         value={this.state.inputs.quantity}
                         placeholder="Quantity..." />

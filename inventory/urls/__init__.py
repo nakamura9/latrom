@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from inventory import views
-from item_urls import product_urls
+from item_urls import item_urls
 from inventory_management_urls import inventory_management_urls
 from warehouse_urls import warehouse_urls
 from order_urls import order_urls
@@ -28,7 +28,7 @@ urlpatterns = [
         views.InventoryControllerCreateView.as_view(), 
             name='create-inventory-controller'),
 ] 
-urlpatterns += product_urls
+urlpatterns += item_urls
 urlpatterns += inventory_management_urls
 urlpatterns += warehouse_urls
 urlpatterns += order_urls

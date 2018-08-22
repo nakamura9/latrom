@@ -162,8 +162,6 @@ WEBPACK_LOADER = {
     }
 }
 
-CONFIG_FILE = 'config.json'
-TEST_CONFIG_FILE = 'test.json'
 TEST_RUN_MODE = False 
 
 #change for each installation

@@ -7,14 +7,14 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
-import forms 
-import models
-import filters
+from services import forms 
+from services import models
+from services import filters
 from common_data.utilities import ExtraContext
 from django_filters.views import FilterView
 from rest_framework import viewsets
 
-import serializers
+from services import serializers
 
 class Dashboard(TemplateView):
     template_name = os.path.join('services', 'dashboard.html')

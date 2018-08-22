@@ -149,11 +149,23 @@ class SearchableWidget extends Component {
             )
         }else{
             rendered = (
-                <div style={{width:'100%'}}>
+                <div style={{
+                    width:'100%', 
+                    margin: '0px', 
+                    minHeight: '35px',
+                    backgroundColor: '#ccc'
+                }} >
                     <span>{this.state.selectedValue}</span>
                     <span style={{float:'right'}}>
                         <button 
-                            className="btn btn-secondary"
+                            style={{
+                                backgroundColor: '#',
+                                color: 'white',
+                                border: '0px',
+                                boxShadow: 'none',
+                                minHeight: '35px',
+                                minWidth: '35px'
+                            }}
                             onClick={() =>{
                                 this.setState({
                                     selectedValue: "",

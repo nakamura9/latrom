@@ -9,8 +9,8 @@ from django.db.models import Q
 from django.conf import settings
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
-from warehouse_models import WareHouseItem
-from item_management import OrderItem
+import inventory
+import invoicing
 
 class BaseItem(models.Model):
     class Meta:
@@ -26,6 +26,7 @@ class BaseItem(models.Model):
         upload_to=settings.MEDIA_ROOT)
     description = models.TextField(blank=True, default="")
     unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default=1)
+    unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
     supplier = models.ForeignKey("inventory.Supplier", blank=True, null=True)
     def __str__(self):
         return str(self.id) + " - " + self.name
@@ -33,7 +34,12 @@ class BaseItem(models.Model):
     @property
     def quantity(self):
         #returns quantity from all warehouses
-        items = WareHouseItem.objects.filter(product=self)
+        if isinstance(self, Product):
+            items = inventory.models.WareHouseItem.objects.filter(product=self)
+        if isinstance(self, Consumable):
+            items = inventory.models.WareHouseItem.objects.filter(consumable=self)
+        if isinstance(self, Equipment):
+            items = inventory.models.WareHouseItem.objects.filter(equipment=self)
         return reduce(lambda x, y: x + y, [i.quantity for i in items], 0)
 
     @property
@@ -68,7 +74,6 @@ class Product(BaseItem):
     direct_price = models.DecimalField(max_digits=9, decimal_places=2)
     margin = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     markup = models.DecimalField(max_digits=9, decimal_places=2, default=0)
-    unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
     sku = models.CharField(max_length=16, blank=True)
     minimum_order_level = models.IntegerField(default=0)
     maximum_stock_level = models.IntegerField(default=0)
@@ -94,97 +99,11 @@ class Product(BaseItem):
         '''
         return 0
 
-        #dates under consideration 
-        TODAY  = datetime.date.today()
-        START = TODAY - datetime.timedelta(days=30)
         
-        #get the most recent price older than 30 days
-        older_items = OrderItem.objects.filter(
-            Q(product=self) 
-            & Q(received__gt = 0)
-            & Q(order__issue_date__lt = START))
-
-        if older_items.count() > 0:
-            previous_price = older_items.latest('order__issue_date').order_price
-        else:
-            #uses the oldest available price. not implemented here
-            previous_price = self.unit_purchase_price
-         
-        # get the ordered items from the last 30 days.
-        ordered_in_last_month = OrderItem.objects.filter(
-            Q(product=self) 
-            & Q(received__gt = 0)
-            & Q(order__issue_date__gte = START)
-            & Q(order__issue_date__lte =TODAY))
-
-        #calculate the number of items ordered in the last 30 days
-        ordered_quantity = reduce(lambda x, y: x + y, 
-            [i.received for i in ordered_in_last_month], 0)
-        
-        #get the value of items ordered in the last month
-        total_ordered_value = reduce(lambda x,y: x + y,
-            [i.received_total for i in ordered_in_last_month], 0)
-        
-        #get the number of sold items in the last 30 days
-        sold_in_last_month = None
-        #calculate the number of items sold in that period
-        sold_quantity = reduce(lambda x, y: x + y, 
-            [i.quantity for i in sold_in_last_month], 0)
-
-        #get the value of the items sold in the last month
-        total_sold_value = reduce(lambda x, y: x + y, 
-            [i.total_without_discount for i in sold_in_last_month], 0)
-        
-        #determine the quantity of inventory before the valuation period
-        initial_quantity = self.quantity + ordered_quantity - sold_quantity
-        
-        # get the value of the items before the valuation period
-        initial_value = D(initial_quantity) * previous_price
-        total_value = 0
-        
-        #if no valuation system is being used
-        #create inventory config ***
-        if not config.get('inventory_valuation', None):
-            return self.unit_sales_price * D(self.quantity)
-        else:
-            if config['inventory_valuation'] == 'averaging':
-                total_value += initial_value
-                total_value += total_ordered_value
-
-                average_value = total_value / (ordered_quantity + initial_quantity)
-                return average_value 
-
-
-            elif config['inventory_valuation'] == 'fifo':
-                # while loop compares the quantity sold with the intial inventory,
-                # and the new inventory after each new order.
-                ordered_in_last_month_ordered = list(ordered_in_last_month.order_by(
-                    'order__issue_date'))
-                quantity = initial_quantity
-                index = 0
-                while quantity < sold_quantity:
-                    quantity += ordered_in_last_month_ordered[index]
-                    index += 1
-
-                if index == 0:
-                    total_value += initial_value - total_sold_value
-                    total_value += total_ordered_value
-                    average_value = total_value / D(ordered_quantity + (initial_quantity - sold_quantity))
-                    return average_value
-                else:
-                    remaining_orders = ordered_in_last_month_ordered[index:]
-                    total_value = 0
-                    for i in remaining_orders:
-                        total_value += i.order_price * i.received
-                    average_value = total_value / reduce(lambda x,y: x + y, 
-                        [i.received for i in remaining_orders], 0)
-
-            else:
-                return self.unit_sales_price * D(self.quantity)
     @property
     def sales_to_date(self):
         return 0 #!!fix
-        items = InvoiceItem.objects.filter(product=self)
+        items = invoicing.models.SalesInvoiceLine.objects.filter(product=self)
         total_sales = reduce(lambda x,y: x + y, [product.quantity * product.price for item in items], 0)
         return total_sales
     
@@ -209,7 +128,7 @@ class Product(BaseItem):
         # from orders
         orders = [Event(o.order.issue_date, 
             "added %d items to inventory from purchase order #%d." % (o.received, o.order.pk)) \
-                for o in OrderItem.objects.filter(Q(product=self) 
+                for o in inventory.models.OrderItem.objects.filter(Q(product=self) 
                     & Q(order__issue_date__gte= epoch)) if o.received > 0]
 
         events = items + orders 

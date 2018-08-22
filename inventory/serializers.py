@@ -7,11 +7,26 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['unit_sales_price', 'unit_purchase_price', 'quantity',
             'id', 'name', 'description']
 
+class ConsumableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consumable
+        fields = ['unit_purchase_price', 'quantity',
+            'id', 'name', 'description']
+
+class EquipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['unit_purchase_price', 'quantity',
+            'id', 'name', 'description']
+
 class WareHouseItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False)
+    consumable = ConsumableSerializer(many=False)
+    equipment = EquipmentSerializer(many=False)
+    
     class Meta:
         model = WareHouseItem
-        fields = ['product', 'name', 'id', 'quantity', 'warehouse', 'location']
+        fields = ['product', 'consumable','equipment','item_type','name', 'id', 'quantity', 'warehouse', 'location']
 
 
 class WareHouseSerializer(serializers.ModelSerializer):
@@ -22,6 +37,9 @@ class WareHouseSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False)
+    consumable = ConsumableSerializer(many=False)
+    equipment = EquipmentSerializer(many=False)
+    
     class Meta:
         fields = "__all__"
         model = OrderItem
