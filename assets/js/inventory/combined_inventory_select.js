@@ -1,4 +1,7 @@
-class SearchableWidget extends Component {
+import React, {Component} from 'react';
+import axios from 'axios';
+
+class InventorySelectWidget extends Component {
     //currValue is whats being typed, selected is the value validated
     state = {
         items: [],
@@ -10,17 +13,49 @@ class SearchableWidget extends Component {
     componentDidMount(){
         axios({
             method: "GET",
-            url: '/api/inventory-product'
+            url: '/inventory/api/product'
         }).then(res => {
             let newChoices = res.data.map((item) =>{
-                return(item[this.props.idField] + " - " + item[this.props.displayField])
+                return('P' + item['id'] + " - " + item['name'])
             });
 
             this.setState({
                 items: res.data,
                 choices: newChoices
+            }, () => {
+                    axios({
+                        method: "GET",
+                        url: '/inventory/api/equipment'
+                    }).then(res => {
+                        console.log(res.data);
+                        let additionalChoices = res.data.map((item) =>{
+                            return('E' + item['id'] + " - " + item['name'])
+                        });
+                        let newItems = this.state.items.concat(res.data);
+                        let newChoices = this.state.choices.concat(additionalChoices);
+                        this.setState({
+                            items: newItems,
+                            choices: newChoices
+                        }, () => {
+                            axios({
+                                method: "GET",
+                                url: '/inventory/api/consumable'
+                            }).then(res => {
+                                let additionalChoices = res.data.map((item) =>{
+                                    return('C' + item['id'] + " - " + item['name'])
+                                });
+                                let newItems =this.state.items.concat(res.data);
+                                let newChoices = this.state.choices.concat(
+                                    additionalChoices);
+                                this.setState({
+                                    items: newItems,
+                                    choices: newChoices
+                                });
+                            })
+                        });
+                });
             });
-        })
+        });
     }
 
     handleChange = (evt) => {
@@ -75,10 +110,10 @@ class SearchableWidget extends Component {
             <div>
                 {rendered}   
                 <datalist id="id_list">
-                    {this.state.items.map((item, i) => {
+                    {this.state.choices.map((choice, i) => {
                         //always display id and display field
                         return(<option key={i} >
-                                {item[this.props.idField]} - {item[this.props.displayField]}
+                                {choice}
                             </option>)
                     })}
                     
@@ -87,3 +122,5 @@ class SearchableWidget extends Component {
         );
     }
 }
+
+export default InventorySelectWidget;

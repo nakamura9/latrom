@@ -20,6 +20,7 @@ export default class ItemReceiptTable extends Component{
             'method': 'GET'
         }).then(
             res => {
+                console.log(res);
                 this.setState({
                     'items': res.orderitem_set.filter((item, i) =>{
                         return(item.quantity > item.received);
@@ -104,9 +105,18 @@ class ReceivingLine extends Component{
         this.setState({medium:""})
     }
     render(){
+        let name = null;
+
+        if(this.props.item.item_type === 1){
+            name = this.props.item.product.name;
+        }else if(this.props.item.item_type === 2){
+            name = this.props.item.consumable.name;            
+        }else if (this.props.item.item_type === 3){
+            name = this.props.item.equipment.name;
+        }
         return(
             <tr>
-                <td>{this.props.item.product.name}</td>
+                <td>{name}</td>
                 <td>{this.props.item.quantity}</td>
                 <td>{this.props.item.received}</td>
                 <td><input type="number" 

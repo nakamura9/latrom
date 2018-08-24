@@ -23,7 +23,7 @@ from inventory.models import Product
 from invoicing.models import CreditNote, SalesInvoiceLine, SalesConfig
 from invoicing import filters
 from invoicing import serializers
-from common import SalesRepCheckMixin
+from .common import SalesRepCheckMixin
 
 
 #########################################

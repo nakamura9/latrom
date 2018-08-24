@@ -1,5 +1,5 @@
 from django import forms
-import models
+from . import models
 
 class BootstrapMixin(forms.Form):
     """This class intergrates bootstrap into select form fields

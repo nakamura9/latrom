@@ -1,5 +1,5 @@
 from django import forms
-import models 
+from . import models 
 from common_data.forms import BootstrapMixin
 
 class ServiceForm(forms.ModelForm,BootstrapMixin):
@@ -12,15 +12,11 @@ class ServiceCategoryForm(forms.ModelForm, BootstrapMixin):
         exclude = 'parent',
         model = models.ServiceCategory
 
-class ServiceManagerForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields = "__all__"
-        model = models.ServicesManager
 
 class ServicePersonForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
-        model = models.ServicesPerson
+        model = models.ServicePerson
 
 
 class ServiceTeamForm(forms.ModelForm, BootstrapMixin):
@@ -29,15 +25,23 @@ class ServiceTeamForm(forms.ModelForm, BootstrapMixin):
         exclude = "members",
         model = models.ServiceTeam
 
-class ServiceWorkOrderCreateForm(forms.ModelForm, BootstrapMixin):
+class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
     #create service people in react
+    status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        fields = ['date', 'time', 'expected_duration', 'team' ]
+        fields = ['date', 'time', 'expected_duration', 'team', 'status', 'description' ]
         model = models.ServiceWorkOrder
 
 class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        fields = ["actual_duration", "comments"]
+        fields = ["status","actual_duration", "comments"]
+        model = models.ServiceWorkOrder
+
+
+class ServiceWorkOrderAuthorizationForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = ["authorized_by", "status"]
         model = models.ServiceWorkOrder
 
 class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):

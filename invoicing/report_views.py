@@ -8,9 +8,9 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 
 from common_data.utilities import ExtraContext, extract_period
-import models 
-import forms
-from models import AbstractSale
+from . import models 
+from . import forms
+from .models import AbstractSale
 
 class CustomerReportFormView(ExtraContext, FormView):
     extra_context = {

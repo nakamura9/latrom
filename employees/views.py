@@ -15,10 +15,10 @@ from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from rest_framework import viewsets
 
-import serializers
-import models 
-import filters
-import forms
+from . import serializers
+from . import models 
+from . import filters
+from . import forms
 from accounting.models import Tax
 from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
 

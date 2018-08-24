@@ -1,4 +1,4 @@
-import models
+from . import models
 import django_filters
 
 class ServiceFilter(django_filters.FilterSet):
@@ -6,4 +6,27 @@ class ServiceFilter(django_filters.FilterSet):
         model = models.Service
         fields = {
             'name': ['icontains']
+        }
+
+class ProcedureFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ServiceProcedure
+        fields = {
+            'name': ['icontains']
+        }
+
+class ServicePersonFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ServicePerson
+        fields = {
+            'employee': ['exact']
+        }
+
+class WorkOrderFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ServiceWorkOrder
+        fields = {
+            'date': ['exact'],
+            'status': ['exact'],
+            'completed': ['exact']
         }

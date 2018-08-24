@@ -1,0 +1,48 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Procedure Details</h1>
+    <p class="lead">Information and steps that represent a procedure</p>
+    <hr class="my-2">
+    <p>More info</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'services:procedure-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Summary Details</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Description: {{object.description}}</p>
+                    <p class="card-text">Reference: {{object.reference}}</p>
+                    <h5>Required Equipment:</h5>
+                    <ul>
+                        {% for item in object.required_equipment.all %}
+                        <li>{{item}}</li>
+                        {% endfor %}
+                    </ul>
+                    <h5>Required Consumables:</h5>
+                    <ul>
+                            {% for item in object.required_consumables.all %}
+                            <li>{{item}}</li>
+                            {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Procedure Stages</h3>
+            <ol>
+                {% for step in object.task_set.all %}
+                    <li>{{step}}</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock content %}

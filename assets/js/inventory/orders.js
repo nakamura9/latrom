@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {SearchableWidget, Totals, Aux, DeleteButton} from '../src/common';
 import $ from 'jquery';
 import axios from 'axios';
+import InventorySelectWidget from './combined_inventory_select';
 
 export default class OrderTable extends Component{
     constructor(props){
@@ -183,10 +184,7 @@ class OrderTableEntry extends Component{
             <Aux>
                 <tr>
                     <td colSpan={2}>
-                        <SearchableWidget 
-                            dataURL="/inventory/api/product"
-                            idField="id"
-                            displayField="name"
+                        <InventorySelectWidget
                             onSelect={this.onSearchableSelect}
                             onClear={this.onSearchableClear}/>
                     </td>

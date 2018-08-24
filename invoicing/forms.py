@@ -2,7 +2,7 @@
 from django import forms
 from common_data.forms import BootstrapMixin, PeriodReportForm
 from accounting.models import Account, Journal
-import models
+from . import models
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit

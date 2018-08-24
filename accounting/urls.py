@@ -1,6 +1,6 @@
 from django.conf.urls import url
-import views
-import report_views
+from . import views
+from . import report_views
 from rest_framework import routers
 
 tax_router = routers.DefaultRouter()

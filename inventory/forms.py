@@ -1,6 +1,6 @@
 
 from django import forms
-import models
+from . import models
 from accounting.models import Account
 from common_data.forms import BootstrapMixin
 from crispy_forms.helper import FormHelper

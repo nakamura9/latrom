@@ -3,7 +3,7 @@ import os
 
 from django.views.generic import TemplateView
 
-import models 
+from . import models 
 
 class InventoryReport(TemplateView):
     template_name = os.path.join('inventory', 'reports', 'inventory_report.html')

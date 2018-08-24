@@ -11,6 +11,7 @@ module.exports = {
         employees: './js/employees',
         inventory: './js/inventory',
         calendar: './js/calendar',
+        services: './js/services',
         widgets: './js/widgets'
     },
     output: {

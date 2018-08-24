@@ -12,7 +12,8 @@ class Service(models.Model):
     flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
     hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
     category = models.ForeignKey('services.ServiceCategory')
-    procedure = models.ForeignKey('services.ServiceProcedure', null=True, blank=True)
+    procedure = models.ForeignKey('services.ServiceProcedure', null=True, 
+        blank=True)
     frequency = models.CharField(max_length = 16, 
                         choices = [("once", "Once off"),
                                     ("daily", "Daily"),
@@ -44,27 +45,29 @@ class ServiceCategory(models.Model):
     def children(self):
         return self.category_set.all()
 
-class ServicesManager(models.Model):
+#might rename 
+class ServicePerson(models.Model):
     employee = models.ForeignKey('employees.Employee')
+    is_manager = models.BooleanField(default=False)
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
-
     def __str__(self):
-        return self.employee.full_name
+        return str(self.employee)
 
-#might rename 
-class ServicesPerson(models.Model):
-    employee = models.ForeignKey('employees.Employee')
-
-    def __str__(self):
-        return self.employee.full_name
+    @property
+    def name(self):
+        return str(self.employee)
 
 class ServiceTeam(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    manager = models.ForeignKey('services.ServicesManager', null=True, 
-        blank=True)
-    members = models.ManyToManyField('services.ServicesPerson')
+    manager = models.ForeignKey('services.ServicePerson', null=True, 
+        blank=True, related_name="service_team_manager")
+    members = models.ManyToManyField('services.ServicePerson', 
+        related_name="service_team_members")
+
+    def __str__(self):
+        return self.name
 
 class ServiceWorkOrder(models.Model):
     STATUS_CHOICES = [
@@ -78,6 +81,7 @@ class ServiceWorkOrder(models.Model):
     time = models.TimeField(choices = time_choices(
         '06:00:00', '18:30:00', '00:30:00'
         ))
+    description = models.TextField(blank=True, default="")
     completed = models.DateTimeField(null=True, blank=True)
     expected_duration = models.DurationField(choices = time_choices(
         '00:00:00', '08:00:00', '00:30:00', delta=True
@@ -85,12 +89,16 @@ class ServiceWorkOrder(models.Model):
     actual_duration = models.DurationField(choices = time_choices(
         '00:00:00', '08:00:00', '00:30:00', delta=True
         ), null=True, blank=True)
-    service_people = models.ManyToManyField('services.ServicesPerson', 
+    service_people = models.ManyToManyField('services.ServicePerson', 
         blank=True)
     team = models.ForeignKey('services.ServiceTeam', null=True, blank=True)
-    status = models.CharField(max_length=16, choices=STATUS_CHOICES)
-    authorized_by = models.ForeignKey('employees.Employee')#filter queryset
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, blank=True)
+    authorized_by = models.ForeignKey('employees.Employee', null=True, 
+        blank=True)#filter queryset
     comments = models.TextField(blank=True)
+
+    def __str__(self):
+        return "%s: %d" % (self.date, self.pk)
 
 class BaseRequisition(models.Model):
     class Meta:
@@ -147,6 +155,8 @@ class ConsumablesRequisitionLine(models.Model):
 class Task(models.Model):
     procedure = models.ForeignKey('services.ServiceProcedure')
     description = models.TextField()
+    def __str__(self):
+        return self.description
 
 class ServiceProcedure(models.Model):
     as_checklist = models.BooleanField(default=False, blank=True)

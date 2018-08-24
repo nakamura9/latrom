@@ -1,5 +1,5 @@
 from rest_framework import serializers
-import models
+from . import models
 from inventory.serializers import SupplierSerializer
 from invoicing.serializers import CustomerSerializer
 from employees.serializers import EmployeeSerializer

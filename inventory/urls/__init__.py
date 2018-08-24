@@ -1,12 +1,12 @@
 from django.conf.urls import url
 from inventory import views
-from item_urls import item_urls
-from inventory_management_urls import inventory_management_urls
-from warehouse_urls import warehouse_urls
-from order_urls import order_urls
-from report_urls import report_urls 
-from supplier_urls import supplier_urls
-from transfer_urls import transfer_urls
+from .item_urls import item_urls
+from .inventory_management_urls import inventory_management_urls
+from .warehouse_urls import warehouse_urls
+from .order_urls import order_urls
+from .report_urls import report_urls 
+from .supplier_urls import supplier_urls
+from .transfer_urls import transfer_urls
 
 urlpatterns = [
     url(r'^$', views.InventoryDashboard.as_view(), name="home"),

@@ -1,5 +1,5 @@
 from django_filters import FilterSet
-import models 
+from common_data import models 
 
 class OrganizationFilter(FilterSet):
     class Meta:

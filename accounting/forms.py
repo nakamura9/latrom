@@ -1,7 +1,7 @@
 
 from django import forms
 from common_data.forms import BootstrapMixin
-import models
+from . import models
 from inventory.models import Supplier
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit

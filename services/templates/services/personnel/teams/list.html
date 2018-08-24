@@ -1,0 +1,31 @@
+{% extends "common_data/unfiltered_list_template.html" %}
+{% block list_headings %}
+    <tr class="bg-primary">
+        <td>Team Name</td>
+        <td>Team Leader</td>
+        <td>Number of Members</td>
+        <td>Actions</td>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for team in object_list %}
+    <tr>
+        <td>{{team.name}}</td>
+        <td>{{team.manager}}</td>
+        <td>{{team.members.all.count}}</td>
+        <td>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item" href="{% url 'services:team-detail' pk=team.pk %}">Details</a>
+                    <a class="dropdown-item" href="{% url 'services:team-update' pk=team.pk %}">Update</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock list_content %}

@@ -7,10 +7,10 @@ from django.urls import reverse_lazy
 from accounting.models import Journal
 from invoicing.models import SalesConfig
 from django_filters.views import FilterView
-import filters
-from utilities import ExtraContext
-import models 
-import forms 
+from common_data import filters
+from common_data.utilities import ExtraContext
+from common_data import models 
+from . import forms 
 from django.template import loader
 from django.core.mail import send_mail
 

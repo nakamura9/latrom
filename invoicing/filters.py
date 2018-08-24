@@ -1,7 +1,7 @@
 
 
 import django_filters
-import models 
+from . import models 
 
 class CustomerFilter(django_filters.FilterSet):
     class Meta:

@@ -23,7 +23,7 @@ from common_data.utilities import *
 from common_data.models import GlobalConfig
 from invoicing.models import SalesConfig
 
-from common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 #######################################################
 #               Inventory Check Views                 #

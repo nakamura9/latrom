@@ -1,0 +1,32 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr class="info">
+    <td style="width:15%">Reference</td>
+    <td style="width:20%">Name</td>
+    <td style="width:50%">Description</td>
+    <td style="width:15%">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} 
+{% for pro in object_list %}
+<tr>
+    <td>{{pro.reference}}</td>
+    <td>{{pro.name}}</td>
+    <td>{{pro.description | truncatechars:60}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'services:procedure-update' pk=pro.pk %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+                <a class="dropdown-item" href="{% url 'services:procedure-details' pk=pro.pk %}">
+                        <i class="fas fa-eye"></i> Detail
+                    </a>
+            </div>
+        </div>
+
+    </td>
+</tr>
+{% endfor %} {% endblock %}

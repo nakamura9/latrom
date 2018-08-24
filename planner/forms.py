@@ -1,6 +1,6 @@
 from django import forms
 from common_data.forms import BootstrapMixin
-import models 
+from . import models 
 from django.contrib.auth.models import User
 
 class ConfigForm(forms.ModelForm, BootstrapMixin):

@@ -14,7 +14,6 @@ const stockReceipt =  document.getElementById('item-table');
 const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
 
-
 if(inventoryCheck){
     ReactDOM.render(<InventoryChecker />, inventoryCheck);
 }else if(newOrder){

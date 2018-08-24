@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-import views
+from common_data import views
 urlpatterns = [
     url(r'^workflow/?$', views.WorkFlowView.as_view(), name="workflow"),
     url(r'^react-test/?$', views.ReactTest.as_view(), name="react-test"),

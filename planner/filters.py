@@ -1,5 +1,5 @@
 from django_filters import FilterSet
-import models 
+from . import models 
 
 class EventFilter(FilterSet):
     class Meta:

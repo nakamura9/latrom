@@ -29,7 +29,7 @@ from common_data.models import GlobalConfig
 
 from django.core.mail import EmailMessage
 
-from common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 
 class OrderAPIView(ModelViewSet):
@@ -39,7 +39,7 @@ class OrderAPIView(ModelViewSet):
 
 class OrderPOSTMixin(object):
     def post(self, request, *args, **kwargs):
-        update_flag = self.get_object()
+        update_flag = isinstance(self, UpdateView)
         resp = super(OrderPOSTMixin, self).post(request, *args, **kwargs)
         items = json.loads(urllib.unquote(request.POST["items"]))
         if not self.object:
@@ -51,9 +51,27 @@ class OrderPOSTMixin(object):
                 i.delete()
 
         for data in items:
-            order.orderitem_set.create(
-                product=models.Product.objects.get(
-                    pk=data['pk']),
+            item_type = data['pk'][0]
+            pk = data['pk'].strip(item_type)
+            if item_type == 'P':
+                product = models.Product.objects.get(pk=pk)
+                order.orderitem_set.create(
+                    product=product,
+                    item_type=1,
+                    quantity=data['quantity'],
+                    order_price=data['order_price'])
+            elif item_type == 'E':
+                equipment = models.Equipment.objects.get(pk=pk)
+                order.orderitem_set.create(
+                    equipment=equipment,
+                    item_type=3,
+                    quantity=data['quantity'],
+                    order_price=data['order_price'])
+            elif item_type == 'C':
+                consumable = models.Consumable.objects.get(pk=pk)
+                order.orderitem_set.create(
+                    consumable=consumable,
+                    item_type=2,
                     quantity=data['quantity'],
                     order_price=data['order_price'])   
         

@@ -128,21 +128,6 @@ class WareHouseItem extends Component{
     }
     createAdjustment(){
         let note = prompt('Create Acompanying Note:');
-        /*let url = window.location.href;
-        let url_elements = url.split('/');
-        $.ajax({
-            'url': '/inventory/api/stock-adjustment/',
-            'method': 'POST',
-            'data': {
-                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                warehouse_item: this.props.data.id,
-                adjustment: this.props.data.quantity - this.state.value,
-                note: note,
-                inventory_check: url_elements[url_elements.length-2]
-            }
-        }).then(() =>{
-            this.setState({'verified': true});
-        })*/
         this.props.adjust({
             warehouse_item: this.props.data.id,
             adjustment: this.props.data.quantity - this.state.value,
@@ -153,12 +138,22 @@ class WareHouseItem extends Component{
     }
 
     render(){
+        let name = null;
+
+        if(this.props.data.item_type === 1){
+            name = this.props.data.product.name;
+        }else if(this.props.data.item_type === 2){
+            name = this.props.data.consumable.name;            
+        }else if (this.props.data.item_type === 3){
+            name = this.props.data.equipment.name;
+        }
+
         return(
             <tr>
                 <td>
                     <input type="checkbox" checked={this.state.verified} />
                 </td>
-                <td>{this.props.data.product.name}</td>
+                <td>{name}</td>
                 <td>{this.props.data.quantity}</td>
                 <td>
                     <input type="number"

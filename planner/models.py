@@ -60,7 +60,6 @@ class Event(models.Model):
             'customer': 1
         }
         evt_type = evt_mapping[evt_type]
-        print 'adding'
         if evt_type == 0:
             self.participants.create(
                 participant_type = evt_type,

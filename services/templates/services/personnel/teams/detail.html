@@ -1,0 +1,61 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Service Team</h1>
+    <p class="lead">View Details about the selected Service Team</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'services:team-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Team Details</h4>
+                        <p class="card-text">Name: {{object.name}}</p>
+                        <p class="card-text">Description: {{object.description}}</p>
+                        <p class="card-text">
+                            Number of Members: {{object.members.all.count}}</p>
+                        <p class="card-text">Manager: {{object.manager}}</p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div>
+                    <h4>Team Members</h4>
+                    <table class="table">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th>Employee Number</th>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in object.members.all %}
+                            <tr>
+                                <td scope="row">
+                                    {{sp.employee.employee_number}}
+                                </td>
+                                <td>{{sp.employee}}</td>
+                                <td><a href="{% url 'services:service-person-dashboard' pk=sp.pk %}" class="btn btn-info">View Person</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h4>Current Work Orders</h4>
+                </div>
+            </div>
+    </div> 
+</div>
+
+{% endblock content %}

@@ -20,8 +20,8 @@ class EmailMixin(object):
     pass
 
 class WareHousePaginator(PageNumberPagination):
-    page_size = 1
-    max_page_size = 1
+    page_size = 10
+    max_page_size = 10
     page_size_query_description = 'page_size'
 
 class ModelViewGroup(object):

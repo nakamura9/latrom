@@ -1,5 +1,5 @@
-import views
-from api import get_calendar
+from . import views
+from .api import get_calendar
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 

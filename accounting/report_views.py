@@ -10,8 +10,8 @@ from django.urls import reverse_lazy
 from common_data.utilities import ExtraContext, extract_period
 from common_data.forms import PeriodReportForm
 
-import models 
-import forms 
+from . import models 
+from . import forms 
 
 class BalanceSheet(TemplateView):
     template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')

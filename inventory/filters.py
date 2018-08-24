@@ -1,5 +1,5 @@
 
-from models import *
+from .models import *
 
 import django_filters
 from django.db import models

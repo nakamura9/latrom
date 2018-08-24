@@ -1,0 +1,39 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr class="info">
+    <td style="width:15%">Work Order ID</td>
+    <td style="width:20%">Date</td>
+    <td style="width:10%">Status</td>
+    <td style="width:40%">Description</td>
+    <td style="width:15%">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} 
+{% for wo in object_list %}
+<tr>
+    <td>{{wo.id}}</td>
+    <td>{{wo.date}}</td>
+    <td>{{wo.status | truncatechars:60}}</td>
+    <td>{{wo.description | truncatechars:60}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'services:work-order-update' pk=wo.pk %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-detail' pk=wo.pk %}">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                {% if wo.status != 'authorized' %}
+                <a class="dropdown-item" href="{% url 'services:work-order-complete' pk=wo.pk %}">
+                    <i class="fas fa-eye"></i> Complete
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </td>
+</tr>
+{% endfor %} {% endblock %}

@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.conf import settings
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
-from item_models import Product, Equipment, Consumable
+from .item_models import Product, Equipment, Consumable
 
 
 
@@ -45,21 +45,24 @@ class WareHouse(models.Model):
 
     def get_item(self, item):
         '''can accept product consumable or equipment as an arg'''
-        if isinstance(item, Product):
-            return WareHouseItem.objects.filter(product=item, warehouse=self)
-        elif isinstance(item, Consumable):
-            return WareHouseItem.objects.filter(consumable=item, warehouse=self)
-        elif isinstance(item, Equipment):
-            return WareHouseItem.objects.filter(equipment=item, warehouse=self)
-        else:
-            return None # next code is dead for now
+        try:
+            if isinstance(item, Product):
+                return WareHouseItem.objects.get(product=item, warehouse=self)
+            elif isinstance(item, Consumable):
+                return WareHouseItem.objects.get(consumable=item, warehouse=self)
+            elif isinstance(item, Equipment):
+                return WareHouseItem.objects.get(equipment=item, warehouse=self)
+            else:
+                return None # next code is dead for now
+        except:
+            return None
             raise NotImplementedError('the selected product does not exist')
     
     def has_item(self, item):
         found_item = self.get_item(item)
         if found_item:
             return(
-                found_item.count() > 0
+                found_item.quantity > 0
             )
         return False 
             
@@ -68,6 +71,7 @@ class WareHouse(models.Model):
         #check if record of item is already in warehouse
         if self.has_item(item):
             self.get_item(item).increment(quantity)
+            return self.get_item(item)
         else:
             if isinstance(item, Product):
                 return self.warehouseitem_set.create(product=item, 
@@ -76,7 +80,7 @@ class WareHouse(models.Model):
                 return self.warehouseitem_set.create(consumable=item, 
                     quantity=quantity, item_type=2)
             elif isinstance(item, Equipment):
-                return self.warehouseitem_set.create(equipmemt=item, 
+                return self.warehouseitem_set.create(equipment=item, 
                     quantity=quantity, item_type=3)
             
 

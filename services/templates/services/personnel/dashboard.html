@@ -1,0 +1,48 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Service Person Portal</h1>
+    <p class="lead">Welcome {{request.user}}. </p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="/login?next={{request.path}}" role="button">Login</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Personal Details</h4>
+                    <p class="card-text">Full Name: {{object.employee}}</p>
+                    <p class="card-text">Role: {% if object.is_manager %}Manager {% else %} Technician {% endif %} </p>
+                    <p class="card-text">Number of Teams : 0</p>
+                    <p class="card-text">Number of open Work Orders: 0</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            {% if request.user != object.employee.user %}
+            <h6>Please login as <u>{{object.employee}}</u> to access more details. <u>{{request.user}}</u> is currently logged in.</h6>
+            {% else %}
+            <div>
+                <h4>Current WorkOrders</h4>
+            </div>
+            <div>
+                <h4>Complete WorkOrders</h4>
+            </div>
+            <div>
+                <h4>Teams</h4>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+

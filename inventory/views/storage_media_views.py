@@ -9,7 +9,7 @@ from django.db.models import Q
 from inventory import forms
 from inventory import serializers
 from inventory import models
-from common import InventoryControllerCheckMixin
+from .common import InventoryControllerCheckMixin
 
 #!fix prevent updates from assigining parent media to child media.
 
@@ -24,7 +24,6 @@ class StorageMediaCreateView(CreateView):
         }
 
     def post(self, request, *args, **kwargs):
-        print request.POST
         return super(StorageMediaCreateView, self).post(request, *args, **kwargs)
 
 class StorageMediaDetailView(DetailView):
@@ -46,7 +45,6 @@ class StorageMediaListView(InventoryControllerCheckMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(StorageMediaListView, self).get_context_data(*args, **kwargs)
-        print context
         return context
 
 class StorageMediaListAPIView(ListAPIView):

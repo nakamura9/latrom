@@ -182,11 +182,13 @@ class ScrappingEntry extends Component{
             }});
     }
     render(){
+        let splitURL = window.location.href.split('/');
+        let pk = splitURL[splitURL.length - 1 ];
         return(
             <tr>
                 <td colSpan={2}>
                     <SearchableWidget 
-                        dataURL="/inventory/api/product"
+                        dataURL= {"/inventory/api/unpaginated-warehouse-items/" + pk}
                         displayField="name"
                         onSelect={this.selectHandler}
                         onClear={this.clearHandler}

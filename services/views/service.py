@@ -45,14 +45,14 @@ class ServiceUpdateView(ExtraContext, UpdateView):
 class ServiceListView(ExtraContext, FilterView):
     filterset_class = filters.ServiceFilter
     model = models.Service
-    template_name = os.path.join('services', 'service_list.html')
+    template_name = os.path.join('services', 'service', 'list.html')
     extra_context = {
         'title': 'List of offered services',
         'new_link': reverse_lazy('services:create-service')
     }
     
 class ServiceDetailView(DetailView):
-    template_name = os.path.join('services', 'service_detail.html')
+    template_name = os.path.join('services', 'service', 'detail.html')
     model = models.Service 
 
 class ServiceAPIView(viewsets.ModelViewSet):

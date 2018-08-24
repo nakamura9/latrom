@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.conf import settings
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
-from item_models import Product
+from .item_models import Product
 
 class InventorySettings(SingletonModel):
     INVENTORY_VALUATION_METHODS = [

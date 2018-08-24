@@ -5,9 +5,9 @@ from django.http import JsonResponse
 from django.db.models import Q
 from inventory.models import InventoryCheck
 from invoicing.models import AbstractSale
-from l2d import List2D
+from .l2d import List2D
 import time
-from models import Event
+from .models import Event
 
 def reshape(data, shape):
     i = 0
@@ -72,7 +72,6 @@ def get_month_data(array):
             else:
                 count += 1 
     data = reshape(res, (shape))
-    print (now - time.time())
     return  data
 
 def get_month_views(current, user):
@@ -85,8 +84,6 @@ def get_month_views(current, user):
         current_date.month)
     period_string = current_date.strftime('%B, %Y')
     #data = [[get_day(date, user) for date in week] for week in array]
-    #
-    #print data
     return get_month_data(array), period_string
 
 def get_week_views(current, user):

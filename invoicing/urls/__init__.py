@@ -1,10 +1,10 @@
 from django.conf.urls import url
 from invoicing import views, report_views
 from rest_framework.routers import DefaultRouter
-from bill_urls import bill_urls
-from combined_urls import combined_urls
-from service_urls import service_urls
-from sales_urls import sales_urls
+from .bill_urls import bill_urls
+from .combined_urls import combined_urls
+from .service_urls import service_urls
+from .sales_urls import sales_urls
 
 report_urls = [
     url(r'^customer-statement-form/?$', 

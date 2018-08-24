@@ -13,7 +13,7 @@ from common_data.utilities import ExtraContext
 from invoicing.models import Customer
 from invoicing import filters
 from invoicing import serializers
-from common import SalesRepCheckMixin
+from .common import SalesRepCheckMixin
 
 #########################################
 #           Customer Views              #

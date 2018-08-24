@@ -29,10 +29,6 @@
                                 <td>{{object.adjusted_by}}</td>
                             </tr>
                             <tr>
-                                <th># of Products stored</th>
-                                <td>{{object.warehouse.product_count}}</td>
-                            </tr>
-                            <tr>
                                 <th># of Adjustments</th>
                                 <td>{{object.adjustments.count}}</td>
                             </tr>
@@ -53,17 +49,17 @@
             <table class="table">
                 <thead>
                     <tr class="bg-primary">
-                        <th>Item</th>
-                        <th>Recorded Quantity</th>
-                        <th>Actual Quantity</th>
-                        <th>Difference</th>
-                        <th>Note</th>
+                        <th style="width:20%">Item</th>
+                        <th style="width:15%">Recorded Quantity</th>
+                        <th style="width:15%">Actual Quantity</th>
+                        <th style="width:10%">Difference</th>
+                        <th style="width:40%">Note</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for sa in object.adjustments %}
                     <tr>
-                        <td>{{sa.warehouse_item.product.name}}</td>
+                        <td>{{sa.warehouse_item.item.name}}</td>
                         <td>{{sa.prev_quantity}}</td>
                         <td>{{sa.warehouse_item.quantity}}</td>
                         <td>{{sa.adjustment}}</td>

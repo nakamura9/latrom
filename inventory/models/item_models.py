@@ -31,6 +31,10 @@ class BaseItem(models.Model):
     def __str__(self):
         return str(self.id) + " - " + self.name
 
+    def set_purchase_price(self, price):
+        self.unit_purchase_price = price
+        self.save()
+
     @property
     def quantity(self):
         #returns quantity from all warehouses

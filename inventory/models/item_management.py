@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.conf import settings
 from accounting.models import JournalEntry, Journal, Account
 from common_data.models import SingletonModel
-from warehouse_models import WareHouseItem, StorageMedia
+from .warehouse_models import WareHouseItem, StorageMedia
 import inventory
 class Order(models.Model):
     '''The record of all purchase orders for inventory of items that 
@@ -39,6 +39,12 @@ class Order(models.Model):
         (0, 'Cash Order'),
         (1, 'Deffered Payment Order'),
         (2, 'Pay on Receipt') ]
+    ORDER_STATUS_CHOICES = [
+        ('received-partially', 'Partially Received'),
+        ('received', 'Received in Total'),
+        ('draft', 'Internal Draft'),
+        ('submitted', 'Submitted to Supplier')
+    ]
     
     expected_receipt_date = models.DateField()
     issue_date = models.DateField()
@@ -51,12 +57,7 @@ class Order(models.Model):
     tax = models.ForeignKey('accounting.Tax', default=1)
     tracking_number = models.CharField(max_length=64, blank=True, default="")
     notes = models.TextField()
-    status = models.CharField(max_length=24, choices=[
-        ('received-partially', 'Partially Received'),
-        ('received', 'Received in Total'),
-        ('draft', 'Internal Draft'),
-        ('submitted', 'Submitted to Supplier')
-    ])
+    status = models.CharField(max_length=24, choices=ORDER_STATUS_CHOICES)
     active = models.BooleanField(default=True)
     received_to_date = models.FloatField(default=0.0)
     
@@ -190,7 +191,7 @@ class OrderItem(models.Model):
         n= float(n)
         self.received += n
         
-        wh_item = self.order.ship_to.add_item(self.item)
+        wh_item = self.order.ship_to.add_item(self.item, n)
         if medium:
             medium = StorageMedia.objects.get(pk=medium)
             wh_item.location=medium
