@@ -29,20 +29,20 @@ class ProcedureCRUDMixin(object):
                 t.delete()
 
         #tasks 
-        steps = json.loads(urllib.unquote(request.POST['tasks']))
+        steps = json.loads(urllib.parse.unquote(request.POST['tasks']))
         for task in steps:
             models.Task.objects.create(
                 procedure=self.object,
                 description=task    
             )
         #equipment 
-        equipment = json.loads(urllib.unquote(request.POST['equipment']))
+        equipment = json.loads(urllib.parse.unquote(request.POST['equipment']))
         for item in equipment:
             pk = item['value'].split('-')[0]
             self.object.required_equipment.add(Equipment.objects.get(pk=pk))
 
         #consumables
-        consumables = json.loads(urllib.unquote(request.POST['consumables']))
+        consumables = json.loads(urllib.parse.unquote(request.POST['consumables']))
         for item in consumables:
             pk = item['value'].split('-')[0]
             self.object.required_consumables.add(Consumable.objects.get(pk=pk))

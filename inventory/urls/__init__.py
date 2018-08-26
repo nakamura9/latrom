@@ -7,6 +7,11 @@ from .order_urls import order_urls
 from .report_urls import report_urls 
 from .supplier_urls import supplier_urls
 from .transfer_urls import transfer_urls
+from rest_framework.routers import DefaultRouter
+
+unit_router = DefaultRouter()
+unit_router.register('api/unit', views.UnitAPIView)
+
 
 urlpatterns = [
     url(r'^$', views.InventoryDashboard.as_view(), name="home"),
@@ -35,3 +40,4 @@ urlpatterns += order_urls
 urlpatterns += report_urls
 urlpatterns += transfer_urls
 urlpatterns += supplier_urls
+urlpatterns += unit_router.urls

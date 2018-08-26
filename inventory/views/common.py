@@ -78,6 +78,10 @@ class UnitDeleteView(InventoryControllerCheckMixin, DeleteView):
     model = models.UnitOfMeasure
     success_url = reverse_lazy('invoicing.product-list')
 
+class UnitAPIView(ModelViewSet):
+    serializer_class = serializers.UnitSerializer
+    queryset = models.UnitOfMeasure.objects.all()
+
 class ConfigView(InventoryControllerCheckMixin, UpdateView):
     template_name = os.path.join('inventory', 'config.html')
     form_class = forms.ConfigForm

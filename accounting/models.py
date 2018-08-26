@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from functools import reduce
 
 import datetime
 from decimal import Decimal as D

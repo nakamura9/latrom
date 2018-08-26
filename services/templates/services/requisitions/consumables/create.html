@@ -1,0 +1,29 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Create Consumable Requisition</h1>
+    <p class="lead">Jumbo helper text</p>
+    <hr class="my-2">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Requisition Form</h4>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <div id="consumable-requisition-table"></div>
+                        <button class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+{% render_bundle "services" %}
+{% endblock content %}

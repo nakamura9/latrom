@@ -45,7 +45,7 @@ class EventCreateView(LoginRequiredMixin, CreateView):
         if not self.object:
             return resp
         
-        participants = json.loads(urllib.unquote(request.POST['participants']))
+        participants = json.loads(urllib.parse.unquote(request.POST['participants']))
         
         for p in participants:
             self.object.add_participant(p['type'], p['pk'])
@@ -65,7 +65,7 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
         for p in self.object.participants.all():
             p.delete()
 
-        participants = json.loads(urllib.unquote(request.POST['participants']))
+        participants = json.loads(urllib.parse.unquote(request.POST['participants']))
         
         for p in participants:
             self.object.add_participant(p['type'], p['pk'])

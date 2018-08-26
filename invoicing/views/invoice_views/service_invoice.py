@@ -28,7 +28,7 @@ from common_data.forms import SendMailForm
 
 def process_data(items, inv):
     if items:
-        items = json.loads(urllib.unquote(items))
+        items = json.loads(urllib.parse.unquote(items))
         for item in items:
             inv.add_line(item['id'], item['hours'])
                 

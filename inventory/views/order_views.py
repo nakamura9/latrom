@@ -41,7 +41,7 @@ class OrderPOSTMixin(object):
     def post(self, request, *args, **kwargs):
         update_flag = isinstance(self, UpdateView)
         resp = super(OrderPOSTMixin, self).post(request, *args, **kwargs)
-        items = json.loads(urllib.unquote(request.POST["items"]))
+        items = json.loads(urllib.parse.unquote(request.POST["items"]))
         if not self.object:
            return resp
 

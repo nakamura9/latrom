@@ -29,7 +29,7 @@ class ScrappingRecordCreateView(CreateView):
             return resp
         
         raw_data = request.POST['items']
-        item_list = json.loads(urllib.unquote(raw_data))
+        item_list = json.loads(urllib.parse.unquote(raw_data))
 
         for line in item_list:
             item = models.Product.objects.get(pk=line['pk'])

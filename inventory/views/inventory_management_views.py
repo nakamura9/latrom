@@ -47,7 +47,7 @@ class InventoryCheckCreateView(CreateView):
             return resp
         
         raw_data = request.POST['adjustments']
-        adjustments = json.loads(urllib.unquote(raw_data))
+        adjustments = json.loads(urllib.parse.unquote(raw_data))
         for adj in adjustments:
             wh_item = models.WareHouseItem.objects.get(pk=adj['warehouse_item'])
             models.StockAdjustment.objects.create(
@@ -101,7 +101,7 @@ class TransferOrderCreateView(CreateView):
         if not self.object:
             return resp 
         
-        data = json.loads(urllib.unquote(request.POST['items'])) 
+        data = json.loads(urllib.parse.unquote(request.POST['items'])) 
         for i in data:
             pk, _ = i['item'].split('-')[0]
             product = models.Product.objects.get(pk=pk)
@@ -168,7 +168,7 @@ class StockReceiptCreateView(InventoryControllerCheckMixin,CreateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(StockReceiptCreateView, self).post(request, *args, **kwargs)
-        data = json.loads(urllib.unquote(request.POST['received-items']))
+        data = json.loads(urllib.parse.unquote(request.POST['received-items']))
         for line in data:
             pk = line['orderItem']
             n = line['quantity']

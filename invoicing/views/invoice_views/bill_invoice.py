@@ -24,7 +24,7 @@ from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 
 def process_data(data, inv):
-    items = json.loads(urllib.unquote(data))
+    items = json.loads(urllib.parse.unquote(data))
     for item in items:
         inv.add_line(item['pk'])
     

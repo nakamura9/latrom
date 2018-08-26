@@ -1,5 +1,5 @@
 {
     "python.pythonPath": "C:\\Python27\\python.exe",
     "git.ignoreLimitWarning": true,
-    "python.jediEnabled": false
+    "python.jediEnabled": true
 }

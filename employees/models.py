@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import datetime
 from decimal import Decimal as D
+from functools import reduce
 
 
 from django.db import models

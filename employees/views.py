@@ -276,7 +276,7 @@ class PayrollTaxCreateView(AdministratorCheckMixin, CreateView):
 
     def post(self, request):
         resp = super(PayrollTaxCreateView, self).post(request)
-        brackets = json.loads(urllib.unquote(request.POST['brackets']))
+        brackets = json.loads(urllib.parse.unquote(request.POST['brackets']))
         if not self.object:
             return resp
         

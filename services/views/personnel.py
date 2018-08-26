@@ -59,7 +59,7 @@ class ServiceTeamCRUDMixin(object):
         if update_flag:
             self.object.members.clear()
         
-        members_list = json.loads(urllib.unquote(request.POST['members']))
+        members_list = json.loads(urllib.parse.unquote(request.POST['members']))
         for data in members_list:
             pk = data['value'].split('-')[0]
             service_person = models.ServicePerson.objects.get(pk=pk)

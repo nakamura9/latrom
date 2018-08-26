@@ -21,7 +21,7 @@ class WorkOrderCRUDMixin(object):
         resp = super(WorkOrderCRUDMixin, self).post(request, *args, **kwargs)
         if not self.object:
             return resp
-        service_people = json.loads(urllib.unquote(
+        service_people = json.loads(urllib.parse.unquote(
             request.POST['service_people']))
         
         if update_flag:

@@ -39,6 +39,7 @@ def get_calendar(request):
     }
     return JsonResponse(payload)
 
+
 def get_month_data(array):
     '''benchmark later:
         1. requesting the DB every day
@@ -57,7 +58,7 @@ def get_month_data(array):
         'icon': 'eye',
         'date': e.date 
     } for e in event_objs]
-    events = sorted(events, lambda x,y: x['date'] < y['date'], )
+    events = sorted(events, key=lambda x, y: x['date'] < y['date'])
     res = [{
         'date': i,
         'day': i.day,

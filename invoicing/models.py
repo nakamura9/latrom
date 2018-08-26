@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import datetime
 from decimal import Decimal as D
+from functools import reduce
 
 from django.db import models
 from django.db.models import Q
@@ -394,8 +395,9 @@ class CombinedInvoice(AbstractSale):
     '''Basic Invoice format with description and amount fields 
     that combines the features of sales, services and bills'''
     def add_line(self, data):
+        print(data)
         if data['lineType'] == 'sale':
-            pk, name = data['data']['product'].split('-')
+            pk = data['data']['item'].split('-')[0]
             product = inventory.models.Product.objects.get(pk=pk)
             self.combinedinvoiceline_set.create(
                 line_type=1,#product

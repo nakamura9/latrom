@@ -123,6 +123,22 @@
             <hr class="my-4" />
             <div class="card-deck">
                 <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Requisitions</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:consumable-create' %}">Manage Equipment Requisitions</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables Requisitions</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
                             <h4 class="card-title">Reports</h4>

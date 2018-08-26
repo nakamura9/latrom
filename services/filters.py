@@ -30,3 +30,20 @@ class WorkOrderFilter(django_filters.FilterSet):
             'status': ['exact'],
             'completed': ['exact']
         }
+
+class ConsumableRequisitionFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ConsumablesRequisition
+        fields = {
+            'date': ['exact'],
+            'requested_by': ['exact']
+        }
+
+
+class EquipmentRequisitionFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ConsumablesRequisition
+        fields = {
+            'date': ['exact'],
+            'requested_by': ['exact']
+        }

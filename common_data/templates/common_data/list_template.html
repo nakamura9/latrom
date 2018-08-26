@@ -9,8 +9,9 @@
 <div class="jumbotron">
     <div class="container">
         <h1 class="display-3">{{title}}</h1>
+        {% if new_link %}
         <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New</a>
-
+        {% endif %}
     </div>
 </div>
 

@@ -109,15 +109,14 @@ class BaseRequisition(models.Model):
     department = models.CharField(max_length=255)
     reference = models.CharField(max_length=255)
     
-    
 
 class EquipmentRequisition(BaseRequisition):
     requested_by = models.ForeignKey('employees.Employee', 
         related_name='requested_by')
     authorized_by = models.ForeignKey('employees.Employee', 
-        related_name='authorized_by')#filter queryset
+        related_name='authorized_by', null=True)#filter queryset
     released_by = models.ForeignKey('employees.Employee', 
-        related_name='released_by')
+        related_name='released_by', null=True)
 
 
 class EquipmentRequisitionLine(models.Model):
@@ -129,27 +128,27 @@ class EquipmentRequisitionLine(models.Model):
     ]
     equipment = models.ForeignKey('inventory.Equipment') 
     quantity = models.FloatField()
-    quantity_returned = models.FloatField()
+    quantity_returned = models.FloatField(default=0)
     requesting_condition = models.CharField(max_length=16, 
         choices=CONDITION_CHOICES)
     returned_condition = models.CharField(max_length=16, 
-        choices=CONDITION_CHOICES)
-
+        choices=CONDITION_CHOICES, null=True)
+    requisition = models.ForeignKey('services.EquipmentRequisition')
 
 class ConsumablesRequisition(BaseRequisition):
     requested_by = models.ForeignKey('employees.Employee', 
         related_name='consumable_requested_by')
     authorized_by = models.ForeignKey('employees.Employee', 
-        related_name='consumable_authorized_by')#filter queryset
+        related_name='consumable_authorized_by', null=True)#filter queryset
     released_by = models.ForeignKey('employees.Employee', 
-        related_name='consumable_released_by')
-
+        related_name='consumable_released_by', null=True)
 
 class ConsumablesRequisitionLine(models.Model):
     consumable = models.ForeignKey('inventory.Consumable')
     unit = models.ForeignKey('inventory.UnitOfMeasure')
     quantity = models.FloatField()
     returned = models.FloatField(default=0.0)
+    requisition = models.ForeignKey('services.ConsumablesRequisition')
 
 
 class Task(models.Model):
@@ -169,3 +168,6 @@ class ServiceProcedure(models.Model):
     @property
     def steps(self):
         return self.task_set.all().order_by('pk')
+
+    def __str__(self):
+        return self.name

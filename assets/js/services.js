@@ -2,12 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {ProcedureViews, InventorySelectWidgets} from '../js/services/procedure';
 import MultipleSelectWidget from '../js/src/multiple_select';
-
+import ConsumableRequisitionTable from './services/requisition/consumable';
+import EquipmentRequisitionTable from './services/requisition/equipment';
 
 
 const procedure = document.getElementById('procedure-widgets');
 const inventory = document.getElementById('inventory-widgets');
 const personnel = document.getElementById('personnel-list');
+const consumableTable = document.getElementById('consumable-requisition-table');
+const equipmentTable = document.getElementById('equipment-requisition-table');
 const workOrderPersons = document.getElementById('work-order-persons');
 
 if(procedure){
@@ -62,4 +65,10 @@ if(workOrderPersons){
                         inputField="service_people"
                         populatedURL={populatedURL}
                         resProcessor={resProcessor}/>, workOrderPersons)
+}
+if (consumableTable){
+    ReactDOM.render(<ConsumableRequisitionTable />, consumableTable)
+}
+if (equipmentTable){
+    ReactDOM.render(<EquipmentRequisitionTable />, equipmentTable)
 }

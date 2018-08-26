@@ -1,6 +1,7 @@
 import os 
 import datetime
 import decimal
+from functools import reduce
 
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import FormView

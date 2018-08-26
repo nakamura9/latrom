@@ -27,7 +27,7 @@ from django.core.mail import EmailMessage
 
 def process_data(items, inv):
     if items:
-        items = json.loads(urllib.unquote(items))
+        items = json.loads(urllib.parse.unquote(items))
         for item in items:
             inv.add_line(item)
             

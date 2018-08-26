@@ -73,7 +73,7 @@ class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
                     pk=request.POST['journal']),
             )
         for item in request.POST.getlist('items[]'):
-            item_data = json.loads(urllib.unquote(item))
+            item_data = json.loads(urllib.parse.unquote(item))
             amount = decimal.Decimal(item_data['amount'])
             account = models.Account.objects.get(
                     pk=int(item_data['account']))
@@ -237,7 +237,7 @@ class NonInvoicedCashSale(BookkeeperCheckMixin, FormView):
         #clean data
         if form.is_valid():
             for item in request.POST.getlist('items[]'):
-                data = json.loads(urllib.unquote(item))
+                data = json.loads(urllib.parse.unquote(item))
                 quantity = float(data['quantity'])
                 #item-fix
                 product = Product.objects.get(pk=data['id'])

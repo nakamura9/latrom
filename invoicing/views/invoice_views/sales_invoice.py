@@ -25,7 +25,7 @@ from common_data.models import GlobalConfig
 
 def process_data(items, inv):
     if items:
-        items = json.loads(urllib.unquote(items))
+        items = json.loads(urllib.parse.unquote(items))
         for item in items:
 
             pk, name = item['name'].split('-')

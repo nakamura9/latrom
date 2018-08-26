@@ -1,5 +1,6 @@
 from django import forms
 from . import models
+from django.contrib.auth.models import User
 
 class BootstrapMixin(forms.Form):
     """This class intergrates bootstrap into select form fields
@@ -46,3 +47,7 @@ class SendMailForm(BootstrapMixin, forms.Form):
     recepient = forms.EmailField()
     subject = forms.CharField()
     content = forms.CharField(widget=forms.Textarea)
+
+class AuthenticateForm(BootstrapMixin, forms.Form):
+    user = forms.ModelChoiceField(User.objects.all())
+    password = forms.CharField(widget=forms.PasswordInput)
