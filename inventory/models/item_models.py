@@ -18,7 +18,7 @@ class BaseItem(models.Model):
         abstract = True
 
     name = models.CharField(max_length = 64)
-    category = models.ForeignKey('inventory.Category', default=1)
+    category = models.ForeignKey('inventory.Category', on_delete=None,default=1)
     active = models.BooleanField(default=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
@@ -26,9 +26,9 @@ class BaseItem(models.Model):
     image = models.FileField(blank=True, null=True, 
         upload_to=settings.MEDIA_ROOT)
     description = models.TextField(blank=True, default="")
-    unit = models.ForeignKey('inventory.UnitOfMeasure', blank=True, default=1)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,blank=True, default=1)
     unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
-    supplier = models.ForeignKey("inventory.Supplier", blank=True, null=True)
+    supplier = models.ForeignKey("inventory.Supplier", on_delete=None,blank=True, null=True)
     def __str__(self):
         return str(self.id) + " - " + self.name
 
@@ -152,7 +152,7 @@ class Equipment(BaseItem):
     ]
     condition = models.CharField(max_length=16, 
         choices=CONDITION_CHOICES, default='excellent')
-    asset_data = models.ForeignKey('accounting.Asset', null=True, blank=True)
+    asset_data = models.ForeignKey('accounting.Asset', on_delete=None, null=True, blank=True)
 
 class Consumable(BaseItem):
     minimum_order_level = models.IntegerField( default=0)

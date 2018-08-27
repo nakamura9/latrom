@@ -1,0 +1,29 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info" style="width:15%">Name</td>
+    <td class="info" style="width:15%">Base Unit</td>
+    <td class="info" style="width:50%">Description</td>
+    <td class="info" style="width:20%">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} {% for item in object_list %}
+<tr>
+    <td>{{item.name}}</td>
+    <td>{{item.base_unit}}</td>
+    <td>{{item.description}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'inventory:unit-detail'  pk=item.pk  %}">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                <a class="dropdown-item" href="{% url 'inventory:unit-update'  pk=item.pk  %}">
+                    <i class="fas fa-file"></i> Update
+                </a>
+            </div>
+        </div>
+</tr>
+{% endfor %} {% endblock %}

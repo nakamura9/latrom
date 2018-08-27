@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 from services import views
 from .personnel import personnel_urls
 from .procedure import procedure_urls
@@ -7,7 +7,7 @@ from .service import service_urls
 from .requisition import requisition_urls
 
 urlpatterns = [
-    url(r'^$', views.Dashboard.as_view(), name='dashboard')
+    re_path(r'^$', views.Dashboard.as_view(), name='dashboard')
 ]
 
 urlpatterns += personnel_urls

@@ -30,7 +30,7 @@ class SalesConfig(SingletonModel):
     default_quotation_comments = models.TextField(blank=True)
     default_credit_note_comments = models.TextField(blank=True)
     default_terms = models.TextField(blank=True)
-    sales_tax = models.ForeignKey('accounting.Tax', null=True, blank="True")
+    sales_tax = models.ForeignKey('accounting.Tax', on_delete=None, null=True, blank="True")
     include_shipping_address = models.BooleanField(default=False)
     business_address = models.TextField(blank=True)
     logo = models.ImageField(null=True,upload_to="logo/")
@@ -65,14 +65,15 @@ class Customer(models.Model):
     likelihood. Individuals however can also be represented.
     Customers can have accounts if store credit is extended to them.'''
     #make sure it can only be one or the other not both
-    organization = models.OneToOneField('common_data.Organization', null=True,
-        blank=True, unique=True)
+    organization = models.OneToOneField('common_data.Organization', null=True,  
+        on_delete=models.CASCADE, blank=True, unique=True)
     individual = models.OneToOneField('common_data.Individual', null=True,
-        blank=True,)    
+        on_delete=models.CASCADE, blank=True,)    
     billing_address = models.TextField(default= "", blank=True)
     banking_details = models.TextField(default= "", blank=True)
     active = models.BooleanField(default=True)
-    account = models.ForeignKey('accounting.Account', null=True)#created in save method
+    account = models.ForeignKey('accounting.Account', on_delete=models.CASCADE,
+        null=True)#created in save method
 
     @property
     def invoices(self):
@@ -163,14 +164,15 @@ class AbstractSale(models.Model):
         ('reversed', 'Reversed'),
     ]
     status = models.CharField(max_length=16, choices=SALE_STATUS)
-    customer = models.ForeignKey("invoicing.Customer", default=DEFAULT_CUSTOMER)
-    salesperson = models.ForeignKey('invoicing.SalesRepresentative', 
-        default=DEFAULT_SALES_REP)
+    customer = models.ForeignKey("invoicing.Customer", on_delete=None,default=DEFAULT_CUSTOMER)
+    salesperson = models.ForeignKey('invoicing.SalesRepresentative',
+        on_delete=None, default=DEFAULT_SALES_REP)
     active = models.BooleanField(default=True)
     due= models.DateField( default=timezone.now)
     date= models.DateField(default=timezone.now)
     discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    tax = models.ForeignKey('accounting.Tax', blank=True, null=True)
+    tax = models.ForeignKey('accounting.Tax', on_delete=None,blank=True, 
+        null=True)
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
     
@@ -235,7 +237,7 @@ class SalesInvoice(AbstractSale):
     DEFAULT_WAREHOUSE = 1 #make fixture
     purchase_order_number = models.CharField(blank=True, max_length=32)
     #add has returns field
-    ship_from = models.ForeignKey('inventory.WareHouse',
+    ship_from = models.ForeignKey('inventory.WareHouse', on_delete=None,
          default=DEFAULT_WAREHOUSE)
 
     def add_product(self, product, quantity):
@@ -290,8 +292,8 @@ class SalesInvoice(AbstractSale):
         return j
 
 class SalesInvoiceLine(models.Model):
-    invoice = models.ForeignKey('invoicing.SalesInvoice')
-    product = models.ForeignKey("inventory.Product")
+    invoice = models.ForeignKey('invoicing.SalesInvoice',on_delete=models.CASCADE,)
+    product = models.ForeignKey("inventory.Product", on_delete=None)
     quantity = models.FloatField(default=0.0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
@@ -335,8 +337,8 @@ class ServiceInvoice(AbstractSale):
             [i.total for i in self.serviceinvoiceline_set.all() ], 0)
 
 class ServiceInvoiceLine(models.Model):
-    invoice = models.ForeignKey('invoicing.ServiceInvoice')
-    service = models.ForeignKey('services.Service')
+    invoice = models.ForeignKey('invoicing.ServiceInvoice', on_delete=models.CASCADE,)
+    service = models.ForeignKey('services.Service', on_delete=None)
     hours = models.DecimalField(max_digits=6, decimal_places=2)
     
     @property
@@ -388,8 +390,8 @@ class Bill(AbstractSale):
         return j
             
 class BillLine(models.Model):
-    bill = models.ForeignKey('invoicing.Bill')
-    expense = models.ForeignKey('accounting.Expense')
+    bill = models.ForeignKey('invoicing.Bill', on_delete=None)
+    expense = models.ForeignKey('accounting.Expense', on_delete=None)
 
 class CombinedInvoice(AbstractSale):
     '''Basic Invoice format with description and amount fields 
@@ -433,10 +435,10 @@ class CombinedInvoiceLine(models.Model):
         (2, 'service'),
         (3, 'expense'),
     ]
-    invoice = models.ForeignKey('invoicing.CombinedInvoice', default=1)
-    expense = models.ForeignKey('accounting.Expense', null=True)
-    service = models.ForeignKey('services.Service', null=True)
-    product = models.ForeignKey("inventory.Product", null=True)
+    invoice = models.ForeignKey('invoicing.CombinedInvoice', on_delete=None, default=1)
+    expense = models.ForeignKey('accounting.Expense',on_delete=None, null=True)
+    service = models.ForeignKey('services.Service',on_delete=None, null=True)
+    product = models.ForeignKey("inventory.Product", on_delete=None,null=True)
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
     quantity_or_hours = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
 
@@ -480,7 +482,7 @@ class SalesRepresentative(models.Model):
     sales - takes two dates as arguments and returns the 
     amount sold exclusive of tax. Used in commission calculation
     '''
-    employee = models.OneToOneField('employees.Employee')
+    employee = models.OneToOneField('employees.Employee', on_delete=None,)
     number = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
     can_reverse_invoices = models.BooleanField(default=True)
@@ -518,7 +520,7 @@ class CreditNote(models.Model):
         are to be written off."""
     
     date = models.DateField()
-    invoice = models.ForeignKey('invoicing.SalesInvoice')
+    invoice = models.ForeignKey('invoicing.SalesInvoice', on_delete=None)
     comments = models.TextField()
 
     @property
@@ -571,10 +573,10 @@ class Payment(models.Model):
         choices = PAYMENT_FOR_CHOICES
         )
     #only one of the four is selected
-    sales_invoice = models.ForeignKey("invoicing.SalesInvoice", null=True)
-    service_invoice = models.ForeignKey("invoicing.ServiceInvoice", null=True)
-    bill = models.ForeignKey("invoicing.Bill", null=True)
-    combined_invoice = models.ForeignKey("invoicing.CombinedInvoice", null=True)
+    sales_invoice = models.ForeignKey("invoicing.SalesInvoice", on_delete=models.CASCADE, null=True)
+    service_invoice = models.ForeignKey("invoicing.ServiceInvoice", on_delete=models.CASCADE,null=True)
+    bill = models.ForeignKey("invoicing.Bill", on_delete=models.CASCADE,null=True)
+    combined_invoice = models.ForeignKey("invoicing.CombinedInvoice", on_delete=models.CASCADE,null=True)
     amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
     method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
@@ -583,7 +585,7 @@ class Payment(models.Model):
                                         ("ecocash", "EcoCash")],
                                         default='transfer')
     reference_number = models.AutoField(primary_key=True)
-    sales_rep = models.ForeignKey("invoicing.SalesRepresentative")
+    sales_rep = models.ForeignKey("invoicing.SalesRepresentative", on_delete=None,)
     comments = models.TextField(default="Thank you for your business")
 
     def __str__(self):

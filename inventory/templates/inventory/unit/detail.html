@@ -1,0 +1,50 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Unit Details</h1>
+    <p class="lead">Unit Information</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:unit-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Unit Details</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Base Unit: {{object.base_unit}}</p>
+                    <p class="card-text">Description: {{object.description}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <h4>Derived Units </h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:20%">Name</th>
+                        <th style="width:80%">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unit in object.derived_units %}
+                    <tr>
+                        <td scope="row">{{unit.name}}</td>
+                        <td>{{unit.description}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+
+{% endblock content %}

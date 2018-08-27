@@ -14,17 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf.urls import url,  include, static
+from django.urls import re_path,  include
 from django.conf import settings
+from django.conf.urls import static
 
 urlpatterns = [
-    url('admin/', admin.site.urls),
-    url(r'^base/', include('common_data.urls', namespace='base')),
-    url(r'^invoicing/', include("invoicing.urls", namespace="invoicing")),
-    url(r'^accounting/', include("accounting.urls", namespace="accounting")),
-    url(r'^inventory/', include("inventory.urls", namespace="inventory")),
-    url(r'^employees/', include("employees.urls", namespace="employees")),
-    url(r'^services/', include("services.urls", namespace="services")),
-    url(r'^planner/', include("planner.urls", namespace="planner")),
-    url(r'^', include('django.contrib.auth.urls'))
+    re_path('admin/', admin.site.urls),
+    re_path(r'^base/', include(('common_data.urls', 'base'), namespace='base')),
+    re_path(r'^invoicing/', include(("invoicing.urls", 'invoicing'), namespace="invoicing")),
+    re_path(r'^accounting/', include(("accounting.urls", 'accounting'), namespace="accounting")),
+    re_path(r'^inventory/', include(("inventory.urls", 'inventory'), namespace="inventory")),
+    re_path(r'^employees/', include(("employees.urls", 'employees'), namespace="employees")),
+    re_path(r'^services/', include(("services.urls", 'services'), namespace="services")),
+    re_path(r'^planner/', include(("planner.urls", 'planner'), namespace="planner")),
+    re_path(r'^', include('django.contrib.auth.urls'))
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

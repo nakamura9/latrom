@@ -69,8 +69,29 @@ class InventoryDashboard(InventoryControllerCheckMixin, TemplateView):
 class UnitCreateView(InventoryControllerCheckMixin, CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
-    success_url = reverse_lazy('inventory:home')
+    success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
+
+class UnitUpdateView(InventoryControllerCheckMixin, UpdateView):
+    form_class = forms.UnitForm
+    model = models.UnitOfMeasure
+    success_url = reverse_lazy('inventory:unit-list')
+    template_name = CREATE_TEMPLATE
+
+
+class UnitDetailView(InventoryControllerCheckMixin, DetailView):
+    model = models.UnitOfMeasure
+    template_name = os.path.join('inventory', 'unit', 'detail.html')
+
+
+class UnitListView(ExtraContext, InventoryControllerCheckMixin, FilterView):
+    filterset_class = filters.UnitFilter
+    model = models.UnitOfMeasure
+    template_name = os.path.join('inventory', 'unit', 'list.html')
+    extra_context = {
+        'title': 'List of Units',
+        'new_link': reverse_lazy('inventory:unit-create')
+    }
 
 
 class UnitDeleteView(InventoryControllerCheckMixin, DeleteView):

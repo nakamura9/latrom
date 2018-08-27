@@ -17,7 +17,7 @@ class AccountingSettings(SingletonModel):
 class Bookkeeper(models.Model):
     '''Model that gives employees access to the bookkeeping function of the 
     software such as order creation and the like.'''
-    employee = models.ForeignKey('employees.Employee', null=True) 
+    employee = models.ForeignKey('employees.Employee', on_delete=models.CASCADE,null=True) 
 
 class Transaction(models.Model):
     '''
@@ -28,9 +28,9 @@ class Transaction(models.Model):
     Does not create a table on the database.
     Is an aggregate component of a JournalEntry
     '''
-    account = models.ForeignKey('accounting.Account')
+    account = models.ForeignKey('accounting.Account', on_delete=None)
     amount =models.DecimalField(max_digits=9, decimal_places=2)
-    entry = models.ForeignKey('accounting.JournalEntry')
+    entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.CASCADE)
     class Meta:
         abstract =True
 
@@ -94,7 +94,7 @@ class JournalEntry(models.Model):
     reference = models.CharField(max_length=128, default="")
     date = models.DateField(default=datetime.date.today)
     memo = models.TextField()
-    journal = models.ForeignKey('accounting.Journal')
+    journal = models.ForeignKey('accounting.Journal', on_delete=None)
     posted_to_general_ledger = models.BooleanField(default=False)
     adjusted = models.BooleanField(default=False)
 
@@ -294,8 +294,8 @@ class Adjustmet(models.Model):
     will balance the books. In this way, the journal entries become immutable.
     Not yet implemented
     '''
-    entry = models.ForeignKey('accounting.JournalEntry', null=True)
-    workbook = models.ForeignKey('accounting.WorkBook', null=True)
+    entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.CASCADE, null=True)
+    workbook = models.ForeignKey('accounting.WorkBook', on_delete=models.CASCADE,null=True)
     description = models.TextField()
 
 DEPRECIATION_METHOD = [
@@ -319,7 +319,7 @@ class Asset(models.Model):
     description = models.TextField(blank=True)
     category = models.IntegerField(choices=ASSET_CHOICES)
     initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account', null=True)
+    debit_account = models.ForeignKey('accounting.Account', on_delete=models.CASCADE,null=True)
     depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
@@ -377,7 +377,7 @@ class AbstractExpense(models.Model):
     description = models.TextField()
     category = models.IntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account')
+    debit_account = models.ForeignKey('accounting.Account', on_delete=None)
 
     class Meta:
         abstract = True
@@ -385,7 +385,7 @@ class AbstractExpense(models.Model):
 class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
-    customer = models.ForeignKey('invoicing.Customer', null=True)
+    customer = models.ForeignKey('invoicing.Customer', on_delete=None,null=True)
     
     def create_entry(self):
         j = JournalEntry.objects.create(

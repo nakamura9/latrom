@@ -58,7 +58,7 @@ def get_month_data(array):
         'icon': 'eye',
         'date': e.date 
     } for e in event_objs]
-    events = sorted(events, key=lambda x, y: x['date'] < y['date'])
+    events = sorted(events, key=lambda x: x['date'])
     res = [{
         'date': i,
         'day': i.day,
@@ -84,7 +84,6 @@ def get_month_views(current, user):
         current_date.year,
         current_date.month)
     period_string = current_date.strftime('%B, %Y')
-    #data = [[get_day(date, user) for date in week] for week in array]
     return get_month_data(array), period_string
 
 def get_week_views(current, user):

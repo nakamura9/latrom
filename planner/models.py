@@ -51,7 +51,7 @@ class Event(models.Model):
         'planner.EventParticipant', 
         blank=True,
         related_name='participants')
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=None)
 
     def add_participant(self, evt_type, pk):
         evt_mapping = {
@@ -93,9 +93,9 @@ class EventParticipant(models.Model):
     participant_type = models.PositiveSmallIntegerField(
         choices=PARTICIPANT_TYPES
         )
-    employee = models.ForeignKey('employees.Employee', null=True, blank=True)
-    customer = models.ForeignKey('invoicing.Customer', null=True, blank=True)
-    supplier = models.ForeignKey('inventory.Supplier', null=True, blank=True)
+    employee = models.ForeignKey('employees.Employee', on_delete=None, null=True, blank=True)
+    customer = models.ForeignKey('invoicing.Customer', on_delete=None, null=True, blank=True)
+    supplier = models.ForeignKey('inventory.Supplier', on_delete=None,  null=True, blank=True)
 
     def __str__(self):
         if self.participant_type == 0:

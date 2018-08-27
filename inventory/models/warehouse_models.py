@@ -18,7 +18,7 @@ class WareHouse(models.Model):
     name = models.CharField(max_length=128)
     address = models.TextField()
     description = models.TextField(blank=True)
-    inventory_controller = models.ForeignKey('employees.Employee', null=True, 
+    inventory_controller = models.ForeignKey('employees.Employee', on_delete=None, null=True, 
         blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
@@ -109,13 +109,13 @@ class WareHouseItem(models.Model):
     ]
     
     item_type = models.PositiveSmallIntegerField()
-    product = models.ForeignKey('inventory.Product',null=True)
-    consumable = models.ForeignKey('inventory.Consumable',null=True)
-    equipment = models.ForeignKey('inventory.Equipment',null=True)
+    product = models.ForeignKey('inventory.Product', on_delete=None, null=True)
+    consumable = models.ForeignKey('inventory.Consumable', on_delete=None, null=True)
+    equipment = models.ForeignKey('inventory.Equipment', on_delete=None, null=True)
     quantity = models.FloatField()
-    warehouse = models.ForeignKey('inventory.Warehouse', default=1)
+    warehouse = models.ForeignKey('inventory.Warehouse', on_delete=None, default=1)
     location = models.ForeignKey('inventory.StorageMedia', blank=True, 
-        null=True)
+        on_delete=None, null=True)
     verified = models.BooleanField(default=False)
     #verification expires after the next inventory check date
 
@@ -158,10 +158,10 @@ class WareHouseItem(models.Model):
 
 class StorageMedia(models.Model):
     name = models.CharField(max_length = 255)
-    warehouse = models.ForeignKey('inventory.WareHouse')
-    location = models.ForeignKey('inventory.StorageMedia', null=True, blank=True)
+    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None, )
+    location = models.ForeignKey('inventory.StorageMedia', on_delete=None,  null=True, blank=True)
     description = models.TextField(blank=True)
-    unit = models.ForeignKey('inventory.UnitOfMeasure', null=True, blank=True)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,  null=True, blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)

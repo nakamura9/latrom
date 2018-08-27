@@ -62,7 +62,7 @@ class InventoryController(models.Model):
     inventory controller and have the ability to make purchase orders,
     receive them, transfer inventory between warehouses and perform other 
     functions.'''
-    employee = models.ForeignKey('employees.Employee')
+    employee = models.ForeignKey('employees.Employee', on_delete=None, )
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
 
@@ -73,10 +73,10 @@ class Supplier(models.Model):
     contact people.
     The account of the supplier is for instances when orders are made on credit.'''
     # one or the other 
-    organization = models.OneToOneField('common_data.Organization', null=True)
-    individual = models.OneToOneField('common_data.Individual', null=True)
+    organization = models.OneToOneField('common_data.Organization', on_delete=None, null=True)
+    individual = models.OneToOneField('common_data.Individual', on_delete=None, null=True)
     active = models.BooleanField(default=True)
-    account = models.ForeignKey('accounting.Account',blank=True, null=True)
+    account = models.ForeignKey('accounting.Account', on_delete=None, blank=True, null=True)
 
     @property
     def name(self):
@@ -136,29 +136,23 @@ class UnitOfMeasure(models.Model):
     can also be a derived unit where the quantity is calculated back into the base unit for each element.'''
     name = models.CharField(max_length=64)
     description = models.TextField(default="")
+    eval_string = models.CharField(max_length=255, default="")
     is_derived = models.BooleanField(default = False)
-    base_unit = models.ForeignKey('inventory.UnitOfMeasure', null=True, blank=True)
+    base_unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None, null=True, blank=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
 
-class DerivedUnitStage(models.Model):
-    OPERATIONS = [
-        (0, 'sum'),
-        (1, 'difference'),
-        (2, 'product'),
-        (3, 'ratio')
-        ]
-    stage_number = models.PositiveSmallIntegerField()
-    operation = models.PositiveSmallIntegerField(choices=OPERATIONS)
-    value = models.FloatField()
-    unit = models.ForeignKey('inventory.UnitOfMeasure')
+    @property
+    def derived_units(self):
+        return UnitOfMeasure.objects.filter(base_unit=self)
+
 
 class Category(models.Model):
     '''Used to organize inventory'''
     name = models.CharField(max_length=64)
-    parent = models.ForeignKey('inventory.Category', blank=True, null=True)
+    parent = models.ForeignKey('inventory.Category', on_delete=None,blank=True, null=True)
     description = models.TextField(default="")
 
     def __str__(self):

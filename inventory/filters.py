@@ -54,3 +54,11 @@ class TransferOrderFilter(django_filters.FilterSet):
             'source_warehouse': ['exact'],
             'receiving_warehouse': ['exact']
         }
+
+class UnitFilter(django_filters.FilterSet):
+    class Meta:
+        model = UnitOfMeasure
+        fields = {
+            'name': ['icontains'],
+            'base_unit': ['exact']
+        }

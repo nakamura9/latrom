@@ -3,7 +3,7 @@ import os
 from latrom import settings 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
-from django.conf.urls import url
+from django.urls import re_path
 import datetime
 from rest_framework.pagination import PageNumberPagination
 import invoicing
@@ -81,13 +81,13 @@ class ModelViewGroup(object):
         update_view_name = "%s-update" % model_name
         delete_view_name = "%s-delete" % model_name
         list_view_name = "%s-list" % model_name
-        self.urls.append(url(r'^%s/?' % create_view_name , 
+        self.urls.append(re_path(r'^%s/?' % create_view_name , 
             self.create_klass.as_view(), name=create_view_name ))
-        self.urls.append(url(r'^%s/?' % list_view_name , 
+        self.urls.append(re_path(r'^%s/?' % list_view_name , 
             self.list_klass.as_view(), name=list_view_name ))
-        self.urls.append(url(r'^%s/(?P<pk>[\w]+)/?' % update_view_name , 
+        self.urls.append(re_path(r'^%s/(?P<pk>[\w]+)/?' % update_view_name , 
             self.update_klass.as_view(), name=update_view_name ))
-        self.urls.append(url(r'^%s/(?P<pk>[\w]+)/?' % delete_view_name , 
+        self.urls.append(re_path(r'^%s/(?P<pk>[\w]+)/?' % delete_view_name , 
             self.delete_klass.as_view(), name=delete_view_name ))
         
         return self.urls

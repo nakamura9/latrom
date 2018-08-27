@@ -3,8 +3,8 @@ import Event from '../Event';
 
 const dayView = (props) =>{
     let dayWrapper = {
-        width: '100%',
-        height: '100%',
+        width: '350px',
+        height: '500px',
         margin: 'auto',
         padding: '10px',
         border: '1px solid black'

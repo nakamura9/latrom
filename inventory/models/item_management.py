@@ -51,11 +51,11 @@ class Order(models.Model):
     issue_date = models.DateField()
     type_of_order = models.IntegerField(choices=ORDER_TYPE_CHOICES, default=0)
     deferred_date = models.DateField(blank=True, null=True)
-    supplier = models.ForeignKey('inventory.supplier', blank=True, null=True)
+    supplier = models.ForeignKey('inventory.supplier', on_delete=None,blank=True, null=True)
     supplier_invoice_number = models.CharField(max_length=32, blank=True, default="")
     bill_to = models.CharField(max_length=128, blank=True, default="")
-    ship_to = models.ForeignKey('inventory.WareHouse')
-    tax = models.ForeignKey('accounting.Tax', default=1)
+    ship_to = models.ForeignKey('inventory.WareHouse', on_delete=None)
+    tax = models.ForeignKey('accounting.Tax',on_delete=None, default=1)
     tracking_number = models.CharField(max_length=64, blank=True, default="")
     notes = models.TextField()
     status = models.CharField(max_length=24, choices=ORDER_STATUS_CHOICES)
@@ -160,12 +160,12 @@ class OrderItem(models.Model):
         (2, 'Consumable'),
         (3, 'Equipment')
         ]
-    order = models.ForeignKey('inventory.Order')
+    order = models.ForeignKey('inventory.Order', on_delete=None, )
     item_type = models.PositiveSmallIntegerField(default=1, 
         choices=ITEM_TYPE_CHOICES)
-    product = models.ForeignKey('inventory.product', null=True)
-    consumable = models.ForeignKey('inventory.consumable', null=True)
-    equipment = models.ForeignKey('inventory.equipment', null=True)
+    product = models.ForeignKey('inventory.product', on_delete=None,null=True)
+    consumable = models.ForeignKey('inventory.consumable', on_delete=None,null=True)
+    equipment = models.ForeignKey('inventory.equipment', on_delete=None,null=True)
     quantity = models.FloatField()
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
@@ -226,8 +226,8 @@ class StockReceipt(models.Model):
     create_entry - method only called for instances where inventory 
     is paid for on receipt as per order terms.
     '''
-    order = models.ForeignKey('inventory.Order')
-    received_by = models.ForeignKey('employees.Employee', 
+    order = models.ForeignKey('inventory.Order', on_delete=None)
+    received_by = models.ForeignKey('employees.Employee', on_delete=None,
         default=1)
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
@@ -260,8 +260,8 @@ class StockReceipt(models.Model):
 class InventoryCheck(models.Model):
     date = models.DateField()
     next_adjustment_date = models.DateField(null=True)#not required
-    adjusted_by = models.ForeignKey('employees.Employee')
-    warehouse = models.ForeignKey('inventory.WareHouse')
+    adjusted_by = models.ForeignKey('employees.Employee', on_delete=None )
+    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None )
     comments = models.TextField()
     
     @property 
@@ -274,10 +274,10 @@ class InventoryCheck(models.Model):
             [i.adjustment_value for i in self.adjustments], 0)
 
 class StockAdjustment(models.Model):
-    warehouse_item = models.ForeignKey('inventory.WareHouseItem')
+    warehouse_item = models.ForeignKey('inventory.WareHouseItem', on_delete=None)
     adjustment = models.FloatField()
     note = models.TextField()
-    inventory_check = models.ForeignKey('inventory.InventoryCheck')
+    inventory_check = models.ForeignKey('inventory.InventoryCheck', on_delete=None)
 
     @property
     def adjustment_value(self):
@@ -298,12 +298,12 @@ class TransferOrder(models.Model):
     issue_date = models.DateField()
     expected_completion_date = models.DateField()
     issuing_inventory_controller = models.ForeignKey('employees.Employee',
-        related_name='issuing_inventory_controller', null=True)
-    receiving_inventory_controller = models.ForeignKey('employees.Employee', null=True)
+        related_name='issuing_inventory_controller', on_delete=None,null=True)
+    receiving_inventory_controller = models.ForeignKey('employees.Employee', on_delete=None, null=True)
     actual_completion_date =models.DateField(null=True)#provided later
     source_warehouse = models.ForeignKey('inventory.WareHouse',
-        related_name='source_warehouse')
-    receiving_warehouse = models.ForeignKey('inventory.WareHouse')
+        related_name='source_warehouse', on_delete=None,)
+    receiving_warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None,)
     order_issuing_notes = models.TextField(blank=True)
     receive_notes = models.TextField(blank=True)
     completed = models.BooleanField(default=False)
@@ -317,15 +317,15 @@ class TransferOrder(models.Model):
         self.save()
 
 class TransferOrderLine(models.Model):
-    product = models.ForeignKey('inventory.Product')
+    product = models.ForeignKey('inventory.Product', on_delete=None)
     quantity = models.FloatField()
-    transfer_order = models.ForeignKey('inventory.TransferOrder')
+    transfer_order = models.ForeignKey('inventory.TransferOrder', on_delete=None)
 
 
 class InventoryScrappingRecord(models.Model):
     date = models.DateField()
-    controller = models.ForeignKey('employees.Employee')
-    warehouse = models.ForeignKey('inventory.WareHouse')
+    controller = models.ForeignKey('employees.Employee', on_delete=None)
+    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None)
     comments = models.TextField(blank=True)
 
     @property
@@ -336,10 +336,10 @@ class InventoryScrappingRecord(models.Model):
                 0)
 
 class InventoryScrappingRecordLine(models.Model):
-    product = models.ForeignKey('inventory.Product')
+    product = models.ForeignKey('inventory.Product', on_delete=None)
     quantity = models.FloatField()
     note = models.TextField(blank=True)
-    scrapping_record = models.ForeignKey('inventory.InventoryScrappingRecord')
+    scrapping_record = models.ForeignKey('inventory.InventoryScrappingRecord', on_delete=None)
 
     @property
     def scrapped_value(self):
