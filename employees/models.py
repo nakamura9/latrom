@@ -46,6 +46,9 @@ class Employee(Person):
         Used in payslips
     allowances_YTD - a field that calculates all the allowances earned throughout the year. 
         Used in payslips
+    earnings_YTD - a field that calculates all the  earnings throughout the year. 
+        Used in payslips
+    is_<role> - checks the instance for evidence that an employee has been assigned a certain role within the system.
     '''
     employee_number = models.AutoField(primary_key=True)
     hire_date = models.DateField()
@@ -63,6 +66,7 @@ class Employee(Person):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    @property
     def _payslips_YTD(self):
         '''internal abstract method used in the following properties'''
         curr_year = datetime.date.today().year
@@ -75,13 +79,13 @@ class Employee(Person):
     
     @property
     def deductions_YTD(self):
-        slips = self._payslips_YTD()
+        slips = self._payslips_YTD
         return reduce(lambda x, y: x + y, [i.total_deductions \
              for i in slips], 0)
 
     @property
     def earnings_YTD(self):
-        slips = self._payslips_YTD()
+        slips = self._payslips_YTD
         return reduce(lambda x, y: x + y, [i.gross_pay \
              for i in slips], 0)    
 
@@ -100,8 +104,8 @@ class Employee(Person):
 
 #Change to benefits 
 class Allowance(models.Model):
-    '''simple object that tracks a fixed allowance as part of a pay
-    grade'''
+    '''simple object that tracks a fixed benefit or allowance granted as 
+    part of a pay grade'''
     name = models.CharField(max_length = 32)
     amount = models.FloatField()
     active = models.BooleanField(default=True)
@@ -260,7 +264,7 @@ class Payslip(models.Model):
     
     def save(self, *args, **kwargs):
         super(Payslip, self).save(*args, **kwargs)
-        #add leave for each month fix this
+        #add leave for each month
         self.employee.leave_days += self.employee.pay_grade.monthly_leave_days
         self.employee.save()
 
@@ -272,9 +276,9 @@ class Payslip(models.Model):
         elif not hasattr(self.employee, 'salesrepresentative'):
             return 0
         else:
-            total_sales = \
-                self.employee.salesrepresentative.sales(self.start_period, 
-                    self.end_period)
+            total_sales = self.employee.salesrepresentative.sales(
+                self.start_period, 
+                self.end_period)
             commissionable_sales = total_sales - self.commission.min_sales
             return self.employee.pay_grade.commission.rate * \
                 commissionable_sales
@@ -287,12 +291,6 @@ class Payslip(models.Model):
     def overtime_one_pay(self):
         return self.employee.pay_grade.overtime_rate * self.overtime_one_hours
 
-    @property
-    def calculated_payroll_taxes_list(self):
-        return [{
-            'name': tax.name,
-            'amount': tax.tax(self.taxable_gross_pay)} \
-                for tax in self.employee.pay_grade.payroll_taxes.all()]
 
     @property
     def overtime_two_pay(self):
@@ -301,6 +299,17 @@ class Payslip(models.Model):
     @property
     def overtime_pay(self):
         return self.overtime_one_pay + self.overtime_two_pay
+
+    '''
+    #Deprecate
+    @property
+    def calculated_payroll_taxes_list(self):
+        return [{
+            'name': tax.name,
+            'amount': tax.tax(self.taxable_gross_pay)} \
+                for tax in self.employee.pay_grade.payroll_taxes.all()]
+    '''
+
 
     @property
     def gross_pay(self):
@@ -331,11 +340,11 @@ class Payslip(models.Model):
 
     @property
     def total_deductions(self):
-        return self.total_payroll_taxes + self._deductions
+        return self.total_payroll_taxes + D(self._deductions)
 
     @property
     def net_pay(self):
-        return D(self.gross_pay) - self.total_deductions
+        return D(self.gross_pay) - D(self.total_deductions)
 
 
 class PayrollTax(models.Model):

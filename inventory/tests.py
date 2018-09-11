@@ -9,19 +9,17 @@ from common_data.tests import create_test_user, create_account_models
 
 from django.test import TestCase,Client
 from django.urls import reverse
-import models 
+from . import models 
 from accounting.models import Account, JournalEntry
-
+from common_data.models import Organization
 TODAY = datetime.date.today()
 
 def create_test_inventory_models(cls):
+    cls.organization = Organization.objects.create(
+        legal_name = 'test business'
+    )
     cls.supplier = models.Supplier.objects.create(
-            name='Test Name',
-            contact_person='Test Contact Person',
-            physical_address='Test Address',
-            telephone='1234325345',
-            email='test@mail.com',
-            website = 'test.site',
+            organization=cls.organization,
             account = cls.account_c
             )
 
@@ -45,8 +43,7 @@ def create_test_inventory_models(cls):
             supplier = cls.supplier,
             minimum_order_level = 0,
             maximum_stock_level = 20,
-            category = cls.category,
-            sub_category = cls.category
+            category = cls.category
         )
     cls.warehouse = models.WareHouse.objects.create(
         name='Test Location',
@@ -91,12 +88,7 @@ class ModelTests(TestCase):
 
     def test_create_supplier(self):
         sup = models.Supplier.objects.create(
-            name='Other Test Name',
-            contact_person='Test Contact Person',
-            physical_address='Test Address',
-            telephone='1234325345',
-            email='test@mail.com',
-            website = 'test.site',
+            organization=self.organization,
             account = self.account_c
         )
         self.assertIsInstance(sup, models.Supplier)
@@ -113,8 +105,7 @@ class ModelTests(TestCase):
             supplier = self.supplier,
             minimum_order_level = 0,
             maximum_stock_level = 20,
-            category = self.category,
-            sub_category = self.category    
+            category = self.category
         ) 
         self.assertIsInstance(product, models.Product)
         #and associated functions
@@ -254,17 +245,10 @@ class ViewTests(TestCase):
             'quantity' : 10,
             'minimum_order_level' : 0,
             'maximum_stock_level' : 20,
-            'category' : cls.category.pk,
-            'sub_category' : cls.category.pk,
-            
+            'category' : cls.category.pk
         }
         cls.SUPPLIER_DATA = {
-            'name' : 'Other Test Name',
-            'contact_person' : 'Test Contact Person',
-            'physical_address' : 'Test Address',
-            'telephone' : '1234325345',
-            'email' : 'test@mail.com',
-            'website' : 'test.site',
+            'organization': cls.organization,
             'account': cls.account_c.pk
         }
         cls.ORDER_DATA = {

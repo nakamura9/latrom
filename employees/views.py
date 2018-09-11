@@ -38,7 +38,7 @@ class DashBoard(AdministratorCheckMixin, ExtraContext, TemplateView):
         'employees': models.Employee.objects.all()
     }
 
-class PayrollConfig(ExtraContext, UpdateView):
+class PayrollConfig(AdministratorCheckMixin, ExtraContext, UpdateView):
     model = models.EmployeesSettings
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy("employees:dashboard")
@@ -47,7 +47,7 @@ class PayrollConfig(ExtraContext, UpdateView):
         'title': 'Configure automated Payroll'
     }
 
-class ManualPayrollConfig(TemplateView):
+class ManualPayrollConfig(AdministratorCheckMixin, TemplateView):
     template_name = os.path.join('employees', 'manual_config.html')
     
 

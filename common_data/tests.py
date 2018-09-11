@@ -6,8 +6,7 @@ import datetime
 TODAY = datetime.date.today()
 
 def create_test_user(cls):
-    cls.user = User.objects.create(username='Testuser')
-    cls.user.set_password('123')
+    cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
     cls.user.save()
 
 def create_account_models(cls):
