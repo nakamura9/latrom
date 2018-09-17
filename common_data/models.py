@@ -25,7 +25,8 @@ class Individual(Person):
     '''
     phone_two = models.CharField(max_length = 16,blank=True , default="")
     other_details = models.TextField(blank=True, default="")
-    organization = models.ForeignKey('common_data.Organization', on_delete=models.CASCADE,null=True, blank=True)
+    organization = models.ForeignKey('common_data.Organization', 
+        on_delete=models.CASCADE,null=True, blank=True)
     photo = models.ImageField(null=True, blank=True)
     
     def delete(self):

@@ -16,7 +16,9 @@ TODAY = datetime.date.today()
 
 from employees.models import *
 
-def create_employees_models(cls):
+
+
+def create_test_employees_models(cls):
     cls.allowance = Allowance.objects.create(
             name='Model Test Allowance',
             amount=50
@@ -73,11 +75,11 @@ def create_employees_models(cls):
             overtime_two_hours=0,
             pay_roll_id = 1
     )
-'''
+
 class CommonModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
 
     def test_create_employee_settings(self):
@@ -97,7 +99,7 @@ class CommonModelTests(TestCase):
 class EmployeeModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def test_create_employee(self):
         obj = Employee.objects.create(
@@ -143,7 +145,7 @@ class AllowanceModelTest(TestCase):
 class DeductionModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def test_create_fixed_deduction(self):
         obj = Deduction.objects.create(
@@ -195,7 +197,7 @@ class CommissionRuleModelTest(TestCase):
 class PayGradeModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
     
     def test_create_pay_grade(self):
         obj = PayGrade.objects.create(
@@ -231,7 +233,7 @@ class PayGradeModelTests(TestCase):
 class PaySlipModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def test_create_pay_slip(self):
         obj = Payslip.objects.create(
@@ -289,7 +291,7 @@ class PaySlipModelTests(TestCase):
 class TaxBracketModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def test_create_payroll_tax(self):
         obj = PayrollTax.objects.create(
@@ -307,5 +309,3 @@ class TaxBracketModelTests(TestCase):
             deduction=25)
 
         self.assertIsInstance(obj, TaxBracket)
-
-'''

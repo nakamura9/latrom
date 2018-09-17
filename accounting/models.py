@@ -254,7 +254,7 @@ class InterestBearingAccount(AbstractAccount):
 class Ledger(models.Model):
     '''
     Summarizes the accounts and journal entries
-    Not yet implemented
+    Not yet implemented -might make a singleton model
     '''
     name = models.CharField(max_length=64)
 
@@ -327,17 +327,20 @@ class Asset(models.Model):
 
     def create_entry(self):
         '''debits the debit account and credits the appropriate asset account'''
-        j = JournalEntry.objects.create(
-            reference = "Asset. ID: " + str(self.pk),
-            date = datetime.date.today(),
-            memo =  "Asset added. Name: %s. Description: %s " % (
-                self.name, self.description
-            ),
-            journal = Journal.objects.get(pk=5)# not ideal general journal
-        )
-        j.simple_entry(self.initial_value, 
-        Account.objects.get(name=asset_choices[self.category]),#one of the asset accounts
-        self.debit_account)
+        try:
+            j = JournalEntry.objects.create(
+                reference = "Asset. ID: " + str(self.pk),
+                date = datetime.date.today(),
+                memo =  "Asset added. Name: %s. Description: %s " % (
+                    self.name, self.description
+                ),
+                journal = Journal.objects.get(pk=5)# not ideal general journal
+            )
+            j.simple_entry(self.initial_value, 
+            Account.objects.get(name=asset_choices[self.category]),
+            self.debit_account)
+        except:
+            pass
 
     def depreciate(self):
         pass
@@ -375,18 +378,24 @@ class AbstractExpense(models.Model):
     whether or not the expense can be billed to customers is also 
     recorded. Creates a journal entry when intialized.'''
     description = models.TextField()
-    category = models.IntegerField(choices=EXPENSE_CHOICES)
+    category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     debit_account = models.ForeignKey('accounting.Account', on_delete=None)
 
     class Meta:
         abstract = True
 
+    @property
+    def expense_account(self):
+        global EXPENSE_CHOICES
+        name = EXPENSE_CHOICES[self.category][1]
+        return Account.objects.get(name=name)
+
 class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', on_delete=None,null=True)
-    
+
     def create_entry(self):
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
@@ -409,8 +418,6 @@ class Expense(AbstractExpense):
             self.create_entry()
 
 
-
-
 class RecurringExpense(AbstractExpense):
     EXPENSE_CYCLE_CHOICES = [
         (1, 'Daily'), 
@@ -431,11 +438,14 @@ class RecurringExpense(AbstractExpense):
 
     def create_entry(self):
         j = JournalEntry.objects.create(
-            reference = "Expense. ID: " + str(self.pk),
-            date = datetime.date.today,
-            memo =  "Recurrent Expense recorded. Category: %s." % self.category,
+            reference = "Expense. ID: {}".format(self.pk),
+            date = datetime.date.today(),
+            memo =  "Recurrent Expense recorded. Category: {}".format(self.category),
             journal = Journal.objects.get(pk=2)# cash disbursements
         )
         j.simple_entry(self.amount, 
         Account.objects.get(name=expense_choices[self.category]), 
         self.debit_account)
+        return j
+
+    

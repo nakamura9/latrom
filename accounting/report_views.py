@@ -113,7 +113,7 @@ class IncomeStatement(TemplateView):
     template_name = os.path.join('accounting', 'reports', 'income_statement.html')
 
     def get_context_data(self, *args, **kwargs):
-        context = super(IncomeStatement, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         kwargs =  self.request.GET
         start, end = extract_period(kwargs)
 

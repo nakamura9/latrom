@@ -100,7 +100,8 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, ConfigMixin, Crea
         
         items = request.POST.get("item_list", None)
         process_data(items, inv)
-
+        #fix 
+        #create payment for invoice and entry if the post obj is paid
         return resp
 
 

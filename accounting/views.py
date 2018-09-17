@@ -14,6 +14,8 @@ from django.contrib.auth.decorators import login_required
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from rest_framework import viewsets
+from common_data.views import PaginationMixin
+
 
 from . import serializers
 from . import models 
@@ -125,7 +127,7 @@ class AccountDetailView(BookkeeperCheckMixin, DetailView):
     model = models.Account 
     
 
-class AccountListView(BookkeeperCheckMixin, ExtraContext, FilterView):
+class AccountListView(BookkeeperCheckMixin, FilterView, PaginationMixin, ExtraContext):
     template_name = os.path.join('accounting', 'account_list.html')
     filterset_class = filters.AccountFilter
     paginate_by = 10
@@ -133,8 +135,9 @@ class AccountListView(BookkeeperCheckMixin, ExtraContext, FilterView):
         "title": "Chart of Accounts",
         'new_link': reverse_lazy('accounting:create-account')
                 }
-    def get_queryset(self):
-        return models.Account.objects.filter(active=True).order_by('pk')
+    
+    model=models.Account
+
 #############################################################
 #                        Misc Views                         #
 #############################################################
@@ -303,6 +306,8 @@ class JournalListView(BookkeeperCheckMixin, ExtraContext, FilterView):
 
     def get_queryset(self):
         return models.Journal.objects.all().order_by('name')
+
+    
 
 #########################################################
 #                  Assets and Expenses                  #

@@ -8,7 +8,7 @@
 </tr>
 {% endblock %}
 {% block list_content %}
-{% for item in object_list %}
+{% for item in filter.qs %}
 <tr>
     <td>{{item.name}}</td>
     <td>{{item.balance}}</td>

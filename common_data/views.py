@@ -13,6 +13,7 @@ from common_data import models
 from . import forms 
 from django.template import loader
 from django.core.mail import send_mail
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
@@ -133,3 +134,22 @@ class SendEmail(ExtraContext, FormView):
                 [form.cleaned_data['recepient']])
             return resp
         return resp
+
+#fix
+class PaginationMixin(object):
+    def get_queryset(self):
+        qs = self.model.objects.all()
+        p = Paginator(qs, self.paginate_by)
+
+        page = self.request.GET.get('page')
+        try:
+            qs_ = p.page(page)
+        except PageNotAnInteger:
+            #gets first page
+            qs_ = p.page(1)
+        except EmptyPage:
+            #gets last page 
+            qs_ = p.page(p.num_pages)
+
+        
+        return qs_

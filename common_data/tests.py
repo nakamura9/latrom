@@ -2,14 +2,28 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from accounting.models import *
 import datetime
-
+from common_data import models
+from django.core.management import call_command
 TODAY = datetime.date.today()
+
+def create_test_common_entities(cls):
+    cls.individual = models.Individual.objects.create(
+        first_name="test",
+        last_name="last_name")
+
+    cls.organization = models.Organization.objects.create(
+        legal_name="business"
+    )
 
 def create_test_user(cls):
     cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
     cls.user.save()
 
 def create_account_models(cls):
+    if Journal.objects.all().count() < 5:
+        call_command('loaddata', 'accounting/fixtures/accounts.json', 
+            'accounting/fixtures/journals.json')
+
     cls.account_c = Account.objects.create(
             name= 'Model Test Credit Account',
             balance=100,
@@ -61,3 +75,10 @@ def create_account_models(cls):
         billable=False,
         debit_account=cls.account_d,
     )
+    if AccountingSettings.objects.all().count() == 0:
+        cls.config = AccountingSettings.objects.create(
+            start_of_financial_year = TODAY,
+            use_default_chart_of_accounts = True
+        )
+    else:
+        cls.config = AccountingSettings.objects.first()

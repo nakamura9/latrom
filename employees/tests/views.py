@@ -8,7 +8,7 @@ from django.test import TestCase, Client
 from django.shortcuts import reverse
 
 from employees.models import *
-from .models import create_employees_models
+from .models import create_test_employees_models
 from latrom import settings
 from common_data.tests import create_test_user
 
@@ -25,7 +25,7 @@ class GenericPageTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -79,7 +79,7 @@ class PayGradePageTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -121,7 +121,7 @@ class PaySlipPageTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -159,7 +159,7 @@ class EmployeePageTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -224,7 +224,7 @@ class BenefitsPageTests(TestCase):
         
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -281,7 +281,7 @@ class CommissionPageTests(TestCase):
         
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -340,7 +340,7 @@ class DeductionPageTests(TestCase):
         
     @classmethod
     def setUpTestData(cls):
-        create_employees_models(cls)
+        create_test_employees_models(cls)
 
     def setUp(self):
         #wont work in setUpClass

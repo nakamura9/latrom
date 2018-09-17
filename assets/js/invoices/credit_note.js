@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 import $ from 'jquery';
-
 
 export default class CreditNoteTable extends Component{
     constructor(props){
@@ -15,25 +15,30 @@ export default class CreditNoteTable extends Component{
         //prepopulate the form
         let decomposedURL = window.location.href.split('/');
         let pk = decomposedURL[decomposedURL.length - 1]; 
-        $.ajax({
+        axios({
             url: '/invoicing/api/sales-invoice/' + pk,
             data: {},
             method: 'GET'
         }).then(res => {
             let credits = {};
-
-            var i = 0;
-            for( i in res.salesinvoiceline_set){
-                credits[res.salesinvoiceline_set[i].id] = 0.0;
+            let i = 0;
+            console.log(res.data);
+            for( i in res.data.salesinvoiceline_set){
+                credits[res.data.salesinvoiceline_set[i].id] = 0.0;
             }
             this.setState({
-                elements: res.salesinvoiceline_set,
+                elements: res.data.salesinvoiceline_set,
                 credit: credits
             });
             
         });
 
         // place hidden input 
+        /*
+        document.getElementsByTagName('form')
+            .appendChild()
+            .document.createElement('input').a
+        */
         $('<input>').attr({
             'name': 'returned-items',
             'type': 'hidden',
@@ -90,7 +95,7 @@ class CreditNoteLine extends Component{
         }
     }
     handleInputChange(evt){
-        let credit = this.props.element.item.unit_sales_price * evt.target.value;
+        let credit = this.props.element.product.unit_sales_price * evt.target.value;
         this.setState({
             returned: evt.target.value,
             id: this.props.element.id,
@@ -104,8 +109,8 @@ class CreditNoteLine extends Component{
         return(
         <tr>
             <td>{this.props.element.quantity}</td>
-            <td>{this.props.element.item.item_name}</td>
-            <td>{this.props.element.item.unit_sales_price.toFixed(2)}</td>
+            <td>{this.props.element.product.name}</td>
+            <td>{this.props.element.product.unit_sales_price.toFixed(2)}</td>
             <td>
                 <input type="number" 
                     name = {this.props.element.id}
