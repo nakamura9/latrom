@@ -5,7 +5,6 @@ import urllib
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from django_filters.views import FilterView
 from inventory import forms
 from inventory import models
 from common_data.utilities import ExtraContext, ConfigMixin

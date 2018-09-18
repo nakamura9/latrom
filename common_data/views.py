@@ -15,6 +15,34 @@ from django.template import loader
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+
+class PaginationMixin(object):
+    '''quick and dirty mixin to support pagination on filterviews '''
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        filter = self.filterset_class(self.request.GET, queryset=self.queryset)
+        object_list = filter.qs
+
+        p = Paginator(object_list, self.paginate_by)
+
+        page = self.request.GET.get('page')
+        try:
+            qs_ = p.page(page)
+        except PageNotAnInteger:
+            #gets first page
+            qs_ = p.page(1)
+        except EmptyPage:
+            #gets last page 
+            qs_ = p.page(p.num_pages)
+
+        context['object_list'] = qs_
+        context['paginator'] = p
+        context['is_paginated'] = True
+        context['page_obj'] = page
+
+        return context
+
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 #########################################################
@@ -82,7 +110,7 @@ class IndividualDetailView(ExtraContext, DetailView):
     model = models.Individual
     
 
-class IndividualListView(ExtraContext, FilterView):
+class IndividualListView(ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('common_data', 'individual', 'list.html')
     queryset = models.Individual.objects.all()
     filterset_class = filters.IndividualFilter
@@ -136,20 +164,3 @@ class SendEmail(ExtraContext, FormView):
         return resp
 
 #fix
-class PaginationMixin(object):
-    def get_queryset(self):
-        qs = self.model.objects.all()
-        p = Paginator(qs, self.paginate_by)
-
-        page = self.request.GET.get('page')
-        try:
-            qs_ = p.page(page)
-        except PageNotAnInteger:
-            #gets first page
-            qs_ = p.page(1)
-        except EmptyPage:
-            #gets last page 
-            qs_ = p.page(p.num_pages)
-
-        
-        return qs_

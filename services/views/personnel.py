@@ -12,6 +12,8 @@ from services import filters
 from services import serializers
 from common_data.utilities import ExtraContext
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
+
 
 ####################################################
 #                Service Employees                 #
@@ -33,7 +35,7 @@ class ServicePersonUpdateView(ExtraContext, UpdateView):
         'title': 'Update Service Person Details'
     }
 
-class ServicePersonListView(ExtraContext, FilterView):
+class ServicePersonListView(ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'personnel', 'list.html')
     queryset = models.ServicePerson.objects.all()
     extra_context = {

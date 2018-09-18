@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from rest_framework import generics, viewsets
-from django_filters.views import FilterView
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.conf import settings

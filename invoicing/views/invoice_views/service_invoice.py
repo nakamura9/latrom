@@ -7,6 +7,7 @@ import urllib
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.urls import reverse_lazy
 from invoicing import forms
 from wkhtmltopdf.views import PDFTemplateView
@@ -48,7 +49,7 @@ def process_data(items, inv):
 class ServiceInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ServiceInvoiceSerializer
     queryset = ServiceInvoice.objects.all()
-class ServiceInvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class ServiceInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "Service Invoice List",
                     "new_link": reverse_lazy("invoicing:create-service-invoice")}
     template_name = os.path.join("invoicing", "service_invoice","list.html")

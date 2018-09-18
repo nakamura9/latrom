@@ -8,6 +8,7 @@ from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from rest_framework import viewsets
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.urls import reverse_lazy, reverse
 from invoicing import forms
 
@@ -37,7 +38,7 @@ class SalesRepUpdateView(SalesRepCheckMixin,ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class SalesRepListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class SalesRepListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "List of Sales Representatives",
                     "new_link": reverse_lazy("invoicing:create-sales-rep")}
     template_name = os.path.join("invoicing", "sales_rep_list.html")

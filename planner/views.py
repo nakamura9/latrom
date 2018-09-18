@@ -4,6 +4,7 @@ import os
 import json
 import urllib
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.db.models import Q
@@ -72,7 +73,7 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
 
         return resp
 
-class EventListView(ExtraContext, LoginRequiredMixin, FilterView):
+class EventListView(ExtraContext, LoginRequiredMixin, PaginationMixin, FilterView):
     template_name = os.path.join('planner', 'events', 'list.html')
     filterset_class = filters.EventFilter
     extra_context = {

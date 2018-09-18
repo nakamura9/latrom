@@ -49,12 +49,6 @@ class CustomerForm(forms.ModelForm, BootstrapMixin):
         exclude = ['active', 'account']
         model = models.Customer
 
-class QuickCustomerForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields = ['individual', 'organization', 'billing_address']
-        model = models.Customer
-
-
 class SalesRepForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = 'active',

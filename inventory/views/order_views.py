@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from inventory import forms
@@ -122,7 +123,7 @@ class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext,
     extra_context = {"title": "Update Existing Purchase Order"}
 
 
-class OrderListView(InventoryControllerCheckMixin, ExtraContext, FilterView):
+class OrderListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.OrderFilter
     template_name = os.path.join("inventory", "order", "list.html")

@@ -7,6 +7,8 @@ import urllib
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
+
 from django.urls import reverse_lazy
 from invoicing import forms
 
@@ -43,7 +45,7 @@ def process_data(data, inv):
         pass
 
 
-class BillListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class BillListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
     template_name = os.path.join("invoicing", "bill","list.html")

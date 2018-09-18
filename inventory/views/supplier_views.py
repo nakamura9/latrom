@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from inventory import forms
@@ -42,7 +43,7 @@ class SupplierUpdateView(InventoryControllerCheckMixin, ExtraContext,
     extra_context = {"title": "Update Existing Supplier"}
 
 
-class SupplierListView(InventoryControllerCheckMixin, ExtraContext, FilterView):
+class SupplierListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier", "list.html")

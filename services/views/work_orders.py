@@ -13,6 +13,7 @@ from services import filters
 from services import serializers
 from common_data.utilities import ExtraContext
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from rest_framework.viewsets import ModelViewSet
 
 class WorkOrderCRUDMixin(object):
@@ -79,7 +80,7 @@ class WorkOrderDetailView(DetailView):
         )
         return context
 
-class WorkOrderListView(ExtraContext, FilterView):
+class WorkOrderListView(ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'work_order', 'list.html')
     filterset_class = filters.WorkOrderFilter
     queryset = models.ServiceWorkOrder.objects.all()

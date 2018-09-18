@@ -127,16 +127,16 @@ class AccountDetailView(BookkeeperCheckMixin, DetailView):
     model = models.Account 
     
 
-class AccountListView(BookkeeperCheckMixin, FilterView, PaginationMixin, ExtraContext):
+class AccountListView(BookkeeperCheckMixin, PaginationMixin, FilterView,  ExtraContext):
     template_name = os.path.join('accounting', 'account_list.html')
     filterset_class = filters.AccountFilter
     paginate_by = 10
+    queryset = models.Account.objects.all()
     extra_context = {
         "title": "Chart of Accounts",
         'new_link': reverse_lazy('accounting:create-account')
                 }
-    
-    model=models.Account
+    #model=models.Account
 
 #############################################################
 #                        Misc Views                         #
@@ -164,7 +164,7 @@ class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     }
 
 
-class TaxListView(BookkeeperCheckMixin, ExtraContext, FilterView):
+class TaxListView(BookkeeperCheckMixin, ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.TaxFilter
     template_name = os.path.join('accounting','tax_list.html')
     paginate_by =10
@@ -295,7 +295,7 @@ class JournalDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'journal_detail.html')
     model = models.Journal
 
-class JournalListView(BookkeeperCheckMixin, ExtraContext, FilterView):
+class JournalListView(BookkeeperCheckMixin, ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('accounting', 'journal_list.html')
     filterset_class = filters.JournalFilter
     paginate_by = 10

@@ -19,6 +19,12 @@ from services.models import Service, ServiceCategory
 TODAY = datetime.date.today()
 
 def create_test_invoicing_models(cls):
+    '''creates common models for testing invoices.
+    
+    1. customers:
+        a. customer_org
+        b. customer_ind
+    '''
     create_test_common_entities(cls)
     org = Organization.objects.create(
         legal_name="business"

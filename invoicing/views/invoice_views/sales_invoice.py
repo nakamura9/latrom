@@ -7,6 +7,7 @@ import urllib
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.urls import reverse_lazy
 from rest_framework import viewsets
 from django.core.mail import EmailMessage
@@ -48,7 +49,7 @@ def process_data(items, inv):
     else:
         pass
 
-class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "Sales Invoice List",
                     "new_link": reverse_lazy("invoicing:create-sales-invoice")}
     template_name = os.path.join("invoicing", "sales_invoice","list.html")

@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from inventory import forms
@@ -48,7 +49,7 @@ class ProductDetailView(InventoryControllerCheckMixin, DetailView):
     template_name = os.path.join("inventory", "item", "product", "detail.html")
 
 
-class ProductListView(InventoryControllerCheckMixin, ExtraContext, FilterView):
+class ProductListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.ItemFilter
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
@@ -102,7 +103,7 @@ class ConsumableDetailView(InventoryControllerCheckMixin, DetailView):
 
 
 class ConsumableListView(InventoryControllerCheckMixin, ExtraContext, 
-        FilterView):
+        PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.ItemFilter
     template_name = os.path.join('inventory', 'item', 'consumable','list.html')
@@ -149,7 +150,7 @@ class EquipmentDetailView(InventoryControllerCheckMixin, DetailView):
 
 
 class EquipmentListView(InventoryControllerCheckMixin, ExtraContext, 
-        FilterView):
+        PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.ItemFilter
     template_name = os.path.join('inventory', 'item', 'equipment', 'list.html')

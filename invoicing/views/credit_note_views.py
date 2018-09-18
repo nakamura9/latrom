@@ -11,6 +11,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from rest_framework import generics, viewsets
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
+
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
@@ -84,7 +86,7 @@ class CreditNoteDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
 
 #Deprecated
 #credit notes now accessed on an invoice by invoice basis
-class CreditNoteListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class CreditNoteListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "List of Credit Notes",
                     "new_link": reverse_lazy("invoicing:credit-note-create")}
     template_name = os.path.join("invoicing", "credit_note_list.html")

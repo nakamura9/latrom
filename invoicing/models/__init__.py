@@ -28,7 +28,7 @@ class SalesConfig(SingletonModel):
     sales_tax = models.ForeignKey('accounting.Tax', on_delete=None, null=True, blank="True")
     include_shipping_address = models.BooleanField(default=False)
     business_address = models.TextField(blank=True)
-    logo = models.ImageField(null=True,upload_to="logo/")
+    logo = models.ImageField(null=True,upload_to="logo/", blank=True)
     document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES)
     currency = models.CharField(max_length=1, choices=CURRENCY_CHOICES)
     apply_price_multiplier = models.BooleanField(default=False)

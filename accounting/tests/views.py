@@ -11,9 +11,8 @@ import datetime
 import decimal
 from latrom import settings
 
-from common_data.tests import create_test_user
 from inventory.tests import create_test_inventory_models
-from common_data.tests import create_account_models
+from common_data.tests import create_test_user, create_account_models
 
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()

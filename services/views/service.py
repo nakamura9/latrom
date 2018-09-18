@@ -12,6 +12,8 @@ from services import models
 from services import filters
 from common_data.utilities import ExtraContext
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
+
 from rest_framework import viewsets
 
 from services import serializers
@@ -42,7 +44,7 @@ class ServiceUpdateView(ExtraContext, UpdateView):
         'title': 'Update existing service Listing'
     }
 
-class ServiceListView(ExtraContext, FilterView):
+class ServiceListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.ServiceFilter
     model = models.Service
     template_name = os.path.join('services', 'service', 'list.html')

@@ -1,5 +1,5 @@
 from django.urls import re_path
-from invoicing import views, report_views
+from invoicing import views
 from rest_framework.routers import DefaultRouter
 from .bill_urls import bill_urls
 from .combined_urls import combined_urls
@@ -8,11 +8,11 @@ from .sales_urls import sales_urls
 
 report_urls = [
     re_path(r'^customer-statement-form/?$', 
-        report_views.CustomerReportFormView.as_view(),
+        views.CustomerReportFormView.as_view(),
              name='customer-statement-form'),
-    re_path(r'^customer-statement/?$', report_views.CustomerStatement.as_view(),
+    re_path(r'^customer-statement/?$', views.CustomerStatement.as_view(),
              name='customer-statement'),
-    re_path(r'^invoice-aging/?$', report_views.InvoiceAgingReport.as_view(),
+    re_path(r'^invoice-aging/?$', views.InvoiceAgingReport.as_view(),
              name='invoice-aging'),
 ]
 
@@ -22,7 +22,6 @@ customer_router.register(r'api/customer', views.CustomerAPIViewSet, base_name='c
 
 customer_urls = [
     re_path(r'^create-customer$', views.CustomerCreateView.as_view(), name='create-customer'),
-    re_path(r'^quick-customer$', views.QuickCustomerCreateView.as_view(), name='quick-customer'),
     re_path(r'^update-customer/(?P<pk>[\w]+)$', views.CustomerUpdateView.as_view(), name='update-customer'),
     re_path(r'^delete-customer/(?P<pk>[\w]+)$', views.CustomerDeleteView.as_view(), name='delete-customer'),
     re_path(r'^customer-list$', views.CustomerListView.as_view(), name='customers-list'),

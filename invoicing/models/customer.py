@@ -27,13 +27,13 @@ class Customer(models.Model):
     def invoices(self):
         return AbstractSale.abstract_filter(Q(customer=self))
     
-
     @property
     def name(self):
         if self.organization:
             return self.organization.legal_name
         else:
             return str(self.individual)
+            
     @property
     def customer_email(self):
         if self.is_organization:

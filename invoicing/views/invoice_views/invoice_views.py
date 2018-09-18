@@ -6,7 +6,6 @@ import urllib
 
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from invoicing import forms
 

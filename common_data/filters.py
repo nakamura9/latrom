@@ -15,3 +15,4 @@ class IndividualFilter(FilterSet):
             'first_name': ['icontains'],
             'last_name': ['icontains']
         }
+

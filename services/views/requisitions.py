@@ -5,6 +5,8 @@ import urllib
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
+
 from rest_framework.viewsets import ModelViewSet
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -55,7 +57,7 @@ class EquipmentRequisitionDetailView(DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class EquipmentRequisitionListView(ExtraContext, FilterView):
+class EquipmentRequisitionListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
     queryset = models.EquipmentRequisition.objects.all()
     template_name = os.path.join('services', 'requisitions', 'equipment', 'list.html')
@@ -154,7 +156,7 @@ class ConsumableRequisitionDetailView(DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class ConsumableRequisitionListView(ExtraContext, FilterView):
+class ConsumableRequisitionListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.ConsumableRequisitionFilter
     queryset = models.ConsumablesRequisition.objects.all()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')

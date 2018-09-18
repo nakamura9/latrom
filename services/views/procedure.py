@@ -10,6 +10,8 @@ from services import models
 from services import filters
 from common_data.utilities import ExtraContext 
 from django_filters.views import FilterView
+from common_data.views import PaginationMixin
+
 from inventory.models import Equipment, Consumable
 from rest_framework.viewsets import ModelViewSet 
 from services.serializers import ProcedureSerializer
@@ -66,7 +68,7 @@ class ProcedureDetailView(DetailView):
     template_name = os.path.join('services', 'procedure', 'detail.html')
     model = models.ServiceProcedure
 
-class ProcedureListView(ExtraContext, FilterView):
+class ProcedureListView(ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'procedure', 'list.html')
     filterset_class = filters.ProcedureFilter
     model = models.ServiceProcedure
