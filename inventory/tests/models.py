@@ -1,15 +1,16 @@
+import datetime
 import json
 import urllib
-import datetime
-from django.utils import timezone
-from common_data.tests import create_test_user, create_account_models
 
-from django.test import TestCase,Client
+from django.test import Client, TestCase
 from django.urls import reverse
-from inventory import models 
-from accounting.models import Account, JournalEntry
+from django.utils import timezone
 
+from accounting.models import Account, JournalEntry
 from common_data.models import Organization
+from common_data.tests import create_account_models, create_test_user
+from inventory import models
+
 TODAY = datetime.date.today()
 
 def create_test_inventory_models(cls):

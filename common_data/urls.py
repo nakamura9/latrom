@@ -1,5 +1,7 @@
-from django.urls import re_path, include
+from django.urls import include, re_path
+
 from common_data import views
+
 urlpatterns = [
     re_path(r'^workflow/?$', views.WorkFlowView.as_view(), name="workflow"),
     re_path(r'^react-test/?$', views.ReactTest.as_view(), name="react-test"),

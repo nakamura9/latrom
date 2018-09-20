@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.views.generic import TemplateView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from invoicing import forms
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from common_data.utilities import ExtraContext, apply_style
 from inventory.models import Product
+from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing import filters
-from invoicing import serializers
 from views import SalesRepCheckMixin
 
 ################################################

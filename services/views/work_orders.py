@@ -1,20 +1,19 @@
-import os 
-import json 
+import json
+import os
 import urllib
 
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
-from django.views.generic import ListView ,TemplateView, DetailView
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
-from services import models
-from services import forms 
-from services import filters
-from services import serializers
-from common_data.utilities import ExtraContext
 from django_filters.views import FilterView
-from common_data.views import PaginationMixin
 from rest_framework.viewsets import ModelViewSet
+
+from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from services import filters, forms, models, serializers
+
 
 class WorkOrderCRUDMixin(object):
     def post(self, request, *args, **kwargs):

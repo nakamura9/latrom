@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.views.generic import TemplateView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from rest_framework import viewsets
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters.views import FilterView
-from common_data.views import PaginationMixin
-from django.urls import reverse_lazy, reverse
-from invoicing import forms
+from rest_framework import viewsets
 
 from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from invoicing import filters, forms, serializers
 from invoicing.models import SalesRepresentative
-from invoicing import filters
-from invoicing import serializers
+
 from .common import SalesRepCheckMixin
 
 #########################################
@@ -55,4 +55,4 @@ class SalesRepsAPIViewSet(viewsets.ModelViewSet):
 class SalesRepDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join("common_data", "delete_template.html")
     model = SalesRepresentative
-    success_url = reverse_lazy("invoicing:invoices-list")
+    success_url = reverse_lazy("invoicing:sales-reps-list")

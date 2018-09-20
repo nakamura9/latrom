@@ -1,6 +1,7 @@
 from django.urls import re_path
-from inventory import views
 from rest_framework import routers
+
+from inventory import views
 
 order_router = routers.DefaultRouter()
 order_router.register(r'^api/order', views.OrderAPIView)

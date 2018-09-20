@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal as D
-import rest_framework
 
+import rest_framework
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.conf import settings
-from accounting.models import JournalEntry, Journal, Account
+
+from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel
+
 from .item_models import Product
+
 
 class InventorySettings(SingletonModel):
     INVENTORY_VALUATION_METHODS = [

@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
-import json
-import urllib
+
 import datetime
 import decimal
+import json
+import os
+import urllib
 
-from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView,  FormView
-from django.http import HttpResponseRedirect
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
-from django_filters.views import FilterView
-from common_data.views import PaginationMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormView,
+                                       UpdateView)
+from django_filters.views import FilterView
 from rest_framework import viewsets
 
-from . import serializers
-from . import models 
-from . import filters
-from . import forms
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
+from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.views import PaginationMixin
+
+from . import filters, forms, models, serializers
+
 
 class AdministratorCheckMixin(UserPassesTestMixin):
     def test_func(self):

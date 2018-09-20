@@ -33,12 +33,6 @@ export default class CreditNoteTable extends Component{
             
         });
 
-        // place hidden input 
-        /*
-        document.getElementsByTagName('form')
-            .appendChild()
-            .document.createElement('input').a
-        */
         $('<input>').attr({
             'name': 'returned-items',
             'type': 'hidden',
@@ -112,7 +106,7 @@ class CreditNoteLine extends Component{
             <td>{this.props.element.product.name}</td>
             <td>{this.props.element.product.unit_sales_price.toFixed(2)}</td>
             <td>
-                <input type="number" 
+                <input type="number"
                     name = {this.props.element.id}
                     onChange={this.handleInputChange.bind(this)}
                     className="form-control"/>

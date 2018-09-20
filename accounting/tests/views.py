@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase, Client
-from django.shortcuts import reverse
-import json 
-import os 
-import urllib
-from accounting.models import *
 import datetime
 import decimal
-from latrom import settings
+import json
+import os
+import urllib
 
+from django.shortcuts import reverse
+from django.test import Client, TestCase
+
+from accounting.models import *
+from common_data.tests import create_account_models, create_test_user
 from inventory.tests import create_test_inventory_models
-from common_data.tests import create_test_user, create_account_models
+from latrom import settings
 
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()

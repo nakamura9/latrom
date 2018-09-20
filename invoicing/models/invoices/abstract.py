@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from functools import reduce
 import datetime
+import itertools
+from decimal import Decimal as D
+from functools import reduce
+
 from django.db import models
 from django.db.models import Q
-from decimal import Decimal as D
 from django.utils import timezone
 
-from services.models import Service
-from accounting.models import Account, Journal, JournalEntry, Tax, Expense
-import itertools
+from accounting.models import Account, Expense, Journal, JournalEntry, Tax
 from invoicing import models as inv_models
+from services.models import Service
 
 
 class AbstractSale(models.Model):

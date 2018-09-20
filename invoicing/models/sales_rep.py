@@ -1,7 +1,10 @@
-from django.db import models
 from functools import reduce
-from .invoices.abstract import AbstractSale
+
+from django.db import models
 from django.db.models import Q
+
+from .invoices.abstract import AbstractSale
+
 
 class SalesRepresentative(models.Model):
     '''Really just a dummy class that points to an employee. 
@@ -18,7 +21,10 @@ class SalesRepresentative(models.Model):
     can_reverse_invoices = models.BooleanField(default=True)
     can_offer_discounts = models.BooleanField(default=True)
 
-    def delete(self):
+    def delete(self, deep=False):
+        if deep:
+            super().delete()
+            return
         self.active = False
         self.save()
 
@@ -33,4 +39,3 @@ class SalesRepresentative(models.Model):
 
         #exclude tax in the calculation
         return reduce(lambda x, y: x + y, [i.subtotal for i in invoices], 0)
-

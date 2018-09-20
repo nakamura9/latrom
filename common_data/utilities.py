@@ -1,12 +1,16 @@
+import datetime
 import json
 import os
-from latrom import settings 
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
+
 from django.urls import re_path
-import datetime
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rest_framework.pagination import PageNumberPagination
+
 import invoicing
+from latrom import settings
+
+
 class ConfigMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super(ConfigMixin, self).get_context_data(*args, **kwargs)

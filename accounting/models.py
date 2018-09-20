@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from functools import reduce
 
 import datetime
 from decimal import Decimal as D
+from functools import reduce
 
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+
 from common_data.models import Person, SingletonModel
+
 
 class AccountingSettings(SingletonModel):
     start_of_financial_year = models.DateField()
@@ -447,5 +449,3 @@ class RecurringExpense(AbstractExpense):
         Account.objects.get(name=expense_choices[self.category]), 
         self.debit_account)
         return j
-
-    

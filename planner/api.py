@@ -1,13 +1,17 @@
 import calendar
 import datetime
+import time
+
 from dateutil.relativedelta import relativedelta
-from django.http import JsonResponse
 from django.db.models import Q
+from django.http import JsonResponse
+
 from inventory.models import InventoryCheck
 from invoicing.models import AbstractSale
+
 from .l2d import List2D
-import time
 from .models import Event
+
 
 def reshape(data, shape):
     i = 0

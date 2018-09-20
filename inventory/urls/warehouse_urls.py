@@ -1,6 +1,7 @@
 from django.urls import re_path
-from inventory import views 
 from rest_framework import routers
+
+from inventory import views
 
 warehouse_router = routers.DefaultRouter()
 warehouse_router.register(r'^api/warehouse', views.WareHouseAPIView)
@@ -37,4 +38,3 @@ warehouse_urls = [
         views.StorageMediaListAPIView.as_view())
     
 ]  +  warehouse_router.urls
-

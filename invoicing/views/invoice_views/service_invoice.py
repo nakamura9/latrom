@@ -1,31 +1,28 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.views.generic import TemplateView, DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from django_filters.views import FilterView
-from common_data.views import PaginationMixin
+from django.core.mail import EmailMessage
 from django.urls import reverse_lazy
-from invoicing import forms
-from wkhtmltopdf.views import PDFTemplateView
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormView,
+                                       UpdateView)
+from django_filters.views import FilterView
+from rest_framework import viewsets
 from wkhtmltopdf import utils as pdf_tools
+from wkhtmltopdf.views import PDFTemplateView
+
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from django.core.mail import EmailMessage
-from rest_framework import viewsets
-
-from common_data.utilities import ExtraContext, ConfigMixin, apply_style
+from common_data.utilities import ConfigMixin, ExtraContext, apply_style
+from common_data.views import EmailPlusPDFMixin, PaginationMixin
+from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing import filters
-from invoicing import serializers
-from invoicing.views.common import  SalesRepCheckMixin
-from wkhtmltopdf.views import PDFTemplateView
-from wkhtmltopdf import utils as pdf_tools
-from django.core.mail import EmailMessage
-from common_data.forms import SendMailForm
+from invoicing.views.common import SalesRepCheckMixin
+
 
 def process_data(items, inv):
     if items:
@@ -178,59 +175,8 @@ class ServiceInvoicePDFView(ConfigMixin, PDFTemplateView):
         context['object'] = ServiceInvoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class ServiceInvoiceEmailSendView(ExtraContext, FormView):
-    form_class = SendMailForm
-    template_name = os.path.join('common_data', 'create_template.html')
-    success_url = reverse_lazy('invoicing:sales-invoice-list')
-    extra_context = {
-        'title': 'Send Invoice as PDF attatchment'
-    }
-
-    def get_initial(self):
-        inv = ServiceInvoice.objects.get(pk=self.kwargs['pk'])
-        
-        return {
-            'recepient': inv.customer.customer_email
-        }
-    def post(self,request, *args, **kwargs):
-        resp = super(ServiceInvoiceEmailSendView, self).post(
-            request, *args, **kwargs)
-        form = self.form_class(request.POST)
-        
-        if not form.is_valid():
-            return resp
-        
-        config = GlobalConfig.objects.get(pk=1)
-        msg = EmailMessage(
-            subject=form.cleaned_data['subject'],
-            body = form.cleaned_data['content'],
-            from_email=config.email_user,
-            to=[form.cleaned_data['recepient']]
-        )
-
-        template = os.path.join("invoicing", "service_invoice",
+class ServiceInvoiceEmailSendView(EmailPlusPDFMixin):
+    inv_class = ServiceInvoice
+    pdf_template_name = os.path.join("invoicing", "service_invoice",
             'pdf.html')
-        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
-    
-        context = {
-            'object': ServiceInvoice.objects.get(pk=self.kwargs['pk'])
-        }
-        context.update(SalesConfig.objects.first().__dict__)
-        options = {
-            'output': out_file
-        }
-        try:
-            pdf_tools.render_pdf_from_template(
-                template, None, None, 
-                apply_style(context),
-                cmd_options=options)
-        except Exception as e:
-            raise Exception('Error occured creating pdf %s' % e )
-
-        if os.path.isfile(out_file):
-            msg.attach_file(out_file)
-            msg.send()
-            os.remove(out_file)
-
-        # if the message is successful delete it.
-        return resp
+    success_url = reverse_lazy('invoicing:sales-invoice-list')

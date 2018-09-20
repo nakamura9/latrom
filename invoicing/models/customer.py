@@ -3,9 +3,12 @@ from decimal import Decimal as D
 
 from django.db import models
 from django.db.models import Q
-from accounting.models import Account
+
 import inventory
+from accounting.models import Account
+
 from .invoices import AbstractSale
+
 
 class Customer(models.Model):
     '''The customer model represents business clients to whom products are 

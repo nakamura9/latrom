@@ -1,19 +1,18 @@
 import datetime
+from decimal import Decimal as D
 
-from django.test import TestCase, Client
+from django.db.models import Q
+from django.test import Client, TestCase
 from django.urls import reverse
 
-from common_data.tests import create_test_common_entities
+from accounting.models import Account, Expense, Tax
 from common_data.models import Individual, Organization
-from invoicing.models import *
-from django.db.models import Q
-from inventory.tests import create_test_inventory_models
-from accounting.models import Account, Expense
+from common_data.tests import create_test_common_entities
 from employees.models import Employee, PayGrade
 from employees.tests import create_test_employees_models
-from decimal import Decimal as D
-from accounting.models import Tax
 from inventory.models import WareHouseItem
+from inventory.tests import create_test_inventory_models
+from invoicing.models import *
 from services.models import Service, ServiceCategory
 
 TODAY = datetime.date.today()

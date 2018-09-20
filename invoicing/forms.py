@@ -1,12 +1,15 @@
 
-from django import forms
-from common_data.forms import BootstrapMixin, PeriodReportForm
-from accounting.models import Account, Journal
-from . import models
-from django.forms.widgets import HiddenInput, MultipleHiddenInput
+from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, HTML, Submit
-from crispy_forms.bootstrap import TabHolder, Tab
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+from django import forms
+from django.forms.widgets import HiddenInput, MultipleHiddenInput
+
+from accounting.models import Account, Journal
+from common_data.forms import BootstrapMixin, PeriodReportForm
+
+from . import models
+
 
 class SalesConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -58,13 +61,13 @@ class SalesRepForm(forms.ModelForm, BootstrapMixin):
 class SalesInvoiceForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 
+        exclude = "active", 'discount'
         model = models.SalesInvoice
 
 
 class SalesInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = ['customer', 'active'] 
+        exclude = ['customer', 'active', 'discount'] 
         model = models.SalesInvoice
 
 class SalesInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
@@ -96,7 +99,7 @@ class ServiceInvoiceForm(forms.ModelForm, BootstrapMixin):
 
 class ServiceInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active", 
+        exclude = "active", 'discount'
         model = models.ServiceInvoice
 
 class BillForm(forms.ModelForm, BootstrapMixin):
@@ -129,7 +132,7 @@ class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
 
 class CombinedInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active", 
+        exclude = "active", 'discount', 'tax'
         model = models.CombinedInvoice
 
 class CombinedInvoicePaymentForm(forms.ModelForm, BootstrapMixin):

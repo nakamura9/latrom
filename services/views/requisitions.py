@@ -1,25 +1,21 @@
-import os
 import json
+import os
 import urllib
 
-from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic import DetailView, ListView
-from django_filters.views import FilterView
-from common_data.views import PaginationMixin
-
-from rest_framework.viewsets import ModelViewSet
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView, UpdateView
+from django_filters.views import FilterView
+from rest_framework.viewsets import ModelViewSet
 
-from services import models
-from inventory.models import Equipment, Consumable, UnitOfMeasure
-from services import filters
-from services import forms 
-from services import serializers
-from common_data.utilities import ExtraContext
 from common_data.forms import AuthenticateForm
+from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from inventory.models import Consumable, Equipment, UnitOfMeasure
+from services import filters, forms, models, serializers
 
 
 class EquipmentRequisitionCreateView(CreateView):

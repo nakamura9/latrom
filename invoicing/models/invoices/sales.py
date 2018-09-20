@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import datetime
+import itertools
 from decimal import Decimal as D
 from functools import reduce
 
@@ -9,15 +10,15 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
-from common_data.models import Person
-from services.models import Service
-from accounting.models import Account, Journal, JournalEntry, Tax, Expense
-from employees.models import Employee
-from common_data.models import SingletonModel
 import inventory
-import itertools
+from accounting.models import Account, Expense, Journal, JournalEntry, Tax
+from common_data.models import Person, SingletonModel
+from employees.models import Employee
 from invoicing.models.payment import Payment
+from services.models import Service
+
 from .abstract import AbstractSale
+
 
 class SalesInvoice(AbstractSale):
     '''used to charge for finished products'''

@@ -1,6 +1,7 @@
 import django_filters
 
-from . import models 
+from . import models
+
 
 class EmployeeFilter(django_filters.FilterSet):
     class Meta:

@@ -1,6 +1,7 @@
 from django.urls import re_path
-from inventory import views 
 from rest_framework import routers
+
+from inventory import views
 
 product_router = routers.DefaultRouter()
 product_router.register(r'^api/product', views.ProductAPIView)

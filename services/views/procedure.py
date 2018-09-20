@@ -1,20 +1,19 @@
-import os 
-import json 
+import json
+import os
 import urllib
 
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
-from services import forms 
-from services import models 
-from services import filters
-from common_data.utilities import ExtraContext 
+from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
-from common_data.views import PaginationMixin
+from rest_framework.viewsets import ModelViewSet
 
-from inventory.models import Equipment, Consumable
-from rest_framework.viewsets import ModelViewSet 
+from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from inventory.models import Consumable, Equipment
+from services import filters, forms, models
 from services.serializers import ProcedureSerializer
+
 
 class ProcedureCRUDMixin(object):
     def post(self, request, *args, **kwargs):

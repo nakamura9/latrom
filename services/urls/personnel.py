@@ -1,7 +1,7 @@
 from django.urls import re_path
-from services import views
 from rest_framework import routers
 
+from services import views
 
 team_router = routers.DefaultRouter()
 team_router.register('api/team', views.ServiceTeamAPIView)

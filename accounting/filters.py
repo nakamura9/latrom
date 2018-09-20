@@ -1,7 +1,7 @@
 
 import django_filters
 
-from . import models 
+from . import models
 
 
 class JournalFilter(django_filters.FilterSet):

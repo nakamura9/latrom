@@ -1,9 +1,12 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-from accounting.models import *
 import datetime
-from common_data import models
+
+from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.test import TestCase
+
+from accounting.models import *
+from common_data import models
+
 TODAY = datetime.date.today()
 
 def create_test_common_entities(cls):

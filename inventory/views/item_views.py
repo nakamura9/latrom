@@ -1,29 +1,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.mixins import  UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormView,
+                                       UpdateView)
 from django_filters.views import FilterView
-from common_data.views import PaginationMixin
-from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from inventory import forms
-from inventory import models
-from inventory import serializers
-from inventory import filters
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.viewsets import ModelViewSet
+
+from common_data.models import GlobalConfig
 from common_data.utilities import *
-from common_data.models import GlobalConfig 
+from common_data.views import PaginationMixin
+from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
 from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+
 
 class ProductAPIView(ModelViewSet):
     queryset = models.Product.objects.all()
@@ -51,7 +52,7 @@ class ProductDetailView(InventoryControllerCheckMixin, DetailView):
 
 class ProductListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.ItemFilter
+    filterset_class = filters.ProductFilter
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
     extra_context = {
         'title': 'Product List',
@@ -105,7 +106,7 @@ class ConsumableDetailView(InventoryControllerCheckMixin, DetailView):
 class ConsumableListView(InventoryControllerCheckMixin, ExtraContext, 
         PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.ItemFilter
+    filterset_class = filters.ConsumableFilter
     template_name = os.path.join('inventory', 'item', 'consumable','list.html')
     extra_context = {
         'title': 'Consumable List',
@@ -152,7 +153,7 @@ class EquipmentDetailView(InventoryControllerCheckMixin, DetailView):
 class EquipmentListView(InventoryControllerCheckMixin, ExtraContext, 
         PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.ItemFilter
+    filterset_class = filters.EquipmentFilter
     template_name = os.path.join('inventory', 'item', 'equipment', 'list.html')
     extra_context = {
         'title': 'Equipment List',

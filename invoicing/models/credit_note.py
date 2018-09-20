@@ -1,5 +1,7 @@
-from django.db import models
 from functools import reduce
+
+from django.db import models
+
 from accounting.models import Account, Journal, JournalEntry
 
 

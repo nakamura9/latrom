@@ -1,19 +1,26 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.generic import TemplateView, DetailView, DeleteView, ListView
-from django.views.generic.edit import CreateView, UpdateView, FormView
 import os
-from django.urls import reverse_lazy
-from accounting.models import Journal
-from invoicing.models import SalesConfig
-from django_filters.views import FilterView
-from common_data import filters
-from common_data.utilities import ExtraContext
-from common_data import models 
-from . import forms 
+
+from django.core.mail import EmailMessage
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import JsonResponse
+from django.shortcuts import render
 from django.template import loader
-from django.core.mail import send_mail
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.urls import reverse_lazy
+from django.views.generic import (DeleteView, DetailView, FormView, ListView,
+                                  TemplateView)
+from django.views.generic.edit import CreateView, FormView, UpdateView
+from django_filters.views import FilterView
+from wkhtmltopdf import utils as pdf_tools
+from wkhtmltopdf.views import PDFTemplateView
+
+from accounting.models import Journal
+from common_data import filters, models
+from common_data.forms import SendMailForm
+from common_data.models import GlobalConfig
+from common_data.utilities import ExtraContext, apply_style
+from invoicing.models import SalesConfig
+
+from . import forms
 
 
 class PaginationMixin(object):
@@ -163,4 +170,64 @@ class SendEmail(ExtraContext, FormView):
             return resp
         return resp
 
-#fix
+class EmailPlusPDFMixin(ExtraContext, FormView):
+    form_class = SendMailForm
+    template_name = os.path.join('common_data', 'create_template.html')
+    success_url = None
+    pdf_template_name = None
+    inv_class = None
+    extra_context = {
+        'title': 'Send Invoice as PDF attatchment'
+    }
+
+    def get_initial(self):
+        if not self.inv_class:
+            raise ValueError('Improperly configured, needs an inv_class attribute')
+        inv = self.inv_class.objects.get(pk=self.kwargs['pk'])
+        return {
+            'recepient': inv.customer.customer_email
+        }
+    
+    def post(self,request, *args, **kwargs):
+        resp = super(EmailPlusPDFMixin, self).post(
+            request, *args, **kwargs)
+        form = self.form_class(request.POST)
+        
+        if not form.is_valid():
+            return resp
+        
+        config = GlobalConfig.objects.get(pk=1)
+        msg = EmailMessage(
+            subject=form.cleaned_data['subject'],
+            body = form.cleaned_data['content'],
+            from_email=config.email_user,
+            to=[form.cleaned_data['recepient']]
+        )
+        if not self.pdf_template_name:
+            raise ValueError('Improperly configured. Needs pdf_template_name attribute.')
+
+        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
+    
+        context = {
+            'object': self.inv_class.objects.get(pk=self.kwargs['pk'])
+        }
+        context.update(SalesConfig.objects.first().__dict__)
+        options = {
+            'output': out_file
+        }
+        try:
+            pdf_tools.render_pdf_from_template(
+                self.pdf_template_name, None, None, 
+                apply_style(context),
+                cmd_options=options)
+
+        except Exception as e:
+            raise Exception('Error occured creating pdf %s' % e )
+
+        if os.path.isfile(out_file):
+            msg.attach_file(out_file)
+            msg.send()
+            os.remove(out_file)
+
+        # if the message is successful delete it.
+        return resp

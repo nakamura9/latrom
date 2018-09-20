@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
-from django.views.generic import  DetailView
 
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from rest_framework import  viewsets
-from django_filters.views import FilterView
-from common_data.views import PaginationMixin
+import os
+
 from django.urls import reverse_lazy
-from invoicing import forms
+from django.views.generic import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django_filters.views import FilterView
+from rest_framework import viewsets
 
 from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from invoicing import filters, forms, serializers
 from invoicing.models import Customer
-from invoicing import filters
-from invoicing import serializers
+
 from .common import SalesRepCheckMixin
 
 #########################################

@@ -1,7 +1,7 @@
 from django.urls import re_path
-from inventory import views 
 from rest_framework import routers
 
+from inventory import views
 
 stock_adjustment_router = routers.DefaultRouter()
 stock_adjustment_router.register(r'^api/stock-adjustment', views.StockAdjustmentAPIView)

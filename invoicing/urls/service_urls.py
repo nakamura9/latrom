@@ -1,7 +1,7 @@
 from django.urls import re_path
-from invoicing import views
 from rest_framework.routers import DefaultRouter
 
+from invoicing import views
 
 service_router = DefaultRouter()
 service_router.register('api/service-invoice', views.ServiceInvoiceAPIViewSet)

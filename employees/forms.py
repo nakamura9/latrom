@@ -1,12 +1,15 @@
 
-from django import forms
-from common_data.forms import BootstrapMixin
-from . import models
-from inventory.models import Supplier
+from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit
-from crispy_forms.bootstrap import TabHolder, Tab
+from crispy_forms.layout import Fieldset, Layout, Submit
+from django import forms
 from django.contrib.auth.models import User
+
+from common_data.forms import BootstrapMixin
+from inventory.models import Supplier
+
+from . import models
+
 
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     automate_payroll_for = forms.ModelMultipleChoiceField(
@@ -134,4 +137,3 @@ class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.PayrollTax
         fields = '__all__'
-        

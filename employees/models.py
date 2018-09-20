@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal as D
 from functools import reduce
 
-
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+
 from common_data.models import Person, SingletonModel
+
 
 class EmployeesSettings(SingletonModel):
     PAYROLL_DATE_CHOICES = [(i, i) for i in range(28, 1)]

@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal as D
-import rest_framework
 from functools import reduce
 
+import rest_framework
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.conf import settings
-from accounting.models import JournalEntry, Journal, Account
-from common_data.models import SingletonModel
+
 import inventory
 import invoicing
+from accounting.models import Account, Journal, JournalEntry
+from common_data.models import SingletonModel
+
 
 class BaseItem(models.Model):
     class Meta:

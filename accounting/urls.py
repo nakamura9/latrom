@@ -1,7 +1,7 @@
 from django.urls import re_path
-from . import views
-from . import report_views
 from rest_framework import routers
+
+from . import report_views, views
 
 tax_router = routers.DefaultRouter()
 tax_router.register(r'^api/tax', views.TaxViewset)

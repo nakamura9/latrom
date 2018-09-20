@@ -1,16 +1,17 @@
-import json 
-import os 
-import urllib
 import datetime
 import decimal
+import json
+import os
+import urllib
 
-from django.test import TestCase, Client
 from django.shortcuts import reverse
+from django.test import Client, TestCase
 
-from employees.models import *
-from .models import create_test_employees_models
-from latrom import settings
 from common_data.tests import create_test_user
+from employees.models import *
+from latrom import settings
+
+from .models import create_test_employees_models
 
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()

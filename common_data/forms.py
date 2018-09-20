@@ -1,6 +1,8 @@
 from django import forms
-from . import models
 from django.contrib.auth.models import User
+
+from . import models
+
 
 class BootstrapMixin(forms.Form):
     """This class intergrates bootstrap into select form fields

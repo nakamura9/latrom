@@ -1,5 +1,7 @@
 from django_filters import FilterSet
-from common_data import models 
+
+from common_data import models
+
 
 class OrganizationFilter(FilterSet):
     class Meta:
@@ -15,4 +17,3 @@ class IndividualFilter(FilterSet):
             'first_name': ['icontains'],
             'last_name': ['icontains']
         }
-

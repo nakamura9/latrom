@@ -2,7 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+
 from common_data.utilities import time_choices
+
 
 # Create your models here.
 class Service(models.Model):

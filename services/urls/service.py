@@ -1,6 +1,7 @@
 from django.urls import re_path
-from services import views
 from rest_framework import routers
+
+from services import views
 
 service_router = routers.DefaultRouter()
 service_router.register('api/service', views.ServiceAPIView)

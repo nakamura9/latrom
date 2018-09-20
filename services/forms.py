@@ -1,6 +1,9 @@
 from django import forms
-from . import models 
+
 from common_data.forms import BootstrapMixin
+
+from . import models
+
 
 class ServiceForm(forms.ModelForm,BootstrapMixin):
     class Meta:

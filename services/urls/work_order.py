@@ -1,7 +1,7 @@
 from django.urls import re_path
-from services import views
 from rest_framework import routers
 
+from services import views
 
 worder_router = routers.DefaultRouter()
 worder_router.register('api/work-order', views.WorkOrderViewSet)
@@ -20,4 +20,3 @@ worder_urls = [
     re_path(r'^work-order-detail/(?P<pk>\d+)/?$', 
         views.WorkOrderDetailView.as_view(), name='work-order-detail'),
 ] + worder_router.urls
-

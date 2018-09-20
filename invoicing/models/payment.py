@@ -1,5 +1,7 @@
 from django.db import models
-from accounting.models import Journal, Account, JournalEntry
+
+from accounting.models import Account, Journal, JournalEntry
+
 
 class Payment(models.Model):
     '''Model represents payments made by credit customers only!
@@ -19,6 +21,10 @@ class Payment(models.Model):
         (2, 'Bill'),
         (3, 'Combined')
     ]
+    PAYMENT_METHODS = [("cash", "Cash" ),
+                        ("transfer", "Transfer"),
+                        ("debit card", "Debit Card"),
+                        ("ecocash", "EcoCash")]
     payment_for = models.PositiveSmallIntegerField(
         choices = PAYMENT_FOR_CHOICES
         )
@@ -33,13 +39,13 @@ class Payment(models.Model):
         on_delete=models.CASCADE,null=True)
     amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
-    method = models.CharField(max_length=32, choices=[("cash", "Cash" ),
-                                        ("transfer", "Transfer"),
-                                        ("debit card", "Debit Card"),
-                                        ("ecocash", "EcoCash")],
-                                        default='transfer')
+    method = models.CharField(
+        max_length=32, 
+        choices=PAYMENT_METHODS,
+        default='transfer')
     reference_number = models.AutoField(primary_key=True)
-    sales_rep = models.ForeignKey("invoicing.SalesRepresentative", on_delete=None,)
+    sales_rep = models.ForeignKey("invoicing.SalesRepresentative", 
+        on_delete=None,)
     comments = models.TextField(default="Thank you for your business")
 
     def __str__(self):

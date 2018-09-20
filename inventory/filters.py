@@ -1,10 +1,11 @@
 
-from .models import *
-
 import django_filters
 from django.db import models
 
-class ItemFilter(django_filters.FilterSet):
+from .models import *
+
+
+class ProductFilter(django_filters.FilterSet):
     
     class Meta:
         model = Product
@@ -14,7 +15,28 @@ class ItemFilter(django_filters.FilterSet):
             'supplier': ['exact'],
             'category': ['exact'],
             }
+
+class EquipmentFilter(django_filters.FilterSet):
+    
+    class Meta:
+        model = Equipment
+        fields = {
+            'name': ['icontains'],
+            'unit': ['exact'],
+            'supplier': ['exact'],
+            'category': ['exact'],
+            }
         
+class ConsumableFilter(django_filters.FilterSet):
+    
+    class Meta:
+        model = Consumable
+        fields = {
+            'name': ['icontains'],
+            'unit': ['exact'],
+            'supplier': ['exact'],
+            'category': ['exact'],
+            }
 
 class OrderFilter(django_filters.FilterSet):
     class Meta:

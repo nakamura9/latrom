@@ -1,7 +1,8 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
-from django.urls import re_path
 import os
+
+from django.urls import re_path
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
 class ModelViewGroup(object):
@@ -70,4 +71,3 @@ class ModelViewGroup(object):
             self.delete_klass.as_view(), name=delete_view_name ))
         
         return self.urls
-

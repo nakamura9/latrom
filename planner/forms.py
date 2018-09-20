@@ -1,7 +1,10 @@
 from django import forms
-from common_data.forms import BootstrapMixin
-from . import models 
 from django.contrib.auth.models import User
+
+from common_data.forms import BootstrapMixin
+
+from . import models
+
 
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:

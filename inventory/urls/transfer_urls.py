@@ -1,7 +1,7 @@
 from django.urls import re_path
-from inventory import views 
 from rest_framework import routers
 
+from inventory import views
 
 transfer_urls = [
     re_path(r'^create-transfer-order/(?P<pk>[\d]+)/?$', views.TransferOrderCreateView.as_view(), 

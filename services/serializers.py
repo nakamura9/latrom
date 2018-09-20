@@ -1,6 +1,8 @@
 from rest_framework import serializers
+
+from inventory.serializers import ConsumableSerializer, EquipmentSerializer
+
 from . import models
-from inventory.serializers import EquipmentSerializer, ConsumableSerializer
 
 
 class ServiceSerializer(serializers.ModelSerializer):

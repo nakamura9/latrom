@@ -1,13 +1,13 @@
+import json
 import os
-import json 
 import urllib
 
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from inventory import forms
-from inventory import models
-from common_data.utilities import ExtraContext, ConfigMixin
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView
+
+from common_data.utilities import ConfigMixin, ExtraContext
+from inventory import forms, models
 from invoicing.models import SalesConfig
 
 

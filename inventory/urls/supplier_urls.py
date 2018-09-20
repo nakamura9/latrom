@@ -1,6 +1,7 @@
 from django.urls import re_path
-from inventory import views 
 from rest_framework import routers
+
+from inventory import views
 
 supplier_urls = [
     re_path(r'^supplier-create/?$', views.SupplierCreateView.as_view(), 

@@ -1,6 +1,7 @@
 from django.urls import re_path
-from invoicing import views
 from rest_framework.routers import DefaultRouter
+
+from invoicing import views
 
 bill_router = DefaultRouter()
 bill_router.register('api/bill', views.BillAPIViewSet)
@@ -19,6 +20,4 @@ bill_urls = [
         name='bill-pdf'),
     re_path(r'^bill-email/(?P<pk>[\d]+)/?$', views.BillEmailSendView.as_view(), 
         name='bill-email'),
-    re_path(r'^bill-payment-detail/(?P<pk>[\d]+)/?$', views.BillPaymentDetailView.as_view(), 
-        name='bill-payment-detail'),
 ] + bill_router.urls
