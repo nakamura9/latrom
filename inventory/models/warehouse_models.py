@@ -5,7 +5,6 @@ import datetime
 from decimal import Decimal as D
 from functools import reduce
 
-import rest_framework
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -20,8 +19,8 @@ class WareHouse(models.Model):
     name = models.CharField(max_length=128)
     address = models.TextField()
     description = models.TextField(blank=True)
-    inventory_controller = models.ForeignKey('employees.Employee', on_delete=None, null=True, 
-        blank=True)
+    inventory_controller = models.ForeignKey('employees.Employee', 
+        on_delete=None, null=True, blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
@@ -29,10 +28,12 @@ class WareHouse(models.Model):
     
     @property
     def item_count(self):
-        return self.all_items.count
+        '''returns the number of distinct item types in the warehouse'''
+        return self.all_items.count()
     
     @property
-    def item_count(self):
+    def total_item_quantity(self):
+        '''returns the total number of physical entities stored in the warehouse'''
         return reduce(lambda x, y: x + y, 
             [i.quantity for i in self.all_items], 0)
 
@@ -41,6 +42,7 @@ class WareHouse(models.Model):
         return self.warehouseitem_set.all()
 
     def decrement_item(self, item, quantity):
+        '''Takes an item and decrements it from the appropriate warehouse item'''
         #safety checks handled elsewhere
         #created to avoid circular imports in invoices
         self.get_item(item).decrement(quantity)
@@ -52,14 +54,15 @@ class WareHouse(models.Model):
             if isinstance(item, Product):
                 return WareHouseItem.objects.get(product=item, warehouse=self)
             elif isinstance(item, Consumable):
-                return WareHouseItem.objects.get(consumable=item, warehouse=self)
+                return WareHouseItem.objects.get(consumable=item, 
+                    warehouse=self)
             elif isinstance(item, Equipment):
                 return WareHouseItem.objects.get(equipment=item, warehouse=self)
             else:
                 return None # next code is dead for now
         except:
             return None
-            raise NotImplementedError('the selected product does not exist')
+            raise ValueError('the selected inventory item does not exist')
     
     def has_item(self, item):
         found_item = self.get_item(item)
@@ -74,7 +77,7 @@ class WareHouse(models.Model):
         #check if record of item is already in warehouse
         if self.has_item(item):
             self.get_item(item).increment(quantity)
-            return self.get_item(item)
+            
         else:
             if isinstance(item, Product):
                 return self.warehouseitem_set.create(product=item, 
@@ -86,16 +89,20 @@ class WareHouse(models.Model):
                 return self.warehouseitem_set.create(equipment=item, 
                     quantity=quantity, item_type=3)
             
+        return self.get_item(item)
 
     def transfer(self, other, item, quantity):
         #transfer stock from current warehouse to other warehouse
         
         if not other.has_item(item):
-            raise Exception('The destination warehouse does not stock this item')
+            other.add_item(item, 0)
         elif not self.has_item(item):
             raise Exception('The source warehouse does not stock this item')
 
         else:
+            source_item = self.get_item(item)
+            if quantity > source_item.quantity:
+                raise Exception('The transferred quantity is greater than the inventory in stock')
             other.get_item(item).increment(quantity)
             self.get_item(item).decrement(quantity)
             # for successful transfers, record the transfer cost some way
@@ -112,10 +119,14 @@ class WareHouseItem(models.Model):
     
     item_type = models.PositiveSmallIntegerField()
     product = models.ForeignKey('inventory.Product', on_delete=None, null=True)
-    consumable = models.ForeignKey('inventory.Consumable', on_delete=None, null=True)
-    equipment = models.ForeignKey('inventory.Equipment', on_delete=None, null=True)
+    consumable = models.ForeignKey('inventory.Consumable', on_delete=None, 
+        null=True)
+    equipment = models.ForeignKey('inventory.Equipment', on_delete=None, 
+        null=True)
     quantity = models.FloatField()
-    warehouse = models.ForeignKey('inventory.Warehouse', on_delete=None, default=1)
+    warehouse = models.ForeignKey('inventory.Warehouse', on_delete=None, 
+        default=1)
+    #might support multiple locations for the same item in the same warehouse
     location = models.ForeignKey('inventory.StorageMedia', blank=True, 
         on_delete=None, null=True)
     verified = models.BooleanField(default=False)
@@ -145,6 +156,7 @@ class WareHouseItem(models.Model):
         #if self.quantity < amount:
         #    raise ValueError('Cannot have a quantity less than zero')
         self.quantity -= amount
+
         self.save()
         # check if min stock level is exceeded
         return self.quantity
@@ -154,6 +166,9 @@ class WareHouseItem(models.Model):
         #for the api
         return self.item.name
 
+    def __str__(self):
+        return self.name
+
     @property
     def item(self):
         return self.mapping[self.item_type]
@@ -161,9 +176,11 @@ class WareHouseItem(models.Model):
 class StorageMedia(models.Model):
     name = models.CharField(max_length = 255)
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None, )
-    location = models.ForeignKey('inventory.StorageMedia', on_delete=None,  null=True, blank=True)
+    location = models.ForeignKey('inventory.StorageMedia', on_delete=None,  
+        null=True, blank=True)
     description = models.TextField(blank=True)
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,  null=True, blank=True)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,  
+        null=True, blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
@@ -176,3 +193,6 @@ class StorageMedia(models.Model):
     @property
     def contents(self):
         return WareHouseItem.objects.filter(location=self)
+
+    def __str__(self):
+        return self.name

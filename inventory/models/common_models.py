@@ -12,10 +12,17 @@ from django.db.models import Q
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel
 
+
 from .item_models import Product
 
 
 class InventorySettings(SingletonModel):
+    INVENTORY_VALUATION_PERIOD=[
+        (30, 'Month'),
+        (90, 'Quarter'),
+        (182, 'Six Months'),
+        (365, 'One Year')
+    ]
     INVENTORY_VALUATION_METHODS = [
         (1, 'Averaging'),
         (2, 'FIFO'),
@@ -60,6 +67,7 @@ class InventorySettings(SingletonModel):
     )
     use_warehousing_model = models.BooleanField(default=True)
     use_storage_media_model = models.BooleanField(default=True)
+    stock_valuation_period = models.IntegerField(choices=INVENTORY_VALUATION_PERIOD, default=365)
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
@@ -100,7 +108,7 @@ class Supplier(models.Model):
         return self.organization != None
 
     @property
-    def supplier_email(self):
+    def email(self):
         if self.is_organization:
             return self.organization.email
         else:
@@ -109,7 +117,7 @@ class Supplier(models.Model):
     @property
     def address(self):
         if self.is_organization:
-            return self.organization.address
+            return self.organization.business_address
         else:
             return self.individual.address
 
@@ -165,13 +173,24 @@ class Category(models.Model):
     parent = models.ForeignKey('inventory.Category', on_delete=None,blank=True, null=True)
     description = models.TextField(default="")
 
+
     def __str__(self):
         return self.name
 
     @property
     def items(self):
+        #deprecating
         return Product.objects.filter(category=self)
 
     @property
     def children(self):
-        return self.category_set.all()
+        return Category.objects.filter(parent=self)
+
+    @property
+    def siblings(self):
+        if not self.parent:
+            return Category.objects.filter(parent__isnull=True).exclude(
+                pk=self.pk)
+        else:
+            return Category.objects.filter(parent=self.parent).exclude(
+                pk=self.pk) 

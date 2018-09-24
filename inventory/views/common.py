@@ -67,18 +67,23 @@ class InventoryDashboard(InventoryControllerCheckMixin, TemplateView):
 #######################################################
 
 
-class UnitCreateView(InventoryControllerCheckMixin, CreateView):
+class UnitCreateView(ExtraContext, InventoryControllerCheckMixin, CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
+    extra_context = {
+        'title':'Create New Unit of measure'
+    }
 
-class UnitUpdateView(InventoryControllerCheckMixin, UpdateView):
+class UnitUpdateView(ExtraContext, InventoryControllerCheckMixin, UpdateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
-
+    extra_context = {
+        'title':'Update Unit of measure'
+    }
 
 class UnitDetailView(InventoryControllerCheckMixin, DetailView):
     model = models.UnitOfMeasure
@@ -88,6 +93,7 @@ class UnitDetailView(InventoryControllerCheckMixin, DetailView):
 class UnitListView(ExtraContext, InventoryControllerCheckMixin, PaginationMixin, FilterView):
     filterset_class = filters.UnitFilter
     model = models.UnitOfMeasure
+    paginate_by = 10
     template_name = os.path.join('inventory', 'unit', 'list.html')
     extra_context = {
         'title': 'List of Units',

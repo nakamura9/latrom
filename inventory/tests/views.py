@@ -62,7 +62,7 @@ class ViewTests(TestCase):
             'tracking_number' : '34234',
             'notes' : 'Test Note',
             'status' : 'draft',
-            'items[]': urllib.quote(json.dumps({
+            'items[]': urllib..parse.quote(json.dumps({
                 'name': cls.product.pk,
                 'quantity': 10,
                 'order_price': 10
@@ -254,7 +254,7 @@ class ViewTests(TestCase):
                 'order': self.order.pk,
                 'receive_date': TODAY,
                 'note': 'test note',
-                'received-items': urllib.quote(json.dumps({
+                'received-items': urllib..parse.quote(json.dumps({
                     'item-' + str(self.order_item.pk) : 2
                 }))
             })

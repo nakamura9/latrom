@@ -56,6 +56,7 @@ class EquipmentRequisitionDetailView(DetailView):
 class EquipmentRequisitionListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
     queryset = models.EquipmentRequisition.objects.all()
+    paginate_by = 10
     template_name = os.path.join('services', 'requisitions', 'equipment', 'list.html')
 
     extra_context = {
@@ -156,6 +157,7 @@ class ConsumableRequisitionListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.ConsumableRequisitionFilter
     queryset = models.ConsumablesRequisition.objects.all()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')
+    paginate_by = 10
 
     extra_context = {
         'title': 'List of Consumables Requisitions'

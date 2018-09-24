@@ -77,10 +77,7 @@ class OrderPOSTMixin(object):
         #vary based on order status
         
         if not update_flag: 
-            if order.type_of_order == 0:#cash
-                order.create_immediate_entry()
-            elif order.type_of_order == 1:
-                order.create_deffered_entry()
+            order.create_entry()
 
         return resp        
 

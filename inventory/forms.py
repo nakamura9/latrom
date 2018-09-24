@@ -186,7 +186,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
             )
         self.helper.add_input(Submit('submit', 'Submit'))
     class Meta:
-        exclude = ["product", "received_to_date"]
+        exclude = ["entry", "received_to_date", ]
         model = models.Order
         
         
