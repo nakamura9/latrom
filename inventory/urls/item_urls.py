@@ -8,8 +8,6 @@ product_router.register(r'^api/product', views.ProductAPIView)
 
 product_urls = [
     re_path(r'^product-create/?$', views.ProductCreateView.as_view(), name="product-create"),
-    re_path(r'^quick-product/?$', views.QuickProductCreateView.as_view(), 
-        name="quick-product"),
     re_path(r'^product-list/?$', views.ProductListView.as_view(), name="product-list"),
     re_path(r'^product-update/(?P<pk>[\w]+)/?$', views.ProductUpdateView.as_view(), 
         name="product-update"),

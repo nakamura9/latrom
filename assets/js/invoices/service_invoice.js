@@ -176,6 +176,10 @@ class EntryRow extends Component{
         this.setState({inputs: newInputs});
     }
     handleButtonClick = () => {
+        if(this.state.inputs.hours < 0.0 || this.state.inputs.hours === ""){
+            alert('Please enter a valid quantity');
+            return;
+        }
         this.props.insertLine(this.state.inputs)
         this.setState({inputs: {
             service: '',

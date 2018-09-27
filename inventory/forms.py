@@ -201,7 +201,7 @@ class StockReceiptForm(forms.ModelForm, BootstrapMixin):
 
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude = "active",
         model = models. UnitOfMeasure
 
 

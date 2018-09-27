@@ -490,7 +490,7 @@ class ItemManagementModelTests(TestCase):
         self.assertEqual(models.WareHouseItem.objects.first().quantity, 
             prev_quantity - 1)
         self.warehouse_item.increment(1)
-'''
+
 
 class ItemModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json', 'invoicing.json']
@@ -507,7 +507,7 @@ class ItemModelTests(TestCase):
             quantity=1,
             invoice=cls.inv,
         )
-    '''
+    
     def test_create_product(self):
         obj = models.Product.objects.create(
             name='other test name',

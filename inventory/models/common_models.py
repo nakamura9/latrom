@@ -86,10 +86,10 @@ class Supplier(models.Model):
     The account of the supplier is for instances when orders are made on credit.'''
     # one or the other 
     organization = models.OneToOneField('common_data.Organization',
-         on_delete=None, 
+         on_delete=None, blank=True,
          null=True)
     individual = models.OneToOneField('common_data.Individual', 
-        on_delete=None, 
+        on_delete=None, blank=True, 
         null=True)
     active = models.BooleanField(default=True)
     account = models.ForeignKey('accounting.Account', 

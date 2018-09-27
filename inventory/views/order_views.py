@@ -23,7 +23,7 @@ from wkhtmltopdf.views import PDFTemplateView
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 from common_data.utilities import *
-from common_data.views import PaginationMixin
+from common_data.views import PaginationMixin, EmailPlusPDFMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
@@ -163,9 +163,10 @@ class OrderPDFView(ConfigMixin, PDFTemplateView):
         context['object'] = models.Order.objects.get(pk=self.kwargs['pk'])
         return context
 
-class OrderEmailSendView(ExtraContext, FormView):
-    form_class = SendMailForm
-    template_name = CREATE_TEMPLATE
+class OrderEmailSendView(EmailPlusPDFMixin):
+    inv_class = models.Order
+    pdf_template_name = os.path.join("inventory", "order",
+            'pdf.html')
     success_url = reverse_lazy('inventory:order-list')
     extra_context = {
         'title': 'Send Purchase Order as PDF attatchment'
@@ -173,49 +174,6 @@ class OrderEmailSendView(ExtraContext, FormView):
 
     def get_initial(self):
         ord = models.Order.objects.get(pk=self.kwargs['pk'])
-        
         return {
-            'recepient': ord.supplier.supplier_email
+            'recepient': ord.supplier.email
         }
-    def post(self,request, *args, **kwargs):
-        resp = super(OrderEmailSendView, self).post(
-            request, *args, **kwargs)
-        form = self.form_class(request.POST)
-        
-        if not form.is_valid():
-            return resp
-        
-        config = GlobalConfig.objects.get(pk=1)
-        msg = EmailMessage(
-            subject=form.cleaned_data['subject'],
-            body = form.cleaned_data['content'],
-            from_email=config.email_user,
-            to=[form.cleaned_data['recepient']]
-        )
-        #create pdf from the command line
-        template = os.path.join("inventory", "order",
-            'pdf.html')
-        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
-    
-        context = {
-            'object': models.Order.objects.get(pk=self.kwargs['pk'])
-        }
-        context.update(SalesConfig.objects.first().__dict__)
-        options = {
-            'output': out_file
-        }
-        try:
-            pdf_tools.render_pdf_from_template(
-                template, None, None, 
-                apply_style(context),
-                cmd_options=options)
-        except:
-            raise Exception('Error occured creating pdf')
-
-        if os.path.isfile(out_file):
-            msg.attach_file(out_file)
-            msg.send()
-            os.remove(out_file)
-
-        # if the message is successful delete it.
-        return resp

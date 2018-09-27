@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block list_content %}
-    {% for item in object_list %}
+    {% for item in filter.qs %}
         <td>{{item.name}}</td>
         <td>{{item.employee_set.all.count}}</td>
         <td>{{item.monthly_salary}}</td>

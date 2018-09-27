@@ -19,7 +19,7 @@ settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
 class CommonViewTests(TestCase):
-    fixtures = ['accounts.json', 'journals.json']
+    fixtures = ['accounts.json', 'employees.json', 'journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -111,7 +111,7 @@ class CommonViewTests(TestCase):
 
 
 class JournalEntryViewTests(TestCase):
-    fixtures = ['accounts.json', 'journals.json']
+    fixtures = ['accounts.json', 'employees.json','journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -198,7 +198,7 @@ class JournalEntryViewTests(TestCase):
             }))
 
 class AccountViewTests(TestCase):
-    fixtures = ['accounts.json', 'journals.json']
+    fixtures = ['accounts.json','employees.json', 'journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -261,7 +261,7 @@ class AccountViewTests(TestCase):
 
 
 class TestReportViews(TestCase):
-    fixtures = ['accounts.json', 'journals.json']
+    fixtures = ['accounts.json', 'employees.json','journals.json']
 
     @classmethod
     def setUpClass(cls):

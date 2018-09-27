@@ -280,7 +280,7 @@ class StockReceipt(models.Model):
 #might need to rename
 class InventoryCheck(models.Model):
     date = models.DateField()
-    next_adjustment_date = models.DateField(null=True)#not required
+    next_adjustment_date = models.DateField(null=True, blank=True)#not required
     adjusted_by = models.ForeignKey('employees.Employee', on_delete=None )
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None )
     comments = models.TextField()
