@@ -405,11 +405,13 @@ class Expense(AbstractExpense):
             memo =  "Expense recorded. Category: %s." % self.category,
             journal = Journal.objects.get(pk=2)# cash disbursements
         )
+        #debits increase expenses credits decrease assets so...
         j.simple_entry(self.amount, 
-        Account.objects.get(name=expense_choices[self.category]), 
         self.customer.account \
         if self.billable \
-        else self.debit_account)
+        else Account.objects.get(pk=1000),#cash account
+        Account.objects.get(name=expense_choices[self.category]), )
+        print 'entry'
 
     def save(self, *args, **kwargs):
         flag = self.pk

@@ -268,8 +268,8 @@ class NonInvoicedCashSale(BookkeeperCheckMixin, FormView):
                 )
             j.simple_entry(
                 total,
-                models.Account.objects.get(pk=4000),#sales
                 models.Account.objects.get(pk=1004),#inventory
+                models.Account.objects.get(pk=1000),#sales
             )
         return resp
 

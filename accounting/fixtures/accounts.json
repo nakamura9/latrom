@@ -300,7 +300,7 @@
         "model": "accounting.account",
         "pk": 4000,
         "fields": {
-            "name": "Sales of Goods and Serivices",
+            "name": "Sales of Goods and Services",
             "balance": 0,
             "description": "Tracks the all the money earned selling company goods and services",
             "type": "income",
