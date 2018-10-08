@@ -28,8 +28,7 @@ def process_data(items, inv):
     if items:
         items = json.loads(urllib.parse.unquote(items))
         for item in items:
-
-            pk, name = item['name'].split('-')
+            pk, name = item['item_name'].split('-')
             inv.add_product(Product.objects.get(pk=pk), 
                 item['quantity'])
     

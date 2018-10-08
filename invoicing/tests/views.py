@@ -577,7 +577,7 @@ class SalesViewTests(TestCase):
             'comments': 'test comments',
             'item_list': json.dumps([
                 {
-                    'name': '1 - name',
+                    'item_name': '1 - name',
                     'quantity': 1
                 }
             ])

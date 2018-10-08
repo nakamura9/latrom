@@ -15,6 +15,7 @@ from common_data.tests import create_account_models, create_test_user
 from employees.tests.models import create_test_employees_models
 from inventory.tests import create_test_inventory_models
 from latrom import settings
+from django.contrib.auth.models import User
 
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
@@ -152,13 +153,16 @@ class JournalEntryModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_account_models(cls)
+        cls.usr = User.objects.create(username = "test_user")
+        
 
     def test_create_entry(self):
         obj = JournalEntry.objects.create(
             memo='record of test entry',
             date=TODAY,
             journal =self.journal,
-            reference = "test reference"
+            reference = "test reference",
+            created_by = self.usr
         )
 
         self.assertIsInstance(obj, JournalEntry)

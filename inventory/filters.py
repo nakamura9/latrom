@@ -64,7 +64,6 @@ class InventoryCheckFilter(django_filters.FilterSet):
         fields = {
             'date': ['exact'],
             'warehouse': ['exact'],
-            'adjusted_by': ['exact']
         }
 
 

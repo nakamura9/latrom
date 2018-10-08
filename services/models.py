@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-
+from django.db.models import Q
 from common_data.utilities import time_choices
 
 
@@ -96,7 +96,8 @@ class ServiceWorkOrder(models.Model):
     team = models.ForeignKey('services.ServiceTeam', on_delete=None, null=True, blank=True)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, blank=True)
     authorized_by = models.ForeignKey('employees.Employee', on_delete=models.CASCADE, null=True, 
-        blank=True)#filter queryset
+        blank=True,
+        limit_choices_to=Q(user__isnull=False))#filter queryset
     comments = models.TextField(blank=True)
 
     def __str__(self):

@@ -28,6 +28,8 @@ class AbstractSale(models.Model):
         ('reversed', 'Reversed'),
     ]
     status = models.CharField(max_length=16, choices=SALE_STATUS)
+    invoice_number = models.PositiveIntegerField(null=True)
+    quotation_number = models.PositiveIntegerField(null=True)
     customer = models.ForeignKey("invoicing.Customer", on_delete=None,default=DEFAULT_CUSTOMER)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative',
         on_delete=None, default=DEFAULT_SALES_REP)
@@ -42,6 +44,12 @@ class AbstractSale(models.Model):
     
     @property
     def overdue(self):
+        '''returns boolean'''
+        return self.overdue_days < 0
+
+    @property
+    def overdue_days(self):
+        '''returns days due'''
         TODAY = timezone.now().date()
 
         if self.due < TODAY:
@@ -66,6 +74,10 @@ class AbstractSale(models.Model):
     @property
     def total(self):
         return self.subtotal + self.tax_amount
+
+    @property
+    def is_quotation(self):
+        return self.status in ['quotation', 'draft']
 
     @property
     def on_credit(self):
@@ -94,9 +106,21 @@ class AbstractSale(models.Model):
     def __str__(self):
         return 'SINV' + str(self.pk)
 
+    def set_quote_invoice_number(self):
+        # add feature to allow invoices to be viewed as 
+        if self.is_quotation and self.quotation_number is None:
+            quotations = AbstractSale.abstract_filter(Q(Q(status='quotation') | Q(status='draft')))
+            self.quotation_number = len(list(quotations))
+        if not self.is_quotation and self.invoice_number is None:
+            invoices = AbstractSale.abstract_filter(Q(Q(status='sent') | Q(status='paid') | Q(status='paid-partially')))
+            self.invoice_number = len(list(invoices))
+        else:
+            return
+
     def save(self, *args, **kwargs):
         super(AbstractSale, self).save(*args, **kwargs)
         config = inv_models.SalesConfig.objects.first()
         if self.tax is None and config.sales_tax is not None:
             self.tax = config.sales_tax
             self.save()
+        self.set_quote_invoice_number()

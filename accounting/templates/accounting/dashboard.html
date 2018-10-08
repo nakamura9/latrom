@@ -59,12 +59,15 @@
 
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Sales</h4>
+                        <h4 class="card-title">Interactions </h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:non-invoiced-cash-sale' %}">Make Non Invoiced Cash Sale</a>
+                                <a href="{% url 'invoicing:customer-list' %}">Customers</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:supplier-list' %} ">Suppliers </a>
                             </li>
 
                         </ul>

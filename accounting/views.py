@@ -73,6 +73,7 @@ class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
                 date = request.POST['date'],
                 journal = models.Journal.objects.get(
                     pk=request.POST['journal']),
+                created_by = request.user
             )
         for item in request.POST.getlist('items[]'):
             item_data = json.loads(urllib.parse.unquote(item))
@@ -201,7 +202,8 @@ class DirectPaymentFormView(BookkeeperCheckMixin, ExtraContext, FormView):
                 reference = 'DPMT:' + form.cleaned_data['reference'],
                 memo=notes_string + form.cleaned_data['notes'],
                 date=form.cleaned_data['date'],
-                journal = journal
+                journal = journal,
+                created_by=request.user
             )
             j.simple_entry(
                 form.cleaned_data['amount'],
@@ -263,7 +265,8 @@ class NonInvoicedCashSale(BookkeeperCheckMixin, FormView):
                     date=date,
                     memo = request.POST['comments'],
                     reference = "Journal Entry derived from non invoiced cash sale",
-                    journal = models.Journal.objects.get(pk=3)#sales journal
+                    journal = models.Journal.objects.get(pk=3),#sales journal
+                    created_by = request.user
                     
                 )
             j.simple_entry(

@@ -14,7 +14,11 @@ from common_data.models import Person, SingletonModel
 
 class EmployeesSettings(SingletonModel):
     PAYROLL_DATE_CHOICES = [(i, i) for i in range(28, 1)]
-    PAYROLL_CYCLE_CHOICES = [('weekly', 'Weekly'), ('bi-monthly', 'Bi-monthly'), ('monthly', 'Monthly')]
+    PAYROLL_CYCLE_CHOICES = [
+        ('weekly', 'Weekly'), 
+        ('bi-monthly', 'Bi-monthly'), 
+        ('monthly', 'Monthly')
+        ]
     payroll_date_one = models.PositiveSmallIntegerField(
         choices = PAYROLL_DATE_CHOICES
         )
@@ -39,23 +43,28 @@ class EmployeesSettings(SingletonModel):
 
 class Employee(Person):
     '''
-    Represents an individual employee of the business. Records their personal details as 
-    well as their title, pay grade and leave days.
+    Represents an individual employee of the business. Records their personal 
+    details as well as their title, pay grade and leave days.
 
     properties
     ------------
-    deductions_YTD - a field that calculates all the deductions throughout the year. 
+    deductions_YTD - a field that calculates all the deductions throughout the 
+    year. 
         Used in payslips
-    allowances_YTD - a field that calculates all the allowances earned throughout the year. 
+    allowances_YTD - a field that calculates all the allowances earned 
+    throughout the year. 
         Used in payslips
-    earnings_YTD - a field that calculates all the  earnings throughout the year. 
+    earnings_YTD - a field that calculates all the  earnings throughout the 
+    year. 
         Used in payslips
-    is_<role> - checks the instance for evidence that an employee has been assigned a certain role within the system.
+    is_<role> - checks the instance for evidence that an employee has been 
+    assigned a certain role within the system.
     '''
     employee_number = models.AutoField(primary_key=True)
     hire_date = models.DateField()
     title = models.CharField(max_length=32)
-    pay_grade = models.ForeignKey('employees.PayGrade', on_delete=models.CASCADE,default=1)
+    pay_grade = models.ForeignKey('employees.PayGrade', 
+        on_delete=models.CASCADE,default=1)
     leave_days = models.FloatField(default=0)
     user = models.OneToOneField('auth.User', null=True,
          on_delete=models.CASCADE)#not all are users

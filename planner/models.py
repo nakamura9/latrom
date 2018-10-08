@@ -96,7 +96,8 @@ class EventParticipant(models.Model):
     participant_type = models.PositiveSmallIntegerField(
         choices=PARTICIPANT_TYPES
         )
-    employee = models.ForeignKey('employees.Employee', on_delete=None, null=True, blank=True)
+    employee = models.ForeignKey('employees.Employee', 
+        on_delete=None, null=True, blank=True)
     customer = models.ForeignKey('invoicing.Customer', on_delete=None, null=True, blank=True)
     supplier = models.ForeignKey('inventory.Supplier', on_delete=None,  null=True, blank=True)
 
