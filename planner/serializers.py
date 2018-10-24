@@ -1,8 +1,11 @@
 from rest_framework import serializers
-from . import models
+
+from employees.serializers import EmployeeSerializer
 from inventory.serializers import SupplierSerializer
 from invoicing.serializers import CustomerSerializer
-from employees.serializers import EmployeeSerializer
+
+from . import models
+
 
 class EventParticipantSerializer(serializers.ModelSerializer):
     employee = EmployeeSerializer(many=False)

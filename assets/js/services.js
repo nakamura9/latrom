@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {ProcedureViews, InventorySelectWidgets} from '../js/services/procedure';
-import MultipleSelectWidget from '../js/src/multiple_select';
+import MultipleSelectWidget from '../js/src/components/multiple_select';
 import ConsumableRequisitionTable from './services/requisition/consumable';
 import EquipmentRequisitionTable from './services/requisition/equipment';
 

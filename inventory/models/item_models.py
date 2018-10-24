@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal as D
-import rest_framework
 from functools import reduce
 
+import rest_framework
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.conf import settings
-from accounting.models import JournalEntry, Journal, Account
-from common_data.models import SingletonModel
+
 import inventory
 import invoicing
+from accounting.models import Account, Journal, JournalEntry
+from common_data.models import SingletonModel
+
 
 class BaseItem(models.Model):
     class Meta:
@@ -26,9 +29,12 @@ class BaseItem(models.Model):
     image = models.FileField(blank=True, null=True, 
         upload_to=settings.MEDIA_ROOT)
     description = models.TextField(blank=True, default="")
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,blank=True, default=1)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,
+        blank=True, default=1)
     unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
-    supplier = models.ForeignKey("inventory.Supplier", on_delete=None,blank=True, null=True)
+    supplier = models.ForeignKey("inventory.Supplier", on_delete=None,
+        blank=True, null=True)
+    
     def __str__(self):
         return str(self.id) + " - " + self.name
 
@@ -102,14 +108,24 @@ class Product(BaseItem):
         averaging- calculating the overall stock value on the average of all
         the values during the period under consderation.
         '''
-        return 0
+        inventory_settings = inventory.models.InventorySettings.objects.first()
+        cut_off_date = datetime.date.today() - datetime.timedelta(
+            days=inventory_settings.stock_valuation_period)
+        ordered_items = inventory.models.OrderItem.objects.filter(
+            Q(order__issue_date__gte=cut_off_date) & 
+            Q(product=self))
+        total_value = 0
+        item_quantity = 0
+        for item in ordered_items:
+            total_value += D(item.quantity) * item.order_price
+            item_quantity += D(item.quantity)
 
+        return total_value / item_quantity
         
     @property
     def sales_to_date(self):
-        return 0 #!!fix
         items = invoicing.models.SalesInvoiceLine.objects.filter(product=self)
-        total_sales = reduce(lambda x,y: x + y, [product.quantity * product.price for item in items], 0)
+        total_sales = reduce(lambda x,y: x + y, [D(item.quantity) * item.price for item in items], 0)
         return total_sales
     
     def delete(self):
@@ -129,7 +145,11 @@ class Product(BaseItem):
         epoch = datetime.date.today() - datetime.timedelta(days=30)
 
         #from invoices
-        items= []
+        items= [Event(inv.invoice.date, 
+            'sold %d items as part of sales invoice %d ' % (
+                inv.quantity, inv.invoice.pk)) \
+                    for inv in invoicing.models.SalesInvoiceLine.objects.filter(
+                        Q(product=self) & Q(invoice__date__gte=epoch))]
         # from orders
         orders = [Event(o.order.issue_date, 
             "added %d items to inventory from purchase order #%d." % (o.received, o.order.pk)) \
@@ -152,7 +172,8 @@ class Equipment(BaseItem):
     ]
     condition = models.CharField(max_length=16, 
         choices=CONDITION_CHOICES, default='excellent')
-    asset_data = models.ForeignKey('accounting.Asset', on_delete=None, null=True, blank=True)
+    asset_data = models.ForeignKey('accounting.Asset', on_delete=None, 
+        null=True, blank=True)
 
 class Consumable(BaseItem):
     minimum_order_level = models.IntegerField( default=0)

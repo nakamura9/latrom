@@ -2,7 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+
 from common_data.utilities import time_choices
+
 
 # Create your models here.
 class Service(models.Model):
@@ -12,8 +14,8 @@ class Service(models.Model):
     flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
     hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
     category = models.ForeignKey('services.ServiceCategory', on_delete=None,)
-    procedure = models.ForeignKey('services.ServiceProcedure', on_delete=models.CASCADE, null=True, 
-        blank=True)
+    procedure = models.ForeignKey('services.ServiceProcedure', 
+        on_delete=models.CASCADE, null=True, blank=True)
     frequency = models.CharField(max_length = 16, 
                         choices = [("once", "Once off"),
                                     ("daily", "Daily"),
@@ -34,8 +36,8 @@ class Service(models.Model):
 class ServiceCategory(models.Model):
     '''Used to organize services'''
     name = models.CharField(max_length=64)
-    parent = models.ForeignKey('services.ServiceCategory', on_delete=models.CASCADE, blank=True, 
-        null=True)
+    parent = models.ForeignKey('services.ServiceCategory', 
+        on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True)
 
     def __str__(self):

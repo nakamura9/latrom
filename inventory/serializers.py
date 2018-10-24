@@ -1,5 +1,7 @@
 from rest_framework import serializers
+
 from .models import *
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,6 +64,8 @@ class RecursiveField(serializers.Serializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     children = RecursiveField(many=True)
+    siblings = RecursiveField(many=True)
+
     class Meta:
         model = Category
         fields = "__all__"

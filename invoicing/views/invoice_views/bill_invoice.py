@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.views.generic import TemplateView, DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView, FormView
-from django_filters.views import FilterView
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from invoicing import forms
-
-from common_data.utilities import ExtraContext, ConfigMixin, apply_style
-from inventory.models import Product
-from invoicing.models import *
-from invoicing import filters
-from invoicing import serializers
-from invoicing.views.common import SalesRepCheckMixin
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import CreateView, FormView, UpdateView
+from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf.views import PDFTemplateView
-from wkhtmltopdf import utils as pdf_tools
-from django.core.mail import EmailMessage
-from common_data.forms import SendMailForm
+
 from common_data.models import GlobalConfig
+from common_data.utilities import ConfigMixin, ExtraContext, apply_style
+from common_data.views import EmailPlusPDFMixin, PaginationMixin
+from inventory.models import Product
+from invoicing import filters, forms, serializers
+from invoicing.models import *
+from invoicing.views.common import SalesRepCheckMixin
+
 
 def process_data(data, inv):
     items = json.loads(urllib.parse.unquote(data))
@@ -33,25 +33,20 @@ def process_data(data, inv):
     # can be created
     if inv.status in ['draft', 'quotation']:
         pass
-    elif inv.status == 'sent': 
-        pass
-        #inv.create_credit_entry()
-    elif inv.status == 'paid':
-        pass
-        #inv.create_cash_entry()
+    elif inv.status in ['sent', 'paid']: 
+        inv.create_entry()
     else:
         pass
 
 
-class BillListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class BillListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
     template_name = os.path.join("invoicing", "bill","list.html")
     filterset_class = filters.AbstractInvoiceFilter
     paginate_by = 10
 
-    def get_queryset(self):
-        return Bill.objects.filter(active=True).order_by('date')
+    queryset = Bill.objects.filter(active=True).order_by('date')
     
 
 class BillDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
@@ -83,11 +78,22 @@ class BillCreateView(SalesRepCheckMixin, ConfigMixin, CreateView):
         return context
 
     def post(self, request, *args, **kwargs):
+        #check if an expense has been recorded
+        data = request.POST.get("item_list", None)
+        if not data:
+            messages.error(self.request, 'No data was sent to the server. Please provide items to the bill.')
+            return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
+        else:
+            items = json.loads(urllib.parse.unquote(data))
+            if isinstance(items, list) or len(items) < 1:
+                messages.error(self.request, 'The provided data could not be processed by the server. Please provide items to the bill.')
+                return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
+
         resp = super(BillCreateView, self).post(request, *args, **kwargs)
         if not self.object:
             return resp
         inv = self.object
-        data = request.POST.get("item_list", None)
+        
         process_data(data, inv)
         return resp
 
@@ -183,59 +189,9 @@ class BillPDFView(ConfigMixin, PDFTemplateView):
         context['object'] = Bill.objects.get(pk=self.kwargs['pk'])
         return context
 
-class BillEmailSendView(ExtraContext, FormView):
-    form_class = SendMailForm
-    template_name = os.path.join('common_data', 'create_template.html')
+
+
+class BillEmailSendView(EmailPlusPDFMixin):
+    inv_class = Bill
     success_url = reverse_lazy('invoicing:bills-list')
-    extra_context = {
-        'title': 'Send Invoice as PDF attatchment'
-    }
-
-    def get_initial(self):
-        inv = Bill.objects.get(pk=self.kwargs['pk'])
-        
-        return {
-            'recepient': inv.customer.customer_email
-        }
-    def post(self,request, *args, **kwargs):
-        resp = super(BillEmailSendView, self).post(
-            request, *args, **kwargs)
-        form = self.form_class(request.POST)
-        
-        if not form.is_valid():
-            return resp
-        
-        config = GlobalConfig.objects.get(pk=1)
-        msg = EmailMessage(
-            subject=form.cleaned_data['subject'],
-            body = form.cleaned_data['content'],
-            from_email=config.email_user,
-            to=[form.cleaned_data['recepient']]
-        )
-
-        template = os.path.join("invoicing", "bill",
-            'pdf.html')
-        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
-    
-        context = {
-            'object': Bill.objects.get(pk=self.kwargs['pk'])
-        }
-        context.update(SalesConfig.objects.first().__dict__)
-        options = {
-            'output': out_file
-        }
-        try:
-            pdf_tools.render_pdf_from_template(
-                template, None, None, 
-                apply_style(context),
-                cmd_options=options)
-        except Exception as e:
-            raise Exception('Error occured creating pdf %s' % e )
-
-        if os.path.isfile(out_file):
-            msg.attach_file(out_file)
-            msg.send()
-            os.remove(out_file)
-
-        # if the message is successful delete it.
-        return resp
+    pdf_template_name = os.path.join('invoicing', 'bill', 'pdf.html')

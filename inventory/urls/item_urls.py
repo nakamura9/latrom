@@ -1,14 +1,13 @@
 from django.urls import re_path
-from inventory import views 
 from rest_framework import routers
+
+from inventory import views
 
 product_router = routers.DefaultRouter()
 product_router.register(r'^api/product', views.ProductAPIView)
 
 product_urls = [
     re_path(r'^product-create/?$', views.ProductCreateView.as_view(), name="product-create"),
-    re_path(r'^quick-product/?$', views.QuickProductCreateView.as_view(), 
-        name="quick-product"),
     re_path(r'^product-list/?$', views.ProductListView.as_view(), name="product-list"),
     re_path(r'^product-update/(?P<pk>[\w]+)/?$', views.ProductUpdateView.as_view(), 
         name="product-update"),

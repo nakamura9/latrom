@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.mixins import  UserPassesTestMixin
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db.models import Q
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormView,
+                                       UpdateView)
 from django_filters.views import FilterView
-from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from inventory import forms
-from inventory import models
-from inventory import serializers
-from inventory import filters
-from common_data.utilities import *
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.viewsets import ModelViewSet
+
 from common_data.models import GlobalConfig
+from common_data.utilities import *
+from common_data.views import PaginationMixin
+from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
 from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
@@ -64,7 +65,7 @@ class InventoryCheckDetailView(DetailView):
     model = models.InventoryCheck
     template_name = os.path.join('inventory', 'inventory_check', 'summary.html')
 
-class InventoryCheckListView(ExtraContext ,FilterView):
+class InventoryCheckListView(ExtraContext ,PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.InventoryCheckFilter
     template_name = os.path.join("inventory", "inventory_check", 'list.html')
@@ -112,7 +113,7 @@ class TransferOrderCreateView(CreateView):
             )
         return resp
 
-class TransferOrderListView(ExtraContext, FilterView):
+class TransferOrderListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.TransferOrderFilter
     template_name = os.path.join('inventory', 'transfer', 'list.html')
     paginate_by =10

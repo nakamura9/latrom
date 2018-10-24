@@ -1,7 +1,7 @@
 from django.urls import re_path
-from services import views
 from rest_framework import routers
 
+from services import views
 
 requisition_urls = [
     re_path(r'^equipment-requisition-create/?$', views.EquipmentRequisitionCreateView.as_view(), name='equipment-requisition-create'),

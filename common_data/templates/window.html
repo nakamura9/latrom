@@ -17,11 +17,13 @@
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
             <li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>
             {% endif %}
+            <!--
             {% if request.user %}
                 <li>
                     <a href="{% url 'planner:dashboard' %}" class="nav-link">Planner</a>
                 </li>
             {% endif %}
+            -->
             {% if request.user.is_superuser %}
             <li>
                 <a href="{% url 'services:dashboard' %}" class="nav-link">Services</a>
@@ -33,7 +35,20 @@
         </ul>
 </nav>
 <article>
-        {% block content %}{% endblock %}
+    <div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">
+                    {{message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+            {% endfor %}
+        
+        {% endif %}
+    </div>
+    {% block content %}{% endblock %}
 </article>
 <hr class="my-2" />
 <footer class="bg-info" style="">

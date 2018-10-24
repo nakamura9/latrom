@@ -137,7 +137,8 @@ class EntryRow extends Component{
             inputs: {
                 unit_price:0.0,
                 quantity: 0.0
-            }
+            },
+            inputReset: false
         };   
     }
     componentDidMount(){
@@ -148,7 +149,12 @@ class EntryRow extends Component{
             this.setState({items: res});
         });
     }
-    clickHandler(){
+    clickHandler =() => {
+        if(this.state.inputs.quantity <= 0.0){
+            alert('Please enter a valid quantity');
+            return;
+        }
+        this.setState({'inputReset': true});
         this.props.addItem(this.state.inputs);
     }
 
@@ -167,7 +173,6 @@ class EntryRow extends Component{
             url: '/inventory/api/product/' + pk,
             method:'get'
         }).then(res => {
-            console.log(res.data);
             let newInputs = {...this.state.inputs};
             newInputs['unit_price'] = res.data.unit_sales_price;
             newInputs['item_name'] = value;
@@ -191,6 +196,7 @@ class EntryRow extends Component{
                         idField="id"
                         onSelect={this.onSelect}
                         onClear={this.onClear}
+                        inputReset={this.state.inputReset}
                     />
                 </td>
                 
@@ -207,7 +213,7 @@ class EntryRow extends Component{
                 <td>
                     <button 
                         className="btn btn-primary"
-                        onClick={this.clickHandler.bind(this)}
+                        onClick={this.clickHandler}
                         type="button">
                         Insert
                     </button>

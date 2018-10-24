@@ -1,12 +1,16 @@
+import datetime
 import json
 import os
-from latrom import settings 
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
+
 from django.urls import re_path
-import datetime
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rest_framework.pagination import PageNumberPagination
+
 import invoicing
+from latrom import settings
+
+
 class ConfigMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super(ConfigMixin, self).get_context_data(*args, **kwargs)
@@ -96,8 +100,8 @@ class ModelViewGroup(object):
 class ExtraContext(object):
     extra_context = {}
     
-    def get_context_data(self, **kwargs):
-        context = super(ExtraContext, self).get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         context.update(self.extra_context)
         return context
 
@@ -132,12 +136,13 @@ extra_context = {
 
     
 def extract_period(kwargs):
-    n = kwargs['default_periods']
-    if n != '0':
+    n = kwargs.get('default_periods', None)
+    if n and n != '0':
         deltas = {
                 '1': 30,
                 '2': 90,
-                '3': 180
+                '3': 180,
+                '4': 365
             }
         end = datetime.date.today()
         start = end - datetime.timedelta(

@@ -1,6 +1,6 @@
 from django.urls import re_path
-from inventory import report_views
 
+from inventory import report_views
 
 report_urls = [
     re_path(r'^inventory-report/?$', report_views.InventoryReport.as_view(),    

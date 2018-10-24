@@ -1,17 +1,28 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal as D
-import rest_framework
 
+import rest_framework
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.conf import settings
-from accounting.models import JournalEntry, Journal, Account
+
+from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel
+
+
 from .item_models import Product
 
+
 class InventorySettings(SingletonModel):
+    INVENTORY_VALUATION_PERIOD=[
+        (30, 'Month'),
+        (90, 'Quarter'),
+        (182, 'Six Months'),
+        (365, 'One Year')
+    ]
     INVENTORY_VALUATION_METHODS = [
         (1, 'Averaging'),
         (2, 'FIFO'),
@@ -56,6 +67,7 @@ class InventorySettings(SingletonModel):
     )
     use_warehousing_model = models.BooleanField(default=True)
     use_storage_media_model = models.BooleanField(default=True)
+    stock_valuation_period = models.IntegerField(choices=INVENTORY_VALUATION_PERIOD, default=365)
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
@@ -73,10 +85,16 @@ class Supplier(models.Model):
     contact people.
     The account of the supplier is for instances when orders are made on credit.'''
     # one or the other 
-    organization = models.OneToOneField('common_data.Organization', on_delete=None, null=True)
-    individual = models.OneToOneField('common_data.Individual', on_delete=None, null=True)
+    organization = models.OneToOneField('common_data.Organization',
+         on_delete=None, blank=True,
+         null=True)
+    individual = models.OneToOneField('common_data.Individual', 
+        on_delete=None, blank=True, 
+        null=True)
     active = models.BooleanField(default=True)
-    account = models.ForeignKey('accounting.Account', on_delete=None, blank=True, null=True)
+    account = models.ForeignKey('accounting.Account', 
+        on_delete=None, 
+        blank=True, null=True)
 
     @property
     def name(self):
@@ -90,7 +108,7 @@ class Supplier(models.Model):
         return self.organization != None
 
     @property
-    def supplier_email(self):
+    def email(self):
         if self.is_organization:
             return self.organization.email
         else:
@@ -99,7 +117,7 @@ class Supplier(models.Model):
     @property
     def address(self):
         if self.is_organization:
-            return self.organization.address
+            return self.organization.business_address
         else:
             return self.individual.address
 
@@ -155,13 +173,24 @@ class Category(models.Model):
     parent = models.ForeignKey('inventory.Category', on_delete=None,blank=True, null=True)
     description = models.TextField(default="")
 
+
     def __str__(self):
         return self.name
 
     @property
     def items(self):
+        #deprecating
         return Product.objects.filter(category=self)
 
     @property
     def children(self):
-        return self.category_set.all()
+        return Category.objects.filter(parent=self)
+
+    @property
+    def siblings(self):
+        if not self.parent:
+            return Category.objects.filter(parent__isnull=True).exclude(
+                pk=self.pk)
+        else:
+            return Category.objects.filter(parent=self.parent).exclude(
+                pk=self.pk) 

@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+
 from django.db import models
+
 from common_data.models import SingletonModel
+from common_data.utilities import time_choices
+from employees.models import Employee
 from inventory.models import Supplier
 from invoicing.models import Customer
-from employees.models import Employee
-from common_data.utilities import time_choices
-import datetime
+
 
 class PlannerConfig(SingletonModel):
     number_of_agenda_items = models.PositiveIntegerField(default=10)

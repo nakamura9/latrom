@@ -1,7 +1,7 @@
 from django.urls import re_path
-from services import views
 from rest_framework import routers
 
+from services import views
 
 procedure_router = routers.DefaultRouter()
 procedure_router.register('api/procedure', views.ProcedureAPIView)

@@ -1,13 +1,15 @@
 
+from crispy_forms.bootstrap import Tab, TabHolder
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Fieldset, Layout, Submit
 from django import forms
-from . import models
+from django.contrib.auth import authenticate
+
 from accounting.models import Account
 from common_data.forms import BootstrapMixin
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit
-from crispy_forms.bootstrap import TabHolder, Tab
-from django.contrib.auth import authenticate
 from employees.models import Employee
+
+from . import models
 
 #models ommitted UnitOfMeasure OrderItem Category
 VALUATION_OPTIONS = [
@@ -184,7 +186,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
             )
         self.helper.add_input(Submit('submit', 'Submit'))
     class Meta:
-        exclude = ["product", "received_to_date"]
+        exclude = ["entry", "received_to_date", ]
         model = models.Order
         
         
@@ -199,7 +201,7 @@ class StockReceiptForm(forms.ModelForm, BootstrapMixin):
 
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude = "active",
         model = models. UnitOfMeasure
 
 

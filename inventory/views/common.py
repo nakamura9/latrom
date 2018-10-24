@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.mixins import  UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormView,
+                                       UpdateView)
 from django_filters.views import FilterView
-from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from inventory import forms
-from inventory import models
-from inventory import serializers
-from inventory import filters
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.viewsets import ModelViewSet
+
+from common_data.models import GlobalConfig
 from common_data.utilities import *
-from common_data.models import GlobalConfig 
+from common_data.views import PaginationMixin
+from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
@@ -66,27 +67,33 @@ class InventoryDashboard(InventoryControllerCheckMixin, TemplateView):
 #######################################################
 
 
-class UnitCreateView(InventoryControllerCheckMixin, CreateView):
+class UnitCreateView(ExtraContext, InventoryControllerCheckMixin, CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
+    extra_context = {
+        'title':'Create New Unit of measure'
+    }
 
-class UnitUpdateView(InventoryControllerCheckMixin, UpdateView):
+class UnitUpdateView(ExtraContext, InventoryControllerCheckMixin, UpdateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
-
+    extra_context = {
+        'title':'Update Unit of measure'
+    }
 
 class UnitDetailView(InventoryControllerCheckMixin, DetailView):
     model = models.UnitOfMeasure
     template_name = os.path.join('inventory', 'unit', 'detail.html')
 
 
-class UnitListView(ExtraContext, InventoryControllerCheckMixin, FilterView):
+class UnitListView(ExtraContext, InventoryControllerCheckMixin, PaginationMixin, FilterView):
     filterset_class = filters.UnitFilter
     model = models.UnitOfMeasure
+    paginate_by = 10
     template_name = os.path.join('inventory', 'unit', 'list.html')
     extra_context = {
         'title': 'List of Units',

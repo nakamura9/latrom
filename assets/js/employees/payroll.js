@@ -94,11 +94,14 @@ class PayrollTable extends Component{
                     console.log(status);
                     console.log(xhr.responseText);
                     console.log(error);
+                },success: function(resp){
+                    alert('Payroll run successfully');
+                    window.location.replace('/employees/list-pay-slips');
                 }
                 
             });
         }
-        window.location.replace('/employees/list-pay-slips');
+        
         
     }
     render(){

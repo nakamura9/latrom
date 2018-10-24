@@ -1,18 +1,18 @@
-import os 
 import datetime
 import decimal
+import os
 from functools import reduce
 
-from django.views.generic import TemplateView, DetailView
-from django.views.generic.edit import FormView
 from django.db.models import Q
 from django.urls import reverse_lazy
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import FormView
 
-from common_data.utilities import ExtraContext, extract_period
 from common_data.forms import PeriodReportForm
+from common_data.utilities import ExtraContext, extract_period
 
-from . import models 
-from . import forms 
+from . import forms, models
+
 
 class BalanceSheet(TemplateView):
     template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')
@@ -113,7 +113,7 @@ class IncomeStatement(TemplateView):
     template_name = os.path.join('accounting', 'reports', 'income_statement.html')
 
     def get_context_data(self, *args, **kwargs):
-        context = super(IncomeStatement, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         kwargs =  self.request.GET
         start, end = extract_period(kwargs)
 

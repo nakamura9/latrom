@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
-from django.db import models
-import os
 import json
+import os
+
+from django.db import models
+
 from latrom import settings
+
 
 class Person(models.Model):
     first_name = models.CharField(max_length =32)
@@ -25,7 +28,8 @@ class Individual(Person):
     '''
     phone_two = models.CharField(max_length = 16,blank=True , default="")
     other_details = models.TextField(blank=True, default="")
-    organization = models.ForeignKey('common_data.Organization', on_delete=models.CASCADE,null=True, blank=True)
+    organization = models.ForeignKey('common_data.Organization', 
+        on_delete=models.CASCADE,null=True, blank=True)
     photo = models.ImageField(null=True, blank=True)
     
     def delete(self):

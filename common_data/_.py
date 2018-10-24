@@ -1,5 +1,6 @@
 from inventory.models import Order, StockAdjustment, TransferOrder
 
+
 class Event(object):
     label = None
     icon = None

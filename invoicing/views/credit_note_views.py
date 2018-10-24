@@ -1,30 +1,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.views.generic import TemplateView, ListView, DetailView, FormView
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.http import HttpResponseRedirect
-from rest_framework import generics, viewsets
-from django_filters.views import FilterView
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DetailView, FormView, ListView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django_filters.views import FilterView
+from rest_framework import generics, viewsets
 
-from invoicing import forms
-from common_data.utilities import ExtraContext, ConfigMixin, Modal
-from inventory.forms import QuickProductForm
 from accounting.forms import TaxForm
+from common_data.utilities import ConfigMixin, ExtraContext, Modal
+from common_data.views import PaginationMixin
+from inventory.forms import QuickProductForm
 from inventory.models import Product
-from invoicing.models import CreditNote, SalesInvoiceLine, SalesConfig
-from invoicing import filters
-from invoicing import serializers
-from .common import SalesRepCheckMixin
+from invoicing import filters, forms, serializers
+from invoicing.models import CreditNote, SalesConfig, SalesInvoiceLine
 
+from .common import SalesRepCheckMixin
 
 #########################################
 #           Credit Note Views              #
@@ -84,10 +84,9 @@ class CreditNoteDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
 
 #Deprecated
 #credit notes now accessed on an invoice by invoice basis
-class CreditNoteListView(SalesRepCheckMixin, ExtraContext, FilterView):
-    extra_context = {"title": "List of Credit Notes",
-                    "new_link": reverse_lazy("invoicing:credit-note-create")}
-    template_name = os.path.join("invoicing", "credit_note_list.html")
+class CreditNoteListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+    extra_context = {"title": "List of Credit Notes"}
+    template_name = os.path.join("invoicing", "sales_invoice", "credit_note", "list.html")
     filterset_class = filters.CreditNoteFilter
     paginate_by = 10
 

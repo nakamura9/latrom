@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
-from django.views.generic import  DetailView
 
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from rest_framework import  viewsets
-from django_filters.views import FilterView
+import os
+
 from django.urls import reverse_lazy
-from invoicing import forms
+from django.views.generic import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django_filters.views import FilterView
+from rest_framework import viewsets
 
 from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from invoicing import filters, forms, serializers
 from invoicing.models import Customer
-from invoicing import filters
-from invoicing import serializers
+
 from .common import SalesRepCheckMixin
 
 #########################################
@@ -33,14 +34,6 @@ class CustomerCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     form_class = forms.CustomerForm
 
 
-class QuickCustomerCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
-    extra_context = {"title": "Create New Customer"}
-    template_name = os.path.join("common_data", "create_template.html")
-    model = Customer
-    success_url = reverse_lazy("invoicing:home")
-    form_class = forms.QuickCustomerForm
-
-
 class CustomerUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Customer"}
     template_name = os.path.join("common_data", "create_template.html")
@@ -49,7 +42,7 @@ class CustomerUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class CustomerListView(SalesRepCheckMixin, ExtraContext, FilterView):
+class CustomerListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "List of Customers",
                     "new_link": reverse_lazy("invoicing:create-customer")}
     template_name = os.path.join("invoicing", "customer_list.html")

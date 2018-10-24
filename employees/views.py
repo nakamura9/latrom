@@ -1,26 +1,28 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
-import json
-import urllib
+
 import datetime
 import decimal
+import json
+import os
+import urllib
 
-from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView,  FormView
-from django.http import HttpResponseRedirect
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
-from django_filters.views import FilterView
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormView,
+                                       UpdateView)
+from django_filters.views import FilterView
 from rest_framework import viewsets
 
-from . import serializers
-from . import models 
-from . import filters
-from . import forms
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, apply_style, ModelViewGroup
+from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.views import PaginationMixin
+
+from . import filters, forms, models, serializers
+
 
 class AdministratorCheckMixin(UserPassesTestMixin):
     def test_func(self):
@@ -38,7 +40,7 @@ class DashBoard(AdministratorCheckMixin, ExtraContext, TemplateView):
         'employees': models.Employee.objects.all()
     }
 
-class PayrollConfig(ExtraContext, UpdateView):
+class PayrollConfig(AdministratorCheckMixin, ExtraContext, UpdateView):
     model = models.EmployeesSettings
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy("employees:dashboard")
@@ -47,7 +49,7 @@ class PayrollConfig(ExtraContext, UpdateView):
         'title': 'Configure automated Payroll'
     }
 
-class ManualPayrollConfig(TemplateView):
+class ManualPayrollConfig(AdministratorCheckMixin, TemplateView):
     template_name = os.path.join('employees', 'manual_config.html')
     
 
@@ -77,15 +79,15 @@ class EmployeeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
         'title': 'Edit Employee data on payroll system'
     }
 
-class EmployeeListView(AdministratorCheckMixin, ExtraContext, FilterView):
+class EmployeeListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'employee_list.html')
     filterset_class = filters.EmployeeFilter
+    paginate_by = 10
     extra_context = {
         'title': 'List of Employees',
         'new_link': reverse_lazy('employees:create-employee')
     }
-    def get_queryset(self):
-        return models.Employee.objects.filter(active=True).order_by('first_name')
+    queryset = models.Employee.objects.filter(active=True).order_by('first_name')
 
 class EmployeeDetailView(AdministratorCheckMixin, DetailView):
     template_name = os.path.join('employees', 'employee_detail.html')
@@ -192,16 +194,18 @@ class PayGradeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
 class PayGradeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
     form_class = forms.PayGradeForm
     template_name =CREATE_TEMPLATE
-    success_url = reverse_lazy('employees:dashboard')
+    success_url = reverse_lazy('employees:list-pay-grades')
     extra_context = {
         'title': 'Edit existing Pay Grade'
     }
+    queryset = models.PayGrade.objects.all()
 
 class PayGradeListView(AdministratorCheckMixin, ListView):
     template_name = os.path.join('employees', 'pay_grade_list.html')
     paginate_by = 10
+    queryset =  models.PayGrade.objects.all()
     extra_context = {
-        'title': 'List of Payslips'
+        'title': 'List of Pay grades'
     }
 
 class PayGradeDeleteView(AdministratorCheckMixin, DeleteView):
@@ -224,7 +228,7 @@ class PayslipView(AdministratorCheckMixin, DetailView):
         context['title'] = 'Pay Slip'
         return context
 
-class PayslipListView(AdministratorCheckMixin, ExtraContext, FilterView):
+class PayslipListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.PayslipFilter
     template_name = os.path.join('employees', 'payslip_list.html')
     paginate_by = 10
@@ -242,26 +246,6 @@ class PayslipViewset(viewsets.ModelViewSet):
 
 
 
-#############################################################
-#                    PayGrade Views                         #
-#############################################################
-
-class PayGradeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
-    form_class = forms.PayGradeForm
-    template_name =CREATE_TEMPLATE
-    model = models.PayGrade
-    success_url = reverse_lazy('employees:dashboard')
-    extra_context = {
-        'title': 'Update existing pay grade'
-    }
-
-
-class PayGradeListView(AdministratorCheckMixin, ExtraContext, FilterView):
-    template_name = os.path.join('employees', 'pay_grade_list.html')
-    extra_context = {
-        'title': 'List of Pay Grades'
-    }
-    model = models.PayGrade
 
 
 #####################################################

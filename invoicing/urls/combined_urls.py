@@ -1,6 +1,7 @@
 from django.urls import re_path
-from invoicing import views
 from rest_framework import routers
+
+from invoicing import views
 
 combined_invoice_router = routers.DefaultRouter()
 combined_invoice_router.register('api/combined-invoice', views.CombinedInvoiceAPIViewSet)
@@ -25,4 +26,3 @@ combined_urls = [
         views.CombinedInvoiceDraftUpdateView.as_view(), name='combined-draft-update'),
     
 ] + combined_invoice_router.urls 
-

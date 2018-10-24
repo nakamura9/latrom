@@ -1,23 +1,21 @@
-import os
 import json
+import os
 import urllib
 
-from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth import authenticate
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth import authenticate
 
-from services import models
-from inventory.models import Equipment, Consumable, UnitOfMeasure
-from services import filters
-from services import forms 
-from services import serializers
-from common_data.utilities import ExtraContext
 from common_data.forms import AuthenticateForm
+from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+from inventory.models import Consumable, Equipment, UnitOfMeasure
+from services import filters, forms, models, serializers
 
 
 class EquipmentRequisitionCreateView(CreateView):
@@ -55,9 +53,10 @@ class EquipmentRequisitionDetailView(DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class EquipmentRequisitionListView(ExtraContext, FilterView):
+class EquipmentRequisitionListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
     queryset = models.EquipmentRequisition.objects.all()
+    paginate_by = 10
     template_name = os.path.join('services', 'requisitions', 'equipment', 'list.html')
 
     extra_context = {
@@ -154,10 +153,11 @@ class ConsumableRequisitionDetailView(DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class ConsumableRequisitionListView(ExtraContext, FilterView):
+class ConsumableRequisitionListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.ConsumableRequisitionFilter
     queryset = models.ConsumablesRequisition.objects.all()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')
+    paginate_by = 10
 
     extra_context = {
         'title': 'List of Consumables Requisitions'

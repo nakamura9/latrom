@@ -1,7 +1,8 @@
-from . import views
-from .api import get_calendar
 from django.urls import re_path
 from rest_framework.routers import DefaultRouter
+
+from . import views
+from .api import get_calendar
 
 event_router = DefaultRouter()
 event_router.register(r'^api/event', views.EventAPIViewSet)

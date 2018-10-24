@@ -1,16 +1,16 @@
-import os
 import datetime
 import itertools
+import os
 
-from django.views.generic.edit import CreateView, FormView
-from django.views.generic import TemplateView, DetailView
-from django.urls import reverse_lazy
 from django.db.models import Q
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import CreateView, FormView
 
 from common_data.utilities import ExtraContext, extract_period
-from . import models 
-from . import forms
-from .models import AbstractSale
+from invoicing import forms, models
+from invoicing.models import AbstractSale
+
 
 class CustomerReportFormView(ExtraContext, FormView):
     extra_context = {

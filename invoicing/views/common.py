@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
+
 import json
+import os
 import urllib
 
-from django.views.generic import TemplateView, ListView, DetailView, FormView
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.http import HttpResponseRedirect
-from rest_framework import generics, viewsets
-from django_filters.views import FilterView
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
 from django.conf import settings
-from invoicing import forms
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DetailView, FormView, ListView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rest_framework import generics, viewsets
 
-from common_data.utilities import ExtraContext, apply_style, Modal
-from inventory.forms import QuickProductForm
 from accounting.forms import TaxForm
+from common_data.utilities import ExtraContext, Modal, apply_style
+from inventory.forms import QuickProductForm
 from inventory.models import Product
+from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing import filters
-from invoicing import serializers
 
 
 class SalesRepCheckMixin(UserPassesTestMixin):

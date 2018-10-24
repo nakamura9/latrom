@@ -1,14 +1,13 @@
-import os 
+import os
 
+from django.db.models import Q
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
-from django.urls import reverse_lazy
-from django.db.models import Q
 
-from inventory import forms
-from inventory import serializers
-from inventory import models
+from inventory import forms, models, serializers
+
 from .common import InventoryControllerCheckMixin
 
 #!fix prevent updates from assigining parent media to child media.
@@ -58,4 +57,3 @@ class StorageMediaListAPIView(ListAPIView):
                 Q(location=None)
             )
         return models.StorageMedia.objects.filter(location=None) 
-    

@@ -1,6 +1,7 @@
 from django.urls import re_path
-from . import views
 from rest_framework import routers
+
+from . import views
 
 employee_router = routers.DefaultRouter()
 employee_router.register(r'^api/employee', views.EmployeeViewSet)

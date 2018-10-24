@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
-from .models import *
+from accounting.serializers import ExpenseSerializer, TaxSerializer
 from inventory.serializers import ProductSerializer
-from accounting.serializers import TaxSerializer, ExpenseSerializer
 from services.serializers import ServiceSerializer
+
+from .models import *
+
 
 class SalesRepsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -79,5 +81,3 @@ class CombinedInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CombinedInvoice
         fields = ['combinedinvoiceline_set', 'customer', 'id']
-
-

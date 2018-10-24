@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MultipleSelectWidget from '../src/multiple_select';
+import MultipleSelectWidget from '../src/components/multiple_select';
 import TextBoxListWidget from '../src/text_box_list';
 import $ from 'jquery';
 import axios from 'axios';

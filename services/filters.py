@@ -1,5 +1,7 @@
-from . import models
 import django_filters
+
+from . import models
+
 
 class ServiceFilter(django_filters.FilterSet):
     class Meta:

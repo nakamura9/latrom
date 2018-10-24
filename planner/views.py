@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os 
-import json
-import urllib
-from django_filters.views import FilterView
-from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.db.models import Q
-from rest_framework import viewsets 
-from common_data.utilities import ExtraContext
-from django.urls import reverse_lazy
-from . import models
-from . import serializers
-from . import forms
-from . import filters
+
 import datetime
+import json
+import os
+import urllib
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django_filters.views import FilterView
+from rest_framework import viewsets
+
+from common_data.utilities import ExtraContext
+from common_data.views import PaginationMixin
+
+from . import filters, forms, models, serializers
 
 
 class ReactCalendar(LoginRequiredMixin, TemplateView):
@@ -72,7 +74,7 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
 
         return resp
 
-class EventListView(ExtraContext, LoginRequiredMixin, FilterView):
+class EventListView(ExtraContext, LoginRequiredMixin, PaginationMixin, FilterView):
     template_name = os.path.join('planner', 'events', 'list.html')
     filterset_class = filters.EventFilter
     extra_context = {
