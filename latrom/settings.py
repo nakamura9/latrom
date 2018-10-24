@@ -172,8 +172,6 @@ WKHTMLTOPDF_CMD_OPTIONS = {
 }
 
 #EMAIL
-
-config_file = open(os.path.join(BASE_DIR, 'global_config.json'))
 email_config = json.load(config_file)
 
 EMAIL_HOST = email_config['email_host']
