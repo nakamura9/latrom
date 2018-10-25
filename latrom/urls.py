@@ -27,5 +27,6 @@ urlpatterns = [
     re_path(r'^employees/', include(("employees.urls", 'employees'), namespace="employees")),
     re_path(r'^services/', include(("services.urls", 'services'), namespace="services")),
     re_path(r'^planner/', include(("planner.urls", 'planner'), namespace="planner")),
+    re_path(r'^messaging/', include(("messaging.urls", 'messaging'), namespace="messaging")),
     re_path(r'^', include('django.contrib.auth.urls'))
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

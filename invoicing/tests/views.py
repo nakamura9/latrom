@@ -367,7 +367,7 @@ class BillViewTests(TestCase):
         with self.assertRaises(Exception):
             self.client.post(reverse('invoicing:bill-email',
             kwargs={'pk':1}), data={
-                'recepient': 'kandoroc@gmail.com',
+                'recipient': 'kandoroc@gmail.com',
                 'subject': 'Test Subject',
                 'content': 'TestContent'
             })
@@ -551,7 +551,7 @@ class CombinedInvoiceViewTests(TestCase):
         with self.assertRaises(Exception):
             self.client.post(reverse('invoicing:combined-invoice-email',
             kwargs={'pk':1}), data={
-                'recepient': 'kandoroc@gmail.com',
+                'recipient': 'kandoroc@gmail.com',
                 'subject': 'Test Subject',
                 'content': 'TestContent'
             })
@@ -699,7 +699,7 @@ class SalesViewTests(TestCase):
         with self.assertRaises(Exception):
             self.client.post(reverse('invoicing:sales-invoice-email',
             kwargs={'pk':1}), data={
-                'recepient': 'kandoroc@gmail.com',
+                'recipient': 'kandoroc@gmail.com',
                 'subject': 'Test Subject',
                 'content': 'TestContent'
             })
@@ -882,7 +882,7 @@ class ServiceInvoiceViewTests(TestCase):
         with self.assertRaises(Exception):
             self.client.post(reverse('invoicing:service-invoice-email',
             kwargs={'pk':1}), data={
-                'recepient': 'kandoroc@gmail.com',
+                'recipient': 'kandoroc@gmail.com',
                 'subject': 'Test Subject',
                 'content': 'TestContent'
             })

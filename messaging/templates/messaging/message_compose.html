@@ -1,0 +1,57 @@
+{% extends "window.html" %}
+{% block content %}
+
+
+<div class="jumbotron">
+    <h1 class="display-3">New message</h1>
+    <p class="lead">Internal messaging platform</p>
+    <hr class="my-2">
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <ul class="nav nav-tabs">
+                    <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">To</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cc-bcc" data-toggle="tab">CC &amp; BCC</a></li>
+                </ul>
+                <div class="tab-content panel-body">
+                    <div id="to" class="tab-pane active">
+                        <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
+                                Recipient</label>
+                            {{form.recipient}}
+                        </div>
+                    </div>
+                    <div id="cc-bcc" class="tab-pane">
+                        <div id="div_id_carbon_copy" class="form-group"> <label for="id_carbon_copy" class="col-form-label ">
+                                Carbon copy
+                            </label>
+                            {{form.carbon_copy}}
+                        </div>
+                        <div id="div_id_blind_carbon_copy" class="form-group"> <label for="id_blind_carbon_copy" class="col-form-label ">
+                                Blind carbon copy
+                            </label>
+                            {{form.blind_carbon_copy}}
+                        </div>
+                    </div>
+                </div>
+                <div id="div_id_subject" class="form-group"> <label for="id_subject" class="col-form-label ">
+                        Subject
+                    </label>
+                    {{form.subject}}
+                </div>
+                <div id="div_id_body" class="form-group"> <label for="id_body" class="col-form-label  requiredField">
+                        Body<span class="asteriskField">*</span> </label>
+                    {{form.body}}
+                </div>
+                {{form.sender}}
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

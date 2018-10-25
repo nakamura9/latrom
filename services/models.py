@@ -63,8 +63,8 @@ class ServicePerson(models.Model):
 class ServiceTeam(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    manager = models.ForeignKey('services.ServicePerson', on_delete=None, null=True, 
-        blank=True, related_name="service_team_manager")
+    manager = models.ForeignKey('services.ServicePerson', on_delete=None, 
+        null=True, blank=True, related_name="service_team_manager")
     members = models.ManyToManyField('services.ServicePerson', 
         related_name="service_team_members")
 
