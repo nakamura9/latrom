@@ -53,6 +53,7 @@ class SalesInvoice(AbstractSale):
              self.ship_from.decrement_item(line.product, line.quantity)
 
     def create_entry(self):
+        #verified
         '''sales entries debits the inventory and in the case of credit 
         sales credits the customer account or the cash book otherwise.
         First a journal entry is made to debit the inventory and credit the 
@@ -62,12 +63,14 @@ class SalesInvoice(AbstractSale):
                 reference='INV' + str(self.pk),
                 memo= 'Auto generated entry from sales invoice.',
                 date=self.date,
-                journal =Journal.objects.get(pk=1)#Cash receipts Journal
+                journal =Journal.objects.get(pk=1),#Cash receipts Journal
+                created_by = self.salesperson.employee.user
             )
-        j.credit(self.total, Account.objects.get(pk=4009))#inventory
-        j.debit(self.subtotal, Account.objects.get(pk=4000))#sales
+        j.debit(self.total, Account.objects.get(pk=4009))#inventory
+        j.debit(self.total, self.customer.account)
+        j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
         if self.tax_amount > D(0):
-            j.debit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+            j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
 
             return j
         if not self.on_credit:

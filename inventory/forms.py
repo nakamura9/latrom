@@ -211,7 +211,7 @@ class QuickProductForm(forms.ModelForm, BootstrapMixin):
         model = models.Product
 
 class CategoryForm(forms.ModelForm, BootstrapMixin):
-    parent = forms.ModelChoiceField(models.Category.objects.all(), widget=forms.HiddenInput)
+    parent = forms.ModelChoiceField(models.Category.objects.all(), widget=forms.HiddenInput, required=False)
     class Meta:
         fields = "__all__"
         model = models.Category

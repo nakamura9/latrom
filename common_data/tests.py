@@ -25,8 +25,10 @@ def create_test_common_entities(cls):
 
 def create_test_user(cls):
     '''creates a test user that can be logged in for view tests'''
-    cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
-    cls.user.save()
+    if not hasattr(cls, 'user'):
+        cls.user = User.objects.create_superuser('Testuser', 
+            'admin@test.com', '123')
+        cls.user.save()
 
 def create_account_models(cls):
     '''creates common accounts models.
@@ -34,6 +36,8 @@ def create_account_models(cls):
     1. Accounts:
         a. account_c - account that is commonly credited
         b. account_d - account that is commonly debited'''
+    if not hasattr(cls, 'user'):
+        create_test_user(cls)
     if Journal.objects.all().count() < 5:
         call_command('loaddata', 'accounting/fixtures/accounts.json', 
             'accounting/fixtures/journals.json')
@@ -62,7 +66,8 @@ def create_account_models(cls):
     cls.entry = JournalEntry.objects.create(
         memo='record of test entry',
             date=TODAY,
-            journal =cls.journal
+            journal =cls.journal,
+            created_by=cls.user
     )
     cls.entry.simple_entry(
             10,

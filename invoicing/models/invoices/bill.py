@@ -46,11 +46,13 @@ class Bill(AbstractSale):
         return self.subtotal
     
     def create_entry(self):
+        #verified
         j = JournalEntry.objects.create(
             reference='INV' + str(self.pk),
             memo= 'Auto generated Entry from unpaid bill from customer.',
             date=self.date,
-            journal =Journal.objects.get(pk=3)#Sales Journal
+            journal =Journal.objects.get(pk=3),#Sales Journal
+            created_by = self.salesperson.employee.user
         )
         #check these accounts
         # the corresponding account for the expense incurred

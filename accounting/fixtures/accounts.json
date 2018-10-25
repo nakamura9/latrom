@@ -190,7 +190,7 @@
         "model": "accounting.account",
         "pk": 2001,
         "fields": {
-            "name": "Sales Tax Collected",
+            "name": "VAT Control Account",
             "balance": 0,
             "description": "Taxes paid to the government on sales made.",
             "type": "liability",

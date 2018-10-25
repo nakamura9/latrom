@@ -47,13 +47,14 @@ INSTALLED_APPS = [
     'accounting',
     'services',
     'planner',
+    'messaging',
     'django_filters',
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
     'generic_scaffold'
 ]
-#'django_tables2','crudbuilder',
+
 LOGIN_REQUIRED_FOR_CRUD = True
 PROJECT_NAME = 'Smart business solutions'
 

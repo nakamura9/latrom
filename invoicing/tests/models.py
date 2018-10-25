@@ -51,10 +51,6 @@ class CommonModelTests(TestCase):
 
 class CustomerModelTests(TestCase):
     fixtures = ['common.json','employees.json','invoicing.json']
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
         
     @classmethod
     def setUpTestData(cls):
@@ -319,6 +315,17 @@ class SalesInvoiceTests(TestCase):
         invs = AbstractSale.abstract_filter(Q(date=TODAY))
         self.assertEqual(len([i for i in invs]), 1)
 
+    def test_set_quote_invoice_number(self):
+        old_status = self.inv.status
+        self.inv.status = 'quotation'
+        self.inv.save()
+        self.inv.set_quote_invoice_number()
+        self.assertEqual(self.inv.quotation_number, 1)
+        self.inv.status = old_status
+        self.inv.save()
+        self.inv.set_quote_invoice_number()
+        self.assertEqual(self.inv.invoice_number, 1)
+
     def test_subtotal(self): 
         self.assertEqual(self.inv.subtotal, 10)
 
@@ -332,6 +339,7 @@ class SalesInvoiceTests(TestCase):
     def test_on_credit(self):
         self.assertFalse(self.inv.on_credit)
         self.inv.due = TODAY - datetime.timedelta(days=1)
+        self.inv.status = 'sent'
         self.inv.save()
         self.assertTrue(self.inv.on_credit)
         self.inv.due = TODAY
@@ -386,7 +394,7 @@ class SalesInvoiceTests(TestCase):
     def test_create_entry(self):
         pre_bal = Account.objects.get(pk=4009).balance
         self.inv.create_entry()
-        self.assertEqual(Account.objects.get(pk=4009).balance, pre_bal + 10)
+        self.assertEqual(Account.objects.get(pk=4009).balance, pre_bal - 10)
         #rollback
         self.inv.status = "sent"
         self.inv.save()

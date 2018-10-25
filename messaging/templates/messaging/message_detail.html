@@ -1,0 +1,39 @@
+{% extends "window.html" %}
+{% block content %}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <h4>Message Thread</h4>
+            {% for message in object.thread.message_set.all %}
+                <a>
+                    <div style="border: 1px solid black; padding:10px;">
+                        <h6>{{message.subject}}</h6>
+                        <hr />
+                        <p>{{message.body | truncatechars:50}}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        <div class="col-sm-8">
+                <div style="background-color: #ccc; padding:10px;">
+                    <h3>Message Details</h3>
+                    <p>Created: {{object.created_timestamp}}</p>
+                    <p>Recipient: {{object.recipient}};
+                    <p>Carbon Copy: {% for recipient in object.carbon_copy.all %}
+                            {{recipient}}; 
+                        {% endfor %}</p>    
+                    <p>Blind Carbon Copy: {% for recipient in object.blind_carbon_copy.all %}
+                            {{recipient}}; 
+                        {% endfor %}</p>
+                    </p>
+                </div>
+            <h5>{{object.subject}}</h5>
+            <hr />
+            {{object.body}}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

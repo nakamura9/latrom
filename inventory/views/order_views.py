@@ -175,5 +175,5 @@ class OrderEmailSendView(EmailPlusPDFMixin):
     def get_initial(self):
         ord = models.Order.objects.get(pk=self.kwargs['pk'])
         return {
-            'recepient': ord.supplier.email
+            'recipient': ord.supplier.email
         }

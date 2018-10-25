@@ -58,7 +58,7 @@
                 <tbody>
                     {% for t in object.transaction_list %}
                     <tr>
-                        <td>{{t.entry.id}}</td>
+                        <td><a href="{% url 'accounting:entry-detail' pk=t.entry.id %}" >{{t.entry.id}}</a></td>
                         <td>{{t.entry.date}}</td>
                         <td>{{t.entry.memo}}</td>
                         <td>{{t.amount}}</td>

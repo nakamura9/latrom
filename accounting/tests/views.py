@@ -24,11 +24,11 @@ class CommonViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
         cls.client = Client()
 
     @classmethod
     def setUpTestData(cls):
+        create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
         cls.PAYMENT_DATA = {
@@ -188,11 +188,11 @@ class JournalEntryViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
         cls.client = Client()
 
     @classmethod
     def setUpTestData(cls):
+        create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
     
@@ -203,7 +203,8 @@ class JournalEntryViewTests(TestCase):
             'journal' :cls.journal.pk,
             'amount': 100,
             'debit': cls.account_d.pk,
-            'credit': cls.account_c.pk
+            'credit': cls.account_c.pk,
+            'created_by': cls.user.pk
         }
         cls.JOURNAL_DATA = {
                 'name': 'Other Test Journal',
@@ -275,11 +276,11 @@ class AccountViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
         cls.client = Client()
 
     @classmethod
     def setUpTestData(cls):
+        create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
     
@@ -338,7 +339,7 @@ class TestReportViews(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        
         cls.client = Client()
         cls.statement_period = {
                 'default_periods': 0,
@@ -348,6 +349,7 @@ class TestReportViews(TestCase):
             }
     @classmethod
     def setUpTestData(cls):
+        create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
 
