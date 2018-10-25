@@ -35,11 +35,14 @@ class CreditNote(models.Model):
         return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_products], 0)
 
     def create_entry(self):
+        '''Credit notes vary so, no automated entry'''
+        #verified
         j = JournalEntry.objects.create(
             reference = 'CN' + str(self.pk),
             memo="Auto generated journal entry from credit note",
             date=self.date,
-            journal=Journal.objects.get(pk=3)
+            journal=Journal.objects.get(pk=3),
+            created_by = self.invoice.salesperson.employee.user
         )
         j.simple_entry(
             self.returned_total,
@@ -51,4 +54,4 @@ class CreditNote(models.Model):
         # to prevent a transaction during an update
         if not self.pk is None:
             return
-        self.create_entry()
+        

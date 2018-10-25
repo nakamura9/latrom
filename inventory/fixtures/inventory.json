@@ -53,5 +53,13 @@
         "fields": {
             "organization": 1
         }
+    },
+    {
+        "model": "inventory.Category",
+        "pk": 1,
+        "fields": {
+            "name": "Default Category",
+            "description": "Generic Category object"
+        }
     }
 ]

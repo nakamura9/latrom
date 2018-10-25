@@ -20,13 +20,14 @@ TODAY = datetime.date.today()
 class GenericPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(GenericPageTests, cls).setUpClass()
-        create_test_user(cls)
+        super().setUpClass()
         cls.client = Client()
 
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        create_test_user(cls)
+        
 
     def setUp(self):
         #wont work in setUpClass
@@ -63,8 +64,7 @@ class GenericPageTests(TestCase):
 class PayGradePageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(PayGradePageTests, cls).setUpClass()
-        create_test_user(cls)
+        super().setUpClass()
         cls.client = Client()
         cls.PAYGRADE_DATA = {
             'name': 'Other Test Grade',
@@ -81,7 +81,8 @@ class PayGradePageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-
+        create_test_user(cls)
+        
     def setUp(self):
         #wont work in setUpClass
         self.client.login(username='Testuser', password='123')
@@ -115,15 +116,15 @@ class PayGradePageTests(TestCase):
 class PaySlipPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(PaySlipPageTests, cls).setUpClass()
-        create_test_user(cls)
+        super().setUpClass()
         cls.client = Client()
         
 
     @classmethod
     def setUpTestData(cls):
+        create_test_user(cls)
         create_test_employees_models(cls)
-
+        
     def setUp(self):
         #wont work in setUpClass
         self.client.login(username='Testuser', password='123')
@@ -143,7 +144,7 @@ class PaySlipPageTests(TestCase):
 class EmployeePageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(EmployeePageTests, cls).setUpClass()
+        super().setUpClass()
         create_test_user(cls)
         cls.client = Client()
         cls.EMPLOYEE_DATA = {
@@ -215,7 +216,7 @@ class EmployeePageTests(TestCase):
 class BenefitsPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(BenefitsPageTests, cls).setUpClass()
+        super().setUpClass()
         create_test_user(cls)
         cls.client = Client()
         cls.ALLOWANCE_DATA = {
@@ -271,7 +272,7 @@ class BenefitsPageTests(TestCase):
 class CommissionPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(CommissionPageTests, cls).setUpClass()
+        super().setUpClass()
         create_test_user(cls)
         cls.client = Client()
         cls.COMMISSION_DATA = {
@@ -328,7 +329,7 @@ class CommissionPageTests(TestCase):
 class DeductionPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(DeductionPageTests, cls).setUpClass()
+        super().setUpClass()
         create_test_user(cls)
         cls.client = Client()
         cls.DEDUCTION_DATA = {

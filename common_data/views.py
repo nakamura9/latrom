@@ -166,7 +166,7 @@ class SendEmail(ExtraContext, FormView):
                 form.cleaned_data['subject'],
                 form.cleaned_data['content'],
                 config.email_user,
-                [form.cleaned_data['recepient']])
+                [form.cleaned_data['recipient']])
             return resp
         return resp
 
@@ -185,7 +185,7 @@ class EmailPlusPDFMixin(ExtraContext, FormView):
             raise ValueError('Improperly configured, needs an inv_class attribute')
         inv = self.inv_class.objects.get(pk=self.kwargs['pk'])
         return {
-            'recepient': inv.customer.customer_email
+            'recipient': inv.customer.customer_email
         }
     
     def post(self,request, *args, **kwargs):
@@ -201,7 +201,7 @@ class EmailPlusPDFMixin(ExtraContext, FormView):
             subject=form.cleaned_data['subject'],
             body = form.cleaned_data['content'],
             from_email=config.email_user,
-            to=[form.cleaned_data['recepient']]
+            to=[form.cleaned_data['recipient']]
         )
         if not self.pdf_template_name:
             raise ValueError('Improperly configured. Needs pdf_template_name attribute.')

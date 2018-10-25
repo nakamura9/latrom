@@ -46,7 +46,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
         model = models.GlobalConfig
 
 class SendMailForm(BootstrapMixin, forms.Form):
-    recepient = forms.EmailField()
+    recipient = forms.EmailField()
     subject = forms.CharField()
     content = forms.CharField(widget=forms.Textarea)
 

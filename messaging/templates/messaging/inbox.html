@@ -1,0 +1,50 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Messaging Inbox</h1>
+    <p class="lead">Welcome {{request.user.username}}!</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'messaging:create-message' %}" role="button">Compose</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="nav nav-tabs|pills nav-stacked">
+                <li class="nav-item">
+                    <a href="#messages" data-toggle="tab" class="nav-link active">Messages</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#notifications" data-toggle="tab" class="nav-link">Notifications</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="messages" role="tabpanel" >
+                    {% for thread in object.threads %}
+                        <a href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;"><div style="border:1px solid black; padding:10px;">
+                            <h6>{{thread.latest.sender.username}}: {{thread.latest.subject | truncatechars:50}}</h6>
+                            <hr />
+                            <p>{{thread.latest.body | truncatechars:80}}</p>
+                        </div>
+                    </a>
+                    {% endfor %}
+                    <!--Paginate the list of messages -->
+                </div>
+                <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="profile-tab">
+                    {% for notification in object.notifications %}
+                        <div style="border:1px solid black; padding:10px;">
+                            <h4>{{notification.title}}</h4>
+                            <hr />
+                            <p>{{notification.message | truncatechars:80}}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -19,7 +19,8 @@ class AccountingSettings(SingletonModel):
 class Bookkeeper(models.Model):
     '''Model that gives employees access to the bookkeeping function of the 
     software such as order creation and the like.'''
-    employee = models.ForeignKey('employees.Employee', on_delete=models.CASCADE,null=True) 
+    employee = models.ForeignKey('employees.Employee', 
+        on_delete=None, default=1, limit_choices_to=Q(user__isnull=False))
 
 class Transaction(models.Model):
     '''
@@ -99,6 +100,7 @@ class JournalEntry(models.Model):
     journal = models.ForeignKey('accounting.Journal', on_delete=None)
     posted_to_general_ledger = models.BooleanField(default=False)
     adjusted = models.BooleanField(default=False)
+    created_by = models.ForeignKey('auth.user', default=1, on_delete=None)
 
     @property
     def total_debits(self):
@@ -326,16 +328,20 @@ class Asset(models.Model):
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
     salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
+    created_by = models.ForeignKey('auth.user', default=1, on_delete=None)
 
     def create_entry(self):
         '''debits the debit account and credits the appropriate asset account'''
+        #verified
         try:
             j = JournalEntry.objects.create(
                 reference = "Asset. ID: " + str(self.pk),
                 date = datetime.date.today(),
                 memo =  "Asset added. Name: %s. Description: %s " % (
                     self.name, self.description
+                
                 ),
+                created_by = self.created_by,
                 journal = Journal.objects.get(pk=5)# not ideal general journal
             )
             j.simple_entry(self.initial_value, 
@@ -383,6 +389,7 @@ class AbstractExpense(models.Model):
     category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     debit_account = models.ForeignKey('accounting.Account', on_delete=None)
+    recorded_by = models.ForeignKey('auth.user', default=1, on_delete=None)
 
     class Meta:
         abstract = True
@@ -397,13 +404,16 @@ class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
     customer = models.ForeignKey('invoicing.Customer', on_delete=None,null=True)
+    
 
     def create_entry(self):
+        #verified
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
             date = self.date,
             memo =  "Expense recorded. Category: %s." % self.category,
-            journal = Journal.objects.get(pk=2)# cash disbursements
+            journal = Journal.objects.get(pk=2),# cash disbursements
+            created_by=self.recorded_by
         )
         #debits increase expenses credits decrease assets so...
         j.simple_entry(self.amount, 
@@ -441,11 +451,13 @@ class RecurringExpense(AbstractExpense):
         return datetime.date.today() < self.expiration_date
 
     def create_entry(self):
+        #verified
         j = JournalEntry.objects.create(
             reference = "Expense. ID: {}".format(self.pk),
             date = datetime.date.today(),
             memo =  "Recurrent Expense recorded. Category: {}".format(self.category),
-            journal = Journal.objects.get(pk=2)# cash disbursements
+            journal = Journal.objects.get(pk=2),# cash disbursements
+            created_by = self.recorded_by
         )
         j.simple_entry(self.amount, 
         Account.objects.get(name=expense_choices[self.category]), 

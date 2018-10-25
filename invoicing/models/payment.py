@@ -76,7 +76,8 @@ class Payment(models.Model):
                 reference='PMT' + str(self.pk),
                 memo= 'Auto generated journal entry from payment.',
                 date=self.date,
-                journal =Journal.objects.get(pk=3)
+                journal =Journal.objects.get(pk=3),
+                created_by = self.sales_rep.employee.user
             )
         
         # split into sales tax and sales
@@ -85,7 +86,7 @@ class Payment(models.Model):
                 self.amount,
                 self.invoice.customer.account,
                 Account.objects.get(
-                    pk=4000),#sales account
+                    pk=1000),#sales account
             )
         else:
             # will now work for partial payments

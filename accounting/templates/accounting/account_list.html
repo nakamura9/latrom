@@ -10,8 +10,8 @@
 {% block list_content %}
 {% for item in object_list %}
 <tr>
-    <td>{{item.name}}</td>
-    <td>{{item.balance}}</td>
+    <td>{{item.pk}}-{{item.name}}</td>
+    <td>{% if item.balance < 0 %} ({{item.balance}}) {% else %} {{item.balance}} {% endif %} </td>
     <td>{{item.type}}</td>
     <td><a class="btn btn-success" href="{% url 'accounting:account-detail' pk=item.pk %}" >View</a></td>
 </tr>

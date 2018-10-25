@@ -68,7 +68,10 @@ class Order(models.Model):
     status = models.CharField(max_length=24, choices=ORDER_STATUS_CHOICES)
     active = models.BooleanField(default=True)
     received_to_date = models.FloatField(default=0.0)
-    entry = models.ForeignKey('accounting.JournalEntry', null=True, blank=True, on_delete=None)
+    issuing_inventory_controller = models.ForeignKey('auth.user', default=1, 
+        on_delete=None)
+    entry = models.ForeignKey('accounting.JournalEntry', null=True, blank=True, 
+        on_delete=None)
     
     def __str__(self):
         return 'ORD' + str(self.pk)
@@ -113,28 +116,29 @@ class Order(models.Model):
         return (float(received) / float(n_items)) * 100.0
 
     def create_entry(self):
+        #verified
         if not self.entry:
             j = JournalEntry.objects.create(
-                    reference = "Auto generated entry created by order " + str(self),
+                    reference = "Auto generated entry created by order " + str(
+                        self),
                     date=self.issue_date,
                     memo = self.notes,
-                    journal = Journal.objects.get(pk=4)
+                    journal = Journal.objects.get(pk=4),
+                    created_by = self.issuing_inventory_controller
                 )
 
             #accounts payable
-            j.credit(self.subtotal, Account.objects.get(pk=2000))
             # since we owe the supplier
-            j.debit(self.total, self.supplier.account)
-            #check for vat calculations
-            j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+            j.credit(self.total, self.supplier.account)
+            j.debit(self.subtotal, Account.objects.get(pk=1004))
+            j.debit(self.tax_amount, Account.objects.get(pk=2001))
         else:
             j = self.entry
 
         if not self.entry and self.type_of_order == 0:
             # remove from accounts payable
-            j.debit(self.total, Account.objects.get(pk=2000))
-            j.credit(self.total, Account.objects.get(pk=4006))
-
+            j.debit(self.total, self.supplier.account)
+    
             #other payments are made manually for credit purchases
         
         if not self.entry:
@@ -156,8 +160,6 @@ class Order(models.Model):
             self.save()
 
     #check for deffered date with deferred type of invoice
-    
-
 
 class OrderItem(models.Model):
     '''A component of an order this tracks the order price 
@@ -249,7 +251,7 @@ class StockReceipt(models.Model):
     '''
     order = models.ForeignKey('inventory.Order', on_delete=None)
     received_by = models.ForeignKey('employees.Employee', on_delete=None,
-        default=1)
+        default=1, limit_choices_to=Q(user__isnull=False))
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)
@@ -264,24 +266,26 @@ class StockReceipt(models.Model):
         
 
     def create_entry(self):
+        #verified
         j = JournalEntry.objects.create(
             reference = "ORD" + str(self.order.pk),
             memo = "Auto generated Entry from Purchase Order",
             date =self.receive_date,
-            journal = Journal.objects.get(pk=2)
+            journal = Journal.objects.get(pk=2),
+            created_by = self.received_by.user
         )
         new_total = self.order.received_total - D(self.order.received_to_date)
         j.simple_entry(
             new_total,
             Account.objects.get(pk=1004),#inventory
-            Account.objects.get(pk=1000)#checking account
+            self.order.supplier.account#checking account
         )
 
 #might need to rename
 class InventoryCheck(models.Model):
     date = models.DateField()
     next_adjustment_date = models.DateField(null=True, blank=True)#not required
-    adjusted_by = models.ForeignKey('employees.Employee', on_delete=None )
+    adjusted_by = models.ForeignKey('employees.Employee', on_delete=None, limit_choices_to=Q(user__isnull=False) )
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None )
     comments = models.TextField()
     
@@ -319,9 +323,12 @@ class TransferOrder(models.Model):
     issue_date = models.DateField()
     expected_completion_date = models.DateField()
     issuing_inventory_controller = models.ForeignKey('employees.Employee',
-        related_name='issuing_inventory_controller', on_delete=None,null=True)
+        related_name='issuing_inventory_controller', 
+        on_delete=None, null=True,
+        limit_choices_to=Q(user__isnull=False))
     receiving_inventory_controller = models.ForeignKey('employees.Employee', 
-        on_delete=None, null=True)
+        on_delete=None, null=True, 
+        limit_choices_to=Q(user__isnull=False))
     actual_completion_date =models.DateField(null=True)#provided later
     source_warehouse = models.ForeignKey('inventory.WareHouse',
         related_name='source_warehouse', on_delete=None,)
@@ -349,7 +356,9 @@ class TransferOrderLine(models.Model):
 
 class InventoryScrappingRecord(models.Model):
     date = models.DateField()
-    controller = models.ForeignKey('employees.Employee', on_delete=None)
+    controller = models.ForeignKey('employees.Employee', 
+        on_delete=None,
+        limit_choices_to=Q(user__isnull=False))
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None)
     comments = models.TextField(blank=True)
 

@@ -272,11 +272,12 @@ class CommonModelTests(TestCase):
             parent= parent_two,
             description="Test Description"
         )
-
+        
         self.assertEqual(parent_one.children.count(), 1)
         self.assertEqual(parent_two.children.count(), 2)
         self.assertEqual(parent_one_child.children.count(), 0)
-        self.assertEqual(parent_one.siblings.count(), 2)# including self.cat
+        self.assertEqual(parent_one.siblings.count(), 
+            models.Category.objects.filter(parent__isnull=True).count() - 1)
         self.assertEqual(parent_one_child.siblings.count(), 0)
         self.assertEqual(parent_two_child.siblings.count(), 1)
 

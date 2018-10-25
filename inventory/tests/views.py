@@ -23,7 +23,7 @@ class CommonViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(CommonViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
         cls.UNIT_DATA = {
             'name': 'Test Unit',
@@ -153,7 +153,7 @@ class InventoryManagementViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(InventoryManagementViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
 
     @classmethod
@@ -265,7 +265,7 @@ class ItemViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(ItemViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
         cls.COMMON_DATA = {
             'name' : 'Test Item',
@@ -429,7 +429,7 @@ class OrderViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(OrderViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
         cls.ORDER_DATA = {
             'expected_receipt_date' : TODAY,
@@ -447,7 +447,8 @@ class OrderViewTests(TestCase):
                 'pk': 'P' + str(cls.product.pk),
                 'quantity': 10,
                 'order_price': 10
-                }]))
+                }])),
+            'issuing_inventory_controller': 1
         }
 
     @classmethod
@@ -528,7 +529,7 @@ class SupplierViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(SupplierViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
 
     @classmethod
@@ -585,7 +586,7 @@ class WarehouseViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(WarehouseViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
         cls.WAREHOUSE_DATA = {
             'name': 'Test Name',
@@ -683,7 +684,7 @@ class ReportViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(ReportViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
 
     @classmethod
@@ -710,7 +711,7 @@ class TransferViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TransferViewTests, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client
         cls.TRANSFER_DATA = {
             'source_warehouse': 1,
