@@ -411,7 +411,7 @@ class Expense(AbstractExpense):
         if self.billable \
         else Account.objects.get(pk=1000),#cash account
         Account.objects.get(name=expense_choices[self.category]), )
-        print 'entry'
+        print('entry')
 
     def save(self, *args, **kwargs):
         flag = self.pk
