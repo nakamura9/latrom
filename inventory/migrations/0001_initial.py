@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('accounting', '0001_initial'),
         ('employees', '0001_initial'),
         ('common_data', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -24,6 +25,9 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(default='')),
                 ('parent', models.ForeignKey(blank=True, null=True, on_delete=None, to='inventory.Category')),
             ],
+            options={
+                'abstract': False,
+            },
         ),
         migrations.CreateModel(
             name='Consumable',
