@@ -290,3 +290,66 @@ class PayrollTaxDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.PayrollTax
     success_url = reverse_lazy('employees:dashboard')
+
+
+class TimeSheetMixin(object):
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args, **kwargs)
+        
+        def get_time(time_string):
+            return datetime.datetime.strptime(time_string, '%H:%M').time()
+        
+        def get_duration(time_string):
+            hr, min = time_string.split(":")
+            return datetime.timedelta(hours=int(hr), minutes=int(min))
+
+        if not self.object:
+            return resp
+        raw_data = request.POST['lines']
+        line_data = json.loads(urllib.parse.unquote(raw_data))
+        for line in line_data:
+            try:
+                date =datetime.date(
+                        self.object.year, 
+                        self.object.month,
+                        int(line['date']))
+            except:
+                date = datetime.date(
+                        self.object.year, 
+                        self.object.month,
+                        28)
+            models.AttendanceLine.objects.create(
+                timesheet=self.object,
+                date=date,
+                time_in=get_time(line['timeIn']),
+                time_out= get_time(line['timeOut']),
+                lunch_duration=get_duration(line['breaksTaken']))
+        
+        return resp
+
+class CreateTimeSheetView(TimeSheetMixin, CreateView):
+    template_name = os.path.join('employees', 'timesheet_create_update.html')
+    form_class = forms.TimesheetForm
+    success_url = reverse_lazy('employees:dashboard')
+
+class ListTimeSheetView(ExtraContext, PaginationMixin, FilterView):
+    template_name = os.path.join('employees', 'time_sheet_list.html')
+    filterset_class = filters.TimeSheetFilter
+    paginate_by = 10
+    extra_context ={
+        'title': 'Time Sheets',
+        'new_link': reverse_lazy('employees:timesheet-create')
+    }
+    def get_queryset(self):
+        
+        return models.EmployeeTimeSheet.objects.all()
+    
+
+class TimeSheetDetailView(DetailView):
+    model = models.EmployeeTimeSheet
+    template_name = os.path.join('employees', 'timesheet_detail.html')
+
+class TimeSheetUpdateView(UpdateView):
+    template_name = os.path.join('employees', 'timesheet_create_update.html')
+    form_class = forms.TimesheetForm
+    success_url = reverse_lazy('employees:dashboard')

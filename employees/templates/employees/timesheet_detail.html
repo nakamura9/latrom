@@ -1,0 +1,52 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Time Sheet Details</h1>
+    <p class="lead">View Recorded Time sheet data</p>
+    <hr class="my-2">
+    <p>Action</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Time Sheet Info.</h4>
+                    <p class="card-text">Employee: {{object.employee}}</p>
+                    <p class="card-text">Period Covered: {{object.month}}/ {{object.year}}</p>
+                    <p class="card-text">Recorded By:{{object.recorded_by}}</p>
+                    <p class="card-text">Is Complete?:{% if object.complete %} Yes {% else %} No {% endif %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <table class="table">
+                <thead>
+                    <tr style="bg-primary text-white">
+                        <td>Date</td>
+                        <td>Time In</td>
+                        <td>Time Out</td>
+                        <td>Lunch Duration</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in object.attendanceline_set.all %}
+                    <tr>
+                        <td>{{line.date}}</td>
+                        <td>{{line.time_in}}</td>
+                        <td>{{line.time_out}}</td>
+                        <td>{{line.lunch_duration}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

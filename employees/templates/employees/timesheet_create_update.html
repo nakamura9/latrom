@@ -1,0 +1,31 @@
+{% extends "window.html" %}
+{% block content %}
+{% load render_bundle from webpack_loader %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Time Sheets</h1>
+    <p class="lead">Create or update timesheets for employee work attendance</p>
+    <hr class="my-2">
+    <p>More info</p>
+    <p class="lead">
+        <p>Manage time-in, time-out, breaks and working hours for each day on the Job</p>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{form.as_p}}
+                <input type="submit" class="btn btn-primary" value="Submit" />
+            </form>
+        </div>
+        <div class="col-sm-8" id="timesheet-root">
+
+        </div>
+    </div>
+</div>
+{% render_bundle "employees" %}
+{% endblock content %}
+

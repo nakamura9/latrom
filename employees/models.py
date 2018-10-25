@@ -41,6 +41,26 @@ class EmployeesSettings(SingletonModel):
         )
     salary_follows_profits = models.BooleanField(default=True)
 
+class EmployeeTimeSheet(models.Model):
+    MONTH_CHOICES = [
+        (i, i) for i in range(0, 13)
+    ] 
+    YEAR_CHOICES = [
+        (i, i) for i in range(2000, 2051)
+    ] 
+    employee = models.ForeignKey('employees.employee', on_delete=None, related_name='target')
+    month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
+    year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
+    recorded_by = models.ForeignKey('employees.employee', on_delete=None, related_name='recorder')
+    complete=models.BooleanField(default=False)
+
+class AttendanceLine(models.Model):
+    timesheet = models.ForeignKey('employees.EmployeeTimeSheet', on_delete=None)
+    date = models.DateField()
+    time_in = models.TimeField()
+    time_out = models.TimeField()
+    lunch_duration = models.DurationField()
+
 class Employee(Person):
     '''
     Represents an individual employee of the business. Records their personal 
