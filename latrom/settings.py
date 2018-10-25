@@ -30,6 +30,16 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
+USER_APPS = [
+    'common_data',
+    'invoicing',
+    'inventory',
+    'employees',
+    'accounting',
+    'services',
+    'planner',
+    'messaging',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,22 +48,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'common_data',
     'rest_framework',
     'webpack_loader',
-    'invoicing',
-    'inventory',
-    'employees',
-    'accounting',
-    'services',
-    'planner',
-    'messaging',
     'django_filters',
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
     'generic_scaffold'
-]
+] + USER_APPS
 
 LOGIN_REQUIRED_FOR_CRUD = True
 PROJECT_NAME = 'Smart business solutions'
