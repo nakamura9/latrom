@@ -1,0 +1,76 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Payroll Officer Details</h1>
+    <p class="lead">View Employee Information and permissions</p>
+    <hr class="my-2">
+    <p>Action</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="{% url 'employees:payroll-officer-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Employee Details</h4>
+                    <p class="card-text">Full Name: {{object.employee.full_name}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Officer Permissions</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Permission</th>
+                                <th>Permitted?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Can register new employees?</td>
+                                <td>{%if object.can_register_new_employees %}
+                                        <i class="fas fa-check"></i>
+                                    {% else %}
+                                       <i class="fas fa-times"></i>
+                                    {% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Can Log time sheets?</td>
+                                <td>{%if object.can_log_timesheets %}
+                                        <i class="fas fa-check"></i>
+                                    {% else %}
+                                       <i class="fas fa-times"></i>
+                                    {% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Can create/update payroll elements?</td>
+                                <td>{%if object.can_create_payroll_elements %}
+                                        <i class="fas fa-check"></i>
+                                    {% else %}
+                                       <i class="fas fa-times"></i>
+                                    {% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Can run payroll?</td>
+                                <td>{%if object.can_run_payroll %}
+                                        <i class="fas fa-check"></i>
+                                    {% else %}
+                                       <i class="fas fa-times"></i>
+                                    {% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

@@ -12,3 +12,14 @@ class PayslipSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Payslip
         fields = "__all__"
+
+class AttendanceLineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AttendanceLine
+        fields = '__all__'
+
+class TimeSheetSerializer(serializers.ModelSerializer):
+    attendanceline_set = AttendanceLineSerializer(many=True)
+    class Meta:
+        model = models.EmployeeTimeSheet
+        fields = '__all__'

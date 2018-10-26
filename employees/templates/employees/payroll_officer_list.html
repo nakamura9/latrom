@@ -1,0 +1,32 @@
+{% extends 'common_data/list_template.html' %}
+{% block list_headings %}
+<tr>
+    <th>Employee Number</th>
+    <th>Full Name</th>
+    <th>Actions</th>
+</tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for officer in filter.qs %}
+        <td>{{officer.pk}}</td>
+        <td>{{officer.employee.full_name}}</td>
+        <td>
+                <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            <a class="dropdown-item" href="{% url 'employees:payroll-officer-detail'  pk=officer.pk  %}">
+                                <i class="fas fa-eye"></i> Detail
+                            </a>
+                            <a class="dropdown-item" href="{% url 'employees:payroll-officer-update'  pk=officer.pk  %}">
+                                <i class="fas fa-file"></i> Update
+                            </a>
+            
+                        </div>
+                    </div>
+        </td>
+    {% endfor %}
+{% endblock %}

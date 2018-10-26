@@ -39,3 +39,11 @@ class PayGradeFilter(django_filters.FilterSet):
             'name': ['icontains'],
             'monthly_salary': ['exact'],
         }
+
+
+class PayrollOfficerFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.PayrollOfficer
+        fields = {
+            'employee': ['exact']
+        }

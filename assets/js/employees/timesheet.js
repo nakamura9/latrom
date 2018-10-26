@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import axios from 'axios';
 
 export default class TimeSheet extends Component{
     state = {
@@ -13,7 +14,27 @@ export default class TimeSheet extends Component{
             id: "id_lines" ,
             value: ""
         }).appendTo('form');
+        
+        const urlSegments = window.location.href.split('/');
+        const tail = urlSegments[urlSegments.length - 1];
+        if(tail !== 'create'){
+            axios({
+                url: '/employees/api/timesheet/' + tail,
+                method: 'GET',
 
+            }).then(res =>{
+                console.log(res.data)
+                this.setState({lines: res.data.attendanceline_set.map((line) =>(
+                    {
+                        date: line.date,
+                        timeIn: line.time_in,
+                        timeOut: line.time_out,
+                        breaksTaken: line.lunch_duration,
+                    }
+                ))})
+            })
+            $('#id_lines').val(encodeURIComponent(JSON.stringify(this.state.lines)));
+        }
     }
     
     lineHandler = (data) =>{

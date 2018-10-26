@@ -143,3 +143,8 @@ class TimesheetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.EmployeeTimeSheet
         fields = "__all__"
+
+class PayrollOfficerForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.PayrollOfficer

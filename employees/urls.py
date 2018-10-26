@@ -6,6 +6,9 @@ from . import views
 employee_router = routers.DefaultRouter()
 employee_router.register(r'^api/employee', views.EmployeeViewSet)
 
+timesheet_router = routers.DefaultRouter()
+timesheet_router.register(r'^api/timesheet', views.TimeSheetViewset)
+
 payslip_router = routers.DefaultRouter()
 payslip_router.register(r'^api/payslip', views.PayslipViewset)
 
@@ -14,6 +17,14 @@ timesheet_urls = [
     re_path(r'timesheet/list', views.ListTimeSheetView.as_view(), name='timesheet-list'),
     re_path(r'timesheet/update/(?P<pk>[\d]+)/?', views.TimeSheetUpdateView.as_view(), name='timesheet-update'),
     re_path(r'timesheet/detail/(?P<pk>[\d]+)/?', views.TimeSheetDetailView.as_view(), name='timesheet-detail')
+]
+
+pay_officer_urls = [
+    re_path(r'^payroll-officer/create/?$', views.PayrollOfficerCreateView.as_view(), name='payroll-officer-create'),
+    re_path(r'^payroll-officer/list/?$', views.PayrollOfficerListView.as_view(), name='payroll-officer-list'),
+    re_path(r'^payroll-officer/update/(?P<pk>[\d]+)/?$', views.PayrollOfficerUpdateView.as_view(), name='payroll-officer-update'),
+    re_path(r'^payroll-officer/detail/(?P<pk>[\d]+)/?$', views.PayrollOfficerDetailView.as_view(), name='payroll-officer-detail'),
+    
 ]
 
 pay_urls = [
@@ -62,4 +73,4 @@ urlpatterns = [
     re_path(r'^$', views.DashBoard.as_view(), name='dashboard')
 ] + other_urls + employee_urls + pay_urls + \
     employee_router.urls + payslip_router.urls + \
-    timesheet_urls
+    timesheet_urls + timesheet_router.urls + pay_officer_urls

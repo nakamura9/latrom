@@ -18,6 +18,9 @@ class Person(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def full_name(self):
+        return "{} {}".format(self.first_name, self.last_name)
 
 class Individual(Person):
     '''inherits from the base person class in common data

@@ -52,7 +52,7 @@ class EmployeeTimeSheet(models.Model):
     month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
     year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
     recorded_by = models.ForeignKey('employees.employee', on_delete=None, related_name='recorder')
-    complete=models.BooleanField(default=False)
+    complete=models.BooleanField(default=False, blank=True)
 
 class AttendanceLine(models.Model):
     timesheet = models.ForeignKey('employees.EmployeeTimeSheet', on_delete=None)
@@ -203,10 +203,14 @@ class Deduction(models.Model):
         objects'''
         self.active = False
         self.save()
-'''
+
+
 class PayrollOfficer(models.Model):
-    employee = models.OneToOneField('employees.Employee)
-'''
+    employee = models.OneToOneField('employees.Employee', on_delete=None)
+    can_log_timesheets = models.BooleanField(default=False, blank=True)
+    can_run_payroll = models.BooleanField(default=False, blank=True)
+    can_create_payroll_elements = models.BooleanField(default=False, blank=True)
+    can_register_new_employees = models.BooleanField(default=False, blank=True)
 
 class CommissionRule(models.Model):
     '''simple model for giving sales representatives commission based on 

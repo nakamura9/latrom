@@ -295,16 +295,28 @@ class PayrollTaxDeleteView(DeleteView):
 class TimeSheetMixin(object):
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
+        update_flag = isinstance(self, UpdateView)
         
         def get_time(time_string):
-            return datetime.datetime.strptime(time_string, '%H:%M').time()
-        
+            try:
+                return datetime.datetime.strptime(time_string, '%H:%M').time()
+            except:
+                return datetime.datetime.strptime(time_string, '%H:%M:%S').time()
+                
         def get_duration(time_string):
-            hr, min = time_string.split(":")
+            try:
+                hr, min = time_string.split(":")
+            except:
+                hr, min, sec = time_string.split(":")
             return datetime.timedelta(hours=int(hr), minutes=int(min))
 
         if not self.object:
             return resp
+
+        if update_flag:
+            for i in self.object.attendanceline_set.all():
+                i.delete()
+
         raw_data = request.POST['lines']
         line_data = json.loads(urllib.parse.unquote(raw_data))
         for line in line_data:
@@ -349,7 +361,43 @@ class TimeSheetDetailView(DetailView):
     model = models.EmployeeTimeSheet
     template_name = os.path.join('employees', 'timesheet_detail.html')
 
-class TimeSheetUpdateView(UpdateView):
+class TimeSheetUpdateView(TimeSheetMixin, UpdateView):
     template_name = os.path.join('employees', 'timesheet_create_update.html')
     form_class = forms.TimesheetForm
+    queryset = models.EmployeeTimeSheet.objects.all()
     success_url = reverse_lazy('employees:dashboard')
+
+class TimeSheetViewset(viewsets.ModelViewSet):
+    queryset = models.EmployeeTimeSheet.objects.all()
+    serializer_class = serializers.TimeSheetSerializer
+
+class PayrollOfficerCreateView(ExtraContext, CreateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.PayrollOfficerForm
+    success_url = reverse_lazy('employees:dashboard')
+    extra_context = {
+        'title': 'Add New Payroll Officer'
+    }
+
+class PayrollOfficerUpdateView(ExtraContext, UpdateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.PayrollOfficerForm
+    queryset = models.PayrollOfficer.objects.all()
+    success_url = reverse_lazy('employees:dashboard')
+    extra_context = {
+        'title': 'Update Payroll Officer'
+    }
+
+class PayrollOfficerListView(ExtraContext, FilterView, PaginationMixin):
+    template_name = os.path.join('employees', 'payroll_officer_list.html')
+    queryset = models.PayrollOfficer.objects.all()
+    filterset_class = filters.PayrollOfficerFilter
+    extra_context = {
+        'title': 'List of Payroll Officers',
+        'new_link': reverse_lazy('employees:payroll-officer-create')
+    }
+
+
+class PayrollOfficerDetailView(DetailView):
+    model = models.PayrollOfficer
+    template_name = os.path.join('employees', 'payroll_officer_detail.html')
