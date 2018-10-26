@@ -1,19 +1,4 @@
-======================================================================
-FAIL: test_post_config_page (invoicing.tests.views.CommonViewsTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-File "C:\Users\nakamura9a\Documents\code\git\latrom\invoicing\tests\views.py", line 48, in test_post_config_page
-self.assertEqual(resp.status_code, 302)
-AssertionError: 200 != 302
 
-----------------------------------------------------------------------
-Ran 4 tests in 0.717s
-
-FAILED (failures=1)
-Destroying test database for alias 'default'...
-C:\Users\nakamura9a\Documents\code\git\latrom [experimental +0 ~4 -0 !]> python manage.py test invoicing
-Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
 ...<tr>
     <th><label for="id_default_invoice_comments">Default invoice comments:</label></th>
     <td><textarea name="default_invoice_comments" cols="40" rows="10" class="form-control textarea form-control" id="id_default_invoice_comments">

@@ -7,3 +7,4 @@ env/
 media/*.*
 media/
 wkhtmltopdf/
+build/

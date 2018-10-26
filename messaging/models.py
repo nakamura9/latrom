@@ -71,5 +71,4 @@ class Inbox(models.Model):
 
     @property
     def threads(self):
-        print(self.user)
         return self.user.messagethread_set.all()
