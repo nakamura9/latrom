@@ -47,6 +47,13 @@ employee_urls = [
         views.EmployeeDetailView.as_view(), name='employee-detail'),
     re_path(r'^employee-delete/(?P<pk>[\w]+)/?$', 
         views.EmployeeDeleteView.as_view(), name='employee-delete'),
+    re_path(r'^employee/create-user/(?P<pk>[\w]+)/?$', 
+        views.EmployeeUserCreateView.as_view(), name='employee-user-create'),
+    re_path(r'^employee/user/reset-password(?P<pk>[\w]+)/?$', 
+        views.EmployeeUserPasswordResetView.as_view(), 
+            name='employee-user-password-reset'),
+    re_path(r'^employee/delete-user(?P<pk>[\w]+)/?$', 
+        views.remove_employee_user, name='employee-delete-user'),
 ]
 
 other_urls = [

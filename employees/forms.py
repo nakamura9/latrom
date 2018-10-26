@@ -46,23 +46,59 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.PayGrade
 
+class CreateEmployeeUserForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data['password']
+        name = cleaned_data['username']
+        if User.objects.filter(username=name).exists():
+            raise forms.ValidationError('The username selected is already in use')
+
+        if password != cleaned_data['confirm_password']:
+            raise forms.ValidationError(' The new passwords do not match')
+
+        usr = User.objects.create_user(name)
+        usr.set_password(password)
+        usr.save()
+        employee = cleaned_data['employee']
+        employee.user= usr
+        employee.save()
+
+        return cleaned_data 
+
+class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    old_password = forms.CharField(widget=forms.PasswordInput)
+    new_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        usr = cleaned_data['employee'].user
+        new_password = cleaned_data['new_password']
+        if not usr.check_password(cleaned_data['old_password']):
+            raise forms.ValidationError('The old password is incorrect')
+
+        if new_password != cleaned_data['confirm_new_password']:
+            raise forms.ValidationError(' The new passwords do not match')
+
+        usr.set_password(new_password)
+        usr.save()
+
+        return cleaned_data 
+
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
-    link_with_user = forms.BooleanField(required=False)
-    username = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=forms.PasswordInput)
-    confirm_password = forms.CharField(required=False, 
-        widget=forms.PasswordInput)
     class Meta:
         exclude="active", 'user',
         model = models.Employee
 
     def __init__(self, *args, **kwargs):
         super(EmployeeForm, self).__init__(*args, **kwargs)
-
-
-        if self.instance and self.instance.user:
-                self.fields['username'].initial = self.instance.user.username
-                self.fields['link_with_user'].initial = True
         
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -78,60 +114,10 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                     'title',
                     'pay_grade',
                     'leave_days',
-                    ),
-                Tab('User Details', 
-                'link_with_user', 
-                'username',
-                'password', 
-                'confirm_password')))
+                    )))
         self.helper.add_input(Submit('submit', 'Submit'))
 
-    def clean(self):
-        cleaned_data = super(EmployeeForm, self).clean()
 
-        if cleaned_data.get('link_with_user'):
-            if cleaned_data.get('username') == "":
-                raise forms.ValidationError("If an employee is going to be"
-                    "linked with a user a username must be specified")
-            else:
-                if cleaned_data.get('password') == "" \
-                        or cleaned_data.get("confirm_password") == "":
-                    raise forms.ValidationError("The password fields cannot be blank")
-                elif cleaned_data.get("password") != \
-                        cleaned_data.get("confirm_password"):
-                    raise forms.ValidationError("The passwords must match")
-                else:
-                    #matching non void passwords
-                    try:
-                        if self.instance and self.instance.user:
-                            #updating existing users
-                            self.instance.user.username = cleaned_data.get(
-                                "username")
-                            self.instance.user.set_password(
-                                cleaned_data.get('password'))
-                            self.instance.user.save()
-                        else:
-                            self.created_user = User.objects.create(
-                                first_name=cleaned_data.get("first_name"),
-                                last_name=cleaned_data.get("last_name"),
-                                username=cleaned_data.get("username"))
-                            self.created_user.set_password(
-                                cleaned_data.get("password"))
-                        #necessary!
-                            self.created_user.save()
-                    except:
-                        raise forms.ValidationError('Failed to create User')
-                    else:
-                        return cleaned_data
-
-        return cleaned_data
-
-    def save(self, *args, **kwargs):
-        obj = super(EmployeeForm, self).save(*args, **kwargs)
-        if hasattr(self, 'created_user'):
-            self.instance.user = self.created_user
-            self.instance.save()
-        return obj
 
 class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:
