@@ -29,6 +29,3 @@ class PayrollConfig(AdministratorCheckMixin, ExtraContext, UpdateView):
         'title': 'Configure automated Payroll'
     }
 
-class ManualPayrollConfig(AdministratorCheckMixin, TemplateView):
-    template_name = os.path.join('employees', 'manual_config.html')
-    

@@ -25,3 +25,11 @@ class TaxFilter(django_filters.FilterSet):
         fields = {
             'name': ['icontains']
         }
+
+
+class BookkeeperFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Bookkeeper
+        fields = {
+            'employee': ['exact']
+        }

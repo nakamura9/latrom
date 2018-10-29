@@ -21,7 +21,19 @@ class Bookkeeper(models.Model):
     software such as order creation and the like.'''
     employee = models.ForeignKey('employees.Employee', 
         on_delete=None, default=1, limit_choices_to=Q(user__isnull=False))
+    can_create_journals = models.BooleanField(default=False, blank=True)
+    can_create_orders_and_invoices = models.BooleanField(default=False, blank=True)
+    can_record_expenses = models.BooleanField(default=False, blank=True)
+    can_record_assets = models.BooleanField(default=False, blank=True)
+    active = models.BooleanField(default=True)
 
+    def delete(self):
+        self.active = False
+        self.save()
+
+    def __str__(self):
+        return self.employee.full_name
+    
 class Transaction(models.Model):
     '''
     Transaction

@@ -1,8 +1,9 @@
-{% extends "common_data/unfiltered_list_template.html" %}
+{% extends "common_data/list_template.html" %}
 {% block list_headings %}
 <tr>
     <th>Employee Number</th>
     <th>Full Name</th>
+    <th>Actions</th>
 </tr>
 {% endblock list_headings %}
 
@@ -11,6 +12,19 @@
 <tr>
     <td>{{bk.employee.pk}}</td>
     <td>{{bk.employee}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'accounting:bookkeeper-update' pk=bk.pk %}">Update</a>
+                <a class="dropdown-item" href="{% url 'accounting:bookkeeper-detail' pk=bk.pk %}">Detail</a>
+                <a class="dropdown-item" href="{% url 'accounting:bookkeeper-delete' pk=bk.pk %}">Delete</a>
+            </div>
+        </div>
+    </td>
 </tr>
 {% endfor %}
 {% endblock list_content %}

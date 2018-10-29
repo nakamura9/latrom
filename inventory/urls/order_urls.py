@@ -11,6 +11,8 @@ order_item_router.register(r'^api/order-item', views.OrderItemAPIView)
 order_urls = [
     re_path(r'^order-create/?$', views.OrderCreateView.as_view(), 
         name="order-create"),
+    re_path(r'^(?P<supplier>[\w]+)/order-create/?$', views.OrderCreateView.as_view(), 
+        name="order-create"),
     re_path(r'^order-list/?$', views.OrderListView.as_view(), 
         name="order-list"),
     re_path(r'^order-update/(?P<pk>[\w]+)/?$', views.OrderUpdateView.as_view(), 

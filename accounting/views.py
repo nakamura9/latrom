@@ -187,6 +187,15 @@ class DirectPaymentFormView(BookkeeperCheckMixin, ExtraContext, FormView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {'title': 'Create Direct Payment'}
+
+    def get_initial(self):
+        if self.kwargs.get('supplier', None):
+            return {
+                'paid_to': self.kwargs['supplier']
+            }
+            
+        return {}
+
     def post(self, request):
         resp = super(DirectPaymentFormView, self).post(request)
         form = self.form_class(request.POST)
@@ -341,7 +350,7 @@ class ExpenseViewGroup(ModelViewGroup):
 #                  Bookeeper                       #
 ####################################################
 
-class BookkeeperCreateView(CreateView):
+class BookkeeperCreateView(BookkeeperCheckMixin, CreateView):
     form_class = forms.BookkeeperForm
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:bookkeeper-list')
@@ -349,10 +358,34 @@ class BookkeeperCreateView(CreateView):
         'title': 'Assign A New Bookkeeper to the system'
     }
 
-class BookkeeperListView(ListView):
+class BookkeeperUpdateView(BookkeeperCheckMixin, UpdateView):
+    form_class = forms.BookkeeperForm
+    template_name = CREATE_TEMPLATE
     queryset = models.Bookkeeper.objects.all()
+    success_url = reverse_lazy('accounting:bookkeeper-list')
+    extra_context = {
+        'title': 'Update Bookkeeper features'
+    }
+
+class BookkeeperListView(BookkeeperCheckMixin, PaginationMixin ,FilterView):
+    queryset = models.Bookkeeper.objects.filter(active=True)
+    paginate_by=10
     template_name = os.path.join('accounting', 'bookkeeper_list.html')
     extra_context = {
         'title': 'List of Bookkeepers',
         'new_link': reverse_lazy('accounting:create-bookkeeper')
+    }
+    filterset_class = filters.BookkeeperFilter
+
+
+class BookkeeperDetailView(BookkeeperCheckMixin, DetailView):
+    model = models.Bookkeeper
+    template_name = os.path.join('accounting', 'bookkeeper_detail.html')
+    
+    
+class BookkeeperDeleteView(ExtraContext, BookkeeperCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = models.Bookkeeper
+    extra_context = {
+        'title': 'Delete Bookkeeper'
     }

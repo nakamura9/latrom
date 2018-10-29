@@ -22,6 +22,7 @@ from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
+from invoicing.views.invoice_views.util import InvoiceInitialMixin
 
 
 def process_data(items, inv):
@@ -69,7 +70,7 @@ class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         return context
 
         
-class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, ConfigMixin, CreateView):
+class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ExtraContext, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -82,14 +83,6 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, ExtraContext, ConfigMixin, Crea
     form_class = forms.SalesInvoiceForm
     success_url = reverse_lazy("invoicing:sales-invoice-list")
     model = SalesInvoice
-
-    def get_initial(self):
-        config = SalesConfig.objects.first()
-        return {
-            'terms': config.default_terms,
-            'comments': config.default_invoice_comments
-        }
-
 
     def post(self, request, *args, **kwargs):
         resp = super(SalesInvoiceCreateView, self).post(request, *args, **kwargs)

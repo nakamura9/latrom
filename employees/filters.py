@@ -47,3 +47,11 @@ class PayrollOfficerFilter(django_filters.FilterSet):
         fields = {
             'employee': ['exact']
         }
+
+class PayrollTaxFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.PayrollTax
+        fields = {
+            'name': ['icontains'],
+            'paid_by': ['exact']
+        }

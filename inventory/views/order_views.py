@@ -106,6 +106,11 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, OrderPOSTMixi
             'form': forms.QuickProductForm
         })]}
 
+    def get_initial(self):
+        if self.kwargs.get('supplier', None):
+            return {
+                'supplier': self.kwargs['supplier']
+            }
     
 
 

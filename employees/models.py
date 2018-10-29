@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import random
 import datetime
 from decimal import Decimal as D
 from functools import reduce
@@ -10,6 +11,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from common_data.models import Person, SingletonModel
+
 
 
 class EmployeesSettings(SingletonModel):
@@ -51,15 +53,15 @@ class EmployeeTimeSheet(models.Model):
     employee = models.ForeignKey('employees.employee', on_delete=None, related_name='target')
     month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
     year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
-    recorded_by = models.ForeignKey('employees.employee', on_delete=None, related_name='recorder')
+    recorded_by = models.ForeignKey('employees.employee', on_delete=None, related_name='recorder', null=True)
     complete=models.BooleanField(default=False, blank=True)
 
 class AttendanceLine(models.Model):
     timesheet = models.ForeignKey('employees.EmployeeTimeSheet', on_delete=None)
     date = models.DateField()
-    time_in = models.TimeField()
-    time_out = models.TimeField()
-    lunch_duration = models.DurationField()
+    time_in = models.TimeField(blank=True, null=True)
+    time_out = models.TimeField(blank=True, null=True)
+    lunch_duration = models.DurationField(null=True, blank=True)
 
 class Employee(Person):
     '''
@@ -86,9 +88,11 @@ class Employee(Person):
     pay_grade = models.ForeignKey('employees.PayGrade', 
         on_delete=models.CASCADE,default=1)
     leave_days = models.FloatField(default=0)
+    uses_timesheet = models.BooleanField(default=False, blank=True)
     user = models.OneToOneField('auth.User', null=True,
          on_delete=models.CASCADE)#not all are users
     active = models.BooleanField(default=True)
+    pin = models.PositiveSmallIntegerField(default=1000)
     
     def delete(self):
         self.active = False

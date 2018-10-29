@@ -121,12 +121,14 @@ class PayGradeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
     }
     queryset = models.PayGrade.objects.all()
 
-class PayGradeListView(AdministratorCheckMixin, ListView):
+class PayGradeListView(AdministratorCheckMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'pay_grade_list.html')
     paginate_by = 10
     queryset =  models.PayGrade.objects.all()
+    filterset_class = filters.PayGradeFilter
     extra_context = {
-        'title': 'List of Pay grades'
+        'title': 'List of Pay grades',
+        'new_link': reverse_lazy('employees:create-pay-grade')
     }
 
 class PayGradeDeleteView(AdministratorCheckMixin, DeleteView):
@@ -190,12 +192,29 @@ class PayrollTaxUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
         'title': 'Update Payroll Tax Object'
     }
 
-class PayrollTaxDetailView(DetailView):
+class PayrollTaxDetailView(AdministratorCheckMixin, DetailView):
     template_name = os.path.join('employees', 'payroll_tax_detail.html')
     model = models.PayrollTax
+
+class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, FilterView):
+    template_name = os.path.join('employees', 'payroll_tax_list.html')
+    queryset = models.PayrollTax.objects.all()
+    extra_context = {
+        'title': 'Payroll Tax List',
+        'new_link': reverse_lazy('employees:create-payroll-tax')
+    }
+    filterset_class = filters.PayrollTaxFilter
 
 
 class PayrollTaxDeleteView(DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.PayrollTax
     success_url = reverse_lazy('employees:dashboard')
+
+def run_payroll(request):
+    pass
+
+class ManualPayrollConfig(AdministratorCheckMixin, FormView):
+    template_name = os.path.join('employees', 'manual_config.html')
+    form_class = forms.PayrollForm
+    success_url = reverse_lazy('employees:dashboard') 

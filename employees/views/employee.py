@@ -84,8 +84,9 @@ class PayrollOfficerUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView
         'title': 'Update Payroll Officer'
     }
 
-class PayrollOfficerListView(AdministratorCheckMixin, ExtraContext, FilterView, PaginationMixin):
+class PayrollOfficerListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'payroll_officer_list.html')
+    paginate_by=10
     queryset = models.PayrollOfficer.objects.all()
     filterset_class = filters.PayrollOfficerFilter
     extra_context = {

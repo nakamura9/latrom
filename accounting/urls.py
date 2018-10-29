@@ -50,9 +50,13 @@ misc_urls = [
     re_path(r'^update-tax/(?P<pk>[\w]+)/?$', views.TaxUpdateView.as_view(), name='update-tax'),
     re_path(r'^config/(?P<pk>[\d]+)/?$', views.AccountConfigView.as_view(), name='config'),
     re_path(r'^direct-payment/?$', views.DirectPaymentFormView.as_view(), name='direct-payment'),
+    re_path(r'^(?P<supplier>[\w]+)/direct-payment/?$', views.DirectPaymentFormView.as_view(), name='direct-payment'),
     re_path(r'^direct-payment-list/?$', views.DirectPaymentList.as_view(), name='direct-payment-list'),
     re_path(r'^create-bookkeeper/?$', views.BookkeeperCreateView.as_view(), name = 'create-bookkeeper'),
-    re_path(r'^bookkeeper-list/?$', views.BookkeeperListView.as_view(), name='bookkeeper-list')]
+    re_path(r'^bookkeeper-list/?$', views.BookkeeperListView.as_view(), name='bookkeeper-list'),
+    re_path(r'^bookkeeper/update/(?P<pk>[\w]+)/?$', views.BookkeeperUpdateView.as_view(), name='bookkeeper-update'),
+    re_path(r'^bookkeeper/detail/(?P<pk>[\w]+)/?$', views.BookkeeperDetailView.as_view(), name='bookkeeper-detail'),
+    re_path(r'^bookkeeper/delete/(?P<pk>[\w]+)/?$', views.BookkeeperDeleteView.as_view(), name='bookkeeper-delete')]
 
 
 journal_urls = [

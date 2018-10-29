@@ -15,24 +15,16 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
-                            <li class="list-group-item ">
-                                <a href="{% url 'employees:create-deduction' %}">Add Deduction</a>
+                            
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:list-pay-grades' %}">Manage Pay Grades</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'employees:create-allowance' %}">Add Allowance</a>
-                            </li>
-                            <li class="list-group-item disabled">
-                                <a href="{% url 'employees:create-commission' %}">Add Commission</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'employees:create-pay-grade' %}">Add Pay Grade</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'employees:create-payroll-tax' %}">Add Payroll Tax</a>
+                                <a href="{% url 'employees:payroll-tax-list' %}">Manage Payroll Taxes</a>
                             </li>
                             <li class="list-group-item">
 
-                                <a href="{% url 'employees:util-list' %}">List Utility objects</a>
+                                <a href="{% url 'employees:util-list' %}">Manage Payroll Elements</a>
                             </li>
                         </ul>
 
@@ -50,14 +42,14 @@
                                 </a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'employees:list-pay-grades' %}">List Pay Grades</a>
+                                <a href="{% url 'employees:list-pay-slips' %}">Manage Pay Slips</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'employees:list-pay-slips' %}">View Pay Slips</a>
+                                <a href="{% url 'employees:timesheet-list' %}">Create and Manage Time Sheets</a>
                             </li>
                             <li class="list-group-item">
-                                    <a href="{% url 'employees:timesheet-list' %}">Create and Manage Time Sheets</a>
-                                </li>
+                                <a href="{% url 'employees:time-logger' %}">Run Time logger</a>
+                            </li>
                         </ul>
                     </div>
                 </div>

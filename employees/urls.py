@@ -13,10 +13,12 @@ payslip_router = routers.DefaultRouter()
 payslip_router.register(r'^api/payslip', views.PayslipViewset)
 
 timesheet_urls = [
-    re_path(r'timesheet/create', views.CreateTimeSheetView.as_view(), name='timesheet-create'),
-    re_path(r'timesheet/list', views.ListTimeSheetView.as_view(), name='timesheet-list'),
-    re_path(r'timesheet/update/(?P<pk>[\d]+)/?', views.TimeSheetUpdateView.as_view(), name='timesheet-update'),
-    re_path(r'timesheet/detail/(?P<pk>[\d]+)/?', views.TimeSheetDetailView.as_view(), name='timesheet-detail')
+    re_path(r'^timesheet/create/?$', views.CreateTimeSheetView.as_view(), name='timesheet-create'),
+    re_path(r'^timesheet/list/?$', views.ListTimeSheetView.as_view(), name='timesheet-list'),
+    re_path(r'^timesheet/update/(?P<pk>[\d]+)/?$', views.TimeSheetUpdateView.as_view(), name='timesheet-update'),
+    re_path(r'^timesheet/detail/(?P<pk>[\d]+)/?$', views.TimeSheetDetailView.as_view(), name='timesheet-detail'),
+    re_path(r'^time-logger/?$', views.TimeLoggerView.as_view(), name='time-logger')
+
 ]
 
 pay_officer_urls = [
@@ -65,6 +67,7 @@ other_urls = [
     re_path(r'^update-deduction/(?P<pk>[\w]+)/?$', views.DeductionUpdateView.as_view(), name='update-deduction'),
     re_path(r'^create-commission/?$', views.CommissionCreateView.as_view(), name='create-commission'),
     re_path(r'^create-payroll-tax/?$', views.PayrollTaxCreateView.as_view(), name='create-payroll-tax'),
+    re_path(r'^payroll-tax-list/?$', views.PayrollTaxListView.as_view(), name='payroll-tax-list'),
     re_path(r'^payroll-tax/(?P<pk>[\w]+)/?$', views.PayrollTaxDetailView.as_view(), name='payroll-tax'), 
     re_path(r'^payroll-tax-delete/(?P<pk>[\w]+)/?$', views.PayrollTaxDeleteView.as_view(), name='payroll-tax-delete'), 
     re_path(r'^update-payroll-tax/(?P<pk>[\w]+)/?$', views.PayrollTaxUpdateView.as_view(), name='update-payroll-tax'),  

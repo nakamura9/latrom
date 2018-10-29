@@ -105,5 +105,5 @@ class NonInvoicedSaleForm(BootstrapMixin,forms.Form):
 
 class BookkeeperForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude = "active",
         model = models.Bookkeeper

@@ -22,6 +22,7 @@ from common_data.views import EmailPlusPDFMixin, PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
+from invoicing.views.invoice_views.util import InvoiceInitialMixin
 
 
 def process_data(items, inv):
@@ -70,7 +71,7 @@ class ServiceInvoiceUpdateView(ExtraContext, UpdateView):
     extra_context = {
         'title': 'Update Service Invoice'
     }
-class ServiceInvoiceCreateView(SalesRepCheckMixin, ConfigMixin, CreateView):
+class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -80,14 +81,6 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, ConfigMixin, CreateView):
     template_name = os.path.join("invoicing","service_invoice", "create.html")
     form_class = forms.ServiceInvoiceForm
     success_url = reverse_lazy("invoicing:service-invoice-list")
-
-    def get_initial(self):
-        config = SalesConfig.objects.first()
-        return {
-            'terms': config.default_terms,
-            'comments': config.default_invoice_comments
-        }
-
 
     def post(self, request, *args, **kwargs):
         resp = super(ServiceInvoiceCreateView, self).post(request, *args, **kwargs)

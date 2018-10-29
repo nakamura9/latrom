@@ -8,6 +8,7 @@ combined_invoice_router.register('api/combined-invoice', views.CombinedInvoiceAP
 
 combined_urls = [
     re_path(r'^create-combined-invoice/?$', views.CombinedInvoiceCreateView.as_view(), name='create-combined-invoice'),
+    re_path(r'^(?P<customer>[\d]+)/create-combined-invoice/?$', views.CombinedInvoiceCreateView.as_view(), name='create-combined-invoice'),
     re_path(r'^combined-invoice-detail/(?P<pk>[\d]+)/?$', views.CombinedInvoiceDetailView.as_view(), name='combined-invoice-detail'),
     re_path(r'^combined-invoice-list/?$', views.CombinedInvoiceListView.as_view(), name='combined-invoice-list'),
     re_path(r'^combined-invoice-update/(?P<pk>[\d]+)/?$', views.CombinedInvoiceUpdateView.as_view(), 

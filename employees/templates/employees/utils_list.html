@@ -1,18 +1,16 @@
 {% extends "window.html" %} {% block content %}
 
 <div class="jumbotron">
-    <h1 class="display-3">Accounting Utility Object Lists</h1>
-    <p class="lead">Lists all Taxes, Deductions, Commissions and Allowances</p>
+    <h1 class="display-3">Payroll Element Lists</h1>
+    <p class="lead">Lists all  Deductions, Commissions and Benefits</p>
     <hr class="my-2">
     <p>Allows users to update and delete each object</p>
 </div>
 
 <ul class="nav nav-tabs">
+    
     <li class="nav-item active">
-        <a class="nav-link " data-toggle='tab' href="#taxes">Tax Objects</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" data-toggle='tab' href="#allowances">Allowances</a>
+        <a class="nav-link" data-toggle='tab' href="#allowances">Benefits</a>
     </li>
     <li class="nav-item">
         <a class="nav-link " data-toggle='tab' href="#deductions">Deductions</a>
@@ -23,52 +21,8 @@
 </ul>
 <hr />
 <div class="tab-content">
-    <div class="tab-pane fade show active" id='taxes'>
-        <a class="btn btn-primary" href="{% url 'employees:create-payroll-tax' %}">Create New Payroll Tax</a>
-        <hr />
-        <div style="margin:1cm;">
-                <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Rate</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for tax in taxes %}
-                            <tr>
-                                <td>{{tax.name}}</td>
-                                <td>{{tax.paid_by_string}}</td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="tax-trigger" data-toggle="dropdown" aria-haspopup="true"
-                                                aria-expanded="false">
-                                                    Actions
-                                                </button>
-                                        <div class="dropdown-menu" aria-labelledby="tax-trigger">
-                                            <a class="dropdown-item" href="{% url 'employees:update-payroll-tax' pk=tax.pk %}">
-                                                <i class="fas fa-file"></i>
-                                                Update</a>
-                                            <a class="dropdown-item" href="{% url 'employees:payroll-tax-delete' pk=tax.pk %}">
-                                                <i class="fas fa-trash"></i>
-                                                Delete</a>
-
-                                                <a class="dropdown-item" href="{% url 'employees:payroll-tax' pk=tax.pk %}">
-                                                        <i class="fas fa-trash"></i>
-                                                        Details</a>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-        </div>
-        
-    </div>
-    <div class="tab-pane fade" id='allowances'>
-        <a href="{% url 'employees:create-allowance' %}" class="btn btn-primary">Create New Allowance</a>
+    <div class="tab-pane active" id='allowances'>
+        <a href="{% url 'employees:create-allowance' %}" class="btn btn-primary">Add New Benefit</a>
         <hr>
         <div style="margin:1cm;">
             <table class="table table-striped">

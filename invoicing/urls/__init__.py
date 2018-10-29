@@ -7,6 +7,9 @@ from .service_urls import service_urls
 from .sales_urls import sales_urls
 
 report_urls = [
+    re_path(r'^(?P<pk>[\w]+)/customer-statement-form/?$', 
+        views.CustomerReportFormView.as_view(),
+             name='customer-statement-form'),
     re_path(r'^customer-statement-form/?$', 
         views.CustomerReportFormView.as_view(),
              name='customer-statement-form'),
@@ -24,7 +27,7 @@ customer_urls = [
     re_path(r'^create-customer$', views.CustomerCreateView.as_view(), name='create-customer'),
     re_path(r'^update-customer/(?P<pk>[\w]+)$', views.CustomerUpdateView.as_view(), name='update-customer'),
     re_path(r'^delete-customer/(?P<pk>[\w]+)$', views.CustomerDeleteView.as_view(), name='delete-customer'),
-    re_path(r'^customer-list$', views.CustomerListView.as_view(), name='customers-list'),
+    re_path(r'^customers-list$', views.CustomerListView.as_view(), name='customers-list'),
 ] + customer_router.urls
 
 sales_rep_router = DefaultRouter()

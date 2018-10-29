@@ -162,7 +162,7 @@ class CustomerViewsTests(TestCase):
         self.assertEqual(resp.status_code, 302)
 
     def test_get_customer_list_page(self):
-        resp = self.client.get(reverse('invoicing:customer-list'))
+        resp = self.client.get(reverse('invoicing:customers-list'))
         self.assertEqual(resp.status_code, 200)
 
 

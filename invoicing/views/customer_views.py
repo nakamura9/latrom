@@ -56,4 +56,4 @@ class CustomerListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, Filter
 class CustomerDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = Customer
-    success_url = reverse_lazy('invoicing:customer-list')
+    success_url = reverse_lazy('invoicing:customers-list')

@@ -4,6 +4,8 @@ import json
 import os
 import urllib
 
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
@@ -103,3 +105,17 @@ class TimeSheetViewset(viewsets.ModelViewSet):
     queryset = models.EmployeeTimeSheet.objects.all()
     serializer_class = serializers.TimeSheetSerializer
 
+class TimeLoggerView(ExtraContext, AdministratorCheckMixin, FormView):
+    template_name = CREATE_TEMPLATE
+    extra_context = {
+        'title': 'Log Time In/Out'
+    }
+    form_class = forms.TimeLoggerForm
+    success_url = reverse_lazy('employees:time-logger')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        messages.info(self.request, '{} logged in successfully at {}'.format(
+            form.cleaned_data['employee_number'], datetime.datetime.now().time()
+        ))
+        return resp

@@ -1,0 +1,38 @@
+{% extends 'common_data/list_template.html' %}
+
+{% block list_headings %}
+<tr>
+    <th>Name</th>
+    <th>Rate</th>
+    <th>Actions</th>
+</tr>
+{% endblock %}
+
+{% block list_content %}
+{% for tax in taxes %}
+<tr>
+    <td>{{tax.name}}</td>
+    <td>{{tax.paid_by_string}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="tax-trigger" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="tax-trigger">
+                <a class="dropdown-item" href="{% url 'employees:update-payroll-tax' pk=tax.pk %}">
+                    <i class="fas fa-file"></i>
+                    Update</a>
+                <a class="dropdown-item" href="{% url 'employees:payroll-tax-delete' pk=tax.pk %}">
+                    <i class="fas fa-trash"></i>
+                    Delete</a>
+
+                    <a class="dropdown-item" href="{% url 'employees:payroll-tax' pk=tax.pk %}">
+                            <i class="fas fa-trash"></i>
+                            Details</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}

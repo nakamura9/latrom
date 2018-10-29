@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block list_content %}
-    {% for officer in filter.qs %}
+    {% for officer in object_list %}
         <td>{{officer.pk}}</td>
         <td>{{officer.employee.full_name}}</td>
         <td>
