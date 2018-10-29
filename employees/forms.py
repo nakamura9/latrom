@@ -23,7 +23,7 @@ class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     #hourly workers must be calculated first
     class Meta:
         model = models.EmployeesSettings
-        fields = "__all__"
+        exclude = "last_payroll_date",
 
 
 #named benefits on the front end
@@ -84,9 +84,10 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
         cleaned_data = super().clean()
         usr = cleaned_data['employee'].user
         new_password = cleaned_data['new_password']
+        '''
         if not usr.check_password(cleaned_data['old_password']):
             raise forms.ValidationError('The old password is incorrect')
-
+        '''
         if new_password != cleaned_data['confirm_new_password']:
             raise forms.ValidationError(' The new passwords do not match')
 

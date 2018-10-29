@@ -33,15 +33,23 @@ class EmployeesSettings(SingletonModel):
     payroll_date_four = models.PositiveSmallIntegerField(
         choices = PAYROLL_DATE_CHOICES
     )
+    last_payroll_date = models.DateField(blank=True, null=True)
     payroll_cycle = models.CharField(
         max_length=12, 
         choices = PAYROLL_CYCLE_CHOICES
         )
-    automate_payroll_for = models.ManyToManyField('employees.Employee')
+    automate_payroll_for = models.ManyToManyField('employees.Employee', blank=True)
     require_verification_before_posting_payslips = models.BooleanField(
         default=True
         )
     salary_follows_profits = models.BooleanField(default=True)
+    payroll_officer = models.ForeignKey("employees.Employee", 
+        on_delete=None,
+        related_name="payroll_officer",
+        blank=True, 
+        null=True
+    )
+    payroll_counter = models.IntegerField(default=0)
 
 class EmployeeTimeSheet(models.Model):
     MONTH_CHOICES = [
@@ -56,12 +64,53 @@ class EmployeeTimeSheet(models.Model):
     recorded_by = models.ForeignKey('employees.employee', on_delete=None, related_name='recorder', null=True)
     complete=models.BooleanField(default=False, blank=True)
 
+    @property
+    def normal_hours(self):
+        total = datetime.timedelta(seconds=0)
+        for line in self.attendanceline_set.all():
+            total += line.normal_time
+
+        return total
+
+    @property
+    def overtime(self):
+        total = datetime.timedelta(seconds=0)
+        for line in self.attendanceline_set.all():
+            total += line.overtime
+
+        return total
+
+
 class AttendanceLine(models.Model):
     timesheet = models.ForeignKey('employees.EmployeeTimeSheet', on_delete=None)
     date = models.DateField()
     time_in = models.TimeField(blank=True, null=True)
     time_out = models.TimeField(blank=True, null=True)
     lunch_duration = models.DurationField(null=True, blank=True)
+
+    def to_datetime(self, time):
+        return datetime.datetime.combine(self.date, time)
+    @property
+    def total_time(self):
+        return self.to_datetime(self.time_out) - self.to_datetime(self.time_in)
+    
+    @property
+    def working_time(self):
+        return self.total_time - self.lunch_duration
+
+    @property
+    def normal_time(self):
+        if (self.working_time.seconds / 3600) > 8:
+            return datetime.timedelta(hours=8)
+        
+        return self.working_time
+
+    @property
+    def overtime(self):
+        if (self.working_time.seconds / 3600) > 8:
+            return self.working_time - datetime.timedelta(hours=8)
+        
+        return datetime.timedelta(seconds=0)
 
 class Employee(Person):
     '''

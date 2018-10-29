@@ -15,14 +15,18 @@
         <div class="col-sm-12">
             <ul class="nav nav-tabs|pills nav-stacked">
                 <li class="nav-item">
-                    <a href="#messages" data-toggle="tab" class="nav-link active">Messages</a>
+                    <a href="#messages" data-toggle="tab" class="nav-link active">Messages <span class="badge badge-primary">{{object.threads.count}}</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#notifications" data-toggle="tab" class="nav-link">Notifications</a>
+                    <a href="#notifications" data-toggle="tab" class="nav-link">Notifications <span class="badge badge-primary">{{object.notifications.count}}</span></a>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="messages" role="tabpanel" >
+                    {% if object.threads.count == 0 %}
+                        <h5>No messages to display</h5>
+                    {% else %}
+                    
                     {% for thread in object.threads %}
                         <a href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;"><div style="border:1px solid black; padding:10px;">
                             <h6>{{thread.latest.sender.username}}: {{thread.latest.subject | truncatechars:50}}</h6>
@@ -31,6 +35,9 @@
                         </div>
                     </a>
                     {% endfor %}
+
+                    {% endif %}
+                    
                     <!--Paginate the list of messages -->
                 </div>
                 <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="profile-tab">

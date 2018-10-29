@@ -72,3 +72,7 @@ class Inbox(models.Model):
     @property
     def threads(self):
         return self.user.messagethread_set.all()
+
+    @property
+    def total_in(self):
+        return self.notifications.count() + self.threads.count()

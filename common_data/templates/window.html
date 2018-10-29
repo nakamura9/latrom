@@ -15,7 +15,7 @@
                 </li>
                 -->
                 <li>
-                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox</a>
+                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary">{{request.user.inbox_set.first.total_in}}</span></a>
                 </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
