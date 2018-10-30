@@ -6,11 +6,14 @@ import axios from 'axios';
 class SearchableWidget extends Component {
     //currValue is whats being typed, selected is the value validated
     state = {
+        
         items: [],
         choices: [],
         currValue: "",
         selectedValue: ""
     }
+
+    
 
     componentDidMount(){
         axios({

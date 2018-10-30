@@ -1,0 +1,54 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Service Category Detail</h1>
+    <p class="lead">Category Information and list of related services</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'services:update-category' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body bg-primary text-white">
+                    <h4 class="card-title">Category Data</h4>
+                    <p class="card-text">Name: {{object.name}} </p>
+                    <p class="card-text">Description: {{object.description}} </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Categories</h3>
+            {% if object.service_set.all.count  == 0 %}
+                <h5>No services listed under this category </h5>
+            {% else %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in object.service_set.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'services:service-details' pk=s.pk %}">{{s.name}}</a>
+                                </td>
+                                <td>{{s.description}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

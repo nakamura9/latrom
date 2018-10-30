@@ -13,6 +13,7 @@ from common_data.views import PaginationMixin
 from inventory.models import Consumable, Equipment
 from services import filters, forms, models
 from services.serializers import ProcedureSerializer
+from services.views.util import ServiceCheckMixin
 
 
 class ProcedureCRUDMixin(object):
@@ -51,23 +52,23 @@ class ProcedureCRUDMixin(object):
 
         return resp
 
-class ProcedureCreateView(ProcedureCRUDMixin, CreateView):
+class ProcedureCreateView(ServiceCheckMixin, ProcedureCRUDMixin, CreateView):
     form_class = forms.ServiceProcedureForm
     template_name = os.path.join('services', 'procedure', 'create.html')
     success_url = reverse_lazy('services:list-procedures')
 
 
-class ProcedureUpdateView(ProcedureCRUDMixin, UpdateView):
+class ProcedureUpdateView(ServiceCheckMixin, ProcedureCRUDMixin, UpdateView):
     form_class = forms.ServiceProcedureForm
     template_name = os.path.join('services', 'procedure', 'update.html')
     success_url = reverse_lazy('services:list-procedures')
     model = models.ServiceProcedure
 
-class ProcedureDetailView(DetailView):
+class ProcedureDetailView(ServiceCheckMixin, DetailView):
     template_name = os.path.join('services', 'procedure', 'detail.html')
     model = models.ServiceProcedure
 
-class ProcedureListView(ExtraContext, PaginationMixin, FilterView):
+class ProcedureListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'procedure', 'list.html')
     filterset_class = filters.ProcedureFilter
     model = models.ServiceProcedure

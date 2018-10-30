@@ -7,7 +7,11 @@ from .service import service_urls
 from .requisition import requisition_urls
 
 urlpatterns = [
-    re_path(r'^$', views.Dashboard.as_view(), name='dashboard')
+    re_path(r'^$', views.Dashboard.as_view(), name='dashboard'),
+    re_path(r'^create-category/?$', views.ServiceCategoryCreateView.as_view(), name='create-category'),
+    re_path(r'^update-category/(?P<pk>[\d]+)/?$', views.ServiceCategoryUpdateView.as_view(), name='update-category'),
+    re_path(r'^category-detail/(?P<pk>[\d]+)/?$', views.ServiceCategoryDetailView.as_view(), name='category-detail'),
+    re_path(r'^category-list/?$', views.ServiceCategoryListView.as_view(), name='category-list')
 ]
 
 urlpatterns += personnel_urls

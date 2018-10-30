@@ -179,11 +179,16 @@ class Employee(Person):
 
     @property
     def is_inventory_controller(self):
-        return hasattr(self, 'inventory_controller')
+        return hasattr(self, 'inventorycontroller')
 
     @property
     def is_bookkeeper(self):
         return hasattr(self, 'bookkeeper')
+
+
+    @property
+    def is_serviceperson(self):
+        return hasattr(self, 'serviceperson')
 
 
 #Change to benefits 

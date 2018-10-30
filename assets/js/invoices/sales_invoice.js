@@ -5,12 +5,10 @@ import axios from 'axios';
 import {Totals, DeleteButton, SearchableWidget} from '../src/common';
 
 export default class SalesInvoiceForm extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
+    state = {
             items: [],
         }
-    }
+
     addItem = (data) => {
         data['subtotal'] = data.quantity * data.unit_price;
         let newItems = [...this.state.items];
@@ -101,7 +99,9 @@ export default class SalesInvoiceForm extends Component{
                             item={item}
                             handler={this.removeItem}/>
                     ))}
-                    <EntryRow addItem={this.addItem.bind(this)}/>
+                    <EntryRow 
+                        itemList={this.state.items}
+                        addItem={this.addItem.bind(this)}/>
                 </tbody>
                 <Totals
                     span={5}
@@ -130,17 +130,13 @@ const SalesLine = (props) => {
 }
 
 class EntryRow extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
+    state = {
             items: [],
             inputs: {
                 unit_price:0.0,
                 quantity: 0.0
-            },
-            inputReset: false
-        };   
-    }
+            }
+        }
     componentDidMount(){
         $.ajax({
             url: '/inventory/api/product/',
@@ -154,7 +150,6 @@ class EntryRow extends Component{
             alert('Please enter a valid quantity');
             return;
         }
-        this.setState({'inputReset': true});
         this.props.addItem(this.state.inputs);
     }
 
@@ -186,17 +181,30 @@ class EntryRow extends Component{
         }})
     }
     
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                inputs: {
+                    unit_price:0.0,
+                    quantity: 0.0
+                }
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
+
     render(){
         return(
             <tr>
                 <td colSpan={2}>
                     <SearchableWidget 
+                        list={this.props.itemList}
                         dataURL="/inventory/api/product/"
                         displayField="name"
                         idField="id"
                         onSelect={this.onSelect}
                         onClear={this.onClear}
-                        inputReset={this.state.inputReset}
                     />
                 </td>
                 

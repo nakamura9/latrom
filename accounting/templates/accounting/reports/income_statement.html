@@ -1,5 +1,5 @@
 {% extends "common_data/printable_page.html" %} {% block page_contents %}
-
+{% load accounting %}
 <table class="table" style="width:100%">
     <tbody>
         <tr>
@@ -37,7 +37,7 @@
                         </tr>
                         <tr>
                             <td>Total Revenue:</td>
-                            <td>{{total_revenue | floatformat:2}}</td>
+                            <td>{{total_revenue | accounting}}</td>
                         </tr>
                         <tr>
                             <th colspan="2">Expenses</th>
@@ -51,11 +51,11 @@
                         {% endfor %}
                         <tr>
                             <td>Total Expenses</td>
-                            <td>{{total_expenses}}</td>
+                            <td>{{total_expenses | accounting}}</td>
                         </tr>
                         <tr>
                             <td>Net Income</td>
-                            <td>{{net_income | floatformat:2}}</td>
+                            <td>{{net_income | accounting}}</td>
                         </tr>
                     </tbody>
                 </table>

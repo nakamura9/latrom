@@ -16,9 +16,9 @@ from common_data.utilities import ExtraContext
 from common_data.views import PaginationMixin
 from inventory.models import Consumable, Equipment, UnitOfMeasure
 from services import filters, forms, models, serializers
+from services.views.util import ServiceCheckMixin
 
-
-class EquipmentRequisitionCreateView(CreateView):
+class EquipmentRequisitionCreateView(ServiceCheckMixin, CreateView):
     template_name = os.path.join('services', 'requisitions', 'equipment', 
         'create.html')
     form_class = forms.EquipmentRequisitionForm
@@ -43,7 +43,7 @@ class EquipmentRequisitionCreateView(CreateView):
         return resp
 
 
-class EquipmentRequisitionDetailView(DetailView):
+class EquipmentRequisitionDetailView(ServiceCheckMixin, DetailView):
     template_name = os.path.join('services', 'requisitions', 'equipment',
         'authorize_release.html')
     model = models.EquipmentRequisition
@@ -53,7 +53,7 @@ class EquipmentRequisitionDetailView(DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class EquipmentRequisitionListView(ExtraContext, PaginationMixin, FilterView):
+class EquipmentRequisitionListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
     queryset = models.EquipmentRequisition.objects.all()
     paginate_by = 10
@@ -117,7 +117,7 @@ def equipment_requisition_release(request, pk=None):
 #            Consumable Requisitions            #
 #################################################
 
-class ConsumableRequisitionCreateView(CreateView):
+class ConsumableRequisitionCreateView(ServiceCheckMixin, CreateView):
     template_name = os.path.join('services', 'requisitions', 'consumables', 
         'create.html')
     form_class = forms.ConsumablesRequisitionForm
@@ -143,7 +143,7 @@ class ConsumableRequisitionCreateView(CreateView):
         return resp
 
 
-class ConsumableRequisitionDetailView(DetailView):
+class ConsumableRequisitionDetailView(ServiceCheckMixin, DetailView):
     template_name = os.path.join('services', 'requisitions', 'consumables',
         'authorize_release.html')
     model = models.ConsumablesRequisition
@@ -153,7 +153,7 @@ class ConsumableRequisitionDetailView(DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class ConsumableRequisitionListView(ExtraContext, PaginationMixin, FilterView):
+class ConsumableRequisitionListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.ConsumableRequisitionFilter
     queryset = models.ConsumablesRequisition.objects.all()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')
@@ -163,7 +163,7 @@ class ConsumableRequisitionListView(ExtraContext, PaginationMixin, FilterView):
         'title': 'List of Consumables Requisitions'
     }
 
-class ConsumableRequisitionAPIView(ModelViewSet):
+class ConsumableRequisitionAPIView(ServiceCheckMixin, ModelViewSet):
     pass
 
 def authenticator(request):

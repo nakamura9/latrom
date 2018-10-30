@@ -13,6 +13,7 @@ from rest_framework.viewsets import ModelViewSet
 from common_data.utilities import ExtraContext
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
+from services.views.util import ServiceCheckMixin
 
 
 class WorkOrderCRUDMixin(object):
@@ -36,7 +37,7 @@ class WorkOrderCRUDMixin(object):
 
 
 
-class WorkOrderCreateView(WorkOrderCRUDMixin, CreateView):
+class WorkOrderCreateView(ServiceCheckMixin, WorkOrderCRUDMixin, CreateView):
     template_name = os.path.join('services', 'work_order', 'create.html')
     form_class = forms.ServiceWorkOrderForm
     success_url = reverse_lazy('services:work-order-list')
@@ -47,14 +48,14 @@ class WorkOrderCreateView(WorkOrderCRUDMixin, CreateView):
         }
 
     
-class WorkOrderUpdateView(WorkOrderCRUDMixin, UpdateView):
+class WorkOrderUpdateView(ServiceCheckMixin, WorkOrderCRUDMixin, UpdateView):
     template_name = os.path.join('services', 'work_order', 'update.html')
     form_class = forms.ServiceWorkOrderForm
     success_url = reverse_lazy('services:work-order-list')
     model = models.ServiceWorkOrder
 
 
-class WorkOrderCompleteView(UpdateView):
+class WorkOrderCompleteView(ServiceCheckMixin, UpdateView):
     template_name = os.path.join('services', 'work_order', 'complete.html')
     form_class = forms.ServiceWorkOrderCompleteForm
     success_url = reverse_lazy('services:work-order-list')
@@ -66,7 +67,7 @@ class WorkOrderCompleteView(UpdateView):
         }
 
 
-class WorkOrderDetailView(DetailView):
+class WorkOrderDetailView(ServiceCheckMixin, DetailView):
     template_name = os.path.join('services', 'work_order', 'detail.html')
     model = models.ServiceWorkOrder
 
@@ -79,7 +80,7 @@ class WorkOrderDetailView(DetailView):
         )
         return context
 
-class WorkOrderListView(ExtraContext, PaginationMixin, FilterView):
+class WorkOrderListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'work_order', 'list.html')
     filterset_class = filters.WorkOrderFilter
     queryset = models.ServiceWorkOrder.objects.all()
