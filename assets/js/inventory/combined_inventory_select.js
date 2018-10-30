@@ -10,6 +10,16 @@ class InventorySelectWidget extends Component {
         selectedValue: ""
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.list.length !== prevProps.list.length){
+            this.setState({
+                currValue : "",
+                selectedValue: ""
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
     componentDidMount(){
         axios({
             method: "GET",
@@ -27,7 +37,6 @@ class InventorySelectWidget extends Component {
                         method: "GET",
                         url: '/inventory/api/equipment'
                     }).then(res => {
-                        console.log(res.data);
                         let additionalChoices = res.data.map((item) =>{
                             return('E' + item['id'] + " - " + item['name'])
                         });

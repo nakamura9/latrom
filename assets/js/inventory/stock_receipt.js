@@ -6,13 +6,11 @@ import {SearchableWidget} from '../src/common'
 const PK = $('#id_warehouse').val()
 
 export default class ItemReceiptTable extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            'items': [],
+    state = {
+            items: [],
             receivedItems: []
         }
-    }
+
     componentDidMount(){
         let order = document.getElementById('id_order').value;
         $.ajax({
@@ -126,6 +124,7 @@ class ReceivingLine extends Component{
                     onChange={this.updateQuantity} /></td>
                 <td>
                     <SearchableWidget
+                        list={[]}
                         dataURL={"/inventory/api/storage-media/" + PK}
                         displayField="name"
                         idField="id"

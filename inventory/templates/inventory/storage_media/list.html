@@ -9,6 +9,10 @@
     <p>Visualize Storage Media in the tree hierarchy in they are organized by.</p>
     <p class="lead">
         <a class="btn btn-primary btn-lg" href="{% url 'inventory:storage-media-create' pk=pk %}" role="button">Create New</a>
+        {% if warehouse.storagemedia_set.all.count == 0 %}
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:generate-storage-media' warehouse=pk %}" role="button">Generate Storage System</a>
+        {% endif %}
+        
     </p>
     <div class="container">
         <div class="row">
@@ -18,8 +22,11 @@
                     <div class="card-body">
                         <h4 class="card-title">Storage Media</h4>
                         <div id="storage-media-tree-view"></div>
-                        <a href="" id="id_storage_media_detail" class="btn btn-primary">View Detail</a>
-                        <a href="" id="id_storage_media_update" class="btn btn-primary">Edit</a>
+                        <style>
+                            tr {
+                                font
+                            }
+                        </style>
                     </div>
                 </div>
             </div>

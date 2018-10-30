@@ -9,6 +9,8 @@ warehouse_router.register(r'^api/warehouse', views.WareHouseAPIView)
 api_urls = [
     re_path(r'^api/warehouse-items/(?P<warehouse>[\d]+)/?$', 
         views.WareHouseItemListAPIView.as_view(), name='warehouse-items'),
+    re_path(r'^generate-storage-media/(?P<warehouse>[\d]+)/?$', 
+        views.AutogenerateStorageMediaView.as_view(), name='generate-storage-media'),
     re_path(r'^api/warehouse-item/(?P<pk>[\d]+)/?$', 
         views.WareHouseItemAPIView.as_view(), name='warehouse-item'),
     re_path(r'^api/unpaginated-warehouse-items/(?P<warehouse>[\d]+)/?$', 
@@ -16,6 +18,8 @@ api_urls = [
     name='unpaginated-warehouse-items'),
     re_path(r'^api/storage-media/(?P<pk>[\w]+)/?$', 
         views.StorageMediaListAPIView.as_view()),
+    re_path(r'^api/storage-media-detail/(?P<pk>[\w]+)/?$', 
+        views.StorageMediaRetrieveAPIView.as_view()),
 ]
 
 warehouse_urls = [

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
+import axios from 'axios';
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -9,6 +10,7 @@ const storageMediaView = document.getElementById('storage-media-tree-view');
 
 
 const dataMapper = (node, i) =>{
+    
     return({
         label: node.name,
         nodes: node.children,
@@ -21,40 +23,40 @@ const currentWarehouse = () =>{
     return(decomposed[decomposed.length-1])
 }
 if(storageMedia){
-    let pk = currentWarehouse();
-    ReactDOM.render(<TreeSelectWidget 
-        url={'/inventory/api/storage-media/' + pk}
-        fieldName='location'
-        selectFunc={(id) => (null)}
-        dataMapper={dataMapper}/>, storageMedia);
+    const pk = currentWarehouse();
+    axios.get('/inventory/api/storage-media-detail/' + pk).then(
+        res => {
+            console.log(res.data);
+            ReactDOM.render(<TreeSelectWidget 
+                url={'/inventory/api/storage-media/' + res.data.warehouse}
+                externalFormFieldName='location'
+                updateUrlRoot='/inventory/storage-media-update/'
+                detailUrlRoot='/inventory/storage-media-detail/'
+                dataMapper={dataMapper}/>, storageMedia);
+        }
+    )
+    
 }else if(category){
     ReactDOM.render(<TreeSelectWidget 
         url='/inventory/api/category'
-        fieldName='parent'
-        selectFunc={(id) => (null)}
+        externalFormFieldName='parent'
         dataMapper={dataMapper}/>, category);
 }else if(categoryView){
     ReactDOM.render(<TreeSelectWidget 
+        isListView={true}
+        updateUrlRoot='/inventory/category-update/'
+        detailUrlRoot='/inventory/category-detail/'
         url='/inventory/api/category'
-        fieldName='parent'
-        selectFunc={(id) =>{
-            document.getElementById('id_category_detail').href = 
-            '/inventory/category-detail/' + id;
-            document.getElementById('id_category_update').href = 
-            '/inventory/category-update/' + id;
-        }}
+        externalFormFieldName='parent'
         dataMapper={dataMapper}/>, categoryView);
 }else if(storageMediaView){
     console.log('selected storage media');
     let pk = currentWarehouse();
-    ReactDOM.render(<TreeSelectWidget 
+    ReactDOM.render(<TreeSelectWidget
+        isListView={true} 
         url={'/inventory/api/storage-media/' + pk}
-        fieldName='location'
-        selectFunc={(id) =>{
-            document.getElementById('id_storage_media_detail').href = 
-            '/inventory/storage-media-detail/' + id;
-            document.getElementById('id_storage_media_update').href = 
-            '/inventory/storage-media-update/' + id;
-        }}
+        externalFormFieldName='location'
+        updateUrlRoot='/inventory/storage-media-update/'
+        detailUrlRoot='/inventory/storage-media-detail/'
         dataMapper={dataMapper}/>, storageMediaView);
 }

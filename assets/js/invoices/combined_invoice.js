@@ -143,7 +143,8 @@ export default class CombinedTable extends Component{
                         return(line);
                     }
                     )}
-                <EntryWidget 
+                <EntryWidget
+                    itemList={this.state.items}
                     insertHandler={this.insertHandler}/>
                 </tbody>
                 <Totals 

@@ -132,6 +132,10 @@ class JournalEntry(models.Model):
     def total(self):
         return (self.total_debits, self.total_credits)
 
+    @property
+    def str_total(self):
+        return "DR:{};  CR{}".format(self.total_debits, self.total_credits)
+
 
     def simple_entry(self, amount, credit_acc, debit_acc):
         self.credit(amount, credit_acc)
