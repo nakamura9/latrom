@@ -4,14 +4,20 @@ from rest_framework import routers
 from inventory import views
 
 supplier_urls = [
-    re_path(r'^supplier-create/?$', views.SupplierCreateView.as_view(), 
-        name="supplier-create"),
-    re_path(r'^supplier-list/?$', views.SupplierListView.as_view(), 
+    re_path(r'^supplier-create/?$', 
+        views.SupplierCreateView.as_view(),name="supplier-create"),
+    re_path(r'^supplier-list/?$', views.SupplierListView.as_view(),
         name="supplier-list"),
-    re_path(r'^api/supplier/?$', views.SupplierListAPIView.as_view(), 
+    re_path(r'^api/supplier/?$', 
+        views.SupplierListAPIView.as_view(), 
         name="api-supplier-list"),
     re_path(r'^supplier-update/(?P<pk>[\w]+)/?$', 
-        views.SupplierUpdateView.as_view(), name="supplier-update"),
+        views.SupplierUpdateView.as_view(), 
+        name="supplier-update"),
+    re_path(r'^supplier-detail/(?P<pk>[\w]+)/?$', 
+        views.SupplierDetailView.as_view(), 
+        name="supplier-detail"),
     re_path(r'^supplier-delete/(?P<pk>[\w]+)/?$', 
-        views.SupplierDeleteView.as_view(), name="supplier-delete"),        
+        views.SupplierDeleteView.as_view(), 
+        name="supplier-delete"),        
 ]

@@ -56,7 +56,7 @@ class Customer(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        if self.account is None:
             n_customers = Customer.objects.all().count() + 1
             self.account = Account.objects.create(
                 name= "Customer: %s" % self.name,

@@ -13,8 +13,7 @@ from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel
 
 
-from .item_models import Product
-
+from .item_models import Product, Equipment, Consumable
 
 class InventorySettings(SingletonModel):
     INVENTORY_VALUATION_PERIOD=[
@@ -132,8 +131,21 @@ class Supplier(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def products(self):
+        return Product.objects.filter(supplier=self)
+
+    @property
+    def consumables(self):
+        return Consumable.objects.filter(supplier=self)
+
+    @property
+    def equipment(self):
+        return Equipment.objects.filter(supplier=self)
+
+
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        if self.account is None:
             n_suppliers = Supplier.objects.all().count()
             #will overwrite if error occurs
             self.account = Account.objects.create(

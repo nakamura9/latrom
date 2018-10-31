@@ -250,6 +250,11 @@ class AbstractAccount(models.Model):
         credits = list(self.credit_set.all())
         return sorted(debits + credits)
 
+    @property
+    def recent_entries(self):
+        return [i.entry for i in self.transaction_list[:5]]
+        
+
     class Meta:
         abstract = True
 

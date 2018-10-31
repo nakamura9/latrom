@@ -52,6 +52,12 @@ class ComposeMessageView(CreateView):
             'sender': self.request.user.pk
         }
 
+    def post(self, request):
+        resp = super().post(request)
+        sender = models.Dispatcher(self.object)
+        sender.dispatch()
+        return resp
+
 class MessageThreadView(DetailView):
     template_name = os.path.join('messaging', 'message_thread.html')
     model = models.MessageThread

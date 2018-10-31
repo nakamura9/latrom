@@ -34,8 +34,8 @@ class SupplierCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView
     extra_context = {"title": "Create New Supplier"}
 
 
-class SupplierUpdateView(InventoryControllerCheckMixin, ExtraContext, 
-        UpdateView):
+class SupplierUpdateView(InventoryControllerCheckMixin, 
+    ExtraContext, UpdateView):
     form_class = forms.SupplierForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
@@ -43,22 +43,31 @@ class SupplierUpdateView(InventoryControllerCheckMixin, ExtraContext,
     extra_context = {"title": "Update Existing Supplier"}
 
 
-class SupplierListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class SupplierListView(InventoryControllerCheckMixin, ExtraContext, 
+    PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier", "list.html")
     extra_context = {"title": "Supplier List",
-                    "new_link": reverse_lazy("inventory:supplier-create")}
+                    "new_link": reverse_lazy(
+                        "inventory:supplier-create")}
 
     def get_queryset(self):
         return models.Supplier.objects.all().order_by('pk')
 
 
-class SupplierDeleteView(InventoryControllerCheckMixin, DeleteView):
-    template_name = os.path.join('common_data', 'delete_template.html')
+class SupplierDeleteView(InventoryControllerCheckMixin, 
+        DeleteView):
+    template_name = os.path.join('common_data', 
+        'delete_template.html')
     success_url=reverse_lazy('inventory:supplier-list')
     model = models.Supplier
 
 class SupplierListAPIView(ListAPIView):
     serializer_class = serializers.SupplierSerializer
     queryset = models.Supplier.objects.all()
+
+class SupplierDetailView(InventoryControllerCheckMixin, 
+        DetailView):
+    template_name=os.path.join('inventory', 'supplier', 'detail.html')
+    model = models.Supplier

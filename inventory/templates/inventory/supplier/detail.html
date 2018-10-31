@@ -1,0 +1,125 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Supplier Detail</h1>
+    <p class="lead">Information Regarding supplier Products, Contact Information and Accounting Data</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'inventory:supplier-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Supplier Information</h4>
+                    <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual {% endif %} </p>
+                    <p class="card-text">Name: {{object}}</p>
+                    <h5>Contact Details</h5>
+                    <p class="card-text">Email: {{object.email}}</p>
+                    <p class="card-text">Address: {{object.address}}</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Products</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Last Purchase Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in object.products %}
+                                <tr>
+                                    <td>{{p.name}}</td>
+                                    <td>{{p.description}}</td>
+                                    <td>{{p.unit_purchase_price}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h4 class="card-title">Consumables</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Last Purchase Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in object.consumables %}
+                                <tr>
+                                    <td>{{p.name}}</td>
+                                    <td>{{p.description}}</td>
+                                    <td>{{p.unit_purchase_price}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h4 class="card-title">Equipment</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Last Purchase Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in object.equipment %}
+                                <tr>
+                                    <td>{{p.name}}</td>
+                                    <td>{{p.description}}</td>
+                                    <td>{{p.unit_purchase_price}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Supplier Account</h4>
+                    <p class="card-text">Name: {{object.account}}</p>
+                    <p class="card-text">Balance: {{object.account.balance}}</p>
+                    <h4 class="card-title">Recent Transactions</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in object.recent_entries %}
+                                <tr>
+                                    <td>{{t.date}}</td>
+                                    <td>{{t.memo | truncatechars:50 }}</td>
+                                    <td>{{t.total_debits}}</td>
+                                    <td>{{t.total_credits}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
