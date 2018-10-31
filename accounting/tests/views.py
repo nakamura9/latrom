@@ -131,7 +131,6 @@ class CommonViewTests(TestCase):
     def test_create_expense(self):
         acc = Account.objects.get(pk=1000)
         acc_d_b4 = acc.balance
-        print acc_d_b4
         expense = Expense.objects.create(
             date=TODAY,
             description = 'Test Description',

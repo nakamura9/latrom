@@ -45,7 +45,6 @@ class ComposeMessageView(CreateView):
     model = models.Message
 
     def get_success_url(self):
-        print('data')
         return '/messaging/inbox/' + str(self.request.user.pk)
 
     def get_initial(self):
