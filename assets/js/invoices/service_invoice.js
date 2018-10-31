@@ -106,7 +106,9 @@ export default class ServiceLineTable extends Component{
                         line={line}
                         handler={this.removeLine}/>
                 ))}
-                <EntryRow insertLine={this.insertLine}/>
+                <EntryRow 
+                    itemList={this.state.lines}
+                    insertLine={this.insertLine}/>
                 </tbody>
                 <Totals 
                     span={5}
@@ -151,6 +153,18 @@ class EntryRow extends Component{
         }).then(res => {
             this.setState({services: res});
         });
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                inputs: {
+                    service: '',
+                    hours: ''
+                }
+            })
+            //remove selected choice from list of choices 
+        }
     }
 
     handleServiceChange = (evt) =>{
@@ -214,7 +228,8 @@ class EntryRow extends Component{
                 <tr>
                     <td style={{width: "10%"}}></td>
                     <td style={{width: "50%"}}>
-                        <SearchableWidget 
+                        <SearchableWidget
+                            list={this.props.itemList}
                             dataURL="/services/api/service/"
                             displayField="name"
                             idField="id"

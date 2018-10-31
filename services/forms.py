@@ -12,7 +12,7 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
 
 class ServiceCategoryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = 'parent',
+        fields = "__all__"
         model = models.ServiceCategory
 
 

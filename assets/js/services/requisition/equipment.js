@@ -60,6 +60,7 @@ class EquipmentRequisitionTable extends Component{
                     })}
                 </tbody>
                 <RequisitionTableEntry 
+                    itemList={this.state.lines}
                     insertHandler={this.insertHandler}/>
             </table>
         )
@@ -88,11 +89,26 @@ class RequisitionTableEntry extends Component{
         }
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                inputs: {
+                    quantity: 0,
+                    condition: "",
+                    item: ""
+                }
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
+
     inputHandler = (val, field) =>{
         let newInputs = {...this.state.inputs};
         newInputs[field] = val;
         this.setState({inputs: newInputs});
     }
+    
     onSelectHandler = (val) =>{
         this.inputHandler(val, "item");
     }
@@ -113,9 +129,9 @@ class RequisitionTableEntry extends Component{
         return(
             <tfoot>
                 <tr>
-                    
                     <td colSpan={2}>
                         <SearchableWidget
+                            list={this.props.itemList}
                             dataURL="/inventory/api/equipment/"
                             idField="id"
                             displayField="name"

@@ -1,4 +1,6 @@
 
+import datetime
+
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout, Submit
@@ -7,6 +9,7 @@ from django.contrib.auth.models import User
 
 from common_data.forms import BootstrapMixin
 from inventory.models import Supplier
+from django.db.models import Q
 
 from . import models
 
@@ -20,7 +23,7 @@ class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     #hourly workers must be calculated first
     class Meta:
         model = models.EmployeesSettings
-        fields = "__all__"
+        exclude = "last_payroll_date",
 
 
 #named benefits on the front end
@@ -46,23 +49,60 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.PayGrade
 
+class CreateEmployeeUserForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data['password']
+        name = cleaned_data['username']
+        if User.objects.filter(username=name).exists():
+            raise forms.ValidationError('The username selected is already in use')
+
+        if password != cleaned_data['confirm_password']:
+            raise forms.ValidationError(' The new passwords do not match')
+
+        usr = User.objects.create_user(name)
+        usr.set_password(password)
+        usr.save()
+        employee = cleaned_data['employee']
+        employee.user= usr
+        employee.save()
+
+        return cleaned_data 
+
+class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    old_password = forms.CharField(widget=forms.PasswordInput)
+    new_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        usr = cleaned_data['employee'].user
+        new_password = cleaned_data['new_password']
+        '''
+        if not usr.check_password(cleaned_data['old_password']):
+            raise forms.ValidationError('The old password is incorrect')
+        '''
+        if new_password != cleaned_data['confirm_new_password']:
+            raise forms.ValidationError(' The new passwords do not match')
+
+        usr.set_password(new_password)
+        usr.save()
+
+        return cleaned_data 
+
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
-    link_with_user = forms.BooleanField(required=False)
-    username = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=forms.PasswordInput)
-    confirm_password = forms.CharField(required=False, 
-        widget=forms.PasswordInput)
     class Meta:
         exclude="active", 'user',
         model = models.Employee
 
     def __init__(self, *args, **kwargs):
         super(EmployeeForm, self).__init__(*args, **kwargs)
-
-
-        if self.instance and self.instance.user:
-                self.fields['username'].initial = self.instance.user.username
-                self.fields['link_with_user'].initial = True
         
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -78,62 +118,91 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                     'title',
                     'pay_grade',
                     'leave_days',
-                    ),
-                Tab('User Details', 
-                'link_with_user', 
-                'username',
-                'password', 
-                'confirm_password')))
+                    'pin',
+                    'uses_timesheet'
+                    )))
         self.helper.add_input(Submit('submit', 'Submit'))
 
-    def clean(self):
-        cleaned_data = super(EmployeeForm, self).clean()
 
-        if cleaned_data.get('link_with_user'):
-            if cleaned_data.get('username') == "":
-                raise forms.ValidationError("If an employee is going to be"
-                    "linked with a user a username must be specified")
-            else:
-                if cleaned_data.get('password') == "" \
-                        or cleaned_data.get("confirm_password") == "":
-                    raise forms.ValidationError("The password fields cannot be blank")
-                elif cleaned_data.get("password") != \
-                        cleaned_data.get("confirm_password"):
-                    raise forms.ValidationError("The passwords must match")
-                else:
-                    #matching non void passwords
-                    try:
-                        if self.instance and self.instance.user:
-                            #updating existing users
-                            self.instance.user.username = cleaned_data.get(
-                                "username")
-                            self.instance.user.set_password(
-                                cleaned_data.get('password'))
-                            self.instance.user.save()
-                        else:
-                            self.created_user = User.objects.create(
-                                first_name=cleaned_data.get("first_name"),
-                                last_name=cleaned_data.get("last_name"),
-                                username=cleaned_data.get("username"))
-                            self.created_user.set_password(
-                                cleaned_data.get("password"))
-                        #necessary!
-                            self.created_user.save()
-                    except:
-                        raise forms.ValidationError('Failed to create User')
-                    else:
-                        return cleaned_data
-
-        return cleaned_data
-
-    def save(self, *args, **kwargs):
-        obj = super(EmployeeForm, self).save(*args, **kwargs)
-        if hasattr(self, 'created_user'):
-            self.instance.user = self.created_user
-            self.instance.save()
-        return obj
 
 class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.PayrollTax
         fields = '__all__'
+
+
+class TimesheetForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.EmployeeTimeSheet
+        fields = "__all__"
+
+class PayrollOfficerForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.PayrollOfficer
+
+
+class TimeLoggerForm(BootstrapMixin, forms.Form):
+    employee_number = forms.IntegerField()
+    pin = forms.IntegerField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        e_num = cleaned_data['employee_number']
+        if not models.Employee.objects.filter(pk=e_num).exists():
+            raise forms.ValidationError('The selected Employee number is invalid')
+        
+        employee = models.Employee.objects.get(pk=e_num)
+
+        if cleaned_data['pin'] != employee.pin:
+            raise forms.ValidationError('Incorrect pin used for employee')
+
+        # check if a timesheet for this employee for this month exists, if not 
+        # create a new one. Check if today has a attendance line if not create a new 
+        # one. Check if this line has been logged in, if so log out if not log in.
+        TODAY = datetime.date.today()
+        NOW = datetime.datetime.now().time()
+        if models.EmployeeTimeSheet.objects.filter(
+                Q(employee=employee) & 
+                Q(month=TODAY.month) &
+                Q(year=TODAY.year)
+                ).exists():
+            curr_sheet = models.EmployeeTimeSheet.objects.get(
+                Q(employee=employee) & 
+                Q(month=TODAY.month) &
+                Q(year=TODAY.year)
+                )
+        else:
+            curr_sheet = models.EmployeeTimeSheet.objects.create(
+                employee=employee, 
+                month=TODAY.month,
+                year=TODAY.year
+                )
+        
+        if models.AttendanceLine.objects.filter(
+                Q(timesheet=curr_sheet) &
+                Q(date=TODAY)
+                ).exists():
+            curr_line = models.AttendanceLine.objects.get(
+                Q(timesheet=curr_sheet) &
+                Q(date=TODAY)
+                )
+        else:
+            curr_line = models.AttendanceLine.objects.create(
+                timesheet=curr_sheet,
+                date=TODAY
+                )
+
+        if curr_line.time_in is None:
+            curr_line.time_in = NOW
+            curr_line.save()
+
+        else:
+            curr_line.time_out = NOW
+            curr_line.save()
+
+
+class PayrollForm(BootstrapMixin, forms.Form):
+    start_period = forms.DateField()
+    end_period = forms.DateField()
+    employees = forms.ModelMultipleChoiceField(models.Employee.objects.all())

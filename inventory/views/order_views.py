@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 import os
 import urllib
+import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -105,6 +106,11 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, OrderPOSTMixi
             'form': forms.QuickProductForm
         })]}
 
+    def get_initial(self):
+        if self.kwargs.get('supplier', None):
+            return {
+                'supplier': self.kwargs['supplier']
+            }
     
 
 

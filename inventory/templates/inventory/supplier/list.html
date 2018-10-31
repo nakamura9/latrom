@@ -27,8 +27,17 @@
                                 <a href="{% url 'inventory:supplier-update' pk=supplier.pk %}" class="dropdown-item">
                                         <i class="fas fa-file"></i> Update
                                 </a>
+                                <a href="{% url 'inventory:supplier-detail' pk=supplier.pk %}" class="dropdown-item">
+                                    <i class="fas fa-eye"></i> Details
+                            </a>
                             <a class="dropdown-item" href="{% url 'inventory:supplier-delete'  pk=supplier.pk  %}">
-                                <i class="fas fa-eye"></i> Delete
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                            <a class="dropdown-item" href="{% url 'inventory:order-create'  supplier=supplier.pk  %}">
+                                <i class="fas fa-receipt"></i> Make Purchase Order
+                            </a>
+                            <a class="dropdown-item" href="{% url 'accounting:direct-payment'  supplier=supplier.pk  %}">
+                                <i class="fas fa-money-check"></i> Make Payment To supplier
                             </a>
             
                         </div>

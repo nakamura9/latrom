@@ -1,0 +1,37 @@
+{% extends "common_data/unfiltered_list_template.html" %}
+{% block list_headings %}
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Service Count</th>
+    <th>Actions</th>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for cat in object_list %}
+
+<tr>
+    <td>{{cat}}</td>
+    <td>{{cat.description}}</td>
+    <td>{{cat.service_count}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'services:category-detail' pk=cat.pk %}">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                <a class="dropdown-item" href="{% url 'services:update-category' pk=cat.pk %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>
+
+{% endfor %}
+{% endblock list_content %}

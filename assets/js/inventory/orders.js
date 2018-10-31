@@ -6,13 +6,11 @@ import axios from 'axios';
 import InventorySelectWidget from './combined_inventory_select';
 
 export default class OrderTable extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
+    state = {
             contents: [],
             total: 0
         }
-    }
+   
 
     componentDidMount(){
         //set up the hidden input 
@@ -111,7 +109,8 @@ export default class OrderTable extends Component{
                                 index={i}/>
                         )
                     })}
-                <OrderTableEntry 
+                <OrderTableEntry
+                    itemList={this.state.contents}
                     insertHandler={this.insertHandler} />
                 </tbody>
                 
@@ -150,6 +149,18 @@ class OrderTableEntry extends Component{
         }
     }
     
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                inputs: {
+                    quantity: 0,
+                    order_price: 0
+                }
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
     insertHandler =() =>{
         this.props.insertHandler(this.state.inputs);
     }
@@ -185,6 +196,7 @@ class OrderTableEntry extends Component{
                 <tr>
                     <td colSpan={2}>
                         <InventorySelectWidget
+                            list={this.props.itemList}
                             onSelect={this.onSearchableSelect}
                             onClear={this.onSearchableClear}/>
                     </td>

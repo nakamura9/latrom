@@ -54,24 +54,30 @@ class Order(models.Model):
     
     expected_receipt_date = models.DateField()
     issue_date = models.DateField()
-    type_of_order = models.IntegerField(choices=ORDER_TYPE_CHOICES, default=0)
+    type_of_order = models.IntegerField(choices=ORDER_TYPE_CHOICES,
+         default=0)
     deferred_date = models.DateField(blank=True, null=True)
-    supplier = models.ForeignKey('inventory.supplier', on_delete=None,
-        blank=True, null=True)
-    supplier_invoice_number = models.CharField(max_length=32, blank=True, 
+    supplier = models.ForeignKey('inventory.supplier', 
+        on_delete=None, blank=True, null=True)
+    supplier_invoice_number = models.CharField(max_length=32, 
+        blank=True,  default="")
+    bill_to = models.CharField(max_length=128, blank=True, 
         default="")
-    bill_to = models.CharField(max_length=128, blank=True, default="")
-    ship_to = models.ForeignKey('inventory.WareHouse', on_delete=None)
-    tax = models.ForeignKey('accounting.Tax',on_delete=None, default=1)
-    tracking_number = models.CharField(max_length=64, blank=True, default="")
+    ship_to = models.ForeignKey('inventory.WareHouse', 
+        on_delete=None)
+    tax = models.ForeignKey('accounting.Tax',on_delete=None, 
+        default=1)
+    tracking_number = models.CharField(max_length=64, blank=True, 
+        default="")
     notes = models.TextField()
-    status = models.CharField(max_length=24, choices=ORDER_STATUS_CHOICES)
+    status = models.CharField(max_length=24, 
+        choices=ORDER_STATUS_CHOICES)
     active = models.BooleanField(default=True)
     received_to_date = models.FloatField(default=0.0)
-    issuing_inventory_controller = models.ForeignKey('auth.user', default=1, 
-        on_delete=None)
-    entry = models.ForeignKey('accounting.JournalEntry', null=True, blank=True, 
-        on_delete=None)
+    issuing_inventory_controller = models.ForeignKey('auth.user', 
+        default=1, on_delete=None)
+    entry = models.ForeignKey('accounting.JournalEntry', null=True,
+         blank=True, on_delete=None)
     
     def __str__(self):
         return 'ORD' + str(self.pk)

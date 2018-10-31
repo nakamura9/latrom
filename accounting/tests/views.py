@@ -118,67 +118,26 @@ class CommonViewTests(TestCase):
             description='Test description',
             category = 0,
             initial_value = 100,
-            credit_account = self.account_d,
+            debit_account = self.account_d,
             depreciation_period = 5,
             init_date = TODAY,
             depreciation_method = 0,
             salvage_value = 20,
         )
         self.assertIsInstance(asset, Asset)
-        #testing transaction
-        #self.assertEqual(self.account_d.balance, acc_d_b4 - 100)
     
     def test_create_expense(self):
         acc = Account.objects.get(pk=1000)
-        acc_d_b4 = acc.balance
         expense = Expense.objects.create(
             date=TODAY,
             description = 'Test Description',
             category=0,
             amount=100,
             billable=False,
+            debit_account=acc
          )
 
         self.assertIsInstance(expense, Expense)
-        #test transaction 
-        #self.assertEqual(acc.balance, acc_d_b4 +100)
-
-
-class ViewTests(TestCase):
-    fixtures = ['accounts.json', 'journals.json']
-    
-    def test_get_config_form(self):
-        resp = self.client.get(reverse('accounting:config', kwargs={
-            'pk': 1}))
-        self.assertTrue(resp.status_code == 200)
-
-    def test_post_config_form(self):
-        resp = self.client.post(reverse('accounting:config', kwargs={
-            'pk':1
-        }),
-            data={
-                'start_of_financial_year': '06/01/2018',
-                })
-
-        self.assertTrue(resp.status_code == 302)
-
-    #Direct payments
-    def test_get_direct_payment_list(self):
-        resp = self.client.get(reverse('accounting:direct-payment-list'))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_get_direct_payment_form(self):
-        resp = self.client.get(reverse('accounting:direct-payment'))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_post_payment_form(self):
-        sup_b = self.supplier.account.balance
-        resp = self.client.post(reverse('accounting:direct-payment'),
-            data=self.PAYMENT_DATA)
-        self.assertEqual(resp.status_code, 302)
-        # test transaction impact on accounts
-        self.assertEqual(JournalEntry.objects.latest('pk').total_debits, 100)
-
 
 
 class JournalEntryViewTests(TestCase):

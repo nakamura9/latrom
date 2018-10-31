@@ -30,6 +30,16 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
+USER_APPS = [
+    'common_data',
+    'invoicing',
+    'inventory',
+    'employees',
+    'accounting',
+    'services',
+    'planner',
+    'messaging',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,22 +48,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'common_data',
     'rest_framework',
     'webpack_loader',
-    'invoicing',
-    'inventory',
-    'employees',
-    'accounting',
-    'services',
-    'planner',
-    'messaging',
     'django_filters',
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
     'generic_scaffold'
-]
+] + USER_APPS
 
 LOGIN_REQUIRED_FOR_CRUD = True
 PROJECT_NAME = 'Smart business solutions'
@@ -173,8 +175,7 @@ WKHTMLTOPDF_CMD_OPTIONS = {
 }
 
 #EMAIL
-
-config_file = open(os.path.join(BASE_DIR, 'global_config.json'))
+config_file = open('global_config.json', 'r')
 email_config = json.load(config_file)
 
 EMAIL_HOST = email_config['email_host']

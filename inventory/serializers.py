@@ -64,7 +64,6 @@ class RecursiveField(serializers.Serializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     children = RecursiveField(many=True)
-    siblings = RecursiveField(many=True)
 
     class Meta:
         model = Category

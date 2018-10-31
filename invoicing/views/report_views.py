@@ -20,6 +20,13 @@ class CustomerReportFormView(ExtraContext, FormView):
     form_class = forms.CustomerStatementReportForm
     template_name = os.path.join('common_data', 'reports', 'report_form.html')
 
+    def get_initial(self):
+        if self.kwargs.get('pk', None):
+            return {
+                'customer': self.kwargs['pk']
+        } 
+        return {}
+
 
 class CustomerStatement(TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'customer_statement.html')

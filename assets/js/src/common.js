@@ -103,7 +103,16 @@ class SearchableWidget extends Component {
         selectedValue: ""
     }
 
-    
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.list.length > prevProps.list.length){
+            this.setState({
+                currValue: "",
+                selectedValue: ""
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
     componentDidMount(){
         axios({
             method: "GET",

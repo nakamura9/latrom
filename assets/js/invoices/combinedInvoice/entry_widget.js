@@ -140,7 +140,8 @@ class EntryWidget extends Component{
         let renderedForm;
         if(this.state.selectedLineType === 'sale'){
             renderedForm = (
-                <ProductEntry 
+                <ProductEntry
+                    itemList={this.props.itemList} 
                     onSelect={this.handleProductSelect}
                     onClear={this.handleProductClear}
                     onChangeQuantity={this.handleProductQuantity}
@@ -149,13 +150,15 @@ class EntryWidget extends Component{
         }else if(this.state.selectedLineType === 'service'){
             renderedForm = (
                 <ServiceEntry 
+                    itemList={this.props.itemList}
                     onSelect={this.handleServiceSelect}
                     onClear={this.handleServiceClear}
                     onChangeHours={this.handleServiceHours} />
             );
         }else if(this.state.selectedLineType === "billable"){
             renderedForm = (
-                <BillableEntry 
+                <BillableEntry
+                    itemList={this.props.itemList} 
                     billables={this.state.billables}
                     inputHandler={this.handleBillable}/>
             );            

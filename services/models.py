@@ -36,16 +36,14 @@ class Service(models.Model):
 class ServiceCategory(models.Model):
     '''Used to organize services'''
     name = models.CharField(max_length=64)
-    parent = models.ForeignKey('services.ServiceCategory', 
-        on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
 
     @property
-    def children(self):
-        return self.category_set.all()
+    def service_count(self):
+        return self.service_set.all().count()
 
 #might rename 
 class ServicePerson(models.Model):

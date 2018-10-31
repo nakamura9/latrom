@@ -169,7 +169,8 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     'issue_date',
                     'expected_receipt_date',
                     'supplier',
-                    'status'
+                    'status',
+                    'issuing_inventory_controller'
                     ),
                 Tab('Payment',
                 'tax',
@@ -180,7 +181,6 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     'ship_to',
                     'tracking_number',
                     'supplier_invoice_number',
-
                     'notes'),
             )
             )
@@ -259,3 +259,10 @@ class StorageMediaForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.StorageMedia
+
+
+class AutoStorageMedia(BootstrapMixin, forms.Form):
+    warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), widget=forms.HiddenInput)
+    number_of_corridors = forms.CharField(widget=forms.NumberInput)
+    number_of_aisles_per_corridor = forms.CharField(widget=forms.NumberInput)
+    number_of_shelves_per_aisle = forms.CharField(widget=forms.NumberInput)

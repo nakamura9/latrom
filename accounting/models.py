@@ -21,7 +21,19 @@ class Bookkeeper(models.Model):
     software such as order creation and the like.'''
     employee = models.ForeignKey('employees.Employee', 
         on_delete=None, default=1, limit_choices_to=Q(user__isnull=False))
+    can_create_journals = models.BooleanField(default=False, blank=True)
+    can_create_orders_and_invoices = models.BooleanField(default=False, blank=True)
+    can_record_expenses = models.BooleanField(default=False, blank=True)
+    can_record_assets = models.BooleanField(default=False, blank=True)
+    active = models.BooleanField(default=True)
 
+    def delete(self):
+        self.active = False
+        self.save()
+
+    def __str__(self):
+        return self.employee.full_name
+    
 class Transaction(models.Model):
     '''
     Transaction
@@ -119,6 +131,10 @@ class JournalEntry(models.Model):
     @property
     def total(self):
         return (self.total_debits, self.total_credits)
+
+    @property
+    def str_total(self):
+        return "DR:{};  CR{}".format(self.total_debits, self.total_credits)
 
 
     def simple_entry(self, amount, credit_acc, debit_acc):
@@ -233,6 +249,11 @@ class AbstractAccount(models.Model):
         debits = list(self.debit_set.all())
         credits = list(self.credit_set.all())
         return sorted(debits + credits)
+
+    @property
+    def recent_entries(self):
+        return [i.entry for i in self.transaction_list[:5]]
+        
 
     class Meta:
         abstract = True
@@ -421,7 +442,7 @@ class Expense(AbstractExpense):
         if self.billable \
         else Account.objects.get(pk=1000),#cash account
         Account.objects.get(name=expense_choices[self.category]), )
-        
+       
 
     def save(self, *args, **kwargs):
         flag = self.pk

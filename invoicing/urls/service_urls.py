@@ -8,6 +8,7 @@ service_router.register('api/service-invoice', views.ServiceInvoiceAPIViewSet)
 
 service_urls = [
     re_path(r'^create-service-invoice/?$', views.ServiceInvoiceCreateView.as_view(), name='create-service-invoice'),
+    re_path(r'^(?P<customer>[\d]+)/create-service-invoice/?$', views.ServiceInvoiceCreateView.as_view(), name='create-service-invoice'),
     re_path(r'^service-invoice-detail/(?P<pk>[\d]+)/?$', views.ServiceInvoiceDetailView.as_view(), 
         name='service-invoice-detail'),
     re_path(r'^service-invoice-update/(?P<pk>[\d]+)/?$', views.ServiceInvoiceUpdateView.as_view(), 

@@ -22,6 +22,15 @@ class PayslipFilter(django_filters.FilterSet):
             'end_period': ['lt']
         }
 
+class TimeSheetFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.EmployeeTimeSheet
+        fields = {
+            'year': ['exact'],
+            'month': ['exact'],
+            'employee': ['exact'],
+        }
+
 
 class PayGradeFilter(django_filters.FilterSet):
     class Meta:
@@ -29,4 +38,20 @@ class PayGradeFilter(django_filters.FilterSet):
         fields = {
             'name': ['icontains'],
             'monthly_salary': ['exact'],
+        }
+
+
+class PayrollOfficerFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.PayrollOfficer
+        fields = {
+            'employee': ['exact']
+        }
+
+class PayrollTaxFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.PayrollTax
+        fields = {
+            'name': ['icontains'],
+            'paid_by': ['exact']
         }

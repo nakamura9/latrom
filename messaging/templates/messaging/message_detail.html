@@ -20,14 +20,11 @@
                 <div style="background-color: #ccc; padding:10px;">
                     <h3>Message Details</h3>
                     <p>Created: {{object.created_timestamp}}</p>
-                    <p>Recipient: {{object.recipient}};
-                    <p>Carbon Copy: {% for recipient in object.carbon_copy.all %}
+                    <p>To: {{object.recipient}};</p>
+                    <p>Copy: {% for recipient in object.copy.all %}
                             {{recipient}}; 
                         {% endfor %}</p>    
-                    <p>Blind Carbon Copy: {% for recipient in object.blind_carbon_copy.all %}
-                            {{recipient}}; 
-                        {% endfor %}</p>
-                    </p>
+                    
                 </div>
             <h5>{{object.subject}}</h5>
             <hr />

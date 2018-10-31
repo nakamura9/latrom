@@ -30,6 +30,9 @@ class PaginationMixin(object):
 
         filter = self.filterset_class(self.request.GET, queryset=self.queryset)
         object_list = filter.qs
+        
+        if not self.paginate_by:
+            self.paginate_by = 10
 
         p = Paginator(object_list, self.paginate_by)
 

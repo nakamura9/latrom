@@ -18,6 +18,9 @@ class Person(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def full_name(self):
+        return "{} {}".format(self.first_name, self.last_name)
 
 class Individual(Person):
     '''inherits from the base person class in common data
@@ -93,3 +96,25 @@ class GlobalConfig(SingletonModel):
             fields = self.__dict__
             del fields['_state']
             json.dump(fields, fil)
+
+
+'''
+class Task(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('pending', 'Pending'),
+    ]
+    action = models.CharField(max_length=512)
+    created = models.DateTimeField(auto_now=True)
+    due = models.DateField()
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+
+
+    def __str__(self):
+        return self.title
+
+    def __unicode__(self):
+        return self.title
+'''

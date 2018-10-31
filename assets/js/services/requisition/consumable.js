@@ -60,6 +60,7 @@ class ConsumableRequisitionTable extends Component{
                     })}
                 </tbody>
                 <RequisitionTableEntry 
+                    itemList={this.state.lines}
                     insertHandler={this.insertHandler}/>
             </table>
         )
@@ -85,6 +86,19 @@ class RequisitionTableEntry extends Component{
             quantity: 0,
             unit: 0,
             item: ""
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                inputs: {
+                    quantity: 0,
+                    unit: 0,
+                    item: ""
+                }
+            })
+            //remove selected choice from list of choices 
         }
     }
 
@@ -116,6 +130,7 @@ class RequisitionTableEntry extends Component{
                     
                     <td colSpan={2}>
                         <SearchableWidget
+                            list={this.props.itemList}
                             dataURL="/inventory/api/consumable/"
                             idField="id"
                             displayField="name"

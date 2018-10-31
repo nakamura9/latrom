@@ -1,5 +1,5 @@
 {% extends "common_data/printable_page.html" %} {% block page_contents %}
-
+{% load accounting %}
 <table class="table" style="width:100%">
     <tbody>
         <tr>
@@ -30,7 +30,7 @@
                         {% for a in current_assets %}
                         <tr>
                             <td>{{a.name}}</td>
-                            <td>{{a.balance}}</td>
+                            <td>{{a.balance | accounting}}</td>
                         </tr>
                         {% endfor %}
                         <tr>
@@ -39,7 +39,7 @@
                         </tr>
                         <tr>
                             <td>Total Current Assets</td>
-                            <td>{{current_assets_total}}</td>
+                            <td>{{current_assets_total  | accounting}}</td>
                         </tr>
                         <tr>
                             <th colspan="2">Long Term Assets:</th>
@@ -47,18 +47,18 @@
                         {% for a in long_term_assets %}
                         <tr>
                             <td>{{a.name}}</td>
-                            <td>{{a.balance}}</td>
+                            <td>{{a.balance  | accounting}}</td>
                         </tr>
                         {% endfor %}
                         <tr>
                             <td>Total Long Term Assets</td>
-                            <td>{{long_term_assets_total}}</td>
+                            <td>{{long_term_assets_total  | accounting}}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
                             <th>Total Assets:</th>
-                            <td>{{total_assets}}</td>
+                            <td>{{total_assets  | accounting}}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -72,7 +72,7 @@
                         {% for a in current_liabilities %}
                         <tr>
                             <td>{{a.name}}</td>
-                            <td>{{a.balance}}</td>
+                            <td>{{a.balance  | accounting}}</td>
                         </tr>
                         {% endfor %}
                         <tr>
@@ -81,7 +81,7 @@
                         </tr>
                         <tr>
                             <td>Total Current Liabilites</td>
-                            <td>{{current_liabilities_total}}</td>
+                            <td>{{current_liabilities_total | accounting}}</td>
                         </tr>
                         <tr>
                             <th colspan="2">Long Term Liabilities:</th>
@@ -89,12 +89,12 @@
                         {% for a in long_term_liabilities %}
                         <tr>
                             <td>{{a.name}}</td>
-                            <td>{{a.balance}}</td>
+                            <td>{{a.balance | accounting}}</td>
                         </tr>
                         {% endfor %}
                         <tr>
                             <td>Total Long Term Liabilites</td>
-                            <td>{{long_term_liabilities_total}}</td>
+                            <td>{{long_term_liabilities_total | accounting}}</td>
                         </tr>
                         <tr>
                             <th colspan="2">Equity:</th>
@@ -102,18 +102,18 @@
                         {% for a in equity %}
                         <tr>
                             <td>{{a.name}}</td>
-                            <td>{{a.balance}}</td>
+                            <td>{{a.balance | accounting}}</td>
                         </tr>
                         {% endfor %}
                         <tr>
                             <td>Total Equity</td>
-                            <td>{{long_term_assets_total}}</td>
+                            <td>{{long_term_assets_total | accounting}}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
                             <th>Total Liabilities and Equity:</th>
-                            <td>{{total_l_and_e}}</td>
+                            <td>{{total_l_and_e | accounting}}</td>
                         </tr>
                     </tfoot>
                 </table>

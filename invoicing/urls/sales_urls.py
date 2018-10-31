@@ -14,6 +14,7 @@ credit_note_urls = [
 
 sales_urls = [
     re_path(r'^create-sales-invoice/?$', views.SalesInvoiceCreateView.as_view(), name='create-sales-invoice'),
+    re_path(r'^(?P<customer>[\d]+)/create-sales-invoice/?$', views.SalesInvoiceCreateView.as_view(), name='create-sales-invoice'),
     re_path(r'^sales-invoice-detail/(?P<pk>[\d]+)/?$', views.SalesInvoiceDetailView.as_view(), name='sales-invoice-detail'),
     re_path(r'^sales-invoice-pdf/(?P<pk>[\d]+)/?$', views.SalesInvoicePDFView.as_view(), name='sales-invoice-pdf'),
     re_path(r'^sales-invoice-update/(?P<pk>[\d]+)/?$', 

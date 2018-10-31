@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {SearchableWidget} from '../../src/common';
 
 const inlineStyles = {
@@ -6,49 +6,104 @@ const inlineStyles = {
     float: "left"
 };
 
-const ServiceEntry = (props) => {
-    return(
-        <div>
-            <div style={{...inlineStyles, width:"70%"}}>
-                <SearchableWidget 
-                    dataURL="/services/api/service/"
-                    displayField="name"
-                    idField="id"
-                    onSelect={props.onSelect}
-                    onClear={props.onClear} />
-            </div>
-            <div style={{...inlineStyles, width:"30%"}}>
-                <input 
-                    type="number"
-                    placeholder="Hours..."
-                    className="form-control"
-                    onChange={props.onChangeHours}/>
-            </div>
-        </div>
-    )
-};
+class ServiceEntry extends Component{
+    state = {
+        hours: 0
+    }
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                hours: 0
+            })
+            //remove selected choice from list of choices 
+        }
+    }
 
-const ProductEntry = (props) => {
-    return(
-        <div>
-            <div style={{...inlineStyles, width:"70%"}}>
-                <SearchableWidget 
-                    dataURL="/inventory/api/product/"
-                    displayField="name"
-                    idField="id"
-                    onSelect={props.onSelect}
-                    onClear={props.onClear} />
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                hours: 0
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
+    handler = (evt) =>{
+        this.setState({hours: evt.target.value})
+        this.props.onChangeHours(evt);
+    }
+
+
+    render(){
+        
+        return(
+            <div>
+                <div style={{...inlineStyles, width:"70%"}}>
+                    <SearchableWidget
+                        list={this.props.itemList}
+                        dataURL="/services/api/service/"
+                        displayField="name"
+                        idField="id"
+                        onSelect={this.props.onSelect}
+                        onClear={this.props.onClear} />
+                </div>
+                <div style={{...inlineStyles, width:"30%"}}>
+                    <input 
+                        type="number"
+                        placeholder="Hours..."
+                        className="form-control"
+                        value={this.state.hours}
+                        onChange={this.handler}/>
+                </div>
             </div>
-            <div style={{...inlineStyles, width:"30%"}}>
-                <input 
-                    type="number"
-                    placeholder="Quantity..."
-                    className="form-control"
-                    onChange={props.onChangeQuantity}/>
-            </div>
-        </div>
         )
-};
+    };
+}
+    
+
+class ProductEntry extends Component{
+    state = {
+        quantity: 0
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                quantity: 0
+            })
+            //remove selected choice from list of choices 
+        }
+    }
+
+    handler = (evt) =>{
+        this.setState({quantity: evt.target.value})
+        this.props.onChangeQuantity(evt);
+    }
+
+    render(){
+        return(
+            <div>
+                <div style={{...inlineStyles, width:"70%"}}>
+                    <SearchableWidget
+                        list={this.props.itemList}
+                        dataURL="/inventory/api/product/"
+                        displayField="name"
+                        idField="id"
+                        onSelect={this.props.onSelect}
+                        onClear={this.props.onClear} />
+                </div>
+                <div style={{...inlineStyles, width:"30%"}}>
+                    <input 
+                        type="number"
+                        value={this.state.quantity}
+                        placeholder="Quantity..."
+                        className="form-control"
+                        onChange={this.handler}/>
+                </div>
+            </div>
+            )
+    }
+}
 
 const BillableEntry = (props) => {
     if(props.billables.length === 0){

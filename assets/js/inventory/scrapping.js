@@ -104,7 +104,8 @@ class ScrappingTable extends Component{
                                     index={i}
                                     handler={this.removeItemHandler}/>);
                     })}
-                <ScrappingEntry 
+                <ScrappingEntry
+                    itemList={this.state.lines}
                     insertHandler={this.addItemHandler}/>
                 </tbody>
                 
@@ -144,6 +145,21 @@ class ScrappingEntry extends Component{
             quantity: 0,
             note: "",
             total: 0
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if (this.props.itemList.length !== prevProps.itemList.length){
+            this.setState({
+                inputs: {
+                    name: "",
+                    pk: "",
+                    quantity: 0,
+                    note: "",
+                    total: 0
+                }
+            })
+            //remove selected choice from list of choices 
         }
     }
 
@@ -187,7 +203,8 @@ class ScrappingEntry extends Component{
         return(
             <tr>
                 <td colSpan={2}>
-                    <SearchableWidget 
+                    <SearchableWidget
+                        list={this.props.itemList}
                         dataURL= {"/inventory/api/unpaginated-warehouse-items/" + pk}
                         displayField="name"
                         onSelect={this.selectHandler}

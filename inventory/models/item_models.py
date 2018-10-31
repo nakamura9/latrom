@@ -108,7 +108,8 @@ class Product(BaseItem):
         averaging- calculating the overall stock value on the average of all
         the values during the period under consderation.
         '''
-        inventory_settings = inventory.models.InventorySettings.objects.first()
+        inventory_settings = \
+            inventory.models.InventorySettings.objects.first()
         cut_off_date = datetime.date.today() - datetime.timedelta(
             days=inventory_settings.stock_valuation_period)
         ordered_items = inventory.models.OrderItem.objects.filter(
@@ -124,8 +125,10 @@ class Product(BaseItem):
         
     @property
     def sales_to_date(self):
-        items = invoicing.models.SalesInvoiceLine.objects.filter(product=self)
-        total_sales = reduce(lambda x,y: x + y, [D(item.quantity) * item.price for item in items], 0)
+        items = invoicing.models.SalesInvoiceLine.objects.filter(
+            product=self)
+        total_sales = reduce(lambda x,y: x + y, 
+            [D(item.quantity) * item.price for item in items], 0)
         return total_sales
     
     def delete(self):

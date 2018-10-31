@@ -11,6 +11,6 @@ class MessageForm(BootstrapMixin, forms.ModelForm):
         widget=forms.HiddenInput)
 
     class Meta:
-        fields = ['carbon_copy', 'blind_carbon_copy', 'recipient',
+        fields = ['copy', 'recipient',
             'subject', 'body', 'sender']
         model = Message
