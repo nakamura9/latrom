@@ -48,7 +48,7 @@ class CombinedInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin,
     extra_context = {"title": "Combined Invoice List",
                     "new_link": reverse_lazy("invoicing:create-combined-invoice")}
     template_name = os.path.join("invoicing", "combined_invoice","list.html")
-    filterset_class = filters.AbstractInvoiceFilter
+    filterset_class = filters.CombinedInvoiceFilter
     paginate_by = 10
 
     def get_queryset(self):

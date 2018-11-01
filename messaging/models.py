@@ -15,6 +15,8 @@ class Dispatcher(object):
         return Inbox.objects.filter(user=user).exists()
 
     #check for replies
+
+    
     def dispatch(self):
         #check if user has inbox
         r = self.message.recipient
@@ -142,7 +144,8 @@ class Inbox(models.Model):
     def unread_messages(self):
         total_unread_messages = 0
         for thread in self.threads.all():
-            total_unread_messages += thread.unread.count()
+            total_unread_messages += thread.unread.exclude(
+                sender=self.user).count()
 
         return total_unread_messages
 

@@ -19,7 +19,7 @@ class AccountingSettings(SingletonModel):
 class Bookkeeper(models.Model):
     '''Model that gives employees access to the bookkeeping function of the 
     software such as order creation and the like.'''
-    employee = models.ForeignKey('employees.Employee', 
+    employee = models.OneToOneField('employees.Employee', 
         on_delete=None, default=1, limit_choices_to=Q(user__isnull=False))
     can_create_journals = models.BooleanField(default=False, blank=True)
     can_create_orders_and_invoices = models.BooleanField(default=False, blank=True)

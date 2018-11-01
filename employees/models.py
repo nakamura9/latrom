@@ -185,6 +185,10 @@ class Employee(Person):
     def is_bookkeeper(self):
         return hasattr(self, 'bookkeeper')
 
+    @property
+    def is_payroll_officer(self):
+        return hasattr(self, 'payroll_officer')
+
 
     @property
     def is_serviceperson(self):

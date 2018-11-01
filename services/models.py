@@ -47,7 +47,7 @@ class ServiceCategory(models.Model):
 
 #might rename 
 class ServicePerson(models.Model):
-    employee = models.ForeignKey('employees.Employee', on_delete=None,)
+    employee = models.OneToOneField('employees.Employee', on_delete=None,)
     is_manager = models.BooleanField(default=False)
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)

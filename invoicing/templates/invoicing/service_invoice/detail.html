@@ -102,7 +102,6 @@
                             </td>
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
-                        {% if tax_column %}
                         <tr>
                             <td colspan="{% if include_discount_column %}4{% else %}3{% endif %}">
                                 <b>Tax Due @{{object.tax.rate}}%:</b>
@@ -116,7 +115,6 @@
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>
                         </tr>
-                        {% endif %}
                     </tfoot>
                 </table>
             </td>

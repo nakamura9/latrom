@@ -49,11 +49,12 @@ def process_data(items, inv):
     else:
         pass
 
-class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, 
+        FilterView):
     extra_context = {"title": "Sales Invoice List",
                     "new_link": reverse_lazy("invoicing:create-sales-invoice")}
     template_name = os.path.join("invoicing", "sales_invoice","list.html")
-    filterset_class = filters.AbstractInvoiceFilter
+    filterset_class = filters.SalesInvoiceFilter
     paginate_by = 10
 
     def get_queryset(self):

@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block window %}
 <div class="jumbotron">
     <h1 class="display-3">Begin your WorkFlow</h1>
-    <p class="lead">Get started managing day to day business activities</p>
+    <p class="lead">Welcome {{request.user}}! Get started with common business activities</p>
     <hr class="my-2">
     <p>Quick links to the most frequent actions and get a visual overview of a typical workflow.</p>
 
@@ -10,63 +10,63 @@
 <ul>
     <li style="list-style-type:none;">
         <span>
-            <h1>
-                <i class="fas fa-arrow-right"></i>Configuration</h1>
+            <h3>
+                <i class="fas fa-arrow-right"></i>Personal</h3>
+                <a href="{% url 'messaging:inbox' pk=request.user.pk %}">Go to my inbox</a>
         </span>
-        <ul>
-            <li>
-                <a href="/inventory/config/">Set Up Inventory Options</a>
-            </li>
-            <li>
-                <a href="/invoicing/config/">Set Up Invoicing Options</a>
-            </li>
-        </ul>
     </li>
     <li style="list-style-type:none;">
         <span>
-            <h1>
-                <i class="fas fa-arrow-right"></i>Manage Inventory</h1>
+            <h3>
+                <i class="fas fa-arrow-right"></i>Inventory Tasks</h3>
+                <a href="{% url 'inventory:order-create' %}">Create Order</a><br>
+                <a href="{% url 'inventory:warehouse-list' %}">Manage Warehouses</a><br>
+                <a href="{% url 'inventory:supplier-list' %}">Manage Suppliers</a><br>
+                <a href="{% url 'inventory:product-create' %}">Add product to database</a><br>
+                <a href="{% url 'inventory:config' pk=1%}">Inventory Configuration</a><br>
         </span>
-        <ul>
-            <li>
-                <a href="/inventory/product-create/">Add Item to Inventory</a>
-            </li>
-            <li>
-                <a href="/inventory/order-create/">Order Stock for your business</a>
-            </li>
-            <li>
-                <a href="/inventory/stock-receipt-create/">Receive an order from a supplier</a>
-            </li>
-        </ul>
     </li>
-
+    {% if request.user.employee.is_sales_rep or request.user.is_superuser %}
     <li style="list-style-type:none;">
         <span>
-            <h1>
-                <i class="fas fa-arrow-right"></i>Sell products</h1>
-        </span>
-        <ul>
-            <li>
-                <a href="/invoicing/create-quote">Create a quotation for your products</a>
-            </li>
-            <li>
-                <a href="/invoicing/create-invoice">Create an invoice for a customer</a>
-            </li>
-            <li>
-                <a href="/invoicing/create-payment">Apply a customer's payment</a>
-            </li>
-        </ul>
+            <h3>
+                <i class="fas fa-arrow-right"></i>Sales Related Tasks</h3>
+                <a href="{% url 'invoicing:customer-list' %}">Manage Customers</a><br>
+                <a href="{% url 'invoicing:create-combined-invoice' %}">Create General Purpose Invoice</a><br>
+                <a href="{% url 'invoicing:create-service-invoice' %}">Create Service Invoice</a><br>
+                <a href="{% url 'invoicing:create-sales-invoice' %}">Create Product Sales Invoice</a><br>
+                <a href="{% url 'invoicing:config' pk=1 %}">Sales Configuration</a><br>
+        </span> 
     </li>
+    {% endif %}
+    {% if request.user.employee.is_serviceperson or request.user.is_superuser %}
     <li style="list-style-type:none;">
         <span>
-            <h1><i class="fas fa-arrow-right"></i>Manage Employees</h1>
+            <h3><i class="fas fa-arrow-right"></i>Service Focused Activities</h3>
+            <a href="{% url 'services:create-service' %}">Create New Service Listing</a><br>
+            <a href="{% url 'services:work-order-create' %}">Manage Work Orders</a>
         </span>
-        <ul>
-            <li><a href="/accounting/payroll-config/">Configure</a></li>
-            <li><a href="/accounting/create-employee/">Add Employee</a></li>
-            <li><a href="/accounting/list-pay-slips/">View Payslips</a></li>
-        </ul>
     </li>
+    {% endif %}
+    {% if request.user.employee.is_bookkeeper or request.user.is_superuser %}
+    <li style="list-style-type:none;">
+        <span>
+            <h3><i class="fas fa-arrow-right">
+                
+            </i>Bookkeeping</h3>
+            <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+        </span>
+    </li>
+    {% endif %}
+    {% if request.user.employee.is_payroll_officer or request.user.is_superuser %}
+    <li style="list-style-type:none;">
+        <span>
+            <h3><i class="fas fa-arrow-right"></i>HR Management</h3>
+            <a href="{% url 'employees:list-employees' %}">View Employees List</a>
+            
+        </span>
+    </li>
+    {% endif %}
 </ul>
 
 

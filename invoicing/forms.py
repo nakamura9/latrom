@@ -94,7 +94,7 @@ class ServiceInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
 class ServiceInvoiceForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'invoice_number', 'quotation_number'
+        exclude = "active", 'invoice_number', 'quotation_number', 'discount'
         model = models.ServiceInvoice
 
 class ServiceInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
@@ -127,7 +127,7 @@ class BillPaymentForm(forms.ModelForm, BootstrapMixin):
 class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'invoice_number', 'quotation_number'
+        exclude = "active", 'invoice_number', 'quotation_number', 'discount'
         model = models.CombinedInvoice
 
 class CombinedInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):

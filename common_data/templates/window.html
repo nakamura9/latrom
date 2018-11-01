@@ -7,7 +7,7 @@
 <nav class="navbar navbar-expand-sm bg-light" >
         <ul class="navbar-nav">
             <!--{% url 'base:workflow' %}-->
-            <a class="navbar-brand" href="#"  >Latrom</a>
+            <a class="navbar-brand" href="/base/workflow"  >Latrom</a>
             {% if request.user %}
                 <!--
                 <li>
@@ -27,7 +27,7 @@
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
             <li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>
             {% endif %}
-            {% if request.user.is_superuser %}
+            {% if request.user.is_superuser or request.user.employee.is_serviceperson %}
             <li>
                 <a href="{% url 'services:dashboard' %}" class="nav-link">Services</a>
             </li>
@@ -56,7 +56,7 @@
 <hr class="my-2" />
 <footer class="bg-info" style="">
     <ul style="list-style-type:none;">
-        <li ><a style="color:white;" href="/logout">Logout</a></li>
+        <li ><a style="color:white;" href="/logout?next=/login/">Logout</a></li>
         <li><a style="color:white;" href="/login">Login</a></li>
         <li><a style="color:white;" href="#">About</a></li>
         <li style="color:white;">{{request.user.username}} is logged in.</li>

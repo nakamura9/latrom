@@ -13,5 +13,13 @@
             "name": "VAT",
             "rate": 14
         }
+    },
+    {
+        "model": "accounting.Tax",
+        "pk": 1,
+        "fields": {
+            "name": "None",
+            "rate": 0
+        }
     }
 ]

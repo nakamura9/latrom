@@ -82,7 +82,7 @@ class OrganizationDetailView(ExtraContext, DetailView):
     model = models.Organization
     
 
-class OrganizationListView(ExtraContext, FilterView):
+class OrganizationListView(ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('common_data', 'organization', 'list.html')
     queryset = models.Organization.objects.all()
     filterset_class = filters.OrganizationFilter

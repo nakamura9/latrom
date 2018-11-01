@@ -47,15 +47,17 @@ def process_data(items, inv):
 class ServiceInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ServiceInvoiceSerializer
     queryset = ServiceInvoice.objects.all()
-class ServiceInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+
+class ServiceInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin,
+        FilterView):
     extra_context = {"title": "Service Invoice List",
                     "new_link": reverse_lazy("invoicing:create-service-invoice")}
     template_name = os.path.join("invoicing", "service_invoice","list.html")
-    filterset_class = filters.AbstractInvoiceFilter
+    filterset_class = filters.ServiceInvoiceFilter
     paginate_by = 10
 
     def get_queryset(self):
-        return ServiceInvoice.objects.filter(active=True).order_by('date')
+        return ServiceInvoice.objects.all()
     
 
 class ServiceInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):

@@ -73,7 +73,7 @@ class InventoryController(models.Model):
     inventory controller and have the ability to make purchase orders,
     receive them, transfer inventory between warehouses and perform other 
     functions.'''
-    employee = models.ForeignKey('employees.Employee', on_delete=None, 
+    employee = models.OneToOneField('employees.Employee', on_delete=None, 
         limit_choices_to=Q(user__isnull=False))
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)

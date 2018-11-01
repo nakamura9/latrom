@@ -14,7 +14,7 @@ class CustomerFilter(django_filters.FilterSet):
             
         }
 
-class AbstractInvoiceFilter(django_filters.FilterSet):
+class SalesInvoiceFilter(django_filters.FilterSet):
     class Meta:
         model = models.SalesInvoice
         fields = {
@@ -22,6 +22,34 @@ class AbstractInvoiceFilter(django_filters.FilterSet):
             'customer': ['exact'],
             'salesperson': ['exact'],
         }
+
+class ServiceInvoiceFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ServiceInvoice
+        fields = {
+            'date': ['icontains'],
+            'customer': ['exact'],
+            'salesperson': ['exact'],
+        }
+
+class BillInvoiceFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Bill
+        fields = {
+            'date': ['icontains'],
+            'customer': ['exact'],
+            'salesperson': ['exact'],
+        }
+
+class CombinedInvoiceFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.ServiceInvoice
+        fields = {
+            'date': ['icontains'],
+            'customer': ['exact'],
+            'salesperson': ['exact'],
+        }
+
 
 class SalesRepFilter(django_filters.FilterSet):
     class Meta:

@@ -44,7 +44,7 @@ class BillListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
     template_name = os.path.join("invoicing", "bill","list.html")
-    filterset_class = filters.AbstractInvoiceFilter
+    filterset_class = filters.BillInvoiceFilter
     paginate_by = 10
 
     queryset = Bill.objects.filter(active=True).order_by('date')
