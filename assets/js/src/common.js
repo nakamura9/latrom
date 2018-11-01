@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import $ from 'jquery';
 
 export const Aux = (props) => props.children;
 
@@ -27,8 +28,21 @@ class Totals extends Component{
         subtotal: 0.00,
         total: 0.00
     }
+
+    setTaxFromForm = (evt) =>{
+        axios({
+            method: "GET",
+            url: "/accounting/api/tax/" + evt.target.value
+        }).then(res =>{
+            this.setState({taxObj: res.data});
+        })
+
+    }
     componentDidMount(){
         //get sales tax
+        //look for tax in page if not found get global tax
+        $('#id_tax').on('change', this.setTaxFromForm);
+
         axios({
             method: "GET",
             url: "/invoicing/api/config/1"
@@ -37,7 +51,7 @@ class Totals extends Component{
         })
     }
     componentDidUpdate(prevProps, prevState){
-        if(prevProps.list !== this.props.list){
+        if(prevProps.list !== this.props.list || prevState.taxObj !== this.state.taxObj){
             //update totals 
             let subtotal = this.props.list.reduce(this.props.subtotalReducer, 0);
             

@@ -90,6 +90,9 @@
                             <li class="list-group-item">
                                 <a href="{% url 'accounting:income-statement-form' %}">Income Statement</a>
                             </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:trial-balance' %}">Trial Balance</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -103,7 +106,7 @@
                                 <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
+                                <a onclick="return false" style="color:grey;" href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
                             </li>
                             <li class="list-group-item">
                                 <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>

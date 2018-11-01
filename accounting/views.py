@@ -27,7 +27,7 @@ from . import filters, forms, models, serializers
 class BookkeeperCheckMixin(UserPassesTestMixin):
     def test_func(self):
         if self.request.user.is_superuser or \
-                self.request.user.employee.is_bookkeeper:
+                (hasattr(self.request.user, 'employee') and self.request.user.employee.is_bookkeeper):
             return True
         else:
             return False

@@ -59,6 +59,17 @@ class StorageMediaListAPIView(ListAPIView):
         if self.kwargs.get('pk', None):
             w = models.WareHouse.objects.get(pk=self.kwargs['pk'])
             return models.StorageMedia.objects.filter(
+                Q(warehouse=w)
+            )
+        return models.StorageMedia.objects.filter(location=None)
+
+class StorageMediaNestedListAPIView(ListAPIView):
+    serializer_class = serializers.StorageMediaSerializer
+    #queryset = models.StorageMedia.objects.all()
+    def get_queryset(self):
+        if self.kwargs.get('pk', None):
+            w = models.WareHouse.objects.get(pk=self.kwargs['pk'])
+            return models.StorageMedia.objects.filter(
                 Q(warehouse=w) &
                 Q(location=None)
             )

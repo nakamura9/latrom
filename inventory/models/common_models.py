@@ -143,8 +143,7 @@ class Supplier(models.Model):
     def equipment(self):
         return Equipment.objects.filter(supplier=self)
 
-
-    def save(self, *args, **kwargs):
+    def create_account(self):
         if self.account is None:
             n_suppliers = Supplier.objects.all().count()
             #will overwrite if error occurs
@@ -156,7 +155,11 @@ class Supplier(models.Model):
                 description = 'Account which represents debt owed to a supplier',
                 balance_sheet_category='current-liabilities'
             )
-        
+            self.save()
+
+    def save(self, *args, **kwargs):
+        if self.account is None:
+            self.create_account()    
         super(Supplier, self).save(*args, **kwargs)
 
 

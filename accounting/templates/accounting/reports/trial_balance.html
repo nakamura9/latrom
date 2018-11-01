@@ -1,0 +1,56 @@
+{% extends "common_data/printable_page.html" %} {% block page_contents %}
+{% load accounting %}
+<table class="table" style="width:100%">
+    <tbody>
+        <tr>
+            <td style="width:50%">
+                <img src="/media/{{logo}}" alt="Logo" width='300' height='200'>
+            </td>
+            <td>
+                <h2>{{business_name}}</h2>
+                <hr class="my-2">
+                <p>{{business_address | linebreaks }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <center>
+                    <h1>Trial Balance Report</h1>
+                    <h4>Period Ending: {{date}}</h4>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-primary">
+                            <th>Account Code</th>
+                            <th>Account Title</th>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for acc in accounts %}
+                        <tr>
+                            <td>{{acc.pk}}</td>
+                            <td>{{acc.name}}</td>
+                            <td>{{acc.debit}}</td>
+                            <td>{{acc.credit}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-primary">
+                            <th colspan="2">Total</th>
+                            <th>{{total_debit}}</th>
+                            <th>{{total_credit}}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock page_contents %}

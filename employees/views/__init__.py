@@ -23,7 +23,7 @@ class DashBoard(AdministratorCheckMixin, ExtraContext, TemplateView):
     }
 
     def get(self, request):
-        service = PayrollService()
+        service = AutomatedPayrollService()
         service.run()
         return super().get(request)
 
@@ -37,7 +37,7 @@ class PayrollConfig(AdministratorCheckMixin, ExtraContext, UpdateView):
     }
         
 
-class PayrollService(object):
+class AutomatedPayrollService(object):
     def __init__(self):
         self.settings = models.EmployeesSettings.objects.first()
         self.TODAY  = datetime.date.today()

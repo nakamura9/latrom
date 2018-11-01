@@ -62,6 +62,7 @@ export default class TransferItems extends Component{
     </tbody>
     <tfoot>
             <EntryRow 
+                itemList={this.state.lines}
                 insertHandler={this.insertHandler}/>
     </tfoot>
 </table>
@@ -90,8 +91,18 @@ class TransferLine extends Component{
 class EntryRow extends Component{
     state ={
         item: "",
-        quantity: ""
+        quantity: 0
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.itemList.length !== this.props.itemList.length){
+            this.setState({
+                item: "",
+                quantity: 0
+            })
+        }
+    }
+    
     onSelectItem = (data) =>{
         this.setState({item: data});
     }
@@ -111,6 +122,7 @@ class EntryRow extends Component{
                         dataURL={
                             '/inventory/api/unpaginated-warehouse-items/' + PK
                         }
+                        list={this.props.itemList}
                         displayField="name"
                         idField="id"
                         onSelect={this.onSelectItem}
@@ -120,6 +132,7 @@ class EntryRow extends Component{
                 <input type="number" 
                     className="form-control"
                     name="quantity"
+                    value={this.state.quantity}
                     onChange={this.onSetQuantity}/>
             </td>
             <td>

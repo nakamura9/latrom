@@ -90,7 +90,8 @@ class ReceivingLine extends Component{
     state = {
         orderItem: this.props.item.id,
         quantity: 0,
-        medium: ""
+        medium: "",
+        received: false
     }
     updateQuantity = (evt) =>{
         this.setState({quantity: evt.target.value});
@@ -99,6 +100,11 @@ class ReceivingLine extends Component{
         console.log(data);
         this.setState({medium: data});
     }
+    receiveHandler = () =>{
+        this.setState({received: true});
+        this.props.receiveHandler(this.state);
+    }
+
     onClearMedium = () =>{
         this.setState({medium:""})
     }
@@ -134,7 +140,9 @@ class ReceivingLine extends Component{
                 <td>
                     <button 
                         className="btn btn-primary"
-                        onClick={() => this.props.receiveHandler(this.state)}>Receive</button>
+                        disabled={this.state.received}
+                        onClick={this.receiveHandler
+                            }>Receive</button>
                 </td>
             </tr>
         )

@@ -18,6 +18,8 @@ api_urls = [
     name='unpaginated-warehouse-items'),
     re_path(r'^api/storage-media/(?P<pk>[\w]+)/?$', 
         views.StorageMediaListAPIView.as_view()),
+    re_path(r'^api/storage-media-nested/(?P<pk>[\w]+)/?$', 
+        views.StorageMediaNestedListAPIView.as_view()),
     re_path(r'^api/storage-media-detail/(?P<pk>[\w]+)/?$', 
         views.StorageMediaRetrieveAPIView.as_view()),
 ]

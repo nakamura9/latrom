@@ -17,6 +17,7 @@ expense_router.register(r'^api/expense', views.ExpenseAPIView)
 
 report_urls = [
     re_path(r'^balance-sheet/?$', report_views.BalanceSheet.as_view(), name='balance-sheet'),
+    re_path(r'^trial-balance/?$', report_views.TrialBalance.as_view(), name='trial-balance'),
     re_path(r'^income-statement/?$', report_views.IncomeStatement.as_view(), name='income-statement'),
     re_path(r'^income-statement-form/?$', report_views.IncomeStatementFormView.as_view(), name='income-statement-form')
 ]

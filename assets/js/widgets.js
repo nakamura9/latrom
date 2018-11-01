@@ -28,7 +28,7 @@ if(storageMedia){
         res => {
             console.log(res.data);
             ReactDOM.render(<TreeSelectWidget 
-                url={'/inventory/api/storage-media/' + res.data.warehouse}
+                url={'/inventory/api/storage-media-nested/' + res.data.warehouse}
                 externalFormFieldName='location'
                 updateUrlRoot='/inventory/storage-media-update/'
                 detailUrlRoot='/inventory/storage-media-detail/'
@@ -54,7 +54,7 @@ if(storageMedia){
     let pk = currentWarehouse();
     ReactDOM.render(<TreeSelectWidget
         isListView={true} 
-        url={'/inventory/api/storage-media/' + pk}
+        url={'/inventory/api/storage-media-nested/' + pk}
         externalFormFieldName='location'
         updateUrlRoot='/inventory/storage-media-update/'
         detailUrlRoot='/inventory/storage-media-detail/'

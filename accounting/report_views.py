@@ -9,12 +9,14 @@ from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import FormView
 
 from common_data.forms import PeriodReportForm
-from common_data.utilities import ExtraContext, extract_period
+from common_data.utilities import ExtraContext, extract_period, ConfigMixin
+from accounting.views import BookkeeperCheckMixin
+
 
 from . import forms, models
 
 
-class BalanceSheet(TemplateView):
+class BalanceSheet(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')
 
     def get_context_data(self, *args, **kwargs):
@@ -101,7 +103,7 @@ class BalanceSheet(TemplateView):
         return context
 
 
-class IncomeStatementFormView(ExtraContext, FormView):
+class IncomeStatementFormView(BookkeeperCheckMixin ,ExtraContext, FormView):
     form_class = PeriodReportForm
     template_name = os.path.join('common_data', 'reports', 'report_form.html')
     extra_context = {
@@ -109,7 +111,7 @@ class IncomeStatementFormView(ExtraContext, FormView):
         'title': 'Income Statement Report Form'
     }
 
-class IncomeStatement(TemplateView):
+class IncomeStatement(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 'income_statement.html')
 
     def get_context_data(self, *args, **kwargs):
@@ -153,5 +155,19 @@ class IncomeStatement(TemplateView):
             'total_revenue': total_revenue,
             'total_expenses': total_expenses
         })
+        
+        return context
+
+
+class TrialBalance(BookkeeperCheckMixin ,ConfigMixin, TemplateView):
+    template_name = os.path.join('accounting', 'reports', 'trial_balance.html')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        
+        context['date'] = datetime.date.today()
+        context['accounts'] = models.Account.objects.all().order_by('pk')
+        context['total_debit'] = models.Account.total_debit()
+        context['total_credit'] = models.Account.total_credit()
         
         return context

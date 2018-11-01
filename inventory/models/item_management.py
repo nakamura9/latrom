@@ -135,6 +135,8 @@ class Order(models.Model):
 
             #accounts payable
             # since we owe the supplier
+            if not self.supplier:
+                self.supplier.create_account()
             j.credit(self.total, self.supplier.account)
             j.debit(self.subtotal, Account.objects.get(pk=1004))
             j.debit(self.tax_amount, Account.objects.get(pk=2001))

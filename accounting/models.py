@@ -259,6 +259,33 @@ class AbstractAccount(models.Model):
         abstract = True
 
 class Account(AbstractAccount):
+
+    @staticmethod
+    def total_debit():
+        return reduce(lambda x, y: x + y.debit, 
+            Account.objects.all().exclude(balance=0), D(0.0))
+
+
+    @staticmethod
+    def total_credit():
+        return reduce(lambda x, y: x + y.credit, 
+            Account.objects.all().exclude(balance=0), D(0.0))
+
+
+    @property
+    def credit(self):
+        if self.balance >= D(0.0):
+            return self.balance
+
+        return D('0.00')
+
+
+    @property
+    def debit(self):
+        if self.balance <= 0:
+            return abs(self.balance)
+        
+        return D('0.00')
     
     def convert_to_interest_bearing_account(self):
         # create an instance of InterestBearingAccount 
