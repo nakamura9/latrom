@@ -128,7 +128,7 @@ class EmployeeUserPasswordResetView(AdministratorCheckMixin, FormView):
 
 def remove_employee_user(request, pk=None):
     obj = models.Employee.objects.get(pk=pk)
-    print(obj.user)
+
     if obj.user:
         obj.user.delete()
     obj.save()

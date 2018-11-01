@@ -61,6 +61,8 @@ class Message(models.Model):
         self.read=True
         self.opened_timestamp = datetime.datetime.now()
         self.save()
+
+
 class MessageThread(models.Model):
     # if sender and recipeint are the same, append message to thread unless its 
     # closed manually.
@@ -73,18 +75,34 @@ class MessageThread(models.Model):
         related_name='participants',)
     messages = models.ManyToManyField('messaging.message')
 
+    @property
+    def unread(self):
+        return self.messages.filter(read=False)
+
+    @property
+    def read(self):
+        return self.messages.filter(read=True)
+
     def add_message(self, message):
         self.messages.add(message)
         self.save()
 
+    @property
+    def latest(self):
+        return self.messages.latest('created_timestamp')
 
 class Notification(models.Model):
     user = models.ForeignKey('auth.user', default = 1, on_delete=None)
     title = models.CharField(max_length=255)
+    read = models.BooleanField(default=False)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
     #HMTL link depending on the notification
     action = models.CharField(max_length=255, blank=True)
+
+    def open_notification(self):
+        self.read = True
+        self.save()
 
 
 class Inbox(models.Model):
@@ -107,6 +125,8 @@ class Inbox(models.Model):
                 _to = message.recipient,
             )
             thread.participants.set(message.copy.all())
+            self.threads.add(thread)
+            self.save()
 
         thread.add_message(message)
             
@@ -114,7 +134,18 @@ class Inbox(models.Model):
     def notifications(self):
         return Notification.objects.filter(user=self.user)
 
+    @property
+    def unread_notifications(self):
+        return self.notifications.filter(read=False).count()
+
+    @property
+    def unread_messages(self):
+        total_unread_messages = 0
+        for thread in self.threads.all():
+            total_unread_messages += thread.unread.count()
+
+        return total_unread_messages
 
     @property
     def total_in(self):
-        return self.notifications.count() + self.threads.count()
+        return self.notifications.count() + self.unread_messages

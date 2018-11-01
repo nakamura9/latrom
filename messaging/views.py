@@ -3,12 +3,16 @@ import os
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
+from django.shortcuts import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 from messaging import models
 from messaging import forms 
 
 
-class InboxView(DetailView):
+class InboxView(LoginRequiredMixin, DetailView):
     # a list of threads not messages 
     # includes a panel for notifications 
     template_name = os.path.join('messaging', 'inbox.html')
@@ -31,15 +35,28 @@ class InboxView(DetailView):
                 )
                 return self.object
                 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'message_detail.html')
     model = models.Message
 
-class NotificationDetailView(DetailView):
+    def get(self, *args, **kwargs):
+        resp = super().get(*args, **kwargs)
+        self.object.open_message()
+
+
+        return resp
+
+class NotificationDetailView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'notification_detail.html')
     model = models.Notification
 
-class ComposeMessageView(CreateView):
+    def get(self, *args, **kwargs):
+        resp = super().get(*args, **kwargs)
+        self.object.open_notification()
+
+        return resp
+
+class ComposeMessageView(LoginRequiredMixin, CreateView):
     template_name = os.path.join('messaging', 'message_compose.html')
     form_class = forms.MessageForm
     model = models.Message
@@ -58,6 +75,19 @@ class ComposeMessageView(CreateView):
         sender.dispatch()
         return resp
 
-class MessageThreadView(DetailView):
+class MessageThreadView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'message_thread.html')
     model = models.MessageThread
+
+    
+def reply_message(request, pk=None):
+    msg = models.Message.objects.get(pk=pk)
+    reply = models.Message.objects.create(
+        recipient=msg.sender,
+        sender=request.user,
+        subject=msg.subject,
+        body=request.POST['reply']
+    )
+    sender = models.Dispatcher(reply)
+    sender.dispatch()
+    return HttpResponseRedirect(reverse('messaging:inbox', kwargs={'pk': pk}))

@@ -5,30 +5,44 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-4">
+            
             <h4>Message Thread</h4>
-            {% for message in object.thread.message_set.all %}
+            {% for message in object.messagethread_set.first.messages.all %}
                 <a>
                     <div style="border: 1px solid black; padding:10px;">
-                        <h6>{{message.subject}}</h6>
+                        <h6>{{message.sender}}<span style="float:right;">{{message.created_timestamp}}</span></h6>
                         <hr />
-                        <p>{{message.body | truncatechars:50}}</p>
+                        <p>{{message.subject}} : {{message.body | truncatechars:50}}</p>
                     </div>
                 </a>
             {% endfor %}
         </div>
         <div class="col-sm-8">
-                <div style="background-color: #ccc; padding:10px;">
-                    <h3>Message Details</h3>
-                    <p>Created: {{object.created_timestamp}}</p>
-                    <p>To: {{object.recipient}};</p>
-                    <p>Copy: {% for recipient in object.copy.all %}
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h4 class="card-title">Message Details</h4>
+                    <p class="card-text">Created: {{object.created_timestamp}}</p>
+                    <p class="card-text">To: {{object.recipient}};</p>
+                    <p class="card-text">Copy: {% for recipient in object.copy.all %}
                             {{recipient}}; 
                         {% endfor %}</p>    
                     
                 </div>
-            <h5>{{object.subject}}</h5>
+            </div>
             <hr />
+            <h6>Subject: {{object.subject}}</h6>
+            <hr />
+            <h6>Message Body:</h6>
             {{object.body}}
+            <hr />
+            <div style="padding:30px;">
+                <h6>Reply</h6>
+                <form method="POST" action="{% url 'messaging:reply-message' pk=object.pk  %}">
+                        {% csrf_token %}
+                        <textarea class="form-control" name="reply" id="" cols="30" rows="10"></textarea>
+                        <input style="float:right;" type="submit" value="submit"/>
+                </form>
+            </div>
         </div>
     </div>
 </div>

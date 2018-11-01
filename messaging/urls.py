@@ -11,5 +11,7 @@ urlpatterns = [
     path('create-message', views.ComposeMessageView.as_view(), 
         name='create-message'),
     path('message-thread/<int:pk>', views.MessageThreadView.as_view(),
-        name='message-thread')
+        name='message-thread'),
+    path('reply-message/<int:pk>', views.reply_message,
+        name='reply-message')
 ]

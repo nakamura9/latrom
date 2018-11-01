@@ -10,15 +10,23 @@
         <a class="btn btn-primary btn-lg" href="{% url 'messaging:create-message' %}" role="button">Compose</a>
     </p>
 </div>
+
+<style>
+    .block-link {
+        text-decoration: none;
+        color: black;
+    }
+</style>
+
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
             <ul class="nav nav-tabs|pills nav-stacked">
                 <li class="nav-item">
-                    <a href="#messages" data-toggle="tab" class="nav-link active">Messages <span class="badge badge-primary">{{object.threads.count}}</span></a>
+                    <a href="#messages" data-toggle="tab" class="nav-link active">Messages <span class="badge badge-primary">{{object.unread_messages}}</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#notifications" data-toggle="tab" class="nav-link">Notifications <span class="badge badge-primary">{{object.notifications.count}}</span></a>
+                    <a href="#notifications" data-toggle="tab" class="nav-link">Notifications <span class="badge badge-primary">{{object.unread_notifications}}</span></a>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
@@ -27,8 +35,8 @@
                         <h5>No messages to display</h5>
                     {% else %}
                     
-                    {% for thread in object.threads %}
-                        <a href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;"><div style="border:1px solid black; padding:10px;">
+                    {% for thread in object.threads.all %}
+                        <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;"><div style="border: 1px solid grey; padding:10px;">
                             <h6>{{thread.latest.sender.username}}: {{thread.latest.subject | truncatechars:50}}</h6>
                             <hr />
                             <p>{{thread.latest.body | truncatechars:80}}</p>
@@ -41,6 +49,9 @@
                     <!--Paginate the list of messages -->
                 </div>
                 <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="profile-tab">
+                    {% if object.notifications.count == 0 %}
+                        <h5>No notifications to display</h5>
+                    {% else %}
                     {% for notification in object.notifications %}
                         <div style="border:1px solid black; padding:10px;">
                             <h4>{{notification.title}}</h4>
@@ -48,8 +59,8 @@
                             <p>{{notification.message | truncatechars:80}}</p>
                         </div>
                     {% endfor %}
+                    {% endif %}
                 </div>
-                
               </div>
         </div>
     </div>

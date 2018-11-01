@@ -3,7 +3,8 @@
         "model": "auth.User",
         "pk": 1,
         "fields": {
-            "username": "default_employee_user"
+            "username": "default_employee_user",
+            "password": "123"
         }
     },
     {
@@ -15,7 +16,8 @@
             "payroll_date_three": 1,
             "payroll_date_four": 1,
             "payroll_cycle": "monthly",
-            "require_verification_before_posting_payslips": true
+            "require_verification_before_posting_payslips": true,
+            "last_payroll_date": "2018-01-01"
         }
     },
     {
