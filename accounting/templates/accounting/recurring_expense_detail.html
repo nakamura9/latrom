@@ -1,0 +1,54 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Recurring Expense Details</h1>
+    <p class="lead">Information regarding payment and cycling of recurrent payments</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'accounting:recurring-expense-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <p class="card-text">Date Created: {{object.start_date}}</p>
+                    <p class="card-text">Expiry Date: {{object.expiration_date}}</p>
+                    <p class="card-text">Cycle Frequency: {{object.cycle_string}}</p>
+                    <p class="card-text">Category: {{object.category_string}}</p>
+                    <p class="card-text">Last Recoreded Payment Date: {{object.last_created_date}}</p>
+                    <h5>Description</h5>
+                    <p class="card-text">{{object.description}}</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <h3>Payments Made</h3>
+            <table class="table">
+                <thead>
+                    <tr class="bg-primary">
+                        <td>Date</td>
+                        <td>ID(click for details</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ex in object.related_payments %}
+                        <tr>
+                            <td>{{ex.date}}</td>
+                            <td><a href="{% url 'accounting:expense-detail' pk=ex.pk %}">{{ex.pk}}</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

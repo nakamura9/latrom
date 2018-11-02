@@ -425,13 +425,32 @@ class Asset(models.Model):
     def depreciate(self):
         pass
 
+    @property
+    def salvage_date(self):
+        return self.init_date + datetime.timedelta(
+            days=365 * self.depreciation_period)
+
     def salvage(self):
         #removes asset from the books and credits the appropriate account
         pass
 
+    @property 
+    def _timedelta(self):
+        return int((datetime.date.today() - self.init_date).days / 365)
+
+    @property
+    def category_string(self):
+        return dict(ASSET_CHOICES)[self.category]
+
+    @property
+    def total_depreciation(self):
+        depreciable_value = self.initial_value - self.salvage_value
+        dep_per_year = depreciable_value / self.depreciation_period
+        return self._timedelta * dep_per_year
+
     @property
     def current_value(self):
-        pass
+        return self.initial_value - self.total_depreciation
 
     def _str__(self):
         return self.name
@@ -463,9 +482,15 @@ class AbstractExpense(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     debit_account = models.ForeignKey('accounting.Account', on_delete=None)
     recorded_by = models.ForeignKey('auth.user', default=1, on_delete=None)
+    reference = models.CharField(max_length=32, blank=True, default="")
 
     class Meta:
         abstract = True
+
+    @property
+    def category_string(self):
+        return dict(EXPENSE_CHOICES)[self.category]
+   
 
     @property
     def expense_account(self):
@@ -520,18 +545,27 @@ class RecurringExpense(AbstractExpense):
     last_created_date = models.DateField(null=True, blank=True)
 
     @property
+    def cycle_string(self):
+        return dict(self.EXPENSE_CYCLE_CHOICES)[self.cycle]
+
+    
+    @property
     def is_current(self):
         return datetime.date.today() < self.expiration_date
 
     def create_standalone_expense(self):
         return Expense.objects.create(
+            reference=self.pk,
             date=datetime.date.today(),
             description=self.description,
             category=self.category,
             amount=self.amount,
             debit_account=self.debit_account,
-            recoreded_by=self.recorded_by
+            recorded_by=self.recorded_by
         )
+
+    def related_payments(self):
+        return Expense.objects.filter(reference=self.pk)
 
     def create_entry(self):
         #verified
@@ -548,3 +582,7 @@ class RecurringExpense(AbstractExpense):
         self.last_created_date = datetime.date.today()
         self.save()
         return j
+
+
+    def __str__(self):
+        return "{} - {} Expense".format(self.pk, self.category_string)

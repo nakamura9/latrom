@@ -53,7 +53,7 @@ class Message(models.Model):
 
     @property
     def has_open_thread(self):
-        MessageThread.objects.filter(
+        return self.is_reply or MessageThread.objects.filter(
             Q(_from=self.sender) &
             Q(_to=self.recipient) &
             Q(closed=False)).exists()            
@@ -117,6 +117,11 @@ class Inbox(models.Model):
                 _from =message.recipient, 
                 _to= message.sender)
 
+            initiator = thread._from.inbox
+            if not thread in initiator.threads.all():
+                initiator.threads.add(thread)
+
+
         elif message.has_open_thread:
             thread = MessageThread.objects.get(
                 _from =message.sender, 
@@ -128,6 +133,7 @@ class Inbox(models.Model):
             )
             thread.participants.set(message.copy.all())
             self.threads.add(thread)
+
             self.save()
 
         thread.add_message(message)
@@ -152,3 +158,7 @@ class Inbox(models.Model):
     @property
     def total_in(self):
         return self.unread_notifications + self.unread_messages
+
+
+    def __str__(self):
+        return str(self.user)

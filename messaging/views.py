@@ -60,9 +60,7 @@ class ComposeMessageView(LoginRequiredMixin, CreateView):
     template_name = os.path.join('messaging', 'message_compose.html')
     form_class = forms.MessageForm
     model = models.Message
-
-    def get_success_url(self):
-        return '/messaging/inbox/' + str(self.request.user.pk)
+    success_url = '/base/workflow'
 
     def get_initial(self):
         return {
@@ -90,7 +88,7 @@ def reply_message(request, pk=None):
     )
     sender = models.Dispatcher(reply)
     sender.dispatch()
-    return HttpResponseRedirect(reverse('messaging:inbox', kwargs={'pk': pk}))
+    return HttpResponseRedirect('/base/workflow')
 
 
 def inbox_counter(request):

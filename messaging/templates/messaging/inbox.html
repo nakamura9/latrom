@@ -31,10 +31,10 @@
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="messages" role="tabpanel" >
-                    {% if object.threads.count == 0 %}
+                    {% if object.threads.all.count == 0 %}
                         <h5>No messages to display</h5>
                     {% else %}
-                    
+                    <p>Loading messages...({{object.threads.all.count}})</p>
                     {% for thread in object.threads.all %}
                         <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;"><div style="border: 1px solid grey; padding:10px;">
                             <h6>{{thread.latest.sender.username}}: {{thread.latest.subject | truncatechars:50}}</h6>
@@ -52,6 +52,7 @@
                     {% if object.notifications.count == 0 %}
                         <h5>No notifications to display</h5>
                     {% else %}
+                    <p>Loading Notifications ...</p>
                     {% for notification in object.notifications %}
                         <div style="border:1px solid black; padding:10px;">
                             <h4>{{notification.title}}</h4>

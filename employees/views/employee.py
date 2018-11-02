@@ -130,7 +130,7 @@ def remove_employee_user(request, pk=None):
     obj = models.Employee.objects.get(pk=pk)
 
     if obj.user:
-        obj.user.delete()
-    obj.save()
+        obj.user = None
+        obj.save()
     return HttpResponseRedirect(reverse_lazy('employees:dashboard'))
 

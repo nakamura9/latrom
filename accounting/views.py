@@ -340,13 +340,105 @@ class AssetViewGroup(ModelViewGroup):
     delete_template = os.path.join('common_data', 'delete_template.html')
     success_url = "/accounting/"
 
-class ExpenseViewGroup(ModelViewGroup):
-    model = models.Expense
-    create_form = forms.ExpenseForm
-    create_template = os.path.join('accounting','expense_create.html')
-    list_template = os.path.join('accounting', 'expense_list.html')
-    delete_template = os.path.join('common_data', 'delete_template.html')
+
+class AssetCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
+    form_class = forms.AssetForm
+    template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
+    extra_context = {
+        'title': 'Register New Asset'
+    }
+
+class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, CreateView):
+    form_class = forms.AssetForm
+    template_name = CREATE_TEMPLATE
+    success_url = "/accounting/"
+    extra_context = {
+        'title': 'Update Asset Data'
+    }
+    model = models.Asset
+
+
+class AssetListView(ExtraContext, BookkeeperCheckMixin, PaginationMixin, 
+        FilterView):
+    template_name = os.path.join('accounting', 'asset_list.html')
+    model = models.Asset
+    filterset_class = filters.AssetFilter
+    extra_context = {
+        'title': 'List of Assets',
+        'new_link': reverse_lazy('accounting:asset-create')
+    }
+
+
+class AssetDetailView(BookkeeperCheckMixin, DetailView):
+    template_name = os.path.join('accounting', 'asset_detail.html')
+    model = models.Asset
+
+class ExpenseCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
+    form_class = forms.ExpenseForm
+    template_name = CREATE_TEMPLATE
+    success_url = "/accounting/"
+    extra_context = {
+        'title': 'Record Expense'
+    }
+
+class ExpenseListView(ExtraContext, BookkeeperCheckMixin, PaginationMixin, 
+        FilterView):
+    template_name = os.path.join('accounting', 'expense_list.html')
+    model = models.Expense
+    filterset_class = filters.ExpenseFilter
+    extra_context = {
+        'title': 'List of Expenses',
+        'new_link': reverse_lazy('accounting:expense-create')
+    }
+
+
+class ExpenseDetailView(BookkeeperCheckMixin, DetailView):
+    template_name = os.path.join('accounting', 'expense_detail.html')
+    model = models.Expense
+
+class ExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = models.Expense
+
+
+class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin, 
+        CreateView):
+    form_class = forms.RecurringExpenseForm
+    template_name = CREATE_TEMPLATE
+    success_url = "/accounting/"
+    extra_context = {
+        'title': 'Record Recurring Expense'
+    }
+
+class RecurringExpenseUpdateView(ExtraContext, BookkeeperCheckMixin, 
+        UpdateView):
+    form_class = forms.RecurringExpenseForm
+    template_name = CREATE_TEMPLATE
+    success_url = "/accounting/"
+    extra_context = {
+        'title': 'Update Recurring Expense'
+    }
+    model = models.RecurringExpense
+
+class RecurringExpenseListView(ExtraContext, BookkeeperCheckMixin, 
+        PaginationMixin, FilterView):
+    template_name = os.path.join('accounting', 'recurring_expense_list.html')
+    model = models.RecurringExpense
+    filterset_class = filters.RecurringExpenseFilter
+    extra_context = {
+        'title': 'List of Recurring Expenses',
+        'new_link': reverse_lazy('accounting:recurring-expense-create')
+    }
+
+
+class RecurringExpenseDetailView(BookkeeperCheckMixin, DetailView):
+    template_name = os.path.join('accounting', 'recurring_expense_detail.html')
+    model = models.RecurringExpense
+
+class RecurringExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = models.RecurringExpense
 
 
 ####################################################

@@ -33,3 +33,34 @@ class BookkeeperFilter(django_filters.FilterSet):
         fields = {
             'employee': ['exact']
         }
+
+
+class ExpenseFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Expense
+        fields = {
+            'date': ['exact'],
+            'category': ['exact'],
+            'description': ['icontains'],
+        }
+
+
+class RecurringExpenseFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.RecurringExpense
+        fields = {
+            'category': ['exact'],
+            'description': ['icontains'],
+        }
+
+
+class AssetFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Asset
+        fields = {
+            'name': ['icontains'],
+            'category': ['exact'],
+            'init_date': ['gt', 'lt']
+
+        }
+        

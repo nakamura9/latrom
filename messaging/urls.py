@@ -14,6 +14,6 @@ urlpatterns = [
         name='message-thread'),
     path('reply-message/<int:pk>', views.reply_message,
         name='reply-message'),
-    path('inbox-counter', views.inbox_counter,
+    path('inbox-counter/', views.inbox_counter,
         name='inbox-counter')
 ]

@@ -9,7 +9,7 @@
             <h4>Message Thread</h4>
             {% for message in object.messagethread_set.first.messages.all %}
                 <a>
-                    <div style="border: 1px solid black; padding:10px;">
+                    <div style="border: 1px solid #04f; padding:10px;">
                         <h6>{{message.sender}}<span style="float:right;">{{message.created_timestamp}}</span></h6>
                         <hr />
                         <p>{{message.subject}} : {{message.body | truncatechars:50}}</p>

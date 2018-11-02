@@ -1,0 +1,36 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Recurring Expense Details</h1>
+    <p class="lead">Information regarding payment and cycling of recurrent payments</p>
+    <hr class="my-2">
+</div>
+
+<div class="container">
+    <div class="row">
+            <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="card bg-primary text-white" >
+                <div class="card-body ">
+                    <h3 class="card-title">Details</h3>
+                    <p class="card-text">Amount: {{object.amount}}</p>
+                    <p class="card-text">Account Debited: {{object.debit_account}}</p>
+                    <p class="card-text">Date Created: {{object.date}}</p>
+                    <p class="card-text">Category: {{object.category_string}}</p>
+                    <h5>Description</h5>
+                    <p class="card-text">{{object.description}}</p>
+                    <h5>Billing</h5>
+                    <hr>
+                    <p class="card-text">Is billable?: {% if object.billable %} Yes {% else %} No {% endif %}</p>
+                    {% if object.billable %}<p class="card-text">Customer:  {{object.customer}}</p>{% endif %}
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+
+{% endblock content %}

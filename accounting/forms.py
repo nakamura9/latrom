@@ -27,12 +27,8 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
         model = models.Expense
 
 class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
-    def __init__(self, *args, **kwargs):
-        super(RecurringExpenseForm, self).__init__(*args, **kwargs)
-        self.fields['recurring'].value =True
-
     class Meta:
-        fields = "__all__"
+        exclude = "last_created_date",
         model = models.RecurringExpense
 
 class DirectPaymentForm(BootstrapMixin, forms.Form):

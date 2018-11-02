@@ -9,11 +9,47 @@ tax_router.register(r'^api/tax', views.TaxViewset)
 account_router = routers.DefaultRouter()
 account_router.register(r'^api/account', views.AccountViewSet)
 
-assets = views.AssetViewGroup()
-expenses = views.ExpenseViewGroup()
 
 expense_router = routers.DefaultRouter()
 expense_router.register(r'^api/expense', views.ExpenseAPIView)
+
+expense_urls = [
+    re_path(r'^expense/create/?$', views.ExpenseCreateView.as_view(), name="expense-create"),
+    re_path(r'^expense/list/?$', views.ExpenseListView.as_view(), 
+        name="expense-list"),
+    re_path(r'^expense/detail/(?P<pk>[\d]+)/?$', 
+        views.ExpenseDetailView.as_view(), name="expense-detail"),
+    re_path(r'^expense/delete/(?P<pk>[\d]+)/?$', 
+        views.ExpenseDeleteView.as_view(), name="expense-delete"),
+]
+
+asset_urls = [
+    re_path(r'^asset/create/?$', views.AssetCreateView.as_view(), name="asset-create"),
+    re_path(r'^asset/list/?$', views.AssetListView.as_view(), 
+        name="asset-list"),
+    re_path(r'^asset/detail/(?P<pk>[\d]+)/?$', 
+        views.AssetDetailView.as_view(), name="asset-detail"),
+    re_path(r'^asset/update/(?P<pk>[\d]+)/?$', 
+        views.AssetUpdateView.as_view(), name="asset-update"),
+]
+
+recurring_expense_urls = [
+    re_path(r'^recurring-expense/create/?$',    
+        views.RecurringExpenseCreateView.as_view(), 
+        name="recurring-expense-create"),
+    re_path(r'^recurring-expense/list/?$', 
+        views.RecurringExpenseListView.as_view(), 
+        name="recurring-expense-list"),
+    re_path(r'^recurring-expense/detail/(?P<pk>[\d]+)/?$', 
+        views.RecurringExpenseDetailView.as_view(), 
+        name="recurring-expense-detail"),
+    re_path(r'^recurring-expense/update/(?P<pk>[\d]+)/?$', 
+        views.RecurringExpenseUpdateView.as_view(), 
+        name="recurring-expense-update"),
+    re_path(r'^recurring-expense/delete/(?P<pk>[\d]+)/?$', 
+        views.RecurringExpenseDeleteView.as_view(), 
+        name="recurring-expense-delete"),
+]
 
 report_urls = [
     re_path(r'^balance-sheet/?$', report_views.BalanceSheet.as_view(), name='balance-sheet'),
@@ -73,5 +109,5 @@ journal_urls = [
 urlpatterns =[
     re_path(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls +  misc_urls + account_urls  + journal_urls + \
-    entry_urls  + account_router.urls + assets.urls + expenses.urls + \
-    report_urls + expense_router.urls
+    entry_urls  + account_router.urls  + expense_urls + report_urls + \
+    expense_router.urls + recurring_expense_urls + asset_urls
