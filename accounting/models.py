@@ -15,6 +15,7 @@ from common_data.models import Person, SingletonModel
 class AccountingSettings(SingletonModel):
     start_of_financial_year = models.DateField()
     use_default_chart_of_accounts = models.BooleanField(default=True)
+    default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True, blank=True, on_delete=None)
 
 class Bookkeeper(models.Model):
     '''Model that gives employees access to the bookkeeping function of the 
@@ -296,12 +297,35 @@ class Account(AbstractAccount):
 class InterestBearingAccount(AbstractAccount):
     interest_rate = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     interest_interval = models.IntegerField(choices = [(0, 'monthly'), (1, 'annually')], default=1)
-    interest_method = models.IntegerField(choices = [(0, 'Simple'), 
-        (1, 'Commpound')], default=0)
+    interest_method = models.IntegerField(choices = [(0, 'Simple')], default=0)
+    date_account_opened = models.DateField(default=datetime.date.today)
+    last_interest_earned_date = models.DateField(null=True, blank=True)
 
     def convert_to_current_account(self):
         '''remove the interest related features of the account'''
         pass
+
+    @property
+    def interest_per_interval(self):
+        return self.balance * D(self.rate / D(100.0))
+
+    def add_interest(self):
+        self.balance += self.interest_per_interval
+        self.save()
+
+    @property
+    def _interest_interval_days(self):
+        mapping = {
+            0: 30,
+            1: 365
+        }
+        return mapping[self.interest_interval]
+
+    def should_receive_interest(self, date):
+        if self.last_interest_earned_date:
+            return date > self.last_interest_earned_date + \
+                self._interest_interval_days
+        return date
 
 class Ledger(models.Model):
     '''
@@ -424,6 +448,7 @@ expense_choices = ['Advertising', 'Bank Service Charges', 'Equipment Rental',
     'Dues and Subscriptions', 'Telephone', 'Vehicles', 'Travel and Expenses',
         'Suppliers', 'Rent', 'Payroll Expenses', 'Insurance', 'Office Expenses',
         'Postage', 'Other']
+
 EXPENSE_CHOICES = [(expense_choices.index(i), i) for i in expense_choices]
 
 
@@ -451,7 +476,7 @@ class AbstractExpense(models.Model):
 class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
-    customer = models.ForeignKey('invoicing.Customer', on_delete=None,null=True)
+    customer = models.ForeignKey('invoicing.Customer', on_delete=None,null=True, blank=True)
     
 
     def create_entry(self):
@@ -491,12 +516,22 @@ class RecurringExpense(AbstractExpense):
         (365, 'Annually')]
     cycle = models.IntegerField(choices=EXPENSE_CYCLE_CHOICES, default=30)
     expiration_date = models.DateField(null=True)
-    start_date = models.DateField(null=True)
-    last_created_date = models.DateField(null=True)
+    start_date = models.DateField(default=datetime.date.today)
+    last_created_date = models.DateField(null=True, blank=True)
 
     @property
     def is_current(self):
         return datetime.date.today() < self.expiration_date
+
+    def create_standalone_expense(self):
+        return Expense.objects.create(
+            date=datetime.date.today(),
+            description=self.description,
+            category=self.category,
+            amount=self.amount,
+            debit_account=self.debit_account,
+            recoreded_by=self.recorded_by
+        )
 
     def create_entry(self):
         #verified
@@ -510,4 +545,6 @@ class RecurringExpense(AbstractExpense):
         j.simple_entry(self.amount, 
         Account.objects.get(name=expense_choices[self.category]), 
         self.debit_account)
+        self.last_created_date = datetime.date.today()
+        self.save()
         return j

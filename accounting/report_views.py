@@ -166,7 +166,7 @@ class TrialBalance(BookkeeperCheckMixin ,ConfigMixin, TemplateView):
         context = super().get_context_data(*args, **kwargs)
         
         context['date'] = datetime.date.today()
-        context['accounts'] = models.Account.objects.all().order_by('pk')
+        context['accounts'] = models.Account.objects.all().exclude(balance=0.0).order_by('pk')
         context['total_debit'] = models.Account.total_debit()
         context['total_credit'] = models.Account.total_credit()
         
