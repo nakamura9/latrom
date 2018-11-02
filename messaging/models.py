@@ -108,7 +108,7 @@ class Notification(models.Model):
 
 
 class Inbox(models.Model):
-    user = models.ForeignKey('auth.user', on_delete=None)
+    user = models.OneToOneField('auth.user', on_delete=None)
     threads = models.ManyToManyField('messaging.messagethread')
 
     def receive_message(self, message):
@@ -151,4 +151,4 @@ class Inbox(models.Model):
 
     @property
     def total_in(self):
-        return self.notifications.count() + self.unread_messages
+        return self.unread_notifications + self.unread_messages

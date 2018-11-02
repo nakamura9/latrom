@@ -15,7 +15,18 @@
                 </li>
                 -->
                 <li>
-                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary">{{request.user.inbox_set.first.total_in}}</span></a>
+                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span></a>
+                    <script>
+                        function inboxCounter(){
+                            $.get('/messaging/inbox-counter').then(function(res){
+                                $('#id_message_count').text(res.count);
+                            });
+                        }
+
+                        $(document).ready(function(){
+                            setInterval(inboxCounter, 10000)
+                        })
+                    </script>
                 </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}

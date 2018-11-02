@@ -13,5 +13,7 @@ urlpatterns = [
     path('message-thread/<int:pk>', views.MessageThreadView.as_view(),
         name='message-thread'),
     path('reply-message/<int:pk>', views.reply_message,
-        name='reply-message')
+        name='reply-message'),
+    path('inbox-counter', views.inbox_counter,
+        name='inbox-counter')
 ]

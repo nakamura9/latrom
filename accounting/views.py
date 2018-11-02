@@ -20,7 +20,7 @@ from rest_framework import viewsets
 from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
 from common_data.views import PaginationMixin
 from inventory.models import Product
-
+from accounting.util import AccountingTaskService
 from . import filters, forms, models, serializers
 
 
@@ -39,6 +39,11 @@ CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 class Dashboard(BookkeeperCheckMixin, TemplateView):
     template_name = os.path.join('accounting', 'dashboard.html')
 
+
+    def get(self, *args, **kwargs):
+        service = AccountingTaskService()
+        service.run()
+        return super().get(*args, **kwargs)
 #############################################################
 #                 JournalEntry Views                         #
 #############################################################

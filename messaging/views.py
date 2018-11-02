@@ -3,7 +3,7 @@ import os
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -91,3 +91,7 @@ def reply_message(request, pk=None):
     sender = models.Dispatcher(reply)
     sender.dispatch()
     return HttpResponseRedirect(reverse('messaging:inbox', kwargs={'pk': pk}))
+
+
+def inbox_counter(request):
+    return JsonResponse({'count': request.user.inbox.total_in})
