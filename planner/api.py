@@ -91,6 +91,18 @@ def get_month_views(current, user):
     period_string = current_date.strftime('%B, %Y')
     return get_month_data(array, user), period_string
 
+def get_month(request, year=None, month=None):
+    year = int(year)
+    month= int(month)
+    current_date = datetime.date(year, month, 1)
+    array = c.monthdatescalendar(year, month)
+    period_string = current_date.strftime('%B, %Y')
+    user = request.user
+    return JsonResponse({
+        'period_string': period_string,
+        'weeks': get_month_data(array, user)
+    })
+
 def get_week_views(current, user):
     '''returns a list of days'''
     TODAY = datetime.date.today()

@@ -2,7 +2,7 @@ from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 
 from . import views
-from .api import get_calendar
+from .api import get_month
 
 event_router = DefaultRouter()
 event_router.register(r'^api/event', views.EventAPIViewSet)
@@ -12,7 +12,8 @@ urlpatterns = [
         name='calendar'),
     re_path(r'^dashboard/?$', views.PlannerDashboard.as_view(), 
         name='dashboard'),
-    re_path(r'api/calendar/', get_calendar, name='calendar-api'),
+    re_path(r'^api/calendar/month/(?P<year>[\d]+)/(?P<month>[\d]+)/?$', get_month,
+         name='calendar-api'),
     re_path(r'^config/(?P<pk>\d+)?$', views.PlannerConfigUpdateView.as_view(), 
         name='config'),
     re_path(r'^event-detail/(?P<pk>\d+)/?$', views.EventDetailView.as_view(), 

@@ -61,19 +61,25 @@ class ThreadWidget extends Component{
         return(
             <div>
                 <h4>Message Thread</h4>
-                {this.state.messages.map((message, i) =>(
-                    <MessageCard 
-                        key={i}
-                        messageID={i}
-                        focused={this.state.focused === i}
-                        unread={!message.read}
-                        subject={message.subject}
-                        timestamp={message.created_timestamp}
-                        sender={message.sender}
-                        clickHandler={this.messageClickHandler}
+                <div style={{
+                    overflowY: 'auto',
+                    height: '500px'
+                }}>
+                    {this.state.messages.map((message, i) =>(
+                        <MessageCard 
+                            key={i}
+                            messageID={i}
+                            focused={this.state.focused === i}
+                            unread={!message.read}
+                            subject={message.subject}
+                            timestamp={message.created_timestamp}
+                            sender={message.sender}
+                            clickHandler={this.messageClickHandler}
 
-                    />
-                ))}
+                        />
+                    ))}
+                </div>
+                
             </div>
         )
     }

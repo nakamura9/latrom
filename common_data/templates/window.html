@@ -11,13 +11,15 @@
             {% if request.user %}
                 
                 <li>
-                    <a href="{% url 'planner:dashboard' %}" class="nav-link">Planner<span class="badge badge-primary" id='id_message_count'>
+                    <a href="{% url 'planner:dashboard' %}" class="nav-link">Planner<span class="badge badge-primary">
+                        {% if request.user.employee %}
                         {{request.user.employee.agenda_items}}
-                        
-                    </span><span class="badge badge-danger" >beta!</span></a>
+                        {% else %}
+                        0 {% endif %}
+                    </span><sub><span class="badge badge-danger" >beta!</span></sub></a>
                 </li>
                 <li>
-                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><span class="badge badge-danger" >beta!</span></a>
+                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><sub><span class="badge badge-danger" >beta!</span></sub></a>
                     <script>
                         function inboxCounter(){
                             $.get('/messaging/inbox-counter').then(function(res){

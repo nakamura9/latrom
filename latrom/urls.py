@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import static
 from django.contrib import admin
 from django.urls import include, re_path
-
+from planner.views import ReactCalendar
 urlpatterns = [
     re_path('admin/', admin.site.urls),
     re_path(r'^base/', include(('common_data.urls', 'base'), namespace='base')),
@@ -28,5 +28,6 @@ urlpatterns = [
     re_path(r'^services/', include(("services.urls", 'services'), namespace="services")),
     re_path(r'^planner/', include(("planner.urls", 'planner'), namespace="planner")),
     re_path(r'^messaging/', include(("messaging.urls", 'messaging'), namespace="messaging")),
+    re_path(r'^calendar/*', ReactCalendar.as_view()),
     re_path(r'^', include('django.contrib.auth.urls'))
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

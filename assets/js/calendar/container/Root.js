@@ -3,33 +3,54 @@ import Month from '../components/Month/Month';
 import WeekView from '../components/Week/WeekView';
 import DayView from '../components/Day/DayView';
 import axios from 'axios';
+import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 
-export default class CalendarRoot extends Component{
+/*
+<div>
+                <Link to="previous"><i className="fa fas-chevron-left"></i></Link>
+                <Link to="next"><i className="fa fas-chevron-right"></i></Link>
+            </div>
+*/
+export default class CalendarRouter extends Component{
     state = {
-        view: 'month',
-        nextView: 'month',
-        data: [],
-        period: '',
-        current: 0
+        year: 2018,
+        month: 1,
+        day: 1
     }
     componentDidMount(){
-        this.setData();
-    }
-
-    daySelectHandler = (date) =>{
-
+        const today = new Date();
         this.setState({
-            view: 'day',
-            current: 0
+            day: today.getDate(),
+            month: today.getMonth() + 1,
+            year: today.getFullYear()
+        }, () => {
+            console.log(this.state);
         });
     }
-    componentDidUpdate(prevProps, prevState){
-        if( this.state.nextView !== prevState.nextView || 
-            this.state.current !== prevState.current){
-                this.setData();
-            }
+    render(){
+        return(
+            <Router>
+                <div>
+                    <nav>
+                        <ul>
+                            <li>
+                                <Link to={`/calendar/month/${this.state.year}/${this.state.month}`}>Month</Link>
+                                <Link to={`/calendar/week/${this.state.year}/${this.state.month}/${this.state.day}`}>Week</Link>
+                                <Link to={`/calendar/day/${this.state.year}/${this.state.month}/${this.state.day}`}>Day</Link>
+                            </li>
+                        </ul>
+                    </nav>
+                    <Route path="/calendar/month/:year/:month" component={Month} />
+                    <Route path="/calendar/week/:year/:week" component={WeekView}/>
+                    <Route path="/calendar/day/:year/:month/:day" component={DayView}/>
+                </div>
+            </Router>
+        )
     }
     
+}
+/*
+export default class CalendarRoot extends Component{
     setData = () =>{
         axios.get('/planner/api/calendar',{
             params: {
@@ -46,55 +67,4 @@ export default class CalendarRoot extends Component{
         });
     }
 
-    setCurrent = (val) =>{
-        this.setState((prevState) =>{
-            return({current: prevState.current + val});
-        });
-    }
-    //change the data based on the changes in state of the 
-    // current and the view 
-    render(){
-        let view = null;
-        switch(this.state.view){
-            case 'month':
-                view=<Month 
-                    weeks={this.state.data}
-                    period={this.state.period}/>
-                break;
-            case 'week':
-                view = (
-                    <WeekView 
-                        days={this.state.data}
-                        period={this.state.period}/>            
-                )
-                break;
-            case 'day':
-                view= <DayView data={this.state.data}/>
-                break;
-            default:
-                view=<h1>Loading View...</h1>
-
-        }
-        return(
-        <div>
-            <h1>Calendar</h1>
-            <div>
-                <button onClick={() => {this.setState({nextView:'day'})}}>
-                    Day
-                </button>
-                <button onClick={() => {this.setState({nextView:'week'})}}>
-                    Week
-                </button>
-                <button onClick={() => {this.setState({nextView:'month'})}}>
-                    Month
-                </button>
-            </div>
-            <div>
-                <button onClick={() => {this.setCurrent(-1)}}>Previous</button>
-                <button onClick={() => {this.setCurrent(1)}}>Next</button>
-            </div>
-            {view}
-        </div>
-        );
-    }
-}
+} */

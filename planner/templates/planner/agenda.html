@@ -19,7 +19,7 @@
                 <h5>Create <a href="{% url 'planner:event-create' %}">a new one</a></h5>
                 {% endif %}
                 {% for event in object_list %}
-                <div class="card bg-success text-white" style="width:25%;">
+                <div class="card bg-success text-white" style="width:25%;display:inline-block;">
                     <div class="card-body" style="margin:auto;">
                         <h4 class="card-title">Title: {{event.label}}</h4>
                         <h5>Description:</h5>
