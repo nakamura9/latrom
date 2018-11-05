@@ -8,5 +8,6 @@ class EventFilter(FilterSet):
         model = models.Event
         fields = {
             'date': ['exact'],
-            'label': ['icontains']
+            'label': ['icontains'],
+            'completed': ['exact']
         }

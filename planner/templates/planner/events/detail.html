@@ -5,9 +5,9 @@
     <hr class="my-2">
     <p>Actions</p>
     <p class="lead">
-        <a class="btn btn-primary btn-lg" href="" role="button">Edit</a>
-        <a class="btn">Delete</a>
-        <a class="btn">Complete</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'planner:event-update' pk=object.pk %}" role="button">Edit</a>
+        <a class="btn btn-danger" href="{% url 'planner:event-delete' pk=object.pk %}">Delete</a>
+        <a class="btn btn-success" href="{% url 'planner:event-complete' pk=object.pk %}">Complete</a>
     </p>
 </div>
 
@@ -20,6 +20,12 @@
             <div class="card bg-success text-white" >
                 <div class="card-body">
                     <h4 class="card-title">Title: {{object.label}}</h4>
+                    <p>Author: {{object.owner}}</p>
+                    <p>Status: {% if object.completed %} Completed on {{object.completion_time}} {% else %} In Progress {% endif %}</p>
+                    <p>Priority:{{object.priority}}</p>
+                    <p>Date: {{object.date}}</p>
+                    <p>Start Time: {{object.start_time}}</p>
+                    <p>End Time: {{object.end_time}}</p>
                     <h5>Description:</h5>
                     <p class="card-text">{{object.description}}</p>
                     <hr />

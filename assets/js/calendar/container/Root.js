@@ -37,6 +37,7 @@ export default class CalendarRoot extends Component{
                 current: this.state.current
             }
         }).then(res =>{
+            console.log(res.data);
             this.setState({
                 data: res.data.data,
                 period: res.data.period,

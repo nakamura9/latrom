@@ -29,7 +29,7 @@
                 <h4>
                     <b>{{business_name}}</b>
                 </h4>
-                {% if include_business_address %} {{business_address | linebreaks}} {% endif %}
+                <p>{{business_address | linebreaks}}</p>
             </td>
         </tr>
         <tr>
@@ -39,7 +39,7 @@
                         <b>Bill To:</b>
                     </p>
                     <p>{{object.customer}}</p>
-                    {% if include_shipping %} {{object.customer.business_address | linebreaks}} {% endif %}
+                    <p>{{object.customer.billing_address | linebreaks}}</p>
                 </div>
             </td>
             <td>

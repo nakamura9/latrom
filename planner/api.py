@@ -44,7 +44,7 @@ def get_calendar(request):
     return JsonResponse(payload)
 
 
-def get_month_data(array):
+def get_month_data(array, user):
     '''benchmark later:
         1. requesting the DB every day
         2. requesting sorting the data
@@ -56,11 +56,12 @@ def get_month_data(array):
     events = []
     filters = get_filters(flat[0], flat[len(flat)- 1])
     
-    event_objs = Event.objects.filter(filters)
+    event_objs = Event.objects.filter(filters & Q(owner=user))
     events += [{
         'label': e.label,
-        'icon': 'eye',
-        'date': e.date 
+        'icon': e.icon,
+        'date': e.date,
+        'id': e.pk
     } for e in event_objs]
     events = sorted(events, key=lambda x: x['date'])
     res = [{
@@ -88,7 +89,7 @@ def get_month_views(current, user):
         current_date.year,
         current_date.month)
     period_string = current_date.strftime('%B, %Y')
-    return get_month_data(array), period_string
+    return get_month_data(array, user), period_string
 
 def get_week_views(current, user):
     '''returns a list of days'''
@@ -112,9 +113,10 @@ def get_day_view(current, user):
 def get_day(date, user):
     events = [{
         'label': e.label,
-        'icon': 'eye',
-        'date': e.date 
-    } for e in Event.objects.filter(date=date)]
+        'icon': e.icon,
+        'date': e.date,
+        'id': e.pk 
+    } for e in Event.objects.filter(Q(date=date) & Q(owner=user))]
 
     return {
         'day': date.day,

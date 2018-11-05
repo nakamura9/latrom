@@ -6,10 +6,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-
-from messaging import models
-from messaging import forms 
+from rest_framework.generics import RetrieveAPIView
+import datetime 
+from messaging import models, forms, serializers
 
 
 class InboxView(LoginRequiredMixin, DetailView):
@@ -93,3 +92,21 @@ def reply_message(request, pk=None):
 
 def inbox_counter(request):
     return JsonResponse({'count': request.user.inbox.total_in})
+
+
+class MessageThreadAPIView(RetrieveAPIView):
+    serializer_class = serializers.MessageThreadSerializer
+    queryset = models.MessageThread.objects.all()
+    
+
+class MessageAPIView(RetrieveAPIView):
+    serializer_class = serializers.MessageSerializer
+    queryset = models.Message.objects.all()
+    
+
+def mark_as_read(request, pk=None):
+    msg = models.Message.objects.get(pk=pk)
+    msg.read=True
+    msg.opened_timestamp = datetime.datetime.now()
+    msg.save()
+    return JsonResponse({'status': 'ok'})

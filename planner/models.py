@@ -28,8 +28,6 @@ class Event(models.Model):
         (datetime.timedelta(days=7), '1 week before'),
         (datetime.timedelta(days=14), '2 weeks before'),
         (datetime.timedelta(days=30), '1 month before')
-
-        
     ]
     
     TIME_CHOICES = time_choices('06:00:00','18:00:00','00:30:00')
@@ -38,6 +36,14 @@ class Event(models.Model):
         ('normal', 'Normal'),
         ('high', 'High'),
         ('low', 'Low')
+    ]
+    ICON_CHOICES = [
+        ('file-chart-line', 'Report'),
+        ('truck', 'Delivery'),
+        ('users', 'Meeting'),
+        ('stopwatch', 'Deadline'),
+        ('book', 'Training'),
+        ('calendar', 'Event')
     ]
 
     date = models.DateField()
@@ -49,7 +55,7 @@ class Event(models.Model):
     priority = models.CharField(max_length=8, choices=PRIORITY_CHOICES, default='normal')
     description = models.TextField(blank=True)
     label = models.CharField(max_length=32, blank=True) 
-    icon = models.CharField(max_length=32, blank=True)
+    icon = models.CharField(max_length=32, blank=True, choices=ICON_CHOICES)
     participants = models.ManyToManyField(
         'planner.EventParticipant', 
         blank=True,
@@ -85,6 +91,9 @@ class Event(models.Model):
         self.completed = True
         self.completion_time = datetime.datetime.now()
         self.save()
+
+    def __str__(self):
+        return self.label
 
 
 class EventParticipant(models.Model):

@@ -50,8 +50,6 @@ class AutomatedPayrollService(object):
 
     def run(self):
         print("running payroll service")
-        print(self.pay_dates)
-        print(self.settings.last_payroll_date)
         if self.TODAY.day in self.pay_dates and \
                 self.TODAY != self.settings.last_payroll_date:
             payroll_id = self.settings.payroll_counter + 1

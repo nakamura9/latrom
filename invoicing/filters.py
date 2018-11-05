@@ -43,7 +43,7 @@ class BillInvoiceFilter(django_filters.FilterSet):
 
 class CombinedInvoiceFilter(django_filters.FilterSet):
     class Meta:
-        model = models.ServiceInvoice
+        model = models.CombinedInvoice
         fields = {
             'date': ['icontains'],
             'customer': ['exact'],

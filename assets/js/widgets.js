@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
 import axios from 'axios';
+import ThreadWidget from '../js/messaging/thread';
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
 const categoryView = document.getElementById('category-tree-view');
 const storageMediaView = document.getElementById('storage-media-tree-view');
-
+const threadView = document.getElementById('thread-widget');
 
 const dataMapper = (node, i) =>{
     
@@ -59,4 +60,6 @@ if(storageMedia){
         updateUrlRoot='/inventory/storage-media-update/'
         detailUrlRoot='/inventory/storage-media-detail/'
         dataMapper={dataMapper}/>, storageMediaView);
+}else if(threadView){
+    ReactDOM.render(<ThreadWidget />, threadView);
 }

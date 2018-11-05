@@ -9,13 +9,15 @@
             <!--{% url 'base:workflow' %}-->
             <a class="navbar-brand" href="/base/workflow"  >Latrom</a>
             {% if request.user %}
-                <!--
+                
                 <li>
-                    <a href="{% url 'planner:dashboard' %}" class="nav-link">Planner</a>
+                    <a href="{% url 'planner:dashboard' %}" class="nav-link">Planner<span class="badge badge-primary" id='id_message_count'>
+                        {{request.user.employee.agenda_items}}
+                        
+                    </span><span class="badge badge-danger" >beta!</span></a>
                 </li>
-                -->
                 <li>
-                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span></a>
+                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><span class="badge badge-danger" >beta!</span></a>
                     <script>
                         function inboxCounter(){
                             $.get('/messaging/inbox-counter').then(function(res){

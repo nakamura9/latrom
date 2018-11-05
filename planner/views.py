@@ -6,6 +6,9 @@ import json
 import os
 import urllib
 
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -32,7 +35,28 @@ class PlannerConfigUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('planner:dashboard')
     model = models.PlannerConfig
 
-class EventCreateView(LoginRequiredMixin, CreateView):
+class EventParticipantMixin(object):
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args,**kwargs)
+
+        if not self.object:
+            return resp
+        
+        try:
+            participants = json.loads(urllib.parse.unquote(request.POST['participants']))
+        except json.JSONDecodeError:
+            return resp
+
+        if isinstance(self, UpdateView):
+            for p in self.object.participants.all():
+                p.delete()
+
+        for p in participants:
+            self.object.add_participant(p['type'], p['pk'])
+
+        return resp
+
+class EventCreateView(LoginRequiredMixin, EventParticipantMixin, CreateView):
     template_name = os.path.join('planner', 'events','create.html')
     form_class = forms.EventForm
     success_url = reverse_lazy('planner:event-list')
@@ -42,37 +66,13 @@ class EventCreateView(LoginRequiredMixin, CreateView):
             'owner': self.request.user 
         }
 
-    def post(self, request, *args,  **kwargs):
-        resp = super(EventCreateView, self).post(request, *args, **kwargs)
-        if not self.object:
-            return resp
-        
-        participants = json.loads(urllib.parse.unquote(request.POST['participants']))
-        
-        for p in participants:
-            self.object.add_participant(p['type'], p['pk'])
 
-        return resp
-
-class EventUpdateView(LoginRequiredMixin, UpdateView):
+class EventUpdateView(LoginRequiredMixin, EventParticipantMixin, UpdateView):
     template_name = os.path.join('planner', 'events', 'update.html')
     form_class = forms.EventForm
     success_url = reverse_lazy('planner:event-list')
     model = models.Event
 
-    def post(self, request, *args,  **kwargs):
-        resp = super(EventUpdateView, self).post(request, *args, **kwargs)
-        
-        #remove exisiting participants
-        for p in self.object.participants.all():
-            p.delete()
-
-        participants = json.loads(urllib.parse.unquote(request.POST['participants']))
-        
-        for p in participants:
-            self.object.add_participant(p['type'], p['pk'])
-
-        return resp
 
 class EventListView(ExtraContext, LoginRequiredMixin, PaginationMixin, FilterView):
     template_name = os.path.join('planner', 'events', 'list.html')
@@ -90,14 +90,27 @@ class EventDetailView(LoginRequiredMixin, DetailView):
     model = models.Event 
     template_name = os.path.join('planner', 'events', 'detail.html')
 
+class EventDeleteView(LoginRequiredMixin, DeleteView):
+    model = models.Event 
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = "/planner/dashboard"
+
 class AgendaView(LoginRequiredMixin, ListView):
     template_name = os.path.join('planner', 'agenda.html')
     
     def get_queryset(self):
         return models.Event.objects.filter(
             Q(date__gte=datetime.date.today()) & 
-            Q(owner=self.request.user))
+            Q(owner=self.request.user) &
+            Q(completed=False))
 
 class EventAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.EventSerializer
     queryset = models.Event.objects.all()
+
+def complete_event(request, pk=None):
+    evt = get_object_or_404(models.Event, pk=pk)
+    evt.completed=True
+    evt.completion_time = datetime.datetime.now()
+    evt.save()
+    return HttpResponseRedirect('/planner/dashboard')

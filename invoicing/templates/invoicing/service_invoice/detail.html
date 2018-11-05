@@ -31,7 +31,7 @@
                 <h4>
                     <b>{{business_name}}</b>
                 </h4>
-                {% if include_business_address %} {{business_address | linebreaks}} {% endif %}
+               <p>{{business_address | linebreaks}}</p>
             </td>
         </tr>
         <tr>
@@ -41,7 +41,7 @@
                         <b>Bill To:</b>
                     </p>
                     <p>{{object.customer}}</p>
-                    {% if include_shipping %} {{object.customer.business_address | linebreaks}} {% endif %}
+                    <p>{{object.customer.billing_address | linebreaks}} </p>
                 </div>
             </td>
             <td>
@@ -78,7 +78,7 @@
                     <tbody class="item-table">
                         {% for item in object.serviceinvoiceline_set.all %}
                         <tr>
-                            <td>{{item.service}} + ${{item.service.flat_fee}} flat fee.</td>
+                            <td>{{item.service}} ${{item.service.flat_fee}} flat fee.</td> 
                             <td>{{item.service.hourly_rate | floatformat:2 }}</td>
                             <td>{{item.hours}}</td>
                             <td>{{item.total | floatformat:2 }}</td>

@@ -1,28 +1,19 @@
 {% extends "window.html" %}
 {% block content %}
-
+{% load render_bundle from webpack_loader %}
 
 <div class="container">
     <div class="row">
         <div class="col-sm-4">
-            
-            <h4>Message Thread</h4>
-            {% for message in object.messagethread_set.first.messages.all %}
-                <a>
-                    <div style="border: 1px solid #04f; padding:10px;">
-                        <h6>{{message.sender}}<span style="float:right;">{{message.created_timestamp}}</span></h6>
-                        <hr />
-                        <p>{{message.subject}} : {{message.body | truncatechars:50}}</p>
-                    </div>
-                </a>
-            {% endfor %}
+
+            <div id="thread-widget"></div>
         </div>
         <div class="col-sm-8">
             <div class="card text-white bg-primary">
                 <div class="card-body">
                     <h4 class="card-title">Message Details</h4>
-                    <p class="card-text">Created: {{object.created_timestamp}}</p>
-                    <p class="card-text">To: {{object.recipient}};</p>
+                    <p class="card-text" >Created: <span id="created">{{object.created_timestamp}}</span></p>
+                    <p class="card-text">To: <span id="to">{{object.recipient}}</span>;</p>
                     <p class="card-text">Copy: {% for recipient in object.copy.all %}
                             {{recipient}}; 
                         {% endfor %}</p>    
@@ -30,10 +21,12 @@
                 </div>
             </div>
             <hr />
-            <h6>Subject: {{object.subject}}</h6>
+            <h6>Subject: <span id="subject">{{object.subject}}</span></h6>
             <hr />
             <h6>Message Body:</h6>
-            {{object.body}}
+            <p id="message-body">
+                {{object.body}}
+            </p>
             <hr />
             <div style="padding:30px;">
                 <h6>Reply</h6>
@@ -46,5 +39,5 @@
         </div>
     </div>
 </div>
-
+{% render_bundle "widgets" %}
 {% endblock content %}

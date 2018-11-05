@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from common_data.models import Person, SingletonModel
+import planner
 
 
 
@@ -50,6 +51,8 @@ class EmployeesSettings(SingletonModel):
         null=True
     )
     payroll_counter = models.IntegerField(default=0)
+
+    
 
 class EmployeeTimeSheet(models.Model):
     MONTH_CHOICES = [
@@ -193,6 +196,13 @@ class Employee(Person):
     @property
     def is_serviceperson(self):
         return hasattr(self, 'serviceperson')
+
+    @property
+    def agenda_items(self):
+        #check participants as well
+        return planner.models.Event.objects.filter(
+            Q(Q(completed=False) & Q(date__gte=datetime.date.today())) &
+            Q(owner=self.user)).count()
 
 
 #Change to benefits 

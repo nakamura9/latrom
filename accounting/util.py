@@ -23,13 +23,16 @@ class AccountingTaskService(object):
                         days=expense.cycle) >= self.today:
                     expense.create_entry()
                     expense.create_standalone_expense()
+                    expense.last_created_date = self.today
+                    expense.save()
                 #expenses
             else:
                 if expense.last_created_date + datetime.timedelta(
                         days=expense.cycle) >= self.today:
                     expense.create_entry()
                     expense.create_standalone_expense()
-            
+                    expense.last_created_date = self.today
+                    expense.save()
 
     def run_interest_on_accounts(self):
         print('accruing interest')
@@ -37,6 +40,8 @@ class AccountingTaskService(object):
         for acc in accounts:
             if acc.should_receive_interst(self.today):
                 acc.add_interest()
+                acc.last_interest_earned_date = self.today
+                acc.save()
 
 
 

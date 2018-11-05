@@ -45,6 +45,10 @@ class Message(models.Model):
     
 
     @property
+    def thread_pk(self):
+        return self.messagethread_set.first().pk
+
+    @property
     def is_reply(self):
         return MessageThread.objects.filter(
             Q(_from=self.recipient) &

@@ -1,6 +1,6 @@
 import React from 'react';
 const event = (props) =>{
-    
+    console.log(props);
     let description = null;
     if (props.description){
         description = (<div>
@@ -14,13 +14,16 @@ const event = (props) =>{
         backgroundColor: 'slateblue'
     };
     return(
-        <div style={style}>
-            <div>
-                <i className={"fas fa-" + props.data.icon}></i>
-                <span style={{margin: "0px 5px"}}>{props.data.label}</span>
+        <a href={"/planner/event-detail/" + props.data.id}>
+            <div style={style}>
+                <div>
+                    <i className={"fas fa-" + props.data.icon}></i>
+                    <span style={{margin: "0px 5px"}}>{props.data.label}</span>
+                </div>
+                {description}
+                
             </div>
-            {description}
-        </div>
+        </a>
     );
 }
 

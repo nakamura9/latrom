@@ -14,24 +14,32 @@
         <div class="col-sm-12">
 
             <div style="overflow-x: scroll">
+                {% if object_list.count == 0 %}
+                <h3>There are no events scheduled for you</h3>
+                <h5>Create <a href="{% url 'planner:event-create' %}">a new one</a></h5>
+                {% endif %}
                 {% for event in object_list %}
                 <div class="card bg-success text-white" style="width:25%;">
-                    <div class="card-body">
+                    <div class="card-body" style="margin:auto;">
                         <h4 class="card-title">Title: {{event.label}}</h4>
                         <h5>Description:</h5>
                         <p class="card-text">{{event.description}}</p>
                         <hr />
                         <h5>Participants:</h5>
                         <ul>
+                            {% if event.participants.all.count == 0 %}
+                            <li>No participants</li>
+                            {% endif %}
                             {% for p in event.participants.all %}
                             <li>{{p}}</li>
                             {% endfor %}
                         </ul>
 
                         <div class="btn-group">
-                            <button class="btn">Edit</button>
-                            <button class="btn">Delete</button>
-                            <button class="btn">Complete</button>
+                            <a class="btn btn-primary" href="{% url 'planner:event-update' pk=event.pk %}"> Edit</a>
+                            <a class="btn btn-success" href="{% url 'planner:event-complete' pk=event.pk %}">Complete</a>
+                            <a class="btn btn-danger" href="{% url 'planner:event-delete' pk=event.pk %}">Delete</a>
+                            
                         </div>
 
                     </div>
