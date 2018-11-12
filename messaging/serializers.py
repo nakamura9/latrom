@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 
+
 class MessageSerializer(serializers.ModelSerializer):
     thread_pk = serializers.SerializerMethodField()
     created_timestamp = serializers.DateTimeField(format="%A, %d %B %Y, %H:%M")

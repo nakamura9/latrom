@@ -87,7 +87,7 @@ def reply_message(request, pk=None):
     )
     sender = models.Dispatcher(reply)
     sender.dispatch()
-    return HttpResponseRedirect('/base/workflow')
+    return JsonResponse({'status': 'ok'})
 
 
 def inbox_counter(request):
@@ -110,3 +110,5 @@ def mark_as_read(request, pk=None):
     msg.opened_timestamp = datetime.datetime.now()
     msg.save()
     return JsonResponse({'status': 'ok'})
+
+

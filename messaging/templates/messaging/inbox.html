@@ -34,9 +34,10 @@
                     {% if object.threads.all.count == 0 %}
                         <h5>No messages to display</h5>
                     {% else %}
-                    <p>Number of open threads:  ({{object.threads.all.count}})</p>
+                    <p>Number of open threads:  {{object.threads.all.count}}</p>
                     {% for thread in object.threads.all %}
-                        <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;"><div style="border: 1px solid grey; padding:10px;">
+                        <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;">
+                            <div class="bg-primary text-white"  style="padding:10px; border-top: 2px solid white;">
                             <h6>{{thread.latest.sender.username}}</h6>
                             <hr />
                             <p>{{thread.latest.subject}}</p>

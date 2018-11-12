@@ -21,5 +21,7 @@ urlpatterns = [
     path('api/message/<int:pk>', views.MessageAPIView.as_view(),
         name='api-message'),
     path('api/mark-as-read/<int:pk>', views.mark_as_read,
-        name='api-mark-as-read')
+        name='api-mark-as-read'),
+    
+
 ]

@@ -29,6 +29,13 @@ class ReactCalendar(LoginRequiredMixin, TemplateView):
 class PlannerDashboard(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('planner', 'dashboard.html')
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        context['calendar_url'] = '/calendar/month/{}'.format(
+            datetime.date.today().strftime('%Y/%m'))
+
+        return context
 class PlannerConfigUpdateView(LoginRequiredMixin, UpdateView):
     template_name = os.path.join('planner', 'config.html')
     form_class = forms.ConfigForm

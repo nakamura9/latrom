@@ -65,7 +65,7 @@ def get_month_data(array, user):
     } for e in event_objs]
     events = sorted(events, key=lambda x: x['date'])
     res = [{
-        'date': i,
+        'date': i.strftime("%Y/%m/%d"),
         'day': i.day,
         'events' :[]
         } for i in flat]
@@ -80,21 +80,11 @@ def get_month_data(array, user):
     data = reshape(res, (shape))
     return  data
 
-def get_month_views(current, user):
-    '''returns a list of weeks'''
-    TODAY = datetime.date.today()
-    current_date = TODAY + relativedelta(months=current)
-    c = calendar.Calendar(calendar.MONDAY)
-    array = c.monthdatescalendar(
-        current_date.year,
-        current_date.month)
-    period_string = current_date.strftime('%B, %Y')
-    return get_month_data(array, user), period_string
-
 def get_month(request, year=None, month=None):
     year = int(year)
     month= int(month)
     current_date = datetime.date(year, month, 1)
+    c = calendar.Calendar(calendar.MONDAY)
     array = c.monthdatescalendar(year, month)
     period_string = current_date.strftime('%B, %Y')
     user = request.user
@@ -103,35 +93,50 @@ def get_month(request, year=None, month=None):
         'weeks': get_month_data(array, user)
     })
 
-def get_week_views(current, user):
-    '''returns a list of days'''
-    TODAY = datetime.date.today()
-    current_date = TODAY + relativedelta(weeks=current)
+def get_week(request, year=None, month=None, day=None):
+    year = int(year)
+    month= int(month)
+    day=int(day)
+
+    current_date = datetime.date(year, month, day)
     curr_weekday = current_date.weekday()
     array = [current_date + datetime.timedelta(days=i) \
         for i in (range(0 - curr_weekday, 7-curr_weekday))]
     year, week, wkday = current_date.isocalendar()
     period_string = "%d, (%s) %d" % (week, current_date.strftime('%B'), year)
-    return [get_day(date, user) for date in array], period_string
+    user = request.user
+        
+    return JsonResponse({
+        'period_string': period_string,
+        'days': [_get_day(date, user) for date in array]
+    })
 
-def get_day_view(current, user):
-    '''returns a list of events'''
-    TODAY = datetime.date.today()
-    current_date = TODAY + datetime.timedelta(current)
-    data = get_day(current_date, user)
-    return data, ''
+def get_day(request, year=None, month=None, day=None):
+    year = int(year)
+    month= int(month)
+    day=int(day)
 
+    current_date = datetime.date(year, month, day)
+    period_string = current_date.strftime("%A, %d %B %Y")
+    user = request.user
+        
+    return JsonResponse({
+        'date': period_string,
+        'events': _get_day(current_date, user)
+    })
 
-def get_day(date, user):
+def _get_day(date, user):
     events = [{
         'label': e.label,
         'icon': e.icon,
         'date': e.date,
+        'start': e.start_time.strftime('%H:%M'),
+        'end': e.end_time.strftime('%H:%M'),
         'id': e.pk 
     } for e in Event.objects.filter(Q(date=date) & Q(owner=user))]
 
     return {
         'day': date.day,
-        'date': date,
+        'date': date.strftime('%Y/%m/%d'),
         'events': events
     }

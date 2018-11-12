@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
 import axios from 'axios';
-import ThreadWidget from '../js/messaging/thread';
+import MessageDetail from '../js/messaging/container/root';
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -61,5 +61,5 @@ if(storageMedia){
         detailUrlRoot='/inventory/storage-media-detail/'
         dataMapper={dataMapper}/>, storageMediaView);
 }else if(threadView){
-    ReactDOM.render(<ThreadWidget />, threadView);
+    ReactDOM.render(<MessageDetail />, threadView);
 }

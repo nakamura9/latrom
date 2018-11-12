@@ -19,7 +19,9 @@ from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 from common_data.utilities import ExtraContext, apply_style
 from invoicing.models import SalesConfig
-
+from rest_framework.generics import RetrieveAPIView
+from common_data import serializers 
+from django.contrib.auth.models import User
 from . import forms
 
 
@@ -234,3 +236,18 @@ class EmailPlusPDFMixin(ExtraContext, FormView):
 
         # if the message is successful delete it.
         return resp
+
+
+class UserAPIView(RetrieveAPIView):
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
+
+
+def get_current_user(request):
+    if request.user:
+        return JsonResponse({
+            'pk': request.user.pk,
+            'name': request.user.username
+            })
+
+    return JsonResponse({'pk': None})

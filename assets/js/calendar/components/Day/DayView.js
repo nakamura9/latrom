@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import Event from '../Event';
+import axios from 'axios';
+import Day from './Day';
 
 class DayView extends Component{
     state = {
@@ -8,7 +10,18 @@ class DayView extends Component{
     }
 
     componentDidMount(){
-
+        this.props.linkUpdater();
+        const params = this.props.match.params 
+        axios({
+            method: 'GET',
+            url: `/planner/api/calendar/day/${params.year}/${params.month}/${params.day}`
+        }).then(res =>{
+            console.log(res.data);
+            this.setState({
+                events: res.data.events.events,
+                date: res.data.date
+            })
+        })
     }
     render(){
         let dayWrapper = {
@@ -27,18 +40,12 @@ class DayView extends Component{
         }
     
         return(
-            <div style={dayWrapper}>
-                <div style={dayHeader}>
-                    <span >
-                        <h1>{this.state.date}</h1>
-                    </span>
-                </div>
-                <div>
-                    {this.state.events.map((event, i) =>(
-                        <Event key={i} data={event}/>
-                    ))}
-                </div>
-            </div>
+            <Day 
+                data={{
+                    events: this.state.events,
+                    date: this.state.date
+                }}
+                view="day"/>
         )
     }    
 }

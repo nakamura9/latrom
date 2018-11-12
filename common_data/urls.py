@@ -27,4 +27,6 @@ urlpatterns = [
         name='config'),
     re_path(r'^email/?$', views.SendEmail.as_view(), 
         name='email'),
+    re_path('^api/current-user/?$', views.get_current_user,
+        name='api-current-user'),
 ]

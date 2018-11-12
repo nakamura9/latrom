@@ -2,42 +2,8 @@
 {% block content %}
 {% load render_bundle from webpack_loader %}
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-4">
-
-            <div id="thread-widget"></div>
-        </div>
-        <div class="col-sm-8">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <h4 class="card-title">Message Details</h4>
-                    <p class="card-text" >Created: <span id="created">{{object.created_timestamp}}</span></p>
-                    <p class="card-text">To: <span id="to">{{object.recipient}}</span>;</p>
-                    <p class="card-text">Copy: {% for recipient in object.copy.all %}
-                            {{recipient}}; 
-                        {% endfor %}</p>    
-                    
-                </div>
-            </div>
-            <hr />
-            <h6>Subject: <span id="subject">{{object.subject}}</span></h6>
-            <hr />
-            <h6>Message Body:</h6>
-            <p id="message-body">
-                {{object.body}}
-            </p>
-            <hr />
-            <div style="padding:30px;">
-                <h6>Reply</h6>
-                <form method="POST" action="{% url 'messaging:reply-message' pk=object.pk  %}">
-                        {% csrf_token %}
-                        <textarea class="form-control" name="reply" id="" cols="30" rows="10"></textarea>
-                        <input style="float:right;" type="submit" value="submit"/>
-                </form>
-            </div>
-        </div>
-    </div>
+<div id="thread-widget"  class="container-fluid">
 </div>
+{% csrf_token %}
 {% render_bundle "widgets" %}
 {% endblock content %}

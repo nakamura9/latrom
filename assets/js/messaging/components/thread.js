@@ -10,17 +10,27 @@ class ThreadWidget extends Component{
         messages: [],
         focused: null
     }
+
+
     messageClickHandler = (index) => {
     
         //set the message content to 
         let msg = this.state.messages[index];
         this.setState({focused: index});
         this.markAsRead(index);
-        $("#to").text(msg.recipient);
-        $('#created').text(msg.created_timestamp);
-        $('#subject').text(msg.subject);
-        $("#message-body").text(msg.body);
+        this.props.setCurrent(msg);
+
     }
+
+    componentDidUpdate = (prevProps, prevState) => {
+      if(prevState.messages.length !== this.props.messages.length){
+            let messages = [...this.props.messages].reverse();
+            this.setState({messages: messages});
+            console.log("created");
+            console.log(messages);
+      }
+    }
+    
 
     markAsRead = (index) => {
         const pk = this.state.messages[index].id;
@@ -35,29 +45,9 @@ class ThreadWidget extends Component{
         this.setState({messages: newMessages});
     });
     }
-
-    componentDidMount(){
-        const splitURL = window.location.href.split('/');
-        const pk = splitURL[splitURL.length - 1];
-        //get the message that provides its thread
-
-        axios({
-            'method': 'GET',
-            'url': '/messaging/api/message/'+ pk,
-        }).then(res => {
-            axios({
-                'method': 'GET',
-                'url': '/messaging/api/message-thread/' + res.data.thread_pk
-            }).then( res => {
-                this.setState({messages: res.data.messages.map((message, i) =>(res.data.messages[res.data.messages.length - i - 1]))    
-            });
-            
-        })
-    });
-}
-    
     render(){
-        
+        console.log('actual');
+        console.log(this.state.messages);
         return(
             <div>
                 <h4>Message Thread</h4>
@@ -65,6 +55,7 @@ class ThreadWidget extends Component{
                     overflowY: 'auto',
                     height: '500px'
                 }}>
+                    {this.state.messages.length === 0 ? 'No messages To display' : null}
                     {this.state.messages.map((message, i) =>(
                         <MessageCard 
                             key={i}
@@ -87,15 +78,17 @@ class ThreadWidget extends Component{
 
 const MessageCard = (props) =>{
     let messageStyle = {
-        border: "1px solid black",
-        padding: "10px"
+        borderTop: "1px solid white",
+        padding: "10px",
+        backgroundColor: '#09f',
+        color: 'white'
     }
     if(props.unread){
         messageStyle.backgroundColor = '#08f';
         messageStyle.color = 'white';
     }
     if(props.focused){
-        messageStyle.border = "3px solid #04f";
+        messageStyle.backgroundColor = "#007bff";
     }
     return(
         <div 

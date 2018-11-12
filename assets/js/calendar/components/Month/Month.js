@@ -10,6 +10,7 @@ class Month extends Component{
     }
 
     componentDidMount(){
+        this.props.linkUpdater();
         const params = this.props.match.params 
         axios({
             method: 'GET',
@@ -23,9 +24,16 @@ class Month extends Component{
     }
 
     render(){
-        let cellStyle = {
+        const cellStyle = {
             borderCollapse:"collapse",
             border:"1px solid black"
+        };
+        const headStyle = {
+            ...cellStyle,
+            color: "white",
+            backgroundColor: "#07f",
+            padding: "10px"
+            
         };
         let contents = null;
         if(this.state.weeks.length === 0){
@@ -34,17 +42,17 @@ class Month extends Component{
             contents = (<table>
                 <thead>
                     <tr>
-                        <th style={cellStyle}>Monday</th>
-                        <th style={cellStyle}>Tuesday</th>
-                        <th style={cellStyle}>Wednesday</th>
-                        <th style={cellStyle}>Thursday</th>
-                        <th style={cellStyle}>Friday</th>
-                        <th style={cellStyle}>Saturday</th>
-                        <th style={cellStyle}>Sunday</th>
+                        <th style={headStyle}>Monday</th>
+                        <th style={headStyle}>Tuesday</th>
+                        <th style={headStyle}>Wednesday</th>
+                        <th style={headStyle}>Thursday</th>
+                        <th style={headStyle}>Friday</th>
+                        <th style={headStyle}>Saturday</th>
+                        <th style={headStyle}>Sunday</th>
                     </tr>
                 </thead>
                 <tbody>
-                {this.props.weeks.map((week, i)=>(
+                {this.state.weeks.map((week, i)=>(
                     <Week 
                         key={i} 
                         days={week}/>
@@ -54,7 +62,6 @@ class Month extends Component{
         }
         return(
             <Aux>
-            <h3>Month: {this.props.period}</h3>
             {contents}
             </Aux>
         );

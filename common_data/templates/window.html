@@ -21,6 +21,7 @@
                 <li>
                     <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><sub><span class="badge badge-danger" >beta!</span></sub></a>
                     <script>
+                        // need to find a better way that does not violate the session check
                         function inboxCounter(){
                             $.get('/messaging/inbox-counter').then(function(res){
                                 $('#id_message_count').text(res.count);
@@ -28,7 +29,7 @@
                         }
 
                         $(document).ready(function(){
-                            setInterval(inboxCounter, 10000)
+                            setInterval(inboxCounter, 3000000)
                         })
                     </script>
                 </li>
@@ -75,7 +76,9 @@
         <li><a style="color:white;" href="/login">Login</a></li>
         <li><a style="color:white;" href="#">About</a></li>
         <li style="color:white;">{{request.user.username}} is logged in.</li>
+        {% if request.user.is_superuser %}
         <li><a style="color:white;" href="{% url 'base:config' pk=1 %}">Global Settings</a></li>
+        {% endif %}
     </ul>
 </footer>
 <script type="text/javascript">
