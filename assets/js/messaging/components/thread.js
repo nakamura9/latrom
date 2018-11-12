@@ -26,8 +26,7 @@ class ThreadWidget extends Component{
       if(prevState.messages.length !== this.props.messages.length){
             let messages = [...this.props.messages].reverse();
             this.setState({messages: messages});
-            console.log("created");
-            console.log(messages);
+            
       }
     }
     
@@ -46,8 +45,6 @@ class ThreadWidget extends Component{
     });
     }
     render(){
-        console.log('actual');
-        console.log(this.state.messages);
         return(
             <div>
                 <h4>Message Thread</h4>

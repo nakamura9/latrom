@@ -96,14 +96,10 @@ class InvoiceTable extends Component{
                         let discount = subtotal * (y.discount / 100);
                         return (x + (subtotal - discount));
                     }, 0)
-                    console.log(res.rate);
-                    console.log(subtotal);
                     //set tax amount
                     var tax_amount = subtotal * (res.rate / 100);
-                    console.log(tax_amount);
                     //set total
                     var total = tax_amount + subtotal;
-                    console.log(total);
                     this.setState({
                         tax_rate: res.rate,
                         tax_amount: tax_amount,
@@ -212,7 +208,6 @@ class EntryRow extends Component {
             data.price = this.state.curr_item.unit_sales_price;
             var total = data.price * data.quantity;
             var discount = total * data.discount / 100;
-            console.log(discount);
             data.subtotal = total - discount;
             this.props.addItem(data);
             // clears the unit price field

@@ -22,7 +22,6 @@ export default class CreditNoteTable extends Component{
         }).then(res => {
             let credits = {};
             let i = 0;
-            console.log(res.data);
             for( i in res.data.salesinvoiceline_set){
                 credits[res.data.salesinvoiceline_set[i].id] = 0.0;
             }

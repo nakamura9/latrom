@@ -66,7 +66,6 @@ class PayrollTable extends Component{
          
     }
     runPayroll(){
-        console.log('run_payroll@');
         var i = 0;
         var data = this.state.contents;
         var start = $('#id_start_date').val();
@@ -74,9 +73,7 @@ class PayrollTable extends Component{
         var stop = $('#id_end_date').val();
         stop = this.reformatDate(stop);
         var token = $('input[name=csrfmiddlewaretoken]').val();
-        console.log(data);
         for( i in data){
-            console.log(data[i].employee)
             $.ajax({
                 url: '/employees/api/payslip/',
                 method: 'POST',
@@ -91,9 +88,6 @@ class PayrollTable extends Component{
                     'pay_roll_id': 1
                 },
                 error: function(xhr, status, error){
-                    console.log(status);
-                    console.log(xhr.responseText);
-                    console.log(error);
                 },success: function(resp){
                     alert('Payroll run successfully');
                     window.location.replace('/employees/list-pay-slips');

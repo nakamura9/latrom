@@ -31,7 +31,6 @@ export default class CombinedTable extends Component{
                  url: '/invoicing/api/combined-invoice/' + tail,
                  method: 'GET',
              }).then(res =>{
-                 console.log(res);
                  let itemList = res.data.combinedinvoiceline_set.map((line) =>{
                     let lineMappings = {
                         1: 'sale',

@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import ReplyWidget from './reply_widget';
+import axios from 'axios';
+import $ from 'jquery';
 
 class MessageDetail extends Component{
     state = {
         showReplyWidget: false,
-        message: ""
+        message: "",
+        reply: ""
     }
 
     toggleReply = () =>{
@@ -12,10 +15,30 @@ class MessageDetail extends Component{
             showReplyWidget: !prevState.showReplyWidget
         }))
     }
-    onSendReply = () =>{
-        this.toggleReply();
-        this.setState({message: "Reply sent sucessfully"})
+        
+
+    submitHandler = () =>{
+        const token = $("input[name='csrfmiddlewaretoken']").val();
+        let payload = new FormData();
+        payload.set('reply', this.state.reply);
+        payload.set('csrfmiddlewaretoken', token);
+        axios({
+            method: "POST",
+            url: `/messaging/reply-message/${this.props.id}`,
+            data: payload
+                }).then(() => {
+                    this.toggleReply();
+                    this.setState({
+                        message: "Reply sent sucessfully",
+                        reply: ""
+                    })
+
+                })
     }
+    textInputHandler = (evt) =>{
+        this.setState({reply: evt.target.value});
+    }
+
     render(){
         return(
             <div>
@@ -37,10 +60,20 @@ class MessageDetail extends Component{
                     {this.props.body}
                 </p>
                 <hr />
-                <button onClick={this.toggleReply}>
-                    {this.state.showReplyWidget ? 'Cancel' : null} Reply
+                <button 
+                    className="btn btn-primary"
+                    onClick={this.toggleReply}>
+                    
+                    {this.state.showReplyWidget ? <span><i className="fas fa-times"></i>Cancel Reply</span> : <span><i className="fas fa-reply"></i> Reply</span>} 
                 </button>
-                {this.state.showReplyWidget ? <ReplyWidget msgID={this.props.id}/> : null}
+                <hr />
+                {this.state.showReplyWidget 
+                    ? <ReplyWidget 
+                        clickHandler={this.submitHandler}
+                        inputHandler={this.textInputHandler}
+                        value={this.state.reply}    
+                        msgID={this.props.id}/> 
+                    : null}
                 {this.state.message}
         </div>
         )

@@ -70,7 +70,6 @@ class EntryWidget extends Component{
     //billables
     handleBillable = (evt) =>{
         let value = evt.target.value;
-        console.log(value);
         let billablesList = this.state.billables.map((billable) =>(
             billable.id + '-' + billable.description
         ))
@@ -115,13 +114,11 @@ class EntryWidget extends Component{
                 this.props.insertHandler(data);
             });
         }else if(this.state.selectedLineType === 'billable'){
-            console.log(this.state.inputs)
             let pk = this.state.inputs['billable'].split('-')[0];
             axios({
                 url: "/accounting/api/expense/" + pk,
                 method: "GET"
             }).then( res =>{
-                console.log(res.data);
                 let data = {
                     lineType: 'billable',
                     data: {

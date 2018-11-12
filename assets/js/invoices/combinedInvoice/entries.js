@@ -76,8 +76,14 @@ class ProductEntry extends Component{
     }
 
     handler = (evt) =>{
-        this.setState({quantity: evt.target.value})
-        this.props.onChangeQuantity(evt);
+        console.log(evt.target.value);
+        if(evt.target.value && evt.target.value > 0){
+            this.setState({quantity: evt.target.value})
+            this.props.onChangeQuantity(evt);
+        }else{
+            alert("Please select a valid value greater than 0");
+        }
+        
     }
 
     render(){

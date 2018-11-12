@@ -27,7 +27,6 @@ if(storageMedia){
     const pk = currentWarehouse();
     axios.get('/inventory/api/storage-media-detail/' + pk).then(
         res => {
-            console.log(res.data);
             ReactDOM.render(<TreeSelectWidget 
                 url={'/inventory/api/storage-media-nested/' + res.data.warehouse}
                 externalFormFieldName='location'
@@ -51,7 +50,6 @@ if(storageMedia){
         externalFormFieldName='parent'
         dataMapper={dataMapper}/>, categoryView);
 }else if(storageMediaView){
-    console.log('selected storage media');
     let pk = currentWarehouse();
     ReactDOM.render(<TreeSelectWidget
         isListView={true} 
