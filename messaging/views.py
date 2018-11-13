@@ -112,3 +112,9 @@ def mark_as_read(request, pk=None):
     return JsonResponse({'status': 'ok'})
 
 
+def close_thread(request, pk=None):
+    thread = models.MessageThread.objects.get(pk=pk)
+    thread.closed = True
+    thread.save()
+    return HttpResponseRedirect(
+        '/messaging/inbox/{}'.format(thread.inbox_set.first().pk))
