@@ -23,7 +23,10 @@
         <div class="col-sm-6">
             <ul class="nav nav-tabs|pills nav-stacked">
                 <li class="nav-item">
-                    <a href="#messages" data-toggle="tab" class="nav-link active">Messages <span class="badge badge-primary">{{object.unread_messages}}</span></a>
+                    <a href="#messages" data-toggle="tab" class="nav-link active">Open Threads <span class="badge badge-primary">{{object.unread_messages}}</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="#archived-messages" data-toggle="tab" class="nav-link">Archived Threads</a>
                 </li>
                 <li class="nav-item">
                     <a href="#notifications" data-toggle="tab" class="nav-link">Notifications <span class="badge badge-primary">{{object.unread_notifications}}</span></a>
@@ -34,25 +37,46 @@
                     {% if object.threads.all.count == 0 %}
                         <h5>No messages to display</h5>
                     {% else %}
-                    <p>Number of open threads:  {{object.threads.all.count}}</p>
                     {% for thread in object.threads.all %}
+                    {% if not thread.closed %}
                         <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;">
-                            <div class="bg-primary text-white"  style="padding:10px; border-top: 2px solid white;">
-                            <div style="width: 30%; display: inline-block;">
-                                <i class="fas fa-user" style="font-size: 2cm;margin-left:1cm;;"></i>
+                                <div class="bg-primary text-white"  style="padding:10px; border-top: 2px solid white;">
+                                <div style="width: 30%; display: inline-block;">
+                                    <i class="fas fa-user" style="font-size: 2cm;margin-left:1cm;;"></i>
+                                </div>
+                                <div style="width: 60%; display: inline-block;">
+                                    <h6>{{thread.latest.sender.username}}</h6>
+                                    <hr />
+                                    <p>{{thread.latest.subject}}</p>
+                                </div>
                             </div>
-                            <div style="width: 60%; display: inline-block;">
-                                <h6>{{thread.latest.sender.username}}</h6>
-                                <hr />
-                                <p>{{thread.latest.subject}}</p>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    {% endif %}
+                        
                     {% endfor %}
 
                     {% endif %}
                     
                     <!--Paginate the list of messages -->
+                </div>
+                <div class="tab-pane fade" id="archived-messages" role="tabpanel" >
+                    {% for thread in object.threads.all %}
+                    {% if thread.closed %}
+                        <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;">
+                                <div class="bg-info text-white"  style="padding:10px; border-top: 2px solid white;">
+                                <div style="width: 30%; display: inline-block;">
+                                    <i class="fas fa-user" style="font-size: 2cm;margin-left:1cm;;"></i>
+                                </div>
+                                <div style="width: 60%; display: inline-block;">
+                                    <h6>{{thread.latest.sender.username}}</h6>
+                                    <hr />
+                                    <p>{{thread.latest.subject}}</p>
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                        
+                    {% endfor %}
                 </div>
                 <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="profile-tab">
                     {% if object.notifications.count == 0 %}
@@ -60,7 +84,7 @@
                     {% else %}
                     <p>Loading Notifications ...</p>
                     {% for notification in object.notifications %}
-                        <div style="border:1px solid black; padding:10px;">
+                        <div class="bg-primary text-white" style=" padding:10px; border-top: 2px solid white;">
                             <h4>{{notification.title}}</h4>
                             <hr />
                             <p>{{notification.message | truncatechars:80}}</p>

@@ -33,6 +33,15 @@ export default class MessageDetailView extends Component{
         this.updateMessages()
     }
 
+    closeThread = () =>{
+        if(confirm('Are you sure you want to close this thread?')){
+            axios({
+                url: `/messaging/api/close-thread/${this.state.threadPK}`,
+                method: "GET"
+            })
+        }   
+    }
+
     toggleView = () => {
         this.setState((prevState) => ({
             isTextMessageView: !prevState.isTextMessageView
@@ -87,11 +96,15 @@ export default class MessageDetailView extends Component{
                         <button 
                             className={`btn btn-${this.state.isTextMessageView 
                                 ? 'primary' 
-                                : 'secondary'}`}
+                                : 'info'}`}
                             onClick={this.toggleView}>
                                 {this.state.isTextMessageView 
                                     ? 'Email View' 
                                     : 'Text Messaging View'}</button>
+                        <button 
+                        className='btn btn-danger'
+                        onClick={this.closeThread}>
+                            Close Thread</button>
                     </div>
                 </div>
                 <div className="row">

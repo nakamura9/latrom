@@ -586,3 +586,4 @@ class RecurringExpense(AbstractExpense):
 
     def __str__(self):
         return "{} - {} Expense".format(self.pk, self.category_string)
+

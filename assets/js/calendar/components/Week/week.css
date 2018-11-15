@@ -1,0 +1,23 @@
+.cellStyle {
+    border-collapse: collapse;
+    border:1px solid black;
+}
+
+.headStyle {
+    border-collapse: collapse;
+    border:1px solid black;
+    color: white;
+    background-color: #07f;
+    padding: 10px   
+}
+
+.titleStyle {
+    color: white;
+    background-color: #07f;
+    padding: 20px
+}
+
+.dayWrapper {
+    max-height: 500px;
+    overflow-y: auto
+}
