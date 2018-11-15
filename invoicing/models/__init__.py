@@ -39,6 +39,8 @@ class SalesConfig(SingletonModel):
     include_tax_in_invoice = models.BooleanField(default=True)
     include_units_in_sales_invoice = models.BooleanField(default=True)
     business_registration_number = models.CharField(max_length=32,blank=True)
+    next_invoice_number = models.IntegerField(default=1)
+    next_quotation_number = models.IntegerField(default=1)
 
     @classmethod
     def get_config_dict(cls):

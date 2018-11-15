@@ -30,6 +30,8 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
             Tab('Page Layout',
                 'sales_tax',
                 'include_tax_in_invoice',
+                'next_invoice_number',
+                'next_quotation_number',
                 'include_units_in_sales_invoice',
                 'include_shipping_address',
                 'document_theme',
@@ -37,7 +39,6 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
             Tab('Financial Data Presentation',
                 'currency',
                 'apply_price_multiplier',
-                'price_multiplier',
                 ),
             Tab('Business Information',
                 'logo',
@@ -67,7 +68,7 @@ class SalesInvoiceForm(forms.ModelForm, BootstrapMixin):
 
 class SalesInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = ['customer', 'active', 'discount', 'invoice_number', 'quotation_number'] 
+        exclude = ['customer', 'active', 'discount', 'invoice_number', 'quotation_number', 'status'] 
         model = models.SalesInvoice
 
 class SalesInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
@@ -99,7 +100,7 @@ class ServiceInvoiceForm(forms.ModelForm, BootstrapMixin):
 
 class ServiceInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status'
         model = models.ServiceInvoice
 
 class BillForm(forms.ModelForm, BootstrapMixin):
@@ -112,7 +113,7 @@ class BillUpdateForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     customer = forms.ModelChoiceField(models.Customer.objects.all(), widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status'
         model = models.Bill
 
 class BillPaymentForm(forms.ModelForm, BootstrapMixin):
@@ -132,7 +133,7 @@ class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
 
 class CombinedInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status'
         model = models.CombinedInvoice
 
 class CombinedInvoicePaymentForm(forms.ModelForm, BootstrapMixin):

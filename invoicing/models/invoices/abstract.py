@@ -68,8 +68,11 @@ class AbstractSale(models.Model):
         return invoices
 
     def delete(self):
-        self.active = False
-        self.save()
+        if self.status == "draft":
+            super().delete()
+        else:
+            self.active = False
+            self.save()
     
     @property
     def total(self):
@@ -107,13 +110,18 @@ class AbstractSale(models.Model):
         return 'SINV' + str(self.pk)
 
     def set_quote_invoice_number(self):
-        # add feature to allow invoices to be viewed as 
+        # add feature to allow invoices to be viewed as
+        config = inv_models.SalesConfig.objects.first() 
         if self.is_quotation and self.quotation_number is None:
-            quotations = AbstractSale.abstract_filter(Q(Q(status='quotation') | Q(status='draft')))
-            self.quotation_number = len(list(quotations))
+            self.quotation_number = config.next_quotation_number
+            config.next_quotation_number += 1
+            config.save()
+            self.save()
         if not self.is_quotation and self.invoice_number is None:
-            invoices = AbstractSale.abstract_filter(Q(Q(status='sent') | Q(status='paid') | Q(status='paid-partially')))
-            self.invoice_number = len(list(invoices))
+            self.invoice_number = config.next_invoice_number
+            config.next_invoice_number += 1
+            config.save()
+            self.save()
         else:
             return
 

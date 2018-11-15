@@ -175,6 +175,21 @@ class WareHouseItem(models.Model):
     def item(self):
         return self.mapping[self.item_type]
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.location is None:
+            if self.warehouse.storagemedia_set.all().count() == 0:
+                # create a default storage medium for each warehouse
+                location = StorageMedia.objects.create(
+                    name="Default Storage Medium",
+                    warehouse=self.warehouse
+                )
+            else:
+                location = self.warehouse.storagemedia_set.first()
+            
+            self.location = location
+            self.save()
+
 class StorageMedia(models.Model):
     name = models.CharField(max_length = 255)
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None, )

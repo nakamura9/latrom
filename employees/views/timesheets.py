@@ -105,7 +105,7 @@ class TimeSheetViewset(viewsets.ModelViewSet):
     queryset = models.EmployeeTimeSheet.objects.all()
     serializer_class = serializers.TimeSheetSerializer
 
-class TimeLoggerView(ExtraContext, AdministratorCheckMixin, FormView):
+class TimeLoggerView(ExtraContext, FormView):
     template_name = CREATE_TEMPLATE
     extra_context = {
         'title': 'Log Time In/Out'

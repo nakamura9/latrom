@@ -55,10 +55,9 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if self.account is None:
-            n_customers = Customer.objects.all().count() + 1
-            self.account = Account.objects.create(
+    def create_customer_account(self):
+        n_customers = Customer.objects.all().count() + 1
+        self.account = Account.objects.create(
                 name= "Customer: %s" % self.name,
                 balance =0,
                 id= 1100 + n_customers,
@@ -66,6 +65,10 @@ class Customer(models.Model):
                 description = 'Account which represents credit extended to a customer',
                 balance_sheet_category='current-assets'
             )
+
+    def save(self, *args, **kwargs):
+        if self.account is None:
+            self.create_account()
         super(Customer, self).save(*args, **kwargs)
 
     @property
