@@ -13,6 +13,13 @@ account_router.register(r'^api/account', views.AccountViewSet)
 expense_router = routers.DefaultRouter()
 expense_router.register(r'^api/expense', views.ExpenseAPIView)
 
+currency_router = routers.DefaultRouter()
+currency_router.register(r'^api/currency', views.CurrencyAPIView)
+
+currency_conversion_line_router = routers.DefaultRouter()
+currency_conversion_line_router.register(r'^api/currency-conversion-line',
+     views.CurrencyConversionLineAPIView)
+
 expense_urls = [
     re_path(r'^expense/create/?$', views.ExpenseCreateView.as_view(), name="expense-create"),
     re_path(r'^expense/list/?$', views.ExpenseListView.as_view(), 
@@ -70,30 +77,65 @@ account_urls = [
     re_path(r'^create-account/?$', views.AccountCreateView.as_view(), 
         name='create-account'),
     
-    re_path(r'^account-detail/(?P<pk>[\w]+)/?$', views.AccountDetailView.as_view(), 
+    re_path(r'^account-detail/(?P<pk>[\w]+)/?$', 
+        views.AccountDetailView.as_view(), 
         name='account-detail'),
-    re_path(r'^account-update/(?P<pk>[\w]+)/?$', views.AccountUpdateView.as_view(), 
+    re_path(r'^account-update/(?P<pk>[\w]+)/?$', 
+        views.AccountUpdateView.as_view(), 
         name='account-update'),
     re_path(r'^account-list/?$', views.AccountListView.as_view(), 
         name='account-list'),]
 
+bookkeeper_urls = [
+    re_path(r'^create-bookkeeper/?$', views.BookkeeperCreateView.as_view(), 
+        name = 'create-bookkeeper'),
+    re_path(r'^bookkeeper-list/?$', views.BookkeeperListView.as_view(), 
+        name='bookkeeper-list'),
+    re_path(r'^bookkeeper/update/(?P<pk>[\w]+)/?$', 
+        views.BookkeeperUpdateView.as_view(), name='bookkeeper-update'),
+    re_path(r'^bookkeeper/detail/(?P<pk>[\w]+)/?$', 
+        views.BookkeeperDetailView.as_view(), name='bookkeeper-detail'),
+    re_path(r'^bookkeeper/delete/(?P<pk>[\w]+)/?$', 
+        views.BookkeeperDeleteView.as_view(), name='bookkeeper-delete')
+]
+
+currency_urls = [
+    re_path(r'^currency-converter/?$', views.CurrencyConverterView.as_view(), 
+        name='currency-converter'),
+    re_path(r'^create-currency/?$', views.CurrencyCreateView.as_view(), 
+        name='create-currency'),
+    re_path(r'^update-currency/(?P<pk>[\d]+)?$', 
+        views.CurrencyUpdateView.as_view(), name='update-currency'),
+    re_path(r'^create-currency-conversion-line/?$', 
+        views.CurrencyConversionLineCreateView.as_view(), 
+        name='create-currency-conversion-line'),
+    re_path(r'^update-currency-conversion-line/(?P<pk>[\d]+)/?$',
+        views.CurrencyConversionLineUpdateView.as_view(),
+        name='update-currency-conversion-line'),
+]
+
 misc_urls = [    
     re_path(r'^transfer/?$', views.AccountTransferPage.as_view(), 
     name='transfer'),
-    re_path(r'^non-invoiced-cash-sale/?$', views.NonInvoicedCashSale.as_view() ,name='non-invoiced-cash-sale'),
-    re_path(r'^create-tax/?$', views.TaxCreateView.as_view(), name='create-tax'),
+    re_path(r'^non-invoiced-cash-sale/?$', views.NonInvoicedCashSale.as_view() ,
+        name='non-invoiced-cash-sale'),
+    re_path(r'^create-tax/?$', views.TaxCreateView.as_view(), 
+        name='create-tax'),
     re_path(r'^tax-list/?$', views.TaxListView.as_view(), name='tax-list'),
-    re_path(r'^delete-tax/(?P<pk>[\w]+)/?$', views.TaxDeleteView.as_view(), name='delete-tax'),
-    re_path(r'^update-tax/(?P<pk>[\w]+)/?$', views.TaxUpdateView.as_view(), name='update-tax'),
-    re_path(r'^config/(?P<pk>[\d]+)/?$', views.AccountConfigView.as_view(), name='config'),
-    re_path(r'^direct-payment/?$', views.DirectPaymentFormView.as_view(), name='direct-payment'),
-    re_path(r'^(?P<supplier>[\w]+)/direct-payment/?$', views.DirectPaymentFormView.as_view(), name='direct-payment'),
-    re_path(r'^direct-payment-list/?$', views.DirectPaymentList.as_view(), name='direct-payment-list'),
-    re_path(r'^create-bookkeeper/?$', views.BookkeeperCreateView.as_view(), name = 'create-bookkeeper'),
-    re_path(r'^bookkeeper-list/?$', views.BookkeeperListView.as_view(), name='bookkeeper-list'),
-    re_path(r'^bookkeeper/update/(?P<pk>[\w]+)/?$', views.BookkeeperUpdateView.as_view(), name='bookkeeper-update'),
-    re_path(r'^bookkeeper/detail/(?P<pk>[\w]+)/?$', views.BookkeeperDetailView.as_view(), name='bookkeeper-detail'),
-    re_path(r'^bookkeeper/delete/(?P<pk>[\w]+)/?$', views.BookkeeperDeleteView.as_view(), name='bookkeeper-delete')]
+    re_path(r'^delete-tax/(?P<pk>[\w]+)/?$', views.TaxDeleteView.as_view(), 
+        name='delete-tax'),
+    re_path(r'^update-tax/(?P<pk>[\w]+)/?$', views.TaxUpdateView.as_view(), 
+        name='update-tax'),
+    re_path(r'^config/(?P<pk>[\d]+)/?$', views.AccountConfigView.as_view(), 
+        name='config'),
+    re_path(r'^direct-payment/?$', views.DirectPaymentFormView.as_view(), 
+        name='direct-payment'),
+    re_path(r'^(?P<supplier>[\w]+)/direct-payment/?$', 
+        views.DirectPaymentFormView.as_view(), name='direct-payment'),
+    re_path(r'^direct-payment-list/?$', views.DirectPaymentList.as_view(), 
+        name='direct-payment-list'),
+    
+    ]
 
 
 journal_urls = [
@@ -110,4 +152,6 @@ urlpatterns =[
     re_path(r'^$', views.Dashboard.as_view(), name='dashboard'),
 ] + tax_router.urls +  misc_urls + account_urls  + journal_urls + \
     entry_urls  + account_router.urls  + expense_urls + report_urls + \
-    expense_router.urls + recurring_expense_urls + asset_urls
+    expense_router.urls + recurring_expense_urls + asset_urls + \
+    bookkeeper_urls + currency_urls + currency_router.urls + \
+    currency_conversion_line_router.urls

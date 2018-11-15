@@ -12,7 +12,8 @@ from django.utils import timezone
 
 from common_data.models import Person, SingletonModel
 import planner
-
+import accounting
+import invoicing
 
 
 class EmployeesSettings(SingletonModel):
@@ -178,7 +179,7 @@ class Employee(Person):
 
     @property
     def is_sales_rep(self):
-        return hasattr(self, 'salesrepresentative')
+        return(invoicing.models.SalesRepresentative.objects.filter(employee=self).exists())
 
     @property
     def is_inventory_controller(self):
@@ -186,11 +187,12 @@ class Employee(Person):
 
     @property
     def is_bookkeeper(self):
-        return hasattr(self, 'bookkeeper')
+        return(accounting.models.Bookkeeper.objects.filter(employee=self).exists())
+        
 
     @property
     def is_payroll_officer(self):
-        return hasattr(self, 'payroll_officer')
+        return(PayrollOfficer.objects.filter(employee=self).exists())
 
 
     @property

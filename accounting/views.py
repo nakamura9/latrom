@@ -484,3 +484,38 @@ class BookkeeperDeleteView(ExtraContext, BookkeeperCheckMixin, DeleteView):
     extra_context = {
         'title': 'Delete Bookkeeper'
     }
+
+
+class CurrencyConverterView(BookkeeperCheckMixin, TemplateView):
+    template_name = os.path.join('accounting', 'currency_converter.html')
+
+class CurrencyCreateView(BookkeeperCheckMixin, CreateView):
+    template_name = CREATE_TEMPLATE
+    model = models.Currency
+    success_url = "accounting/currency-converter"
+
+class CurrencyUpdateView(BookkeeperCheckMixin, UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.Currency
+    success_url = "accounting/currency-converter"
+
+
+class CurrencyConversionLineCreateView(BookkeeperCheckMixin, 
+        CreateView):
+    template_name = CREATE_TEMPLATE
+    model = models.CurrencyConversionLine
+    success_url = "accounting/currency-converter"
+
+class CurrencyConversionLineUpdateView(BookkeeperCheckMixin, 
+        UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.CurrencyConversionLine
+    success_url = "accounting/currency-converter"
+
+class CurrencyAPIView(viewsets.ModelViewSet):
+    queryset = models.Currency.objects.all()
+    serializer_class = serializers.CurrencySerializer
+
+class CurrencyConversionLineAPIView(viewsets.ModelViewSet):
+    queryset = models.CurrencyConversionLine.objects.all()
+    serializer_class = serializers.CurrencyConversionLineSerializer
