@@ -85,7 +85,7 @@
                         {% for item in object.salesinvoiceline_set.all %}
                         <tr>
                             <td>{{item.quantity}}</td>
-                            <td>{{item.item.item_name}}</td>
+                            <td>{{item.product.name}}</td>
                             <td>{{item.price | floatformat:2 }}</td>
                             {% if include_units_in_sales_invoice %}
                             <td>{{item.item.unit}}</td>

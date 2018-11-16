@@ -190,7 +190,7 @@ class Employee(Person):
 
     @property
     def is_payroll_officer(self):
-        return hasattr(self, 'payroll_officer')
+        return PayrollOfficer.objects.filter(employee=self).exists()
 
 
     @property
