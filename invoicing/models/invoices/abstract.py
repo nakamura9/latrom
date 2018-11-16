@@ -67,9 +67,9 @@ class AbstractSale(models.Model):
 
         return invoices
 
-    def delete(self):
+    def delete(self, *args, **kwargs):
         if self.status == "draft":
-            super().delete()
+            super().delete(*args, **kwargs)
         else:
             self.active = False
             self.save()

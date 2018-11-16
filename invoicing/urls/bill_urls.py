@@ -21,4 +21,6 @@ bill_urls = [
         name='bill-pdf'),
     re_path(r'^bill-email/(?P<pk>[\d]+)/?$', views.BillEmailSendView.as_view(), 
         name='bill-email'),
+    re_path(r'^bill-delete/(?P<pk>[\d]+)/?$', views.BillDraftDeleteView.as_view(), 
+        name='bill-delete'),
 ] + bill_router.urls

@@ -8,7 +8,7 @@ import urllib
 from django.core.mail import EmailMessage
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf import utils as pdf_tools
@@ -174,3 +174,8 @@ class CombinedInvoiceEmailSendView(EmailPlusPDFMixin):
     success_url = reverse_lazy('invoicing:combined-invoice-list')
     pdf_template_name = os.path.join("invoicing", "combined_invoice",
             'pdf.html')
+
+class CombinedInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('invoicing:home')
+    model = CombinedInvoice

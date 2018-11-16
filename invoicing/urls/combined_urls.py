@@ -25,5 +25,7 @@ combined_urls = [
         name='combined-invoice-payment-detail'),
     re_path(r'^combined-draft-update/(?P<pk>[\d]+)/?$', 
         views.CombinedInvoiceDraftUpdateView.as_view(), name='combined-draft-update'),
+    re_path(r'^combined-draft-delete/(?P<pk>[\d]+)/?$', 
+        views.CombinedInvoiceDraftDeleteView.as_view(), name='combined-draft-delete'),
     
 ] + combined_invoice_router.urls 

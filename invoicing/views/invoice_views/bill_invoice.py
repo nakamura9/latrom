@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf.views import PDFTemplateView
@@ -24,8 +24,7 @@ from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceInitialMixin
 
 
-def process_data(data, inv):
-    items = json.loads(urllib.parse.unquote(data))
+def process_data(items, inv):
     for item in items:
         inv.add_line(item['pk'])
     
@@ -74,22 +73,25 @@ class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, Creat
 
     def post(self, request, *args, **kwargs):
         #check if an expense has been recorded
-        data = request.POST.get("item_list", None)
+        resp = super(BillCreateView, self).post(request, *args, **kwargs)
+        if not self.object:
+            return resp
+        
+        inv = self.object
+        
+        print(request._post)
+        data = request._post.get("item_list", None)
         if not data:
             messages.error(self.request, 'No data was sent to the server. Please provide items to the bill.')
             return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
         else:
             items = json.loads(urllib.parse.unquote(data))
-            if isinstance(items, list) or len(items) < 1:
+            if not isinstance(items, list) or len(items) < 1:
                 messages.error(self.request, 'The provided data could not be processed by the server. Please provide items to the bill.')
                 return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
 
-        resp = super(BillCreateView, self).post(request, *args, **kwargs)
-        if not self.object:
-            return resp
-        inv = self.object
         
-        process_data(data, inv)
+        process_data(items, inv)
         return resp
 
 class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
@@ -190,3 +192,9 @@ class BillEmailSendView(EmailPlusPDFMixin):
     inv_class = Bill
     success_url = reverse_lazy('invoicing:bills-list')
     pdf_template_name = os.path.join('invoicing', 'bill', 'pdf.html')
+
+
+class BillDraftDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('invoicing:home')
+    model = Bill

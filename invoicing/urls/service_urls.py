@@ -25,5 +25,7 @@ service_urls = [
         name='service-invoice-payment-detail'),
     re_path(r'^service-draft-update/(?P<pk>[\d]+)/?$', 
         views.ServiceDraftUpdateView.as_view(), name='service-draft-update'),
+    re_path(r'^service-draft-delete/(?P<pk>[\d]+)/?$', 
+        views.ServiceInvoiceDraftDeleteView.as_view(), name='service-draft-delete'),
     re_path(r'^service-invoice-list/?$', views.ServiceInvoiceListView.as_view(), name='service-invoice-list'),
 ] + service_router.urls

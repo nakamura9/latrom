@@ -175,3 +175,8 @@ class ServiceInvoiceEmailSendView(EmailPlusPDFMixin):
     pdf_template_name = os.path.join("invoicing", "service_invoice",
             'pdf.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
+
+class ServiceInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('invoicing:home')
+    model = ServiceInvoice

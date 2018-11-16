@@ -40,6 +40,10 @@ class Bill(AbstractSale):
         return reduce(lambda x, y: x + y, 
             [e.expense.amount for e in self.billline_set.all()], 0)
     
+    def __str__(self):
+        return "Bill - {}".format(self.pk)
+
+
     @property
     def total(self):
         # no tax on bills 
