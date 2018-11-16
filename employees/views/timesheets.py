@@ -60,10 +60,11 @@ class TimeSheetMixin(object):
                         self.object.month,
                         int(line['date']))
             except:
+
                 date = datetime.date(
                         self.object.year, 
                         self.object.month,
-                        28)
+                        28)# but why??
             models.AttendanceLine.objects.create(
                 timesheet=self.object,
                 date=date,
@@ -105,7 +106,7 @@ class TimeSheetViewset(viewsets.ModelViewSet):
     queryset = models.EmployeeTimeSheet.objects.all()
     serializer_class = serializers.TimeSheetSerializer
 
-class TimeLoggerView(ExtraContext, AdministratorCheckMixin, FormView):
+class TimeLoggerView(ExtraContext, FormView):
     template_name = CREATE_TEMPLATE
     extra_context = {
         'title': 'Log Time In/Out'

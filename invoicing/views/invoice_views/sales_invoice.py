@@ -8,7 +8,7 @@ import urllib
 from django.core.mail import EmailMessage
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf import utils as pdf_tools
@@ -99,7 +99,7 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ExtraConte
         return resp
 
 
-class SalesDraftUpdateView(ConfigMixin, UpdateView):
+class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     model = SalesInvoice
     form_class = forms.SalesInvoiceForm
     template_name = os.path.join('invoicing', 'sales_invoice','create.html')
@@ -119,7 +119,7 @@ class SalesDraftUpdateView(ConfigMixin, UpdateView):
         return resp
 
 
-class SalesInvoiceUpdateView(ExtraContext, UpdateView):
+class SalesInvoiceUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     extra_context = {
         'title': 'Edit Sales Invoice Details'
     }
@@ -138,7 +138,7 @@ class SalesInvoiceAPIViewSet(viewsets.ModelViewSet):
     queryset = SalesInvoice.objects.all()
 
 
-class SalesInvoicePaymentView(ExtraContext, CreateView):
+class SalesInvoicePaymentView(SalesRepCheckMixin,ExtraContext, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.SalesInvoicePaymentForm
@@ -154,7 +154,7 @@ class SalesInvoicePaymentView(ExtraContext, CreateView):
             }
 
 
-class SalesInvoicePaymentDetailView(ListView):
+class SalesInvoicePaymentDetailView(SalesRepCheckMixin, ListView):
     template_name = os.path.join('invoicing', 'sales_invoice', 
         'payment', 'detail.html')
 
@@ -171,7 +171,7 @@ class SalesInvoicePaymentDetailView(ListView):
         return context
 
 
-class SalesInvoiceReturnsDetailView(ListView):
+class SalesInvoiceReturnsDetailView(SalesRepCheckMixin, ListView):
     template_name = os.path.join('invoicing', 'sales_invoice', 
         'credit_note', 'detail_list.html')
 
@@ -197,8 +197,14 @@ class SalesInvoicePDFView(ConfigMixin, PDFTemplateView):
         context['object'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class SalesInvoiceEmailSendView(EmailPlusPDFMixin):
+class SalesInvoiceEmailSendView(SalesRepCheckMixin, EmailPlusPDFMixin):
     inv_class = SalesInvoice
     pdf_template_name = os.path.join("invoicing", "sales_invoice",
             'pdf.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
+
+
+class SalesInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('invoicing:home')
+    model = SalesInvoice

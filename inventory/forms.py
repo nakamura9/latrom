@@ -28,8 +28,23 @@ class SupplierForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'account']
         model = models.Supplier
+
+class ItemInitialMixin(forms.Form):
+    initial_quantity = forms.CharField(widget=forms.NumberInput, initial=0)
+    warehouse = forms.ModelChoiceField(
+        models.WareHouse.objects.all(), required=False)
+
+    def save(self):
+        obj = super().save()
+        if float(self.cleaned_data['initial_quantity']) > 0 and \
+            self.cleaned_data['warehouse'] is not None:
+            wh = self.cleaned_data['warehouse']
+            wh.add_item(self.instance, self.cleaned_data['initial_quantity'])
         
-class ProductForm(forms.ModelForm, BootstrapMixin):
+        return obj
+
+class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
+    
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -55,6 +70,10 @@ class ProductForm(forms.ModelForm, BootstrapMixin):
                     'length', 
                     'width',
                     'height'),
+                Tab('Initial Inventory', 
+                    'initial_quantity', 
+                    'warehouse',
+                    ),
                 Tab('Image', 'image'),
             )
             )
@@ -64,7 +83,9 @@ class ProductForm(forms.ModelForm, BootstrapMixin):
         exclude = 'quantity',
         model = models.Product
 
-class EquipmentForm(forms.ModelForm, BootstrapMixin):
+    
+
+class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     def __init__(self, *args, **kwargs):
         super(EquipmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -86,6 +107,10 @@ class EquipmentForm(forms.ModelForm, BootstrapMixin):
                     'length', 
                     'width',
                     'height'),
+                Tab('Initial Inventory', 
+                    'initial_quantity', 
+                    'warehouse',
+                    ),
                 Tab('Image', 'image'),
             )
             )
@@ -95,7 +120,7 @@ class EquipmentForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.Equipment
 
-class ConsumableForm(forms.ModelForm, BootstrapMixin):
+class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     def __init__(self, *args, **kwargs):
         super(ConsumableForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -117,6 +142,10 @@ class ConsumableForm(forms.ModelForm, BootstrapMixin):
                     'length', 
                     'width',
                     'height'),
+                Tab('Initial Inventory', 
+                    'initial_quantity', 
+                    'warehouse',
+                    ),
                 Tab('Image', 'image'),
             )
             )

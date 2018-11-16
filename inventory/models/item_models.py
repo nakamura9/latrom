@@ -121,6 +121,9 @@ class Product(BaseItem):
             total_value += D(item.quantity) * item.order_price
             item_quantity += D(item.quantity)
 
+        if item_quantity == 0:
+            return 0
+
         return total_value / item_quantity
         
     @property
@@ -162,6 +165,14 @@ class Product(BaseItem):
         events = items + orders 
         return sorted(events)
 
+    @property
+    def locations(self):
+        return inventory.models.WareHouseItem.objects.filter(
+            Q(product=self),
+            Q(quantity__gt=0)
+            )
+
+
 class RawMaterial(BaseItem):
     minimum_order_level = models.IntegerField( default=0)
     maximum_stock_level = models.IntegerField(default=0)
@@ -178,6 +189,20 @@ class Equipment(BaseItem):
     asset_data = models.ForeignKey('accounting.Asset', on_delete=None, 
         null=True, blank=True)
 
+    @property
+    def locations(self):
+        return inventory.models.WareHouseItem.objects.filter(
+            Q(equipment=self),
+            Q(quantity__gt=0)
+            )
+
 class Consumable(BaseItem):
     minimum_order_level = models.IntegerField( default=0)
     maximum_stock_level = models.IntegerField(default=0)
+
+    @property
+    def locations(self):
+        return inventory.models.WareHouseItem.objects.filter(
+            Q(consumable=self),
+            Q(quantity__gt=0)
+            )

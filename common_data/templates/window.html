@@ -79,6 +79,10 @@
         {% if request.user.is_superuser %}
         <li><a style="color:white;" href="{% url 'base:config' pk=1 %}">Global Settings</a></li>
         {% endif %}
+        <li>
+            <a style="color:white;" href="{% url 'employees:time-logger' %}">Run Time logger</a>
+        </li>
+        
     </ul>
 </footer>
 <script type="text/javascript">

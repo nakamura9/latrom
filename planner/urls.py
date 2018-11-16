@@ -7,17 +7,21 @@ from .api import get_month, get_week, get_day
 event_router = DefaultRouter()
 event_router.register(r'^api/event', views.EventAPIViewSet)
 
+api_urls = [
+    re_path(r'^api/calendar/month/(?P<year>[\d]+)/(?P<month>[\d]+)/?$', 
+        get_month),
+    re_path(
+        r'^api/calendar/day/(?P<year>[\d]+)/(?P<month>[\d]+)/(?P<day>[\d]+)/?$',
+        get_day),
+    re_path(
+        r'^api/calendar/week/(?P<year>[\d]+)/(?P<month>[\d]+)/(?P<day>[\d]+)/?$', get_week),
+]
+
 urlpatterns = [
     re_path(r'^calendar/?$', views.ReactCalendar.as_view(), 
         name='calendar'),
     re_path(r'^dashboard/?$', views.PlannerDashboard.as_view(), 
         name='dashboard'),
-    re_path(r'^api/calendar/month/(?P<year>[\d]+)/(?P<month>[\d]+)/?$', 
-        get_month),
-    re_path(r'^api/calendar/day/(?P<year>[\d]+)/(?P<month>[\d]+)/(?P<day>[\d]+)/?$', 
-        get_day),
-    re_path(
-        r'^api/calendar/week/(?P<year>[\d]+)/(?P<month>[\d]+)/(?P<day>[\d]+)/?$', get_week),
     re_path(r'^config/(?P<pk>\d+)?$', views.PlannerConfigUpdateView.as_view(), 
         name='config'),
     re_path(r'^event-detail/(?P<pk>\d+)/?$', views.EventDetailView.as_view(), 
@@ -31,4 +35,4 @@ urlpatterns = [
     re_path(r'^event-create/?$', views.EventCreateView.as_view(), name='event-create'),
     re_path(r'event-list', views.EventListView.as_view(), name='event-list'),
     re_path(r'agenda', views.AgendaView.as_view(), name='agenda'),
-] + event_router.urls
+] + event_router.urls + api_urls

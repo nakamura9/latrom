@@ -35,7 +35,7 @@ const event = (props) =>{
         height: "100%",
         width: "100%",
         color: 'white',
-        backgroundColor: 'slateblue'
+        backgroundColor: '#0cc'
     };
     return(
         <a 

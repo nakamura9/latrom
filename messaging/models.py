@@ -137,8 +137,11 @@ class Inbox(models.Model):
             )
             thread.participants.set(message.copy.all())
             self.threads.add(thread)
-
             self.save()
+            # so sender also can see the message as it is sent
+            sender_inbox = Inbox.objects.get(user=message.sender)
+            sender_inbox.threads.add(thread)
+            sender_inbox.save()
 
         thread.add_message(message)
             

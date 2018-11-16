@@ -162,16 +162,11 @@ class TimeLoggerForm(BootstrapMixin, forms.Form):
         # one. Check if this line has been logged in, if so log out if not log in.
         TODAY = datetime.date.today()
         NOW = datetime.datetime.now().time()
-        if models.EmployeeTimeSheet.objects.filter(
-                Q(employee=employee) & 
+        sheet_filters = Q(Q(employee=employee) & 
                 Q(month=TODAY.month) &
-                Q(year=TODAY.year)
-                ).exists():
-            curr_sheet = models.EmployeeTimeSheet.objects.get(
-                Q(employee=employee) & 
-                Q(month=TODAY.month) &
-                Q(year=TODAY.year)
-                )
+                Q(year=TODAY.year))
+        if models.EmployeeTimeSheet.objects.filter(sheet_filters).exists():
+            curr_sheet = models.EmployeeTimeSheet.objects.get(sheet_filters)
         else:
             curr_sheet = models.EmployeeTimeSheet.objects.create(
                 employee=employee, 
@@ -183,6 +178,7 @@ class TimeLoggerForm(BootstrapMixin, forms.Form):
                 Q(timesheet=curr_sheet) &
                 Q(date=TODAY)
                 ).exists():
+                
             curr_line = models.AttendanceLine.objects.get(
                 Q(timesheet=curr_sheet) &
                 Q(date=TODAY)

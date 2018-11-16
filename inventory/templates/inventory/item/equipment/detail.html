@@ -77,6 +77,33 @@
                         </table>
                     </div>
                 </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Product Locations</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-default">
+                            <thead>
+                                <th>Warehouse</th>
+                                <th>Location</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </thead>
+                            <tbody style="max-height:200px; overflow-y:auto;">
+                                {% for l in object.locations %}
+                                    <tr>
+                                        <td>{{l.warehouse}}</td>
+                                        <td>{{l.location}}</td>
+                                        <td>{{l.quantity}}</td>
+                                        <td>
+                                            <a class="btn" style="color:white;" href="{% url 'inventory:storage-media-detail' pk=l.location.pk %}"> Detail</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

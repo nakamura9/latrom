@@ -13,6 +13,7 @@ const inventoryCheck =  document.getElementById('inventory-checker');
 const stockReceipt =  document.getElementById('item-table');
 const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
+const storageMedia = document.getElementById('id-storage-media-select');
 
 if(inventoryCheck){
     ReactDOM.render(<InventoryChecker />, inventoryCheck);

@@ -69,7 +69,7 @@ class Order(models.Model):
         default=1)
     tracking_number = models.CharField(max_length=64, blank=True, 
         default="")
-    notes = models.TextField()
+    notes = models.TextField(blank=True)
     status = models.CharField(max_length=24, 
         choices=ORDER_STATUS_CHOICES)
     active = models.BooleanField(default=True)
