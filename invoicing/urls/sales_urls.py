@@ -26,6 +26,8 @@ sales_urls = [
         name='sales-invoice-payment-detail'),
     re_path(r'^sales-draft-update/(?P<pk>[\d]+)/?$', 
         views.SalesDraftUpdateView.as_view(), name='sales-draft-update'),
+    re_path(r'^sales-draft-delete/(?P<pk>[\d]+)/?$', 
+        views.SalesInvoiceDraftDeleteView.as_view(), name='sales-draft-delete'),
     re_path(r'^sales-invoice-returns/(?P<pk>[\d]+)/?$', 
         views.SalesInvoiceReturnsDetailView.as_view(), 
         name='sales-invoice-returns'),

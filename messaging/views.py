@@ -59,7 +59,11 @@ class ComposeMessageView(LoginRequiredMixin, CreateView):
     template_name = os.path.join('messaging', 'message_compose.html')
     form_class = forms.MessageForm
     model = models.Message
-    success_url = '/base/workflow'
+    
+    def get_success_url(self):
+        return '/messaging/inbox/{}'.format(
+            models.Inbox.objects.get(user=self.request.user).pk
+        )
 
     def get_initial(self):
         return {

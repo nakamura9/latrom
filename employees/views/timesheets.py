@@ -60,10 +60,11 @@ class TimeSheetMixin(object):
                         self.object.month,
                         int(line['date']))
             except:
+
                 date = datetime.date(
                         self.object.year, 
                         self.object.month,
-                        28)
+                        28)# but why??
             models.AttendanceLine.objects.create(
                 timesheet=self.object,
                 date=date,

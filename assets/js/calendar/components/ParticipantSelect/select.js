@@ -90,7 +90,9 @@ class ParticipantSelectWidget extends Component{
                             name = {item.name}/>)
                     })}
                 </div>
-                <ParticipantEntry addHandler={this.addHandler}/>
+                <ParticipantEntry 
+                    dataList={this.state.items}
+                    addHandler={this.addHandler}/>
             </div>
         );
     }
@@ -135,7 +137,7 @@ class ParticipantEntry extends Component{
             switch(this.state.selecting){
                 case 'employee':
                     widgetSelector = <SearchableWidget 
-                        list={[]}
+                        list={this.props.dataList}
                         dataURL="/employees/api/employee/"
                         idField="employee_number"
                         displayField="first_name" //change to full name
@@ -144,7 +146,7 @@ class ParticipantEntry extends Component{
                     break;
                 case 'customer': 
                     widgetSelector = <SearchableWidget
-                        list={[]}
+                        list={this.props.dataList}
                         dataURL="/invoicing/api/customer/"
                         idField="id"
                         displayField="name"
@@ -153,7 +155,7 @@ class ParticipantEntry extends Component{
                     break;
                 case 'supplier': //supplier
                     widgetSelector = <SearchableWidget 
-                        list={[]}
+                        list={this.props.dataList}
                         dataURL="/inventory/api/supplier/"
                         idField="id"
                         displayField="name"

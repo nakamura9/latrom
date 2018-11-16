@@ -39,7 +39,7 @@
 {% block content_body %}
 {% for item in object.returned_items %}
 <tr>
-    <td>{{item.item.item_name}}</td>
+    <td>{{item.product.name}}</td>
     <td>{{item.returned_quantity}}</td>
     <td>{{item.price}}</td>
     <td>{{item.returned_value}}</td>
