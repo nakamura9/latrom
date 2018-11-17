@@ -113,6 +113,7 @@ export default class SalesInvoiceForm extends Component{
         );
     }
 }
+//item -ok
 const SalesLine = (props) => {
     return(
         <tr >

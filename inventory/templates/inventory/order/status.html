@@ -36,7 +36,7 @@
                         <tbody>
                             {% for item in object.orderitem_set.all %}
                             <tr>
-                                <td>{{item.item.item_name}}</td>
+                                <td>{{item.item.name}}</td>
                                 <td>{{item.quantity}}</td>
                                 <td>{{item.received}}</td>
                             </tr>

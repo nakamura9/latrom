@@ -27,6 +27,7 @@ from common_data.utilities import *
 from common_data.views import PaginationMixin, EmailPlusPDFMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
+from accounting.models import Expense, JournalEntry, Account, Journal
 
 from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
@@ -82,7 +83,8 @@ class OrderPOSTMixin(object):
 
         return resp        
 
-class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, OrderPOSTMixin, CreateView):
+class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, 
+        OrderPOSTMixin, CreateView):
     '''The front end page combines with react to create a dynamic
     table for entering items in the form.
     The two systems communicate of json encoded strings 
@@ -123,7 +125,8 @@ class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext,
     extra_context = {"title": "Update Existing Purchase Order"}
 
 
-class OrderListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class OrderListView(InventoryControllerCheckMixin, ExtraContext, 
+        PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.OrderFilter
     template_name = os.path.join("inventory", "order", "list.html")
@@ -183,3 +186,40 @@ class OrderEmailSendView(EmailPlusPDFMixin):
         return {
             'recipient': ord.supplier.email
         }
+
+class ShippingAndHandlingView(InventoryControllerCheckMixin, 
+        ExtraContext, FormView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.ShippingAndHandlingForm
+    success_url = reverse_lazy("inventory:order-list")
+    extra_context = {
+        'title': 'Record Shipping and handling'
+    }
+
+    def get_initial(self):
+        return {
+            'reference': 'ORD{}'.format(self.kwargs['pk'])
+        }
+    
+    def form_valid(self, form):
+        resp =  super().form_valid(form)
+        entry = JournalEntry.objects.create(
+            reference=form.cleaned_data['reference'], 
+            date=form.cleaned_data['date'], 
+            memo=form.cleaned_data['description'], 
+            journal=Journal.objects.get(pk=2),#disbursements
+            created_by=form.cleaned_data['recorded_by']
+        )
+        # the unit cost changes but the journal entry for the cost 
+        # of the order remains the same
+        entry.simple_entry(
+            form.cleaned_data['amount'],
+            Account.objects.get(pk=1000),
+            Account.objects.get(pk=4009)
+            )
+        
+        return resp
+
+    
+class OrderRelatedExpenses(InventoryControllerCheckMixin, TemplateView):
+    pass

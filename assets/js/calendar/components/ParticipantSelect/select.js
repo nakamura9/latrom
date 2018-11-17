@@ -101,12 +101,19 @@ class ParticipantSelectWidget extends Component{
 class ParticipantEntry extends Component{
     state = {
         selecting: "",
+        next: "",
         selected : {
 
         }
     }
     radioHandler = (evt) =>{
-        this.setState({selecting: evt.target.value});
+        //convoluted but working
+        //need to momentarily clear the select widgets before loading the next one 
+        this.setState({next: evt.target.value}, () =>{
+            this.setState({selecting: ""}, () =>{
+                this.setState({selecting: this.state.next});
+            })
+        });
     }
 
     onClearHandler = () =>{
@@ -125,42 +132,44 @@ class ParticipantEntry extends Component{
     }
 
     insertHandler = () =>{
-        // reset the selecting widget to prevent errors in the select widget
-        this.setState({selecting: ""}, () => 
-            this.props.addHandler(this.state.selected)
-    );
-        
+        this.props.addHandler(this.state.selected);
     }
     render(){
             let widgetSelector = null;
             
             switch(this.state.selecting){
                 case 'employee':
-                    widgetSelector = <SearchableWidget 
-                        list={this.props.dataList}
-                        dataURL="/employees/api/employee/"
-                        idField="employee_number"
-                        displayField="first_name" //change to full name
-                        onClear={this.onClearHandler}
-                        onSelect={this.onSelectHandler} />
+                    widgetSelector = <div>
+                    <SearchableWidget 
+                    list={this.props.dataList}
+                    dataURL="/employees/api/employee/"
+                    idField="employee_number"
+                    displayField="first_name" //change to full name
+                    onClear={this.onClearHandler}
+                    onSelect={this.onSelectHandler} />
+                    </div>
                     break;
                 case 'customer': 
-                    widgetSelector = <SearchableWidget
-                        list={this.props.dataList}
-                        dataURL="/invoicing/api/customer/"
-                        idField="id"
-                        displayField="name"
-                        onClear={this.onClearHandler}
-                        onSelect={this.onSelectHandler} />
+                    widgetSelector = <div>
+                    <SearchableWidget
+                    list={this.props.dataList}
+                    dataURL="/invoicing/api/customer/"
+                    idField="id"
+                    displayField="name"
+                    onClear={this.onClearHandler}
+                    onSelect={this.onSelectHandler} />
+                    </div>
                     break;
                 case 'supplier': //supplier
-                    widgetSelector = <SearchableWidget 
-                        list={this.props.dataList}
-                        dataURL="/inventory/api/supplier/"
-                        idField="id"
-                        displayField="name"
-                        onClear={this.onClearHandler}
-                        onSelect={this.onSelectHandler} />
+                    widgetSelector = <div>
+                    <SearchableWidget 
+                    list={this.props.dataList}
+                    dataURL="/inventory/api/supplier/"
+                    idField="id"
+                    displayField="name"
+                    onClear={this.onClearHandler}
+                    onSelect={this.onSelectHandler} />
+                    </div>
                     break;
                 default:
                     widgetSelector = <h4>Select Participant Category</h4>

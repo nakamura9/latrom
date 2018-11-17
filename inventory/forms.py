@@ -4,8 +4,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout, Submit
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 
-from accounting.models import Account
+from accounting.models import Account, Expense
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 
@@ -295,3 +296,12 @@ class AutoStorageMedia(BootstrapMixin, forms.Form):
     number_of_corridors = forms.CharField(widget=forms.NumberInput)
     number_of_aisles_per_corridor = forms.CharField(widget=forms.NumberInput)
     number_of_shelves_per_aisle = forms.CharField(widget=forms.NumberInput)
+
+class ShippingAndHandlingForm(BootstrapMixin, forms.Form):
+    #using current account 
+    #debiting cost of sales account 
+    amount = forms.CharField(widget=forms.NumberInput)
+    date = forms.DateField()
+    description = forms.CharField(widget=forms.Textarea, required=False)
+    recorded_by = forms.ModelChoiceField(User.objects.all())
+    reference = forms.CharField(widget=forms.HiddenInput)

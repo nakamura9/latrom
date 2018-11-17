@@ -27,4 +27,6 @@ order_urls = [
         name="order-status"),
     re_path(r'^order-detail/(?P<pk>[\w]+)/?$', views.OrderDetailView.as_view(), 
         name="order-detail"),
+    re_path(r'^order-expense/(?P<pk>[\w]+)/?$', views.ShippingAndHandlingView.as_view(), 
+        name="order-expense"),
 ] + order_router.urls + order_item_router.urls 

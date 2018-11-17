@@ -40,9 +40,9 @@ export default class CombinedTable extends Component{
                     let data;
                     if(line.line_type === 1){
                         data = {
-                            item: line.item.code + '-' + line.item.item_name,
+                            item: line.product.id + '-' + line.product.name,
                             quantity: line.quantity_or_hours,
-                            price: line.item.unit_sales_price
+                            price: line.product.unit_sales_price
                         };
                     }else if (line.line_type === 2){
                         data = {
