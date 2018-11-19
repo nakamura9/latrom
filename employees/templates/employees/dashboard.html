@@ -47,9 +47,6 @@
                             <li class="list-group-item">
                                 <a href="{% url 'employees:timesheet-list' %}">Create and Manage Time Sheets</a>
                             </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'employees:time-logger' %}">Run Time logger</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -71,6 +68,21 @@
             </div>
             <hr class="my-2">
             <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                            <h4 class="card-title">Leave Days</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:leave-list' %}">Leave Day Management</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:leave-calendar' %}">Leave Calendar</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Employee Roles</h4>

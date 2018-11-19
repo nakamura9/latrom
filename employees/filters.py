@@ -55,3 +55,12 @@ class PayrollTaxFilter(django_filters.FilterSet):
             'name': ['icontains'],
             'paid_by': ['exact']
         }
+
+class LeaveRequestFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Leave
+        fields = {
+            'start_date': ['exact'],
+            'employee': ['exact'],
+            'status': ['exact']
+        }

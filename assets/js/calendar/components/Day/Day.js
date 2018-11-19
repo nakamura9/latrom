@@ -75,9 +75,6 @@ const day = (props) => {
                 </tr>
             ))}
         </table>
-
-    console.log(props.view === "day");
-    console.log(props);
     return(
         <div style={dayWrapper}>
             

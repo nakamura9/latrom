@@ -21,5 +21,12 @@
             "name": "None",
             "rate": 0
         }
+    },
+    {
+        "model": "accounting.CurrencyConversionTable",
+        "pk": 1,
+        "fields": {
+            "name": "Default Currency table"
+        }
     }
 ]

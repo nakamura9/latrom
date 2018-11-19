@@ -9,7 +9,7 @@ import urllib
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
@@ -484,3 +484,77 @@ class BookkeeperDeleteView(ExtraContext, BookkeeperCheckMixin, DeleteView):
     extra_context = {
         'title': 'Delete Bookkeeper'
     }
+
+
+class CurrencyConverterView(BookkeeperCheckMixin, TemplateView):
+    template_name = os.path.join('accounting', 'currency_converter.html')
+
+class CurrencyCreateView(BookkeeperCheckMixin, CreateView):
+    template_name = CREATE_TEMPLATE
+    model = models.Currency
+    success_url = "accounting/currency-converter"
+
+class CurrencyUpdateView(BookkeeperCheckMixin, UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.Currency
+    success_url = "accounting/currency-converter"
+
+
+class CurrencyConversionLineCreateView(BookkeeperCheckMixin, 
+        CreateView):
+    template_name = CREATE_TEMPLATE
+    model = models.CurrencyConversionLine
+    success_url = "accounting/currency-converter"
+
+class CurrencyConversionLineUpdateView(BookkeeperCheckMixin, 
+        UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.CurrencyConversionLine
+    success_url = "accounting/currency-converter"
+
+class CurrencyAPIView(viewsets.ModelViewSet):
+    queryset = models.Currency.objects.all()
+    serializer_class = serializers.CurrencySerializer
+
+class CurrencyConversionLineAPIView(viewsets.ModelViewSet):
+    queryset = models.CurrencyConversionLine.objects.all()
+    serializer_class = serializers.CurrencyConversionLineSerializer
+
+class CurrencyConversionTableAPIView(viewsets.ModelViewSet):
+    queryset = models.CurrencyConversionTable.objects.all()
+    serializer_class = serializers.CurrencyConversionTableSerializer
+
+
+class ExchangeTableCreateView(CreateView):
+    # no get only post
+    form_class = forms.ExchangeTableForm
+    success_url = "/accounting/currency-converter/"
+    template_name = CREATE_TEMPLATE
+
+def update_reference_currency(request, table=None, currency=None):
+    table = models.CurrencyConversionTable.objects.get(pk=table)
+    currency = models.Currency.objects.get(pk=currency)
+    table.reference_currency = currency
+    table.save()
+
+    return JsonResponse({'status': 'ok'})
+
+
+def exchange_rate(request, line=None):
+    line = models.CurrencyConversionLine.objects.get(pk=line)
+    line.exchange_rate  = request.POST['rate']
+    line.save()
+    return JsonResponse({'status': 'ok'})
+
+def create_exchange_table_conversion_line(request):
+    table = models.CurrencyConversionTable.objects.get(
+        pk=request.POST['table_id']) 
+    currency = models.Currency.objects.get(
+        pk=request.POST['currency_id']
+    )
+    models.CurrencyConversionLine.objects.create(
+        currency = currency,
+        exchange_rate = request.POST['rate'],
+        conversion_table = table
+    )
+    return JsonResponse({'status': 'ok'})
