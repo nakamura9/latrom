@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import Payroll from './employees/payroll';
 import TaxBracketTable from './employees/tax_brackets';
-import TimeSheet from './employees/timesheet';
+import TimeSheet from './employees/timesheet/container/root';
 import LeaveCalendar from './employees/leave/container/root';
 
 const payroll = document.getElementById('payroll-table');
