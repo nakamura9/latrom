@@ -1,0 +1,43 @@
+{% extends "window.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Leave Request Details</h1>
+    <p class="lead">View current status, duration and other details</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="" role="button">Authorize</a>
+    </p>
+    
+
+</div>
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h4 class="card-title">Leave request</h4>
+                <p class="card-text">For: {{object.employee}}</p>
+                <p class="card-text">Start Date: {{object.start_date}}</p>
+                <p class="card-text">End Date: {{object.end_date}}</p>
+                <p class="card-text">Duration: {{object.duration}} days</p>
+                <p class="card-text">Leave Category: {{object.category_string}}</p>
+                <p class="card-text">Status: {{object.status_string}}</p>
+                {% if object.status != 0 %}
+                <p class="card-text">Authorized By: {{object.authorized_by}}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card" style="border: 5px sold #05f">
+            <div class="card-body">
+                <h4 class="card-title">Notes</h4>
+                <p class="card-text">{{object.notes}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

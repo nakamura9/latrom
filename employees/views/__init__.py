@@ -10,6 +10,7 @@ from common_data.utilities import ExtraContext
 
 from employees import forms, models
 from .employee import *
+from .leave import *
 from .payroll import *
 from .timesheets import *
 from employees.views.util import AdministratorCheckMixin 

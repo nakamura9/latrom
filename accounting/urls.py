@@ -20,6 +20,10 @@ currency_conversion_line_router = routers.DefaultRouter()
 currency_conversion_line_router.register(r'^api/currency-conversion-line',
      views.CurrencyConversionLineAPIView)
 
+currency_conversion_table_router = routers.DefaultRouter()
+currency_conversion_table_router.register(r'^api/currency-conversion-table',
+     views.CurrencyConversionTableAPIView)
+
 expense_urls = [
     re_path(r'^expense/create/?$', views.ExpenseCreateView.as_view(), name="expense-create"),
     re_path(r'^expense/list/?$', views.ExpenseListView.as_view(), 
@@ -102,6 +106,16 @@ bookkeeper_urls = [
 currency_urls = [
     re_path(r'^currency-converter/?$', views.CurrencyConverterView.as_view(), 
         name='currency-converter'),
+    re_path(r'^create-exchange-table/?$', 
+        views.ExchangeTableCreateView.as_view(), 
+        name='create-exchange-table'),
+    re_path(r'^api/update-reference-currency/(?P<table>[\d]+)/'
+        '(?P<currency>[\d]+)/?$', 
+        views.update_reference_currency),
+    re_path(r'^api/create-conversion-line/?$', 
+        views.create_exchange_table_conversion_line),
+    re_path(r'^api/update-exchange-rate/(?P<line>[\d]+)/?$', 
+        views.exchange_rate),
     re_path(r'^create-currency/?$', views.CurrencyCreateView.as_view(), 
         name='create-currency'),
     re_path(r'^update-currency/(?P<pk>[\d]+)?$', 
@@ -154,4 +168,4 @@ urlpatterns =[
     entry_urls  + account_router.urls  + expense_urls + report_urls + \
     expense_router.urls + recurring_expense_urls + asset_urls + \
     bookkeeper_urls + currency_urls + currency_router.urls + \
-    currency_conversion_line_router.urls
+    currency_conversion_line_router.urls + currency_conversion_table_router.urls

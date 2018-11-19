@@ -16,11 +16,11 @@ export default class CalendarRouter extends Component{
     }
 
     nextHandler = () =>{
-        this.setLinks()
+        this.setLinks();
         window.location.replace(this.state.nextLink);
     }
     prevHandler = () =>{
-        this.setLinks()
+        this.setLinks();
         window.location.replace(this.state.prevLink);
     }
 
