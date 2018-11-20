@@ -100,7 +100,7 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude="active", 'user',
+        exclude="active", 'user','last_leave_day_increment'
         model = models.Employee
 
     def __init__(self, *args, **kwargs):
@@ -209,7 +209,7 @@ class PayrollForm(BootstrapMixin, forms.Form):
 class LeaveRequestForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.Leave
-        exclude = 'status', 'authorized_by'
+        exclude = 'status', 'authorized_by', 'recorded'
 
 class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
     leave_request = forms.ModelChoiceField(models.Leave.objects.all(), 

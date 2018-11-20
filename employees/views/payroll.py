@@ -13,9 +13,10 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
 from rest_framework import viewsets
+from django.db.models import Q
 
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.utilities import ExtraContext, ConfigMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
@@ -138,15 +139,10 @@ class PayGradeDeleteView(AdministratorCheckMixin, DeleteView):
 
 
 
-class PayslipView(AdministratorCheckMixin, DetailView):
+class PayslipView(AdministratorCheckMixin, ConfigMixin, DetailView):
     template_name = os.path.join('employees', 'payslip.html')
     model= models.Payslip
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(PayslipView, self).get_context_data(*args, **kwargs)
-        context['title'] = 'Pay Slip'
-        return context
-
+    
 class PayslipListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.PayslipFilter
     template_name = os.path.join('employees', 'payslip_list.html')
@@ -239,9 +235,12 @@ class ManualPayrollService(object):
     def run(self):
         print('running manual payroll service')
         for employee in self.employees:
+            print(employee)
             if employee.uses_timesheet:
+                print(';wages')
                 self.generate_wage_payslip(employee)
             else:
+                print('no sheet')
                 self.generate_salaried_payslip(employee)
 
 
@@ -260,13 +259,15 @@ class ManualPayrollService(object):
         NOW = datetime.datetime.now()
         sheet = self.get_employee_timesheet(employee)
         if sheet:
+            print('has sheet')
             if sheet.complete:
+                print('is complete')
                 models.Payslip.objects.create(
                     start_period = self.start,
                     end_period = self.end,
                     employee = employee,
-                    normal_hours = sheet.normal_hours,
-                    overtime_one_hours = sheet.overtime,
+                    normal_hours = (sheet.normal_hours.seconds / 3600),
+                    overtime_one_hours = (sheet.overtime.seconds / 3600),
                     overtime_two_hours = 0,
                     pay_roll_id = self.settings.payroll_counter
                 )
@@ -302,4 +303,6 @@ class ManualPayrollService(object):
             return models.EmployeeTimeSheet.objects.get(sheet_filters)
 
         return None
+
+    
         

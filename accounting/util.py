@@ -28,7 +28,7 @@ class AccountingTaskService(object):
                 #expenses
             else:
                 if expense.last_created_date + datetime.timedelta(
-                        days=expense.cycle) >= self.today:
+                        days=expense.cycle) <= self.today:
                     expense.create_entry()
                     expense.create_standalone_expense()
                     expense.last_created_date = self.today

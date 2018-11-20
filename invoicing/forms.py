@@ -14,7 +14,7 @@ from . import models
 class SalesConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.SalesConfig
-        fields = "__all__"        
+        exclude = "apply_price_multiplier", "price_multiplier"        
     def __init__(self, *args, **kwargs):
         super(SalesConfigForm, self).__init__(*args, **kwargs)
 
@@ -38,7 +38,6 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 ),
             Tab('Financial Data Presentation',
                 'currency',
-                'apply_price_multiplier',
                 ),
             Tab('Business Information',
                 'logo',

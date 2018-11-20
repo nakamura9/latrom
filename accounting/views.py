@@ -400,7 +400,7 @@ class ExpenseDetailView(BookkeeperCheckMixin, DetailView):
 class ExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.Expense
-
+    success_url = "/accounting/expense-list"
 
 class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin, 
         CreateView):

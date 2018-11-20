@@ -148,6 +148,7 @@ class Employee(Person):
     pay_grade = models.ForeignKey('employees.PayGrade', 
         on_delete=models.CASCADE,default=1)
     leave_days = models.FloatField(default=0)
+    last_leave_day_increment = models.DateField(null=True)
     uses_timesheet = models.BooleanField(default=False, blank=True)
     user = models.OneToOneField('auth.User', null=True,
          on_delete=models.CASCADE)#not all are users
@@ -407,7 +408,13 @@ class Payslip(models.Model):
             total_sales = self.employee.salesrepresentative.sales(
                 self.start_period, 
                 self.end_period)
-            commissionable_sales = total_sales - self.commission.min_sales
+            
+            if total_sales < self.employee.pay_grade.commission.min_sales:
+                return 0
+
+            commissionable_sales = total_sales - \
+                self.employee.pay_grade.commission.min_sales
+  
             return self.employee.pay_grade.commission.rate * \
                 commissionable_sales
 
@@ -553,7 +560,7 @@ class Leave(models.Model):
     authorized_by = models.ForeignKey('employees.Employee', on_delete=None, 
         related_name='authority', null=True)
     notes = models.TextField(blank=True)
-    
+    recorded = models.BooleanField(default=False)
     @property
     def status_string(self):
         return dict(self.STATUS_CHOICES)[self.status]

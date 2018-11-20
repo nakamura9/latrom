@@ -61,6 +61,8 @@ class AutomatedPayrollService(object):
             self.settings.last_payroll_date = self.TODAY
             self.settings.payroll_counter = payroll_id
             self.settings.save()
+
+        self.adjust_leave_days()
             
             
     def run_salaries_payroll(self, payroll_id):
@@ -130,3 +132,21 @@ class AutomatedPayrollService(object):
             return models.EmployeeTimeSheet.objects.get(sheet_filters)
 
         return None
+
+    def adjust_leave_days(self):
+        for employee in models.Employee.objects.all():
+            if not employee.last_leave_day_increment or \
+                    (self.TODAY -  employee.last_leave_day_increment).days > 30:
+                employee.leave_days += employee.pay_grade.monthly_leave_days
+                employee.last_leave_day_increment = self.TODAY
+                employee.save()
+
+        for leave in models.Leave.objects.filter(
+                Q(recorded=False) &
+                Q(status=1)):
+            if leave.start_date <= self.TODAY:
+                print(leave)
+                leave.recorded = True
+                leave.employee.leave_days -= leave.duration
+                leave.save()
+                leave.employee.save()
