@@ -154,6 +154,10 @@ class Inbox(models.Model):
         return self.notifications.filter(read=False).count()
 
     @property
+    def archived_threads(self):
+        return self.threads.filter(closed=True)
+        
+    @property
     def unread_messages(self):
         total_unread_messages = 0
         for thread in self.threads.all():

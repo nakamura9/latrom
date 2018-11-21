@@ -90,7 +90,7 @@ class CustomerModelTests(TestCase):
 
     def test_invoices(self):
         inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
             )
         
@@ -98,7 +98,7 @@ class CustomerModelTests(TestCase):
 
     def test_credit_invoices(self):
         inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
             )
         
@@ -111,7 +111,7 @@ class CustomerModelTests(TestCase):
     def test_age_list(self):
         due = TODAY - datetime.timedelta(days=8)
         inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
             due= due
             )
@@ -126,7 +126,7 @@ class PaymentModelTests(TestCase):
         create_test_inventory_models(cls)
         
         cls.sales_inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
             )
         SalesInvoiceLine.objects.create(
@@ -145,7 +145,7 @@ class PaymentModelTests(TestCase):
 
     def test_create_payment(self):
         inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
             )
         SalesInvoiceLine.objects.create(
@@ -202,7 +202,7 @@ class SalesRepModelTests(TestCase):
             employee=self.employee_two
         )
         inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
             salesperson=rep
             )
@@ -222,7 +222,7 @@ class CreditNoteModelTests(TestCase):
         create_test_inventory_models(cls)
         create_test_invoicing_models(cls)
         cls.inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
             salesperson=SalesRepresentative.objects.first()
             )
@@ -241,7 +241,7 @@ class CreditNoteModelTests(TestCase):
     
     def test_create_credit_note(self):
         inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
             salesperson=SalesRepresentative.objects.first()
             )
@@ -277,7 +277,7 @@ class SalesInvoiceTests(TestCase):
         create_test_inventory_models(cls)
         create_test_invoicing_models(cls)
         cls.inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
             )
         cls.line = SalesInvoiceLine.objects.create(
@@ -288,7 +288,7 @@ class SalesInvoiceTests(TestCase):
 
     def test_create_sales_invoice(self):
         obj = SalesInvoice.objects.create(
-            status="sent",
+            status="invoice",
             customer=self.customer_org,
             salesperson=SalesRepresentative.objects.first(),
             date=TODAY,
@@ -339,7 +339,7 @@ class SalesInvoiceTests(TestCase):
     def test_on_credit(self):
         self.assertFalse(self.inv.on_credit)
         self.inv.due = TODAY - datetime.timedelta(days=1)
-        self.inv.status = 'sent'
+        self.inv.status = 'invoice'
         self.inv.save()
         self.assertTrue(self.inv.on_credit)
         self.inv.due = TODAY
@@ -396,7 +396,7 @@ class SalesInvoiceTests(TestCase):
         self.inv.create_entry()
         self.assertEqual(Account.objects.get(pk=4009).balance, pre_bal - 10)
         #rollback
-        self.inv.status = "sent"
+        self.inv.status = "invoice"
         self.inv.save()
         Payment.objects.get(sales_invoice=self.inv).delete()
 
@@ -428,7 +428,7 @@ class BillTests(TestCase):
         create_test_invoicing_models(cls)
         cls.inv = Bill.objects.create(
             customer_reference="100",
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cls.exp = Expense.objects.create(
@@ -448,7 +448,7 @@ class BillTests(TestCase):
     def test_create_bill(self):
         obj = Bill.objects.create(
             customer_reference="100",
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
         )
         self.assertIsInstance(obj, Bill)
@@ -500,7 +500,7 @@ class ServiceInvoiceModelTests(TestCase):
     def setUpTestData(cls):
         create_test_invoicing_models(cls)
         cls.inv = ServiceInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cat = ServiceCategory.objects.create(
@@ -522,7 +522,7 @@ class ServiceInvoiceModelTests(TestCase):
         
     def test_create_service_invoice(self):
         obj = ServiceInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
         )
         self.assertIsInstance(obj, ServiceInvoice)
@@ -555,7 +555,7 @@ class CombinedInvoiceModelTests(TestCase):
         create_test_invoicing_models(cls)
         create_test_inventory_models(cls)
         cls.inv = CombinedInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cat = ServiceCategory.objects.create(
@@ -599,7 +599,7 @@ class CombinedInvoiceModelTests(TestCase):
 
     def test_create_combined_invoice(self):
         obj = CombinedInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=self.customer_org,
         )
 

@@ -26,3 +26,13 @@
     color:white;
 }
 
+input[type="checkbox"] {
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+input[type="radio"] {
+    width: 30px;
+    height: 30px;
+}

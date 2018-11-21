@@ -73,15 +73,6 @@ class SalesInvoice(AbstractSale):
             j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
 
             return j
-        if not self.on_credit:
-            pmt = Payment.objects.create(
-                payment_for=0,
-                sales_invoice=self,
-                amount=self.total,
-                date=self.due,
-                sales_rep=self.salesperson
-            )
-            pmt.create_entry()
 
 class SalesInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.SalesInvoice',on_delete=models.CASCADE,)

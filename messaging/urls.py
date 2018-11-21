@@ -5,7 +5,7 @@ app_name = 'messaging'
 urlpatterns = [
     path('message-detail/<int:pk>', views.MessageDetailView.as_view(), 
         name='message-detail'),
-    path('inbox/<int:pk>', views.InboxView.as_view(), name='inbox'),
+    path('inbox/', views.InboxView.as_view(), name='inbox'),
     path('notification/<int:pk>', views.NotificationDetailView.as_view(), 
         name='notification'),
     path('create-message', views.ComposeMessageView.as_view(), 

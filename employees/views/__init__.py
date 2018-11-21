@@ -23,6 +23,15 @@ class DashBoard(AdministratorCheckMixin, ExtraContext, TemplateView):
         'employees': models.Employee.objects.all()
     }
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        context['calendar_url'] = '/employees/leave-calendar/month/{}'.format(
+            datetime.date.today().strftime('%Y/%m'))
+        
+        return context
+
+
     def get(self, request):
         service = AutomatedPayrollService()
         service.run()

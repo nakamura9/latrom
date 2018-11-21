@@ -21,24 +21,14 @@ from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
-from invoicing.views.invoice_views.util import InvoiceInitialMixin
+from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
 def process_data(items, inv):
     for item in items:
         inv.add_line(item['pk'])
     
-    # moved here because the invoice item data must first be 
-    # saved in the database before inventory and entries 
-    # can be created
-    if inv.status in ['draft', 'quotation']:
-        pass
-    elif inv.status in ['sent', 'paid']: 
-        inv.create_entry()
-    else:
-        pass
-
-
+    
 class BillListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
@@ -55,7 +45,7 @@ class BillDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         'detail.html')
 
         
-class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, CreateView):
+class BillCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -64,7 +54,7 @@ class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, Creat
     template_name = os.path.join("invoicing","bill", "create.html")
     form_class = forms.BillForm
     success_url = reverse_lazy("invoicing:bills-list")
-
+    payment_for = 2
 
     def get_context_data(self, *args, **kwargs):
         context = super(BillCreateView, self).get_context_data(*args, **kwargs)
@@ -79,7 +69,6 @@ class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, Creat
         
         inv = self.object
         
-        print(request._post)
         data = request._post.get("item_list", None)
         if not data:
             messages.error(self.request, 'No data was sent to the server. Please provide items to the bill.')
@@ -90,8 +79,11 @@ class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, Creat
                 messages.error(self.request, 'The provided data could not be processed by the server. Please provide items to the bill.')
                 return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
 
+        if inv.status in ['invoice', 'paid']: 
+            inv.create_entry()
         
         process_data(items, inv)
+        self.set_payment_amount()
         return resp
 
 class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):

@@ -1,7 +1,7 @@
 from django.db import models
 
 from accounting.models import Account, Journal, JournalEntry
-
+from decimal import Decimal as D
 
 class Payment(models.Model):
     '''Model represents payments made by credit customers only!
@@ -99,6 +99,9 @@ class Payment(models.Model):
             j.credit(tax_amount, Account.objects.get(pk=2001))
         
         #change invoice status if  fully paid
-        if self.invoice.total_due == 0:
+        if self.invoice.total_due <= 0:
             self.invoice.status = "paid"
-            self.invoice.save()
+        else:
+            self.invoice.status = "paid-partially"
+        
+        self.invoice.save()

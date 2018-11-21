@@ -60,8 +60,10 @@
                     <!--Paginate the list of messages -->
                 </div>
                 <div class="tab-pane fade" id="archived-messages" role="tabpanel" >
-                    {% for thread in object.threads.all %}
-                    {% if thread.closed %}
+                    {% if object.archived_threads.count == 0 %}
+                    <h5>No threads archived</h5>
+                    {% endif %}
+                    {% for thread in object.archived_threads %}
                         <a class="block-link" href="{% url 'messaging:message-detail' pk=thread.latest.pk %}" style="text-decoration:none;">
                                 <div class="bg-info text-white"  style="padding:10px; border-top: 2px solid white;">
                                 <div style="width: 30%; display: inline-block;">
@@ -74,8 +76,6 @@
                                 </div>
                             </div>
                         </a>
-                    {% endif %}
-                        
                     {% endfor %}
                 </div>
                 <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="profile-tab">

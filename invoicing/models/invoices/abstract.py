@@ -22,7 +22,7 @@ class AbstractSale(models.Model):
     SALE_STATUS = [
         ('quotation', 'Quotation'),
         ('draft', 'Draft'),
-        ('sent', 'Sent'),
+        ('invoice', 'Invoice'),
         ('paid', 'Paid In Full'),
         ('paid-partially', 'Paid Partially'),
         ('reversed', 'Reversed'),
@@ -85,7 +85,9 @@ class AbstractSale(models.Model):
     @property
     def on_credit(self):
         # might need to improve the logic
-        return self.status == 'sent' and self.due < self.date
+        return self.status == 'invoice' and \
+            self.due < self.date and \
+            self.total_due > 0
 
     @property
     def total_paid(self):

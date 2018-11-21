@@ -18,21 +18,14 @@ class InboxView(LoginRequiredMixin, DetailView):
     model = models.Inbox
 
     def get_object(self, *args, **kwargs):
-        pk = self.kwargs.get('pk', None)
         try:
-            usr = User.objects.get(pk=pk)
+            self.object = models.Inbox.objects.get(user=self.request.user)
+            return self.object
         except:
-            self.object = None
-            return None
-        else:
-            try:
-                self.object = models.Inbox.objects.get(user=usr)
-                return self.object
-            except:
-                self.object = models.Inbox.objects.create(
-                    user=usr
-                )
-                return self.object
+            self.object = models.Inbox.objects.create(
+                user=self.request.user
+            )
+            return self.object
                 
 class MessageDetailView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'message_detail.html')

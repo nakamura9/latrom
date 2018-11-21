@@ -74,7 +74,7 @@ class Customer(models.Model):
     @property
     def credit_invoices(self):
         return [i for i in self.invoices \
-            if i.status == 'sent']
+            if i.status == 'invoice']
         
     @property
     def age_list(self):

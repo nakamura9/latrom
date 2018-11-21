@@ -22,7 +22,7 @@ from common_data.views import EmailPlusPDFMixin, PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
-from invoicing.views.invoice_views.util import InvoiceInitialMixin
+from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
 def process_data(items, inv):
@@ -34,15 +34,6 @@ def process_data(items, inv):
         # moved here because the invoice item data must first be 
         # saved in the database before inventory and entries 
         # can be created
-        
-    if inv.status == 'sent': 
-        pass
-        #inv.create_credit_entry()
-    elif inv.status == 'paid':
-        pass
-        #inv.create_cash_entry()
-    else:#includes drafts and quotations
-        pass
         
 class ServiceInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ServiceInvoiceSerializer
@@ -73,7 +64,7 @@ class ServiceInvoiceUpdateView(ExtraContext, UpdateView):
     extra_context = {
         'title': 'Update Service Invoice'
     }
-class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, CreateView):
+class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -83,8 +74,10 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMi
     template_name = os.path.join("invoicing","service_invoice", "create.html")
     form_class = forms.ServiceInvoiceForm
     success_url = reverse_lazy("invoicing:service-invoice-list")
+    payment_for = 1
 
     def post(self, request, *args, **kwargs):
+        print(self.payment_for)
         resp = super(ServiceInvoiceCreateView, self).post(request, *args, **kwargs)
         
         if not self.object:
@@ -92,8 +85,11 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMi
 
         inv = self.object
         items = request.POST.get("item_list", None)
+        if inv.status in ['invoice', 'paid']:
+            inv.create_entry()
         
         process_data(items, inv)
+        self.set_payment_amount()
 
         return resp
 

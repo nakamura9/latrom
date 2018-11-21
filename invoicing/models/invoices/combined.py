@@ -55,6 +55,10 @@ class CombinedInvoice(AbstractSale):
         return reduce(lambda x, y: x + y,
             [i.subtotal for i in self.combinedinvoiceline_set.all()], 0)
 
+    def create_entry(self):
+        print('[warning] A n entry method needs to be implemented that factors '
+        'in all the types of lines in a combined invoice')
+
 class CombinedInvoiceLine(models.Model):
     LINE_CHOICES = [
         (1, 'product'),

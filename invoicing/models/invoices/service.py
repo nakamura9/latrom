@@ -33,6 +33,10 @@ class ServiceInvoice(AbstractSale):
         return reduce(lambda x,y: x + y, 
             [i.total for i in self.serviceinvoiceline_set.all() ], 0)
 
+    def create_entry(self):
+        print('[warning] A n entry method needs to be implemented that factors '
+        'in all the types of lines in a combined invoice')
+
 class ServiceInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.ServiceInvoice', on_delete=models.CASCADE,)
     service = models.ForeignKey('services.Service', on_delete=None)

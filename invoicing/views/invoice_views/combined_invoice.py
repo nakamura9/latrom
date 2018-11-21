@@ -22,7 +22,7 @@ from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
-from invoicing.views.invoice_views.util import InvoiceInitialMixin
+from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
 def process_data(items, inv):
@@ -65,7 +65,7 @@ class CombinedInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         'detail.html')
 
         
-class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, CreateView):
+class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -75,7 +75,7 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigM
     template_name = os.path.join("invoicing","combined_invoice", "create.html")
     form_class = forms.CombinedInvoiceForm
     success_url = reverse_lazy("invoicing:combined-invoice-list")
-
+    payment_for = 3
 
     def post(self, request, *args, **kwargs):
         resp = super(CombinedInvoiceCreateView, self).post(request, *args, **kwargs)
@@ -86,7 +86,7 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigM
         inv = self.object
         items = request.POST.get("item_list", None)
         process_data(items, inv)
-
+        self.set_payment_amount()
         return resp
 
 class CombinedInvoiceUpdateView(ExtraContext, UpdateView):
