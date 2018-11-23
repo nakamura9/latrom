@@ -9,3 +9,4 @@ media/
 wkhtmltopdf/
 build/
 dbs/
+global_config.json

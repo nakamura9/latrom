@@ -39,6 +39,7 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
             Tab('Financial Data Presentation',
                 'currency',
                 'apply_price_multiplier',
+                'price_multiplier'
                 ),
             Tab('Business Information',
                 'logo',

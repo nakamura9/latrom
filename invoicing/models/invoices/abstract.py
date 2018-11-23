@@ -67,6 +67,7 @@ class AbstractSale(models.Model):
 
         return invoices
 
+
     def delete(self):
         if self.status == "draft":
             super().delete()
