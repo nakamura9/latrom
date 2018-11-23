@@ -19,7 +19,7 @@
                     </span><sub><span class="badge badge-danger" >beta!</span></sub></a>
                 </li>
                 <li>
-                    <a href="{% url 'messaging:inbox' pk=request.user.pk %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><sub><span class="badge badge-danger" >beta!</span></sub></a>
+                    <a href="{% url 'messaging:inbox' %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><sub><span class="badge badge-danger" >beta!</span></sub></a>
                     <script>
                         // need to find a better way that does not violate the session check
                         function inboxCounter(){

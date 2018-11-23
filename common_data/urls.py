@@ -6,7 +6,7 @@ urlpatterns = [
     re_path(r'^workflow/?$', views.WorkFlowView.as_view(), name="workflow"),
     re_path(r'^react-test/?$', views.ReactTest.as_view(), name="react-test"),
     re_path(r'^api/config/?$', views.config_JSON_API, name='api-config'),
-    re_path(r'^logo-re_path/?$', views.get_logo_url, name='logo-re_path'),
+    re_path(r'^logo-url/?$', views.get_logo_url, name='logo-url'),
     re_path(r'^organization/create/?$', views.OrganizationCreateView.as_view(), 
         name='organization-create'),
     re_path(r'^organization/list/?$', views.OrganizationListView.as_view(), 

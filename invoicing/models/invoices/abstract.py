@@ -22,7 +22,7 @@ class AbstractSale(models.Model):
     SALE_STATUS = [
         ('quotation', 'Quotation'),
         ('draft', 'Draft'),
-        ('sent', 'Sent'),
+        ('invoice', 'Invoice'),
         ('paid', 'Paid In Full'),
         ('paid-partially', 'Paid Partially'),
         ('reversed', 'Reversed'),
@@ -41,7 +41,8 @@ class AbstractSale(models.Model):
         null=True)
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
-    
+    entry = models.ForeignKey('accounting.JournalEntry', 
+        on_delete=None, blank=True, null=True)
     @property
     def overdue(self):
         '''returns boolean'''
@@ -67,10 +68,9 @@ class AbstractSale(models.Model):
 
         return invoices
 
-
-    def delete(self):
+    def delete(self, *args, **kwargs):
         if self.status == "draft":
-            super().delete()
+            super().delete(*args, **kwargs)
         else:
             self.active = False
             self.save()
@@ -86,7 +86,9 @@ class AbstractSale(models.Model):
     @property
     def on_credit(self):
         # might need to improve the logic
-        return self.status == 'sent' and self.due < self.date
+        return self.status == 'invoice' and \
+            self.due < self.date and \
+            self.total_due > 0
 
     @property
     def total_paid(self):
@@ -99,7 +101,7 @@ class AbstractSale(models.Model):
 
     @property
     def tax_amount(self):
-        if self.tax:
+        if self.tax and self.tax.rate != 0:
             return self.subtotal * D((self.tax.rate / 100.0)).quantize(D('1.00'))
         return 0
 

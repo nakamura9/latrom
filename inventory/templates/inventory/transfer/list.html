@@ -16,7 +16,7 @@
 
     {% for t in object_list %}
         <tr>
-            <td>{{t.issue_date}}</td>
+            <td>{{t.date}}</td>
             <td>{{t.source_warehouse}}</td>
             <td>{{t.receiving_warehouse}}</td>
             <td>{{t.trasferorderline_set.all.count}}</td>

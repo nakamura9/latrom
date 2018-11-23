@@ -70,6 +70,17 @@ class ProductCreateView(InventoryControllerCheckMixin, ExtraContext,
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {
         "title": "Create New Product",
+        'description': 'Cycle  through the tabs to enter information regarding product description, quantity, dimensions and pricing. ',
+        'related_links': [{
+            'name': 'Create Supplier',
+            'url': '/inventory/supplier-create/'
+        },{
+            'name': 'Add Unit',
+            'url': '/inventory/unit-create/'
+        },{
+            'name': 'Add Inventory Category',
+            'url': '/inventory/category-create/'
+        },]
         }
 
 
@@ -124,6 +135,17 @@ class ConsumableCreateView(InventoryControllerCheckMixin, ExtraContext,
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {
         "title": "Create New Consumable",
+        'description': 'Cycle  through the tabs to enter information regarding consumable description, quantity, dimensions and pricing. ',
+        'related_links': [{
+            'name': 'Create Supplier',
+            'url': '/inventory/supplier-create/'
+        },{
+            'name': 'Add Unit',
+            'url': '/inventory/unit-create/'
+        },{
+            'name': 'Add Inventory Category',
+            'url': '/inventory/category-create/'
+        }],
         }
 
 ####################################################
@@ -171,4 +193,15 @@ class EquipmentCreateView(InventoryControllerCheckMixin, ExtraContext,
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {
         "title": "Add New Equipment",
+        'description': 'Cycle  through the tabs to enter information regarding equipment description, quantity, dimensions and pricing. ',
+        'related_links': [{
+            'name': 'Create Supplier',
+            'url': '/inventory/supplier-create/'
+        },{
+            'name': 'Add Unit',
+            'url': '/inventory/unit-create/'
+        },{
+            'name': 'Add Inventory Category',
+            'url': '/inventory/category-create/'
+        }],
         }

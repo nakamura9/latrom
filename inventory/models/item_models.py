@@ -113,7 +113,7 @@ class Product(BaseItem):
         cut_off_date = datetime.date.today() - datetime.timedelta(
             days=inventory_settings.stock_valuation_period)
         ordered_items = inventory.models.OrderItem.objects.filter(
-            Q(order__issue_date__gte=cut_off_date) & 
+            Q(order__date__gte=cut_off_date) & 
             Q(product=self))
         total_value = 0
         item_quantity = 0
@@ -157,10 +157,10 @@ class Product(BaseItem):
                     for inv in invoicing.models.SalesInvoiceLine.objects.filter(
                         Q(product=self) & Q(invoice__date__gte=epoch))]
         # from orders
-        orders = [Event(o.order.issue_date, 
+        orders = [Event(o.order.date, 
             "added %d items to inventory from purchase order #%d." % (o.received, o.order.pk)) \
                 for o in inventory.models.OrderItem.objects.filter(Q(product=self) 
-                    & Q(order__issue_date__gte= epoch)) if o.received > 0]
+                    & Q(order__date__gte= epoch)) if o.received > 0]
 
         events = items + orders 
         return sorted(events)

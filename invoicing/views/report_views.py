@@ -39,7 +39,7 @@ class CustomerStatement(TemplateView):
         start, end = extract_period(kwargs)
         
         #invoices 
-        invoices = AbstractSale.abstract_filter(Q(Q(status='sent') | Q(status='paid')) &
+        invoices = AbstractSale.abstract_filter(Q(Q(status='invoice') | Q(status='paid')) &
             Q(Q(date__gte=start) & Q(date__lte = end)))
         
         payments = models.Payment.objects.filter( Q(date__gte=start)
@@ -63,12 +63,10 @@ class InvoiceAgingReport(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(InvoiceAgingReport, self).get_context_data(*args, **kwargs)
-        credit_invoices = AbstractSale.abstract_filter(Q(status='sent') | Q(status='paid'))
-        outstanding_invoices = AbstractSale.abstract_filter(Q(status='sent'))
+        outstanding_invoices = AbstractSale.abstract_filter(Q(status='invoice'))
         context.update({
             'customers': models.Customer.objects.all(),
-            'invoice_count': len([credit_invoices]),
-            'outstanding_invoices': len([outstanding_invoices])
+            'outstanding_invoices': len([i for i in outstanding_invoices])
         })
         context.update(models.SalesConfig.objects.first().__dict__)
         return context

@@ -134,6 +134,12 @@ class EntryWidget extends Component{
     }
 
     render(){
+        const theadStyle = {
+            padding: '2mm',
+            borderRight: '1px solid white',
+            color: 'white',
+            backgroundColor: '#07f'
+        };
         let renderedForm;
         if(this.state.selectedLineType === 'sale'){
             renderedForm = (
@@ -166,7 +172,7 @@ class EntryWidget extends Component{
             )
         }
         return(
-                <tr>
+                <tr style={theadStyle}>
                     <td colSpan={3}>
                         <h3>Invoice Lines</h3>
                         <RadioGroup 
@@ -180,10 +186,15 @@ class EntryWidget extends Component{
                             }}>
                                 {renderedForm}
                             </div>
-                            <hr />
+                            <br />
                             <button 
-                                disabled={this.state.selectedLineType === ""}
-                                className="btn btn-lg btn-primary"
+                                style={{
+                                    display: this.state.selectedLineType === ""
+                                        ? "none"
+                                        : "block",
+                                    clear: "both", 
+                                    float:"right"}}
+                                className="btn"
                                 onClick={this.handleButtonClick}>
                                 Insert
                             </button>

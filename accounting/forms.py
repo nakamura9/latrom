@@ -103,3 +103,9 @@ class BookkeeperForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "active",
         model = models.Bookkeeper
+
+
+class ExchangeTableForm(forms.ModelForm):
+    class Meta:
+        fields = 'reference_currency', 'name',
+        model = models.CurrencyConversionTable

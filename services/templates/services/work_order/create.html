@@ -6,6 +6,31 @@
     <h1 class="display-3">Create Work Order</h1>
     <p class="lead">Details for creating work orders.</p>
     <hr class="my-2">
+        {% if related_links %}
+        <p>Actions</p>
+            
+            <script>
+                function linkClickHandler(link){
+                    window.open(link ,'popup','width=900,height=480');
+                    $('#refresher-button').css('display', 'block');
+                    return false;
+                }   
+            </script>
+            <div class="btn btn-group">
+                    {% for item in related_links %}
+                        <a class="btn btn-primary text-white"  onclick="linkClickHandler('{{item.url}}')" target="popup">{{item.name}}</a>
+                    {% endfor %}    
+            </div>
+            <button
+                class="btn btn-success"
+                id="refresher-button" 
+                style="display:none;"
+                onclick="window.location.replace(window.location.href);"
+                >Refresh <i class="fas fa-sync"></i>
+            </button>
+        <p class="lead">
+        
+        {% endif %}
 </div>
 
 <div class="container">

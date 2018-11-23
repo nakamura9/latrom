@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <h4 class="card-title">Order Details</h4>
                     <p class="card-text">Order ID: ORD{{object.id}} </p>
-                    <p class="card-text">Order Date: {{object.issue_date}} </p>
+                    <p class="card-text">Order Date: {{object.date}} </p>
                     <p class="card-text">Expected Receipt Date: {{object.expected_receipt_date}} </p>
                     <p class="card-text">Supplier: {{object.supplier}}</p>
                     <p class="card-text">Number of items ordered: {{object.orderitem_set.all.count}}</p>
@@ -36,7 +36,7 @@
                         <tbody>
                             {% for item in object.orderitem_set.all %}
                             <tr>
-                                <td>{{item.item.item_name}}</td>
+                                <td>{{item.item.name}}</td>
                                 <td>{{item.quantity}}</td>
                                 <td>{{item.received}}</td>
                             </tr>

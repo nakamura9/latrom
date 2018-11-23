@@ -100,7 +100,7 @@
 </tr>
 {% endblock %} {% block list_content %} {% for item in filter.qs %}
 <tr>
-    <td>{{item.item_name}}</td>
+    <td>{{item.name}}</td>
     <td>{{item.description | truncatechars:30}}</td>
     <td>{{item.category}}</td>
     <td>{{item.unit_sales_price | floatformat:2 }}</td>

@@ -8,7 +8,7 @@ import urllib
 from django.core.mail import EmailMessage
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf import utils as pdf_tools
@@ -22,7 +22,7 @@ from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
-from invoicing.views.invoice_views.util import InvoiceInitialMixin
+from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
 def process_data(items, inv):
@@ -65,7 +65,7 @@ class CombinedInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         'detail.html')
 
         
-class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, CreateView):
+class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -75,7 +75,7 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigM
     template_name = os.path.join("invoicing","combined_invoice", "create.html")
     form_class = forms.CombinedInvoiceForm
     success_url = reverse_lazy("invoicing:combined-invoice-list")
-
+    payment_for = 3
 
     def post(self, request, *args, **kwargs):
         resp = super(CombinedInvoiceCreateView, self).post(request, *args, **kwargs)
@@ -86,7 +86,7 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigM
         inv = self.object
         items = request.POST.get("item_list", None)
         process_data(items, inv)
-
+        self.set_payment_amount()
         return resp
 
 class CombinedInvoiceUpdateView(ExtraContext, UpdateView):
@@ -125,6 +125,9 @@ class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView
         
         process_data(items, inv)
 
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
+
         return resp
 
 class CombinedInvoicePaymentView(ExtraContext, CreateView):
@@ -141,6 +144,13 @@ class CombinedInvoicePaymentView(ExtraContext, CreateView):
             'combined_invoice': self.kwargs['pk'],
             'payment_for': 3
             }
+
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 
 class CombinedInvoicePaymentDetailView(ListView):
@@ -174,3 +184,8 @@ class CombinedInvoiceEmailSendView(EmailPlusPDFMixin):
     success_url = reverse_lazy('invoicing:combined-invoice-list')
     pdf_template_name = os.path.join("invoicing", "combined_invoice",
             'pdf.html')
+
+class CombinedInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('invoicing:home')
+    model = CombinedInvoice

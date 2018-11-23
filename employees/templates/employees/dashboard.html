@@ -47,9 +47,6 @@
                             <li class="list-group-item">
                                 <a href="{% url 'employees:timesheet-list' %}">Create and Manage Time Sheets</a>
                             </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'employees:time-logger' %}">Run Time logger</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -73,6 +70,21 @@
             <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
+                            <h4 class="card-title">Leave Days</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:leave-list' %}">Leave Day Management</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{calendar_url}}">Leave Calendar</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
                         <h4 class="card-title">Employee Roles</h4>
                     </div>
 
@@ -80,19 +92,19 @@
 
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a class="card-link" href="{% url 'inventory:inventory-controller-list' %}">List and Review Inventory Controllers</a>
+                                <a class="card-link" href="{% url 'inventory:inventory-controller-list' %}">Manage Inventory Controllers</a>
                             </li>
                             <li class="list-group-item">
-                                <a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">List and Review Sales Representatives</a>
+                                <a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">Manage Sales Representatives</a>
                             </li>
                             <li class="list-group-item">
-                                <a class="card-link" href="{% url 'accounting:bookkeeper-list' %}">List and Review Accounting Bookkeepers </a>
+                                <a class="card-link" href="{% url 'accounting:bookkeeper-list' %}">Manage Accounting Bookkeepers </a>
                             </li>
                             <li class="list-group-item">
-                                <a class="card-link" href="{% url 'services:service-person-list' %}">List and Review Service Employees </a>
+                                <a class="card-link" href="{% url 'services:service-person-list' %}">Manage Service Employees </a>
                             </li>
                             <li class="list-group-item">
-                                <a class="card-link" href="{% url 'employees:payroll-officer-list' %}">List and Review Payroll Officers </a>
+                                <a class="card-link" href="{% url 'employees:payroll-officer-list' %}">Manage Payroll Officers </a>
                             </li>
                         </ul>
                     </div>

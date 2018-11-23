@@ -49,9 +49,4 @@ class CreditNote(models.Model):
             self.invoice.customer.account,
             Account.objects.get(pk=4002))# sales returns 
 
-    def save(self, *args, **kwargs):
-        super(CreditNote, self).save(*args, **kwargs)
-        # to prevent a transaction during an update
-        if not self.pk is None:
-            return
         

@@ -104,7 +104,12 @@ class IndividualCreateView(ExtraContext, CreateView):
     form_class = forms.IndividualForm
     success_url = reverse_lazy('invoicing:home')
     extra_context = {
-        'title': 'Add Individual'
+        'title': 'Add Individual',
+        'description': 'Register a human that interacts with your business either as a customer or supplier or an employee of one of the two.',
+        'related_links': [{
+            'name': 'Add Organization',
+            'url': '/base/organization/create'
+        }]
     }
 
 class IndividualUpdateView(ExtraContext, UpdateView):
@@ -113,7 +118,12 @@ class IndividualUpdateView(ExtraContext, UpdateView):
     model = models.Individual
     success_url = reverse_lazy('invoicing:home')
     extra_context = {
-        'title': 'Update Individual details'
+        'title': 'Update Individual details',
+        'description': 'Register a human that interacts with your business either as a customer or supplier or an employee of one of the two.',
+        'related_links': [{
+            'name': 'Add Organization',
+            'url': '/base/organization/create'
+        }]
     }
 
 
@@ -128,7 +138,7 @@ class IndividualListView(ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.IndividualFilter
     extra_context = {
         'title': 'List of Individuals',
-        'new_link': reverse_lazy('base:organization-create')
+        'new_link': reverse_lazy('base:individual-create')
     }
 
 

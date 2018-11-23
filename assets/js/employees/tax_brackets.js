@@ -47,7 +47,7 @@ export default class TaxBracketTable extends Component{
             <th></th>
             <th>Lower Limit</th>
             <th>Upper Limit</th>
-            <th>Rate</th>
+            <th>Rate(%)</th>
             <th>Deduction</th>
         </tr>
     </thead>

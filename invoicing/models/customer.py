@@ -68,13 +68,13 @@ class Customer(models.Model):
 
     def save(self, *args, **kwargs):
         if self.account is None:
-            self.create_account()
+            self.create_customer_account()
         super(Customer, self).save(*args, **kwargs)
 
     @property
     def credit_invoices(self):
         return [i for i in self.invoices \
-            if i.status == 'sent']
+            if i.status == 'invoice']
         
     @property
     def age_list(self):

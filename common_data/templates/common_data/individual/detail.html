@@ -21,7 +21,11 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <h5>Photo:</h5>
+                                                    {% if object.photo %}
                                                     <img src="{{object.photo.url}}" class="img-thumbnail" width="320" height="240" alt="Photo thumbnail">
+                                                    {% else %}
+                                                    <i class="fas fa-user" style="font-size:72;"></i>
+                                                    {% endif %}
                                                 </td>
                                             </tr>
                                             <tr>

@@ -9,7 +9,7 @@ import urllib
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
@@ -57,7 +57,10 @@ class JournalEntryCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     model = models.JournalEntry
     form_class = forms.SimpleJournalEntryForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Journal Entry"}
+    extra_context = {
+        "title": "Create New Journal Entry",
+        "description": "Register Financial Transactions with the accounting system."
+        }
 
 class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
     '''This type of journal entry can have any number of 
@@ -108,7 +111,8 @@ class AccountTransferPage(BookkeeperCheckMixin, ExtraContext, CreateView):
     success_url = reverse_lazy('accounting:dashboard')
     form_class = forms.SimpleJournalEntryForm
     extra_context = {
-        'title': 'Transfer between Accounts'
+        'title': 'Transfer between Accounts',
+        'description': 'Move money directly between accounts using a simplified interface. Journal Entries are created automatically'
     }
 
 class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
@@ -116,7 +120,9 @@ class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     model = models.Account
     form_class = forms.AccountForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Account"}
+    extra_context = {
+        "title": "Create New Account",
+        'description': "Use accounts to manage income and expenses in an intuitive way. A default chart of expenses is already implemented."}
 
 class AccountUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
     template_name = CREATE_TEMPLATE
@@ -164,7 +170,12 @@ class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
     extra_context = {
-        'title': 'Add Global Taxes'
+        'title': 'Add Global Taxes',
+        'description': 'These tax objects are used in orders and invoices. Not to be confused with payroll taxes',
+        'related_links': [{
+            'name': 'Create Payroll Tax',
+            'url': '/employees/create-payroll-tax'
+        }]
     }
 
 
@@ -304,7 +315,9 @@ class JournalCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     model = models.Journal
     form_class = forms.JournalForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Journal"}
+    extra_context = {
+        "title": "Create New Journal",
+        "description": 'A virtual document used to record all financial transactions in a business.'}
 
 class JournalDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'journal_detail.html')
@@ -346,7 +359,8 @@ class AssetCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
     extra_context = {
-        'title': 'Register New Asset'
+        'title': 'Register New Asset',
+        'description': 'Used to formally record valuable property belonging to the organization'
     }
 
 class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, CreateView):
@@ -379,7 +393,8 @@ class ExpenseCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
     extra_context = {
-        'title': 'Record Expense'
+        'title': 'Record Expense',
+        'description': 'Record costs incurred in the process of running a business.'
     }
 
 class ExpenseListView(ExtraContext, BookkeeperCheckMixin, PaginationMixin, 
@@ -400,7 +415,7 @@ class ExpenseDetailView(BookkeeperCheckMixin, DetailView):
 class ExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.Expense
-
+    success_url = "/accounting/expense-list"
 
 class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin, 
         CreateView):
@@ -408,7 +423,8 @@ class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin,
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
     extra_context = {
-        'title': 'Record Recurring Expense'
+        'title': 'Record Recurring Expense',
+        'description': 'Record costs that occur periodically'
     }
 
 class RecurringExpenseUpdateView(ExtraContext, BookkeeperCheckMixin, 
@@ -450,7 +466,8 @@ class BookkeeperCreateView(BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:bookkeeper-list')
     extra_context = {
-        'title': 'Assign A New Bookkeeper to the system'
+        'title': 'Create Bookkeeper',
+        'description': 'Assign An existing employee the role of Bookkeeper to manage the accounting system.'
     }
 
 class BookkeeperUpdateView(BookkeeperCheckMixin, UpdateView):
@@ -484,3 +501,77 @@ class BookkeeperDeleteView(ExtraContext, BookkeeperCheckMixin, DeleteView):
     extra_context = {
         'title': 'Delete Bookkeeper'
     }
+
+
+class CurrencyConverterView(BookkeeperCheckMixin, TemplateView):
+    template_name = os.path.join('accounting', 'currency_converter.html')
+
+class CurrencyCreateView(BookkeeperCheckMixin, CreateView):
+    template_name = CREATE_TEMPLATE
+    model = models.Currency
+    success_url = "accounting/currency-converter"
+
+class CurrencyUpdateView(BookkeeperCheckMixin, UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.Currency
+    success_url = "accounting/currency-converter"
+
+
+class CurrencyConversionLineCreateView(BookkeeperCheckMixin, 
+        CreateView):
+    template_name = CREATE_TEMPLATE
+    model = models.CurrencyConversionLine
+    success_url = "accounting/currency-converter"
+
+class CurrencyConversionLineUpdateView(BookkeeperCheckMixin, 
+        UpdateView):
+    template_name = CREATE_TEMPLATE
+    model = models.CurrencyConversionLine
+    success_url = "accounting/currency-converter"
+
+class CurrencyAPIView(viewsets.ModelViewSet):
+    queryset = models.Currency.objects.all()
+    serializer_class = serializers.CurrencySerializer
+
+class CurrencyConversionLineAPIView(viewsets.ModelViewSet):
+    queryset = models.CurrencyConversionLine.objects.all()
+    serializer_class = serializers.CurrencyConversionLineSerializer
+
+class CurrencyConversionTableAPIView(viewsets.ModelViewSet):
+    queryset = models.CurrencyConversionTable.objects.all()
+    serializer_class = serializers.CurrencyConversionTableSerializer
+
+
+class ExchangeTableCreateView(CreateView):
+    # no get only post
+    form_class = forms.ExchangeTableForm
+    success_url = "/accounting/currency-converter/"
+    template_name = CREATE_TEMPLATE
+
+def update_reference_currency(request, table=None, currency=None):
+    table = models.CurrencyConversionTable.objects.get(pk=table)
+    currency = models.Currency.objects.get(pk=currency)
+    table.reference_currency = currency
+    table.save()
+
+    return JsonResponse({'status': 'ok'})
+
+
+def exchange_rate(request, line=None):
+    line = models.CurrencyConversionLine.objects.get(pk=line)
+    line.exchange_rate  = request.POST['rate']
+    line.save()
+    return JsonResponse({'status': 'ok'})
+
+def create_exchange_table_conversion_line(request):
+    table = models.CurrencyConversionTable.objects.get(
+        pk=request.POST['table_id']) 
+    currency = models.Currency.objects.get(
+        pk=request.POST['currency_id']
+    )
+    models.CurrencyConversionLine.objects.create(
+        currency = currency,
+        exchange_rate = request.POST['rate'],
+        conversion_table = table
+    )
+    return JsonResponse({'status': 'ok'})

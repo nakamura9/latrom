@@ -224,10 +224,15 @@ class EntryRow extends Component{
     }
     
     render(){
+        const theadStyle = {
+            padding: '2mm',
+            borderRight: '1px solid white',
+            color: 'white',
+            backgroundColor: '#07f'
+        };
         return(
-                <tr>
-                    <td style={{width: "10%"}}></td>
-                    <td style={{width: "50%"}}>
+                <tr style={theadStyle}>
+                    <td colSpan={2} style={{width: "60%"}}>
                         <SearchableWidget
                             list={this.props.itemList}
                             dataURL="/services/api/service/"
@@ -235,6 +240,13 @@ class EntryRow extends Component{
                             idField="id"
                             onClear={this.onClear}
                             onSelect={this.onSelect}/>
+                        <button 
+                            style={{width:"100%"}}
+                            className="btn"
+                            onClick={() => window.open(
+                                '/services/create-service' ,'popup','width=900,height=480')}>
+                            Add New Service <i className="fas fa-plus"></i>
+                        </button>
                     </td>
                     <td style={{width: "10%"}}>{this.state.currentRate}</td>
                     <td style={{width: "15%"}}>
@@ -246,7 +258,7 @@ class EntryRow extends Component{
                     </td>
                     <td style={{width: "15%"}}>
                         <button 
-                            className="btn btn-primary"
+                            className="btn "
                             onClick={this.handleButtonClick}
                             type="button">
                             Insert

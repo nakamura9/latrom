@@ -45,7 +45,7 @@ class OrderFilter(django_filters.FilterSet):
             'tracking_number': ['icontains'],
             'supplier': ['exact'],
             'status': ['exact'],
-            'issue_date': ['exact'],
+            'date': ['exact'],
             'expected_receipt_date': ['exact']
         }
 
@@ -71,7 +71,7 @@ class TransferOrderFilter(django_filters.FilterSet):
     class Meta:
         model = TransferOrder
         fields = {
-            'issue_date': ['exact'],
+            'date': ['exact'],
             'source_warehouse': ['exact'],
             'receiving_warehouse': ['exact']
         }
@@ -82,4 +82,12 @@ class UnitFilter(django_filters.FilterSet):
         fields = {
             'name': ['icontains'],
             'base_unit': ['exact']
+        }
+
+
+class ControllerFilter(django_filters.FilterSet):
+    class Meta:
+        model = InventoryController
+        fields = {
+            'employee': ['exact'],
         }

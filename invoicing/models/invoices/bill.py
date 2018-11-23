@@ -40,6 +40,10 @@ class Bill(AbstractSale):
         return reduce(lambda x, y: x + y, 
             [e.expense.amount for e in self.billline_set.all()], 0)
     
+    def __str__(self):
+        return "Bill - {}".format(self.pk)
+
+
     @property
     def total(self):
         # no tax on bills 
@@ -60,15 +64,9 @@ class Bill(AbstractSale):
             j.credit(line.expense.amount, line.expense.expense_account)
         j.debit(self.total, self.customer.account)#customer account
 
-        if not self.on_credit:
-            pmt = Payment.objects.create(
-                payment_for=2,
-                bill=self,
-                amount=self.total,
-                date=self.due,
-                sales_rep=self.salesperson
-            )
-            pmt.create_entry()
+        self.entry = j
+        self.save()
+
         return j
             
 class BillLine(models.Model):

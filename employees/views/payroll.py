@@ -13,9 +13,10 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
 from rest_framework import viewsets
+from django.db.models import Q
 
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.utilities import ExtraContext, ConfigMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
@@ -109,7 +110,26 @@ class PayGradeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
     template_name =CREATE_TEMPLATE
     success_url = reverse_lazy('employees:dashboard')
     extra_context = {
-        'title': 'Add pay grades for payroll'
+        'title': 'Add Pay Grade',
+        'description': 'Use pay grades to group employees on the same income level. Apply commission rules, benefits, deductions and taxes to each unique grade.',
+        'related_links': [
+            {
+                'name': 'Add Commission Rule',
+                'url': '/employees/create-commission/'
+            },
+            {
+                'name': 'Add Allowance',
+                'url': '/employees/create-allowance/'
+            },
+            {
+                'name': 'Add Deduction',
+                'url': '/employees/create-deduction/'
+            },
+            {
+                'name': 'Add Tax',
+                'url': '/employees/create-payroll-tax/'
+            }
+        ] 
     }
 
 class PayGradeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
@@ -138,15 +158,10 @@ class PayGradeDeleteView(AdministratorCheckMixin, DeleteView):
 
 
 
-class PayslipView(AdministratorCheckMixin, DetailView):
+class PayslipView(AdministratorCheckMixin, ConfigMixin, DetailView):
     template_name = os.path.join('employees', 'payslip.html')
     model= models.Payslip
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(PayslipView, self).get_context_data(*args, **kwargs)
-        context['title'] = 'Pay Slip'
-        return context
-
+    
 class PayslipListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
     filterset_class = filters.PayslipFilter
     template_name = os.path.join('employees', 'payslip_list.html')
@@ -196,7 +211,8 @@ class PayrollTaxDetailView(AdministratorCheckMixin, DetailView):
     template_name = os.path.join('employees', 'payroll_tax_detail.html')
     model = models.PayrollTax
 
-class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, FilterView):
+class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, PaginationMixin,
+        FilterView):
     template_name = os.path.join('employees', 'payroll_tax_list.html')
     queryset = models.PayrollTax.objects.all()
     extra_context = {
@@ -239,9 +255,12 @@ class ManualPayrollService(object):
     def run(self):
         print('running manual payroll service')
         for employee in self.employees:
+            print(employee)
             if employee.uses_timesheet:
+                print(';wages')
                 self.generate_wage_payslip(employee)
             else:
+                print('no sheet')
                 self.generate_salaried_payslip(employee)
 
 
@@ -260,13 +279,15 @@ class ManualPayrollService(object):
         NOW = datetime.datetime.now()
         sheet = self.get_employee_timesheet(employee)
         if sheet:
+            print('has sheet')
             if sheet.complete:
+                print('is complete')
                 models.Payslip.objects.create(
                     start_period = self.start,
                     end_period = self.end,
                     employee = employee,
-                    normal_hours = sheet.normal_hours,
-                    overtime_one_hours = sheet.overtime,
+                    normal_hours = (sheet.normal_hours.seconds / 3600),
+                    overtime_one_hours = (sheet.overtime.seconds / 3600),
                     overtime_two_hours = 0,
                     pay_roll_id = self.settings.payroll_counter
                 )
@@ -302,4 +323,6 @@ class ManualPayrollService(object):
             return models.EmployeeTimeSheet.objects.get(sheet_filters)
 
         return None
+
+    
         

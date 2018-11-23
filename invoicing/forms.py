@@ -14,7 +14,8 @@ from . import models
 class SalesConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.SalesConfig
-        fields = "__all__"        
+        fields = "__all__"
+
     def __init__(self, *args, **kwargs):
         super(SalesConfigForm, self).__init__(*args, **kwargs)
 
@@ -38,8 +39,6 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 ),
             Tab('Financial Data Presentation',
                 'currency',
-                'apply_price_multiplier',
-                'price_multiplier'
                 ),
             Tab('Business Information',
                 'logo',
@@ -59,17 +58,28 @@ class SalesRepForm(forms.ModelForm, BootstrapMixin):
         exclude = 'active',
         model = models.SalesRepresentative
 
+class InvoiceCreateMixin(forms.Form):
+    apply_payment = forms.BooleanField(required=False)
 
-class SalesInvoiceForm(forms.ModelForm, BootstrapMixin):
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data['status'] != 'invoice' and \
+                cleaned_data['apply_payment']:
+            raise forms.ValidationError('Save the document as invoice if you want to apply a payment')
+
+        return cleaned_data
+
+class SalesInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'entry'
         model = models.SalesInvoice
 
+    
 
 class SalesInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = ['customer', 'active', 'discount', 'invoice_number', 'quotation_number', 'status'] 
+        exclude = ['customer', 'active', 'discount', 'invoice_number', 'quotation_number', 'status', 'entry'] 
         model = models.SalesInvoice
 
 class SalesInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
@@ -93,28 +103,32 @@ class ServiceInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
         exclude = ['sales_invoice', 'bill', 'combined_invoice']
         model = models.Payment
 
-class ServiceInvoiceForm(forms.ModelForm, BootstrapMixin):
+class ServiceInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    apply_payment = forms.BooleanField(required=False)
+
     class Meta:
-        exclude = "active", 'invoice_number', 'quotation_number', 'discount'
+        exclude = "active", 'invoice_number', 'quotation_number', 'discount', 'entry'
         model = models.ServiceInvoice
 
 class ServiceInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status', 'entry'
         model = models.ServiceInvoice
 
-class BillForm(forms.ModelForm, BootstrapMixin):
+class BillForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    apply_payment = forms.BooleanField(required=False)
+
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'entry'
         model = models.Bill
 
 class BillUpdateForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     customer = forms.ModelChoiceField(models.Customer.objects.all(), widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status', 'entry'
         model = models.Bill
 
 class BillPaymentForm(forms.ModelForm, BootstrapMixin):
@@ -126,15 +140,17 @@ class BillPaymentForm(forms.ModelForm, BootstrapMixin):
         exclude = ['sales_invoice', 'service_invoice', 'combined_invoice']
         model = models.Payment
 
-class CombinedInvoiceForm(forms.ModelForm, BootstrapMixin):
+class CombinedInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    apply_payment = forms.BooleanField(required=False)
+
     class Meta:
-        exclude = "active", 'invoice_number', 'quotation_number', 'discount'
+        exclude = "active", 'invoice_number', 'quotation_number', 'discount', 'entry'
         model = models.CombinedInvoice
 
 class CombinedInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status', 'entry'
         model = models.CombinedInvoice
 
 class CombinedInvoicePaymentForm(forms.ModelForm, BootstrapMixin):

@@ -22,7 +22,7 @@ from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
-from invoicing.views.invoice_views.util import InvoiceInitialMixin
+from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
 def process_data(items, inv):
@@ -33,21 +33,6 @@ def process_data(items, inv):
             inv.add_product(Product.objects.get(pk=pk), 
                 item['quantity'])
     
-    # moved here because the invoice item data must first be 
-    # saved in the database before inventory and entries 
-    # can be created
-    if inv.status in ['draft', 'quotation']:
-        pass
-    elif inv.status == 'sent': 
-        pass
-        #inv.update_inventory()
-        #inv.create_credit_entry()
-    elif inv.status == 'paid':
-        pass
-        #inv.update_inventory()
-        #inv.create_cash_entry()
-    else:
-        pass
 
 class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, 
         FilterView):
@@ -71,7 +56,7 @@ class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         return context
 
         
-class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ExtraContext, ConfigMixin, CreateView):
+class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ExtraContext, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -84,20 +69,22 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ExtraConte
     form_class = forms.SalesInvoiceForm
     success_url = reverse_lazy("invoicing:sales-invoice-list")
     model = SalesInvoice
+    payment_for = 0
 
     def post(self, request, *args, **kwargs):
         resp = super(SalesInvoiceCreateView, self).post(request, *args, **kwargs)
         if not self.object:
             return resp
 
-        inv = self.object
-        
         items = request.POST.get("item_list", None)
-        process_data(items, inv)
-        #fix 
-        #create payment for invoice and entry if the post obj is paid
-        return resp
+        process_data(items, self.object)
 
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
+        
+        self.set_payment_amount()
+        return resp
+    
 
 class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     model = SalesInvoice
@@ -116,6 +103,11 @@ class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
         
         process_data(items, self.object)
 
+        print(self.object.status)
+        if self.object.status in ["invoice", "paid"]:
+            self.object.create_entry()
+            print('entry created')
+
         return resp
 
 
@@ -128,9 +120,6 @@ class SalesInvoiceUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
 
-
-def apply_full_payment_on_invoice(request):
-    pass
 
 
 class SalesInvoiceAPIViewSet(viewsets.ModelViewSet):
@@ -152,6 +141,13 @@ class SalesInvoicePaymentView(SalesRepCheckMixin,ExtraContext, CreateView):
             'sales_invoice': self.kwargs['pk'],
             'payment_for': 0
             }
+
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 
 class SalesInvoicePaymentDetailView(SalesRepCheckMixin, ListView):

@@ -28,7 +28,7 @@
                 </a>
                 {% if wo.status != 'authorized' %}
                 <a class="dropdown-item" href="{% url 'services:work-order-complete' pk=wo.pk %}">
-                    <i class="fas fa-eye"></i> Complete
+                    <i class="fas fa-check"></i> Complete
                 </a>
                 {% endif %}
             </div>

@@ -18,6 +18,18 @@
                         <table class="table">
                             <tbody>
                                 <tr>
+                                    <td colspan="2">
+                                        <h5>Logo:</h5>
+                                        {% if object.logo %}
+                                            <img src="{{object.logo.url}}" class="img-thumbnail" width="128" height="128" alt="Photo thumbnail">
+                                        {% else %}
+                                            <i class="fas fa-building" style="font-size:72;"></i>
+
+                                            
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Legal Name</th>
                                     <td>{{object.legal_name}}</td>
                                 </tr>

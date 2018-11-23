@@ -74,11 +74,11 @@ export default class SalesInvoiceForm extends Component{
 
 
     render(){
-        let theadStyle = {
+        const theadStyle = {
             padding: '2mm',
             borderRight: '1px solid white',
             color: 'white',
-            backgroundColor: 'black'
+            backgroundColor: '#07f'
         };
         return(
             <table className="table">
@@ -113,6 +113,7 @@ export default class SalesInvoiceForm extends Component{
         );
     }
 }
+//item -ok
 const SalesLine = (props) => {
     return(
         <tr >
@@ -195,8 +196,14 @@ class EntryRow extends Component{
 
 
     render(){
+        const theadStyle = {
+            padding: '2mm',
+            borderRight: '1px solid white',
+            color: 'white',
+            backgroundColor: '#07f'
+        };
         return(
-            <tr>
+            <tr style={theadStyle}>
                 <td colSpan={2}>
                     <SearchableWidget 
                         list={this.props.itemList}
@@ -206,8 +213,15 @@ class EntryRow extends Component{
                         onSelect={this.onSelect}
                         onClear={this.onClear}
                     />
+                        <button 
+                            style={{width:"100%"}}
+                            className="btn "
+                            onClick={() => window.open(
+                                '/inventory/product-create/' ,'popup','width=900,height=480')}>
+                            Create New Product <i className="fas fa-plus"></i>
+                        </button>
+                   
                 </td>
-                
                 <td>{this.state.inputs.unit_price.toFixed(2)}</td>
                 <td>
                     <input 
@@ -220,7 +234,7 @@ class EntryRow extends Component{
                 </td>
                 <td>
                     <button 
-                        className="btn btn-primary"
+                        className="btn "
                         onClick={this.clickHandler}
                         type="button">
                         Insert

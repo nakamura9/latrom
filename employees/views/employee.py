@@ -34,7 +34,8 @@ class EmployeeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
     success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
     extra_context = {
-        'title': 'Add Employee to payroll system'
+        'title': 'Create Employee',
+        'description': 'Use this form to record employee data. Employee objects can be added to payroll, and have their vacation time managed. They can also be linked to users.'
     }
     
 
@@ -72,7 +73,8 @@ class PayrollOfficerCreateView(AdministratorCheckMixin, ExtraContext, CreateView
     form_class = forms.PayrollOfficerForm
     success_url = reverse_lazy('employees:dashboard')
     extra_context = {
-        'title': 'Add New Payroll Officer'
+        'title': 'Add Payroll Officer',
+        'description': 'Payroll officers are employees assigned to manage employee data such as income and vacation time as well as the roles of users within the system.'
     }
 
 class PayrollOfficerUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):

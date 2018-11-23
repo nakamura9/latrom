@@ -36,17 +36,4 @@
 
 </div>
 
-
-
-<script>
-    $(document).ready(function(){
-        {% for modal in modals %}
-        $('#{{modal.link}}_form').ajaxForm(
-            function(){
-                alert('created successfully');
-            }
-        );
-    {% endfor %}
-    });
-</script>
 {% endblock %}

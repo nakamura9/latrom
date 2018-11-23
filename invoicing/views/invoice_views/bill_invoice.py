@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf.views import PDFTemplateView
@@ -21,25 +21,14 @@ from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
-from invoicing.views.invoice_views.util import InvoiceInitialMixin
+from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
-def process_data(data, inv):
-    items = json.loads(urllib.parse.unquote(data))
+def process_data(items, inv):
     for item in items:
         inv.add_line(item['pk'])
     
-    # moved here because the invoice item data must first be 
-    # saved in the database before inventory and entries 
-    # can be created
-    if inv.status in ['draft', 'quotation']:
-        pass
-    elif inv.status in ['sent', 'paid']: 
-        inv.create_entry()
-    else:
-        pass
-
-
+    
 class BillListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
@@ -56,7 +45,7 @@ class BillDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         'detail.html')
 
         
-class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, CreateView):
+class BillCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -65,7 +54,7 @@ class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, Creat
     template_name = os.path.join("invoicing","bill", "create.html")
     form_class = forms.BillForm
     success_url = reverse_lazy("invoicing:bills-list")
-
+    payment_for = 2
 
     def get_context_data(self, *args, **kwargs):
         context = super(BillCreateView, self).get_context_data(*args, **kwargs)
@@ -74,22 +63,27 @@ class BillCreateView(SalesRepCheckMixin, InvoiceInitialMixin, ConfigMixin, Creat
 
     def post(self, request, *args, **kwargs):
         #check if an expense has been recorded
-        data = request.POST.get("item_list", None)
+        resp = super(BillCreateView, self).post(request, *args, **kwargs)
+        if not self.object:
+            return resp
+        
+        inv = self.object
+        
+        data = request._post.get("item_list", None)
         if not data:
             messages.error(self.request, 'No data was sent to the server. Please provide items to the bill.')
             return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
         else:
             items = json.loads(urllib.parse.unquote(data))
-            if isinstance(items, list) or len(items) < 1:
+            if not isinstance(items, list) or len(items) < 1:
                 messages.error(self.request, 'The provided data could not be processed by the server. Please provide items to the bill.')
                 return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
 
-        resp = super(BillCreateView, self).post(request, *args, **kwargs)
-        if not self.object:
-            return resp
-        inv = self.object
+        if inv.status in ['invoice', 'paid']: 
+            inv.create_entry()
         
-        process_data(data, inv)
+        process_data(items, inv)
+        self.set_payment_amount()
         return resp
 
 class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
@@ -119,6 +113,10 @@ class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
             line.delete()
         data = request.POST.get("item_list", None)
         process_data(data, inv)
+
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
+            
         return resp
 
 
@@ -157,6 +155,12 @@ class BillPaymentView(ExtraContext, CreateView):
             'payment_for': 2
             }
 
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 class BillPaymentDetailView(ListView):
     template_name = os.path.join('invoicing', 'bill', 
@@ -190,3 +194,9 @@ class BillEmailSendView(EmailPlusPDFMixin):
     inv_class = Bill
     success_url = reverse_lazy('invoicing:bills-list')
     pdf_template_name = os.path.join('invoicing', 'bill', 'pdf.html')
+
+
+class BillDraftDeleteView(SalesRepCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = reverse_lazy('invoicing:home')
+    model = Bill

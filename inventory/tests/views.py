@@ -433,7 +433,7 @@ class OrderViewTests(TestCase):
         cls.client = Client
         cls.ORDER_DATA = {
             'expected_receipt_date' : TODAY,
-            'issue_date' : TODAY,
+            'date' : TODAY,
             'deferred_date' : TODAY,
             'supplier' : cls.supplier.pk,
             'bill_to' : 'Test Bill to',
@@ -715,7 +715,7 @@ class TransferViewTests(TestCase):
         cls.client = Client
         cls.TRANSFER_DATA = {
             'source_warehouse': 1,
-            'issue_date': TODAY.strftime('%m/%d/%Y'),
+            'date': TODAY.strftime('%m/%d/%Y'),
             'expected_completion_date': TODAY.strftime('%m/%d/%Y'), 
             'issuing_inventory_controller': 1,
             'receiving_warehouse': 1,

@@ -4,8 +4,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout, Submit
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 
-from accounting.models import Account
+from accounting.models import Account, Expense
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 
@@ -195,7 +196,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Basic', 
-                    'issue_date',
+                    'date',
                     'expected_receipt_date',
                     'supplier',
                     'status',
@@ -204,7 +205,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                 Tab('Payment',
                 'tax',
                 'type_of_order',
-                'deferred_date'),
+                'due'),
                 Tab('Shipping and Notes', 
                     'bill_to', 
                     'ship_to',
@@ -275,6 +276,12 @@ class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.InventoryController
 
+
+class InventoryControllerUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "employee",
+        model = models.InventoryController
+
 class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):
     warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), 
         widget=forms.HiddenInput)
@@ -295,3 +302,12 @@ class AutoStorageMedia(BootstrapMixin, forms.Form):
     number_of_corridors = forms.CharField(widget=forms.NumberInput)
     number_of_aisles_per_corridor = forms.CharField(widget=forms.NumberInput)
     number_of_shelves_per_aisle = forms.CharField(widget=forms.NumberInput)
+
+class ShippingAndHandlingForm(BootstrapMixin, forms.Form):
+    #using current account 
+    #debiting cost of sales account 
+    amount = forms.CharField(widget=forms.NumberInput)
+    date = forms.DateField()
+    description = forms.CharField(widget=forms.Textarea, required=False)
+    recorded_by = forms.ModelChoiceField(User.objects.all())
+    reference = forms.CharField(widget=forms.HiddenInput)

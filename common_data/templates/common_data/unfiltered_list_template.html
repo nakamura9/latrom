@@ -5,16 +5,18 @@
 {% endblock %}
 {% block content %}
 
-
 <div class="jumbotron">
     <div class="container">
         <h1 class="display-3">{{title}}</h1>
-        {% if new_link %}
-        <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New</a>
-        {% endif %}
+        <p class="lead">{{description}}</p>
+        <p>Actions</p>
+            {% if new_link %}
+            <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New</a>
+            {% endif %}    
+        <p class="lead">
+        </p>
     </div>
 </div>
-
 
 <div class="container">
     <div class="row">
@@ -86,7 +88,7 @@
     //fix in python
     $('input').addClass('form-control');
     $('select').addClass('form-control');
-    $('#id_issue_date').datepicker();
+    $('#id_date').datepicker();
     $('#id_expected_receipt_date').datepicker();
 </script>
 {% endblock %}

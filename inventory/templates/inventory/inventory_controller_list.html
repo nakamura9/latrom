@@ -1,8 +1,9 @@
-{% extends "common_data/unfiltered_list_template.html" %}
+{% extends "common_data/list_template.html" %}
 {% block list_headings %}
 <tr>
     <th>Employee Number</th>
     <th>Full Name</th>
+    <th>Actions</th>
 </tr>
 {% endblock list_headings %}
 
@@ -11,6 +12,17 @@
 <tr>
     <td>{{ic.employee.pk}}</td>
     <td>{{ic.employee}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'inventory:update-inventory-controller' pk=ic.pk %}"><i class="fas fa-edit"></i>Update</a>
+            </div>
+        </div>
+    </td>
 </tr>
 {% endfor %}
 {% endblock list_content %}

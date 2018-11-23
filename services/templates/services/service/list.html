@@ -21,9 +21,9 @@
                         Actions
                     </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
-                <a href="{% url 'services:service-details' pk=s.pk %}" class="dropdown-item">Detail</a>
-                <a class="dropdown-item" href="{% url 'services:service-update' pk=s.pk %}">Update</a>
-                <a class="dropdown-item" href="#">Remove Service Listing</a>
+                <a href="{% url 'services:service-details' pk=s.pk %}" class="dropdown-item"><i class="fas fa-eye"></i>Detail</a>
+                <a class="dropdown-item" href="{% url 'services:service-update' pk=s.pk %}"><i class="fas fa-edit"></i>Update</a>
+                <a class="dropdown-item" href="#" style="color:grey;" onclick="return false"><i class="fas fa-trash"></i>Remove Service Listing</a>
             </div>
         </div>
     </td>

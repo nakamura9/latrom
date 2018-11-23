@@ -49,7 +49,6 @@ class CommonViewsTests(TestCase):
                 "document_theme": 1,
                 "currency": "$",
                 "logo": "img.jpg",
-                "price_multiplier": 0.0,
                 "business_name": 'test name'
             })
         self.assertEqual(resp.status_code, 302)
@@ -236,7 +235,7 @@ class BillViewTests(TestCase):
         cls.client=Client()
         cls.BILL_DATA = {
             'customer_reference': 'ref',
-            'status': 'sent',
+            'status': 'invoice',
             'customer': cls.customer_org.pk,
             'salesperson': 1,
             'due': TODAY.strftime('%m/%d/%Y'),
@@ -264,7 +263,7 @@ class BillViewTests(TestCase):
         )
         cls.bill = Bill.objects.create(
             customer_reference="100",
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cls.line = BillLine.objects.create(
@@ -381,7 +380,7 @@ class CombinedInvoiceViewTests(TestCase):
         super().setUpClass()
         cls.client=Client()
         cls.COMBINED_DATA = {
-            'status': 'sent',
+            'status': 'invoice',
             'customer': cls.customer_org.pk,
             'salesperson': 1,
             'due': TODAY.strftime('%m/%d/%Y'),
@@ -422,7 +421,7 @@ class CombinedInvoiceViewTests(TestCase):
             debit_account=Account.objects.first()
         )
         cls.inv = CombinedInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cat = ServiceCategory.objects.create(
@@ -567,7 +566,7 @@ class SalesViewTests(TestCase):
         cls.SALE_DATA = {
             'purchase_order_number': 'ref',
             'ship_from': 1,
-            'status': 'sent',
+            'status': 'invoice',
             'customer': cls.customer_org.pk,
             'salesperson': 1,
             'due': TODAY.strftime('%m/%d/%Y'),
@@ -590,7 +589,7 @@ class SalesViewTests(TestCase):
         create_test_invoicing_models(cls)
         
         cls.inv = SalesInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cls.line = SalesInvoiceLine.objects.create(
@@ -744,7 +743,7 @@ class ServiceInvoiceViewTests(TestCase):
         super().setUpClass()
         cls.client=Client()
         cls.SERVICE_DATA = {
-            'status': 'sent',
+            'status': 'invoice',
             'customer': cls.customer_org.pk,
             'salesperson': 1,
             'due': TODAY.strftime('%m/%d/%Y'),
@@ -766,7 +765,7 @@ class ServiceInvoiceViewTests(TestCase):
         create_test_invoicing_models(cls)
         
         cls.inv = ServiceInvoice.objects.create(
-            status='sent',
+            status='invoice',
             customer=cls.customer_org,
         )
         cat = ServiceCategory.objects.create(

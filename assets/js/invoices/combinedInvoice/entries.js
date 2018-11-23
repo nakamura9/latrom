@@ -46,6 +46,13 @@ class ServiceEntry extends Component{
                         idField="id"
                         onSelect={this.props.onSelect}
                         onClear={this.props.onClear} />
+                    <button 
+                        style={{width:"100%"}}
+                        className="btn btn-success"
+                        onClick={() => window.open(
+                            '/services/create-service' ,'popup','width=900,height=480')}>
+                        Add Service <i className="fas fa-plus"></i>
+                    </button>
                 </div>
                 <div style={{...inlineStyles, width:"30%"}}>
                     <input 
@@ -76,7 +83,6 @@ class ProductEntry extends Component{
     }
 
     handler = (evt) =>{
-        console.log(evt.target.value);
         if(evt.target.value && evt.target.value > 0){
             this.setState({quantity: evt.target.value})
             this.props.onChangeQuantity(evt);
@@ -97,6 +103,13 @@ class ProductEntry extends Component{
                         idField="id"
                         onSelect={this.props.onSelect}
                         onClear={this.props.onClear} />
+                    <button 
+                        style={{width:"100%"}}
+                        className="btn btn-success"
+                        onClick={() => window.open(
+                            '/inventory/product-create' ,'popup','width=900,height=480')}>
+                        Add Product <i className="fas fa-plus"></i>
+                    </button>
                 </div>
                 <div style={{...inlineStyles, width:"30%"}}>
                     <input 
@@ -117,6 +130,13 @@ const BillableEntry = (props) => {
                 <div>
                     <center>
                         <h6>The selected customer has no billables</h6>
+                        <button 
+                        style={{width:"100%"}}
+                        className="btn btn-success"
+                        onClick={() => window.open(
+                            '/accounting/expense/create' ,'popup','width=900,height=480')}>
+                        Add Expense <i className="fas fa-plus"></i>
+                    </button>
                     </center>
                 </div>
             )
@@ -136,6 +156,13 @@ const BillableEntry = (props) => {
                             </option>
                         ))}
                     </datalist>
+                    <button 
+                        style={{width:"100%"}}
+                        className="btn btn-success"
+                        onClick={() => window.open(
+                            '/accounting/expense/create' ,'popup','width=900,height=480')}>
+                        Add Expense <i className="fas fa-plus"></i>
+                    </button>
                 </div>
             )
         }

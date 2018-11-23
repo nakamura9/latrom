@@ -6,6 +6,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout, Submit
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+
 
 from common_data.forms import BootstrapMixin
 from inventory.models import Supplier
@@ -98,7 +100,7 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude="active", 'user',
+        exclude="active", 'user','last_leave_day_increment'
         model = models.Employee
 
     def __init__(self, *args, **kwargs):
@@ -202,3 +204,40 @@ class PayrollForm(BootstrapMixin, forms.Form):
     start_period = forms.DateField()
     end_period = forms.DateField()
     employees = forms.ModelMultipleChoiceField(models.Employee.objects.all())
+
+
+class LeaveRequestForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.Leave
+        exclude = 'status', 'authorized_by', 'recorded'
+
+class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
+    leave_request = forms.ModelChoiceField(models.Leave.objects.all(), 
+        widget=forms.HiddenInput)
+    status = forms.ChoiceField(choices = [
+        (1, 'Approved'),
+        (2, 'Declined')
+        ])
+    notes = forms.CharField(widget=forms.Textarea, required=False)    
+    '''
+        filter(
+            Q(payrollofficer__isnull=False)) & 
+            Q(user__isnull=False)
+    '''
+    authorized_by = forms.ModelChoiceField(
+        models.Employee.objects.all())
+    password = forms.CharField(widget=forms.PasswordInput)
+    
+
+    def clean(self):
+        cleaned_data = super().clean()
+        usr = cleaned_data['authorized_by'].user
+        authenticated = authenticate(
+            username=usr.username,
+            password=cleaned_data['password']
+        )
+        if not authenticated:
+            raise forms.ValidationError('You entered an incorrect password for this form')
+
+        return cleaned_data
+        

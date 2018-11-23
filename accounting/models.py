@@ -15,6 +15,7 @@ from common_data.models import Person, SingletonModel
 class AccountingSettings(SingletonModel):
     start_of_financial_year = models.DateField()
     use_default_chart_of_accounts = models.BooleanField(default=True)
+    currency_exchange_table = models.ForeignKey('accounting.CurrencyConversionTable', default=1, on_delete=None)
     default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True, blank=True, on_delete=None)
 
 class Bookkeeper(models.Model):
@@ -133,6 +134,18 @@ class JournalEntry(models.Model):
     def total(self):
         return (self.total_debits, self.total_credits)
 
+    @property
+    def primary_credit(self):
+        if self.credit_set.first():
+            return self.credit_set.first().account
+        return None 
+
+    @property
+    def primary_debit(self):
+        if self.debit_set.first():
+            return self.debit_set.first().account
+        return None
+        
     @property
     def str_total(self):
         return "DR:{};  CR{}".format(self.total_debits, self.total_credits)
@@ -425,6 +438,9 @@ class Asset(models.Model):
     def depreciate(self):
         pass
 
+    def __str__(self):
+        return self.name
+        
     @property
     def salvage_date(self):
         return self.init_date + datetime.timedelta(
@@ -586,4 +602,28 @@ class RecurringExpense(AbstractExpense):
 
     def __str__(self):
         return "{} - {} Expense".format(self.pk, self.category_string)
+
+
+
+class Currency(models.Model):
+    name = models.CharField(max_length=255)
+    symbol = models.CharField(max_length=8)
+
+    def __str__(self):
+        return self.name
+
+class CurrencyConversionTable(models.Model):
+    name = models.CharField(max_length=255)
+    reference_currency = models.ForeignKey('accounting.Currency', 
+        on_delete=None, related_name="reference_currency", default=1)
+
+    def __str__(self):
+        return self.name
+
+class CurrencyConversionLine(models.Model):
+    currency = models.ForeignKey('accounting.Currency', 
+        on_delete=None, related_name="exchange_currency")
+    exchange_rate = models.DecimalField(max_digits=9, decimal_places=2)
+    conversion_table = models.ForeignKey('accounting.CurrencyConversionTable',
+        on_delete=None)
 

@@ -1,5 +1,21 @@
 [
     {
+        "model": "accounting.Currency",
+        "pk": "1",
+        "fields": {
+            "name": "US Dollar",
+            "symbol": "$"
+        }
+    },
+    {
+        "model": "accounting.CurrencyConversionTable",
+        "pk": "1",
+        "fields": {
+            "name": "Default Table",
+            "reference_currency": 1
+        }
+    },
+    {
         "model": "accounting.AccountingSettings",
         "pk": "1",
         "fields": {
@@ -20,6 +36,13 @@
         "fields": {
             "name": "None",
             "rate": 0
+        }
+    },
+    {
+        "model": "accounting.CurrencyConversionTable",
+        "pk": 1,
+        "fields": {
+            "name": "Default Currency table"
         }
     }
 ]
