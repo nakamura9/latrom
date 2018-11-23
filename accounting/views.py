@@ -120,7 +120,9 @@ class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     model = models.Account
     form_class = forms.AccountForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Account"}
+    extra_context = {
+        "title": "Create New Account",
+        'description': "Use accounts to manage income and expenses in an intuitive way. A default chart of expenses is already implemented."}
 
 class AccountUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
     template_name = CREATE_TEMPLATE
@@ -313,7 +315,9 @@ class JournalCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     model = models.Journal
     form_class = forms.JournalForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Journal"}
+    extra_context = {
+        "title": "Create New Journal",
+        "description": 'A virtual document used to record all financial transactions in a business.'}
 
 class JournalDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'journal_detail.html')
@@ -355,7 +359,8 @@ class AssetCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
     extra_context = {
-        'title': 'Register New Asset'
+        'title': 'Register New Asset',
+        'description': 'Used to formally record valuable property belonging to the organization'
     }
 
 class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, CreateView):
@@ -388,7 +393,8 @@ class ExpenseCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
     extra_context = {
-        'title': 'Record Expense'
+        'title': 'Record Expense',
+        'description': 'Record costs incurred in the process of running a business.'
     }
 
 class ExpenseListView(ExtraContext, BookkeeperCheckMixin, PaginationMixin, 
@@ -417,7 +423,8 @@ class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin,
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
     extra_context = {
-        'title': 'Record Recurring Expense'
+        'title': 'Record Recurring Expense',
+        'description': 'Record costs that occur periodically'
     }
 
 class RecurringExpenseUpdateView(ExtraContext, BookkeeperCheckMixin, 
@@ -459,7 +466,8 @@ class BookkeeperCreateView(BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:bookkeeper-list')
     extra_context = {
-        'title': 'Assign A New Bookkeeper to the system'
+        'title': 'Create Bookkeeper',
+        'description': 'Assign An existing employee the role of Bookkeeper to manage the accounting system.'
     }
 
 class BookkeeperUpdateView(BookkeeperCheckMixin, UpdateView):

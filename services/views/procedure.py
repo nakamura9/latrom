@@ -52,11 +52,23 @@ class ProcedureCRUDMixin(object):
 
         return resp
 
-class ProcedureCreateView(ServiceCheckMixin, ProcedureCRUDMixin, CreateView):
+class ProcedureCreateView(ServiceCheckMixin, ProcedureCRUDMixin, ExtraContext, 
+        CreateView):
     form_class = forms.ServiceProcedureForm
     template_name = os.path.join('services', 'procedure', 'create.html')
     success_url = reverse_lazy('services:list-procedures')
-
+    extra_context = {
+        'related_links': [
+            {
+                'name': 'Add Equipment',
+                'url': '/inventory/equipment-create/'
+            },
+            {
+                'name': 'Add Consumable',
+                'url': '/inventory/consumable-create/'
+            }
+        ]
+    }
 
 class ProcedureUpdateView(ServiceCheckMixin, ProcedureCRUDMixin, UpdateView):
     form_class = forms.ServiceProcedureForm

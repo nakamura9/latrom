@@ -26,14 +26,15 @@ class LeaveRequestList(AdministratorCheckMixin, ExtraContext,
     queryset = models.Leave.objects.all()
     template_name = os.path.join('employees', 'leave', 'list.html')
     extra_context = {
-        'title': 'List of Leave Requests',
+        'title': 'List of Vaction Applications',
         'new_link': '/employees/leave-request'
     }
 class LeaveDayRequestView(ExtraContext, AdministratorCheckMixin, CreateView):
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.LeaveRequestForm
     extra_context = {
-        'title': 'Make A leave request'
+        'title': 'Vacation Application Form',
+        'description': 'Use this form to apply for vacation or to request leave of absense for the reasons under the category list.'
     }
     success_url = '/employees/leave-list/'
     #links available to anyone

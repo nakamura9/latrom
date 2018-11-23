@@ -86,10 +86,10 @@
                         {% endif %}
         
                     </ul>
-            {% if object_list.count == 0 %}
+
+            {% if object_list.all.count == 0 %}
                 <p><b>No items to display</b></p>
             {% else %}
-            
             <table class="table table-striped table-hover">
                 <thead>
                     {% block list_headings %}{% endblock %}
