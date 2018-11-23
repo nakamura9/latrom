@@ -74,7 +74,7 @@ export default class BillTable extends Component{
                     <tr style={{
                         padding: '2mm',
                         color: 'white',
-                        backgroundColor: 'black',
+                        backgroundColor: '#07f',
                         width: '100%'
                     }}>
                         <th style={{width:"10%"}}></th>
@@ -149,8 +149,14 @@ class EntryRow extends Component{
     }
     
     render(){
+        const theadStyle = {
+            padding: '2mm',
+            borderRight: '1px solid white',
+            color: 'white',
+            backgroundColor: '#07f'
+        };
         const hasBillables =(
-            <tr>
+            <tr style={theadStyle}>
                 <td colSpan={2}>      
                     <input type="text"
                         className="form-control"
@@ -168,7 +174,7 @@ class EntryRow extends Component{
                 </td>
                 <td>
                     <button 
-                        className="btn btn-secondary"
+                        className="btn "
                         onClick={this.clickHandler.bind(this)}
                         type="button">
                             Insert

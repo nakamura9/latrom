@@ -29,7 +29,8 @@ class WareHouseCreateView(ExtraContext, CreateView):
     form_class = forms.WareHouseForm
     success_url = reverse_lazy('inventory:warehouse-list')
     extra_context = {
-        'title': 'Create New Warehouse Location'
+        'title': 'Create  Warehouse',
+        'description': 'Register a new location as a warehouse for storing inventory. Further detail regarding inventory location is provided by the storage media model.'
     }
 
 

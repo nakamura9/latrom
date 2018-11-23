@@ -21,21 +21,21 @@
                     </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
                 <a class="dropdown-item" href="{% url 'inventory:warehouse-update' pk=w.pk %}">
-                        <i class="fas fa-file"></i>Update
+                        <i class="fas fa-edit"></i>Update
                 </a>
                 <a class="dropdown-item" href="{% url 'inventory:warehouse-detail' pk=w.pk %}">
                         <i class="fas fa-eye"></i>Detail
                 </a>
                 <a class="dropdown-item" href="{% url 'inventory:warehouse-delete' pk=w.pk %}">
-                        <i class="fas fa-trash"></i>Close
+                        <i class="fas fa-times"></i>Close
                 </a>
                 
                 <h6 class="dropdown-header">Verify Inventory</h6>
                 <a class="dropdown-item" href="{% url 'inventory:create-inventory-check' pk=w.pk %}">
-                        <i class="fas fa-trash"></i>Check Inventory
+                        <i class="fas fa-clipboard-check"></i>Check Inventory
                 </a>
                 <a class="dropdown-item" href="{% url 'inventory:inventory-check-list' pk=w.pk %}">
-                    <i class="fas fa-trash"></i>Review Inventory Checks
+                    <i class="fas fa-list"></i>Review Inventory Checks
             </a>
                 
                 <h6 class="dropdown-header">Scrap</h6>
@@ -47,17 +47,17 @@
         </a>
         <h6 class="dropdown-header">Storage Media</h6>
         <a class="dropdown-item" href="{% url 'inventory:storage-media-create' pk=w.pk %}">
-                <i class="fas fa-trash"></i>Add Storage Medium
+                <i class="fas fa-archive"></i>Add Storage Medium
         </a>
         <a class="dropdown-item" href="{% url 'inventory:storage-media-list' pk=w.pk %}">
-                <i class="fas fa-trash"></i>Manage Storage Media
+                <i class="fas fa-archive"></i>Manage Storage Media
         </a>
         <h6 class="dropdown-header">Inventory Transfers</h6>
         <a class="dropdown-item" href="{% url 'inventory:create-transfer-order' pk=w.pk %}">
-                <i class="fas fa-trash"></i>Initiate Inventory Transfer
+                <i class="fas fa-truck"></i>Initiate Inventory Transfer
         </a>
         <a class="dropdown-item" href="{% url 'inventory:transfer-order-list' pk=w.pk %}">
-                <i class="fas fa-trash"></i>Inventory Transfer History
+                <i class="fas fa-truck"></i>Inventory Transfer History
         </a>
             </div>
         </div>

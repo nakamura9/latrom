@@ -56,11 +56,15 @@ class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
 
         if not self.object:
             return resp
+            
 
         data = json.loads(urllib.parse.unquote(request.POST['returned-items']))
         for key in data.keys():
             iitem = SalesInvoiceLine.objects.get(pk=key)
             iitem._return(data[key])
+
+        if self.object:
+            self.object.create_entry()
 
         return resp
 

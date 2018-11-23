@@ -109,7 +109,7 @@ export default class CombinedTable extends Component{
                     <tr style={{
                         padding: '2mm',
                         color: 'white',
-                        backgroundColor: 'black',
+                        backgroundColor: '#07f',
                         width: '100%'
                     }}>
                         <th style={{width:"10%"}}></th>

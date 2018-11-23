@@ -90,13 +90,13 @@ class Payment(models.Model):
             )
         else:
             # will now work for partial payments
-            j.debit(self.amount, self.invoice.customer.account)
+            j.credit(self.amount, self.invoice.customer.account)
             # calculate tax as a proportion of the amount paid
-            tax_amount = self.amount * D(self.invoice.tax.rate / 100.0)
+            
             # sales account
-            j.credit(self.amount - tax_amount, Account.objects.get(pk=4000))
+            j.credit(self.amount - self.invoice.tax_amount, Account.objects.get(pk=4000))
             # tax
-            j.credit(tax_amount, Account.objects.get(pk=2001))
+            j.credit(self.invoice.tax_amount, Account.objects.get(pk=2001))
         
         #change invoice status if  fully paid
         if self.invoice.total_due <= 0:

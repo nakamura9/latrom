@@ -60,19 +60,22 @@ class SalesInvoice(AbstractSale):
         customer account. If the invoice is on credit nothing further happens.
         However if it is a cash invoice, the payment object is created along with its accompanying entry.'''
         j = JournalEntry.objects.create(
-                reference='INV' + str(self.pk),
+                reference='INV' + str(self.invoice_number),
                 memo= 'Auto generated entry from sales invoice.',
                 date=self.date,
                 journal =Journal.objects.get(pk=1),#Cash receipts Journal
                 created_by = self.salesperson.employee.user
             )
-        j.debit(self.total, Account.objects.get(pk=4009))#inventory
+        j.credit(self.subtotal, Account.objects.get(pk=1004))#inventory
         j.debit(self.total, self.customer.account)
-        j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
+        #Do this when closing the books 
+        # j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
         if self.tax_amount > D(0):
             j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
 
-            return j
+        self.entry = j
+        self.save()
+        return j
 
 class SalesInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.SalesInvoice',on_delete=models.CASCADE,)

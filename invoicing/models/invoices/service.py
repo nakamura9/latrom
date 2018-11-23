@@ -45,3 +45,24 @@ class ServiceInvoiceLine(models.Model):
     @property
     def total(self):
         return self.service.flat_fee + (self.service.hourly_rate * self.hours)
+
+
+    def create_entry(self):
+        j = JournalEntry.objects.create(
+                reference='INV' + str(self.invoice_number),
+                memo= 'Auto generated entry from sales invoice.',
+                date=self.date,
+                journal =Journal.objects.get(pk=1),#Cash receipts Journal
+                created_by = self.salesperson.employee.user
+            )
+        #what accounts are affected by a service?
+        #j.credit(self.subtotal, Account.objects.get(pk=1004))
+
+        j.debit(self.total, self.customer.account)
+
+        if self.tax_amount > D(0):
+            j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+
+        self.entry = j
+        self.save()
+        return j

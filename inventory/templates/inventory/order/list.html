@@ -11,7 +11,7 @@
 {% endblock %} {% block list_content %} {% for order in object_list %}
 <tr>
     <td>{{order.pk}}</td>
-    <td>{{order.issue_date}}</td>
+    <td>{{order.date}}</td>
     <td>{{order.status}}</td>
     <td>{{order.supplier}}</td>
     <td>{{order.orderitem_set.all.count}}</td>

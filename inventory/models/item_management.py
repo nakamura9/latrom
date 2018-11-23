@@ -53,10 +53,10 @@ class Order(models.Model):
     ]
     
     expected_receipt_date = models.DateField()
-    issue_date = models.DateField()
+    date = models.DateField()
     type_of_order = models.IntegerField(choices=ORDER_TYPE_CHOICES,
          default=0)
-    deferred_date = models.DateField(blank=True, null=True)
+    due = models.DateField(blank=True, null=True)
     supplier = models.ForeignKey('inventory.supplier', 
         on_delete=None, blank=True, null=True)
     supplier_invoice_number = models.CharField(max_length=32, 
@@ -127,7 +127,7 @@ class Order(models.Model):
             j = JournalEntry.objects.create(
                     reference = "Auto generated entry created by order " + str(
                         self),
-                    date=self.issue_date,
+                    date=self.date,
                     memo = self.notes,
                     journal = Journal.objects.get(pk=4),
                     created_by = self.issuing_inventory_controller
@@ -328,7 +328,7 @@ class StockAdjustment(models.Model):
         self.adjust_inventory()
 
 class TransferOrder(models.Model):
-    issue_date = models.DateField()
+    date = models.DateField()
     expected_completion_date = models.DateField()
     issuing_inventory_controller = models.ForeignKey('employees.Employee',
         related_name='issuing_inventory_controller', 

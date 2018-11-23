@@ -49,7 +49,6 @@ class CommonViewsTests(TestCase):
                 "document_theme": 1,
                 "currency": "$",
                 "logo": "img.jpg",
-                "price_multiplier": 0.0,
                 "business_name": 'test name'
             })
         self.assertEqual(resp.status_code, 302)

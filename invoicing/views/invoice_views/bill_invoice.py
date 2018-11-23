@@ -113,6 +113,10 @@ class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
             line.delete()
         data = request.POST.get("item_list", None)
         process_data(data, inv)
+
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
+            
         return resp
 
 
@@ -151,6 +155,12 @@ class BillPaymentView(ExtraContext, CreateView):
             'payment_for': 2
             }
 
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 class BillPaymentDetailView(ListView):
     template_name = os.path.join('invoicing', 'bill', 

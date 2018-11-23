@@ -16,10 +16,6 @@ class SalesConfig(SingletonModel):
         (4, 'Verdant'),
         (5, 'Warm')
     ]
-    CURRENCY_CHOICES = [
-        ('$', 'Dollars($)'), 
-        ('R', 'Rand')
-    ]
 
     default_invoice_comments = models.TextField(blank=True)
     default_quotation_comments = models.TextField(blank=True)
@@ -30,9 +26,8 @@ class SalesConfig(SingletonModel):
     business_address = models.TextField(blank=True)
     logo = models.ImageField(null=True,upload_to="logo/", blank=True)
     document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES)
-    currency = models.CharField(max_length=1, choices=CURRENCY_CHOICES)
-    apply_price_multiplier = models.BooleanField(default=False)
-    price_multiplier =models.FloatField(default=0.0)
+    currency = models.ForeignKey('accounting.Currency', blank=True, null=True,
+        on_delete=None)
     business_name = models.CharField(max_length=255)
     payment_details = models.TextField(blank=True)
     contact_details = models.TextField(blank=True)

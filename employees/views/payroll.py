@@ -192,7 +192,8 @@ class PayrollTaxDetailView(AdministratorCheckMixin, DetailView):
     template_name = os.path.join('employees', 'payroll_tax_detail.html')
     model = models.PayrollTax
 
-class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, FilterView):
+class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, PaginationMixin,
+        FilterView):
     template_name = os.path.join('employees', 'payroll_tax_list.html')
     queryset = models.PayrollTax.objects.all()
     extra_context = {

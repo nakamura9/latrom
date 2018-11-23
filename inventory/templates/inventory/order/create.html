@@ -11,7 +11,32 @@
 <div class="jumbotron">
     <div class="container">
         <h1 class="display-3">{{title}}</h1>
+        <p class="lead">{{description}}</p>
+        {% if related_links %}
+        <p>Actions</p>
+            
+            <script>
+                function linkClickHandler(link){
+                    window.open(link ,'popup','width=900,height=480');
+                    $('#refresher-button').css('display', 'block');
+                    return false;
+                }   
+            </script>
+            <div class="btn btn-group">
+                    {% for item in related_links %}
+                        <a class="btn btn-primary text-white"  onclick="linkClickHandler('{{item.url}}')" target="popup">{{item.name}}</a>
+                    {% endfor %}    
+            </div>
+            <button
+                class="btn btn-success"
+                id="refresher-button" 
+                style="display:none;"
+                onclick="window.location.replace(window.location.href);"
+                >Refresh <i class="fas fa-sync"></i>
+            </button>
+        <p class="lead">
         
+        {% endif %}
     </div>
 </div>
 
@@ -26,64 +51,9 @@
             </div>
         </div>
         <div class="col-sm-4">
-                {% if modals %}
-                <div class="card">
-                    <div class="card-body">
-                        {% for modal in modals %}
-                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#{{modal.link}}">
-                                {{modal.title}}
-                              </button>
-                              <hr />
-                        {% endfor %}        
-                    </div>
-                </div>
-                {% endif %}
         </div>
     </div>
 </div>
 
-{% if modals %}
-{% for modal in modals %}
-<div class="modal fade" id="{{modal.link}}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-                <h4 class="modal-title" id="modelTitleId">{{modal.title}}</h4>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="{{modal.action}}" id="{{modal.link}}_form">
-                    {% csrf_token %}
-                    {{modal.form.as_p}}
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-{% endif %}
-<script>
-        $(document).ready(function(){
-            {% for modal in modals %}
-            $('#{{modal.link}}_form').ajaxForm(
-                function(){
-                    alert('created successfully!');
-                    $("#{{modal.link}}").modal('hide');
-                }
-            );
-        {% endfor %}
-        });
-                $("#id_deferred_date").hide();
-                $('#id_type_of_order').change(function(evt){
-                    if(evt.target.value === "1"){
-                        $("#id_deferred_date").show();
-                    }else{
-                        $("#id_deferred_date").hide();
-                    }
-                })
-    </script>
 {% render_bundle 'inventory' %}
 {% endblock %}

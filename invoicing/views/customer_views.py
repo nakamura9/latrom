@@ -27,7 +27,16 @@ class CustomerAPIViewSet(viewsets.ModelViewSet):
 #No customer list, overlooked!
 
 class CustomerCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
-    extra_context = {"title": "Create New Customer"}
+    extra_context = {
+        "title": "New Customer",
+        'description': 'Register new customers which may be organizational or private individuals. ',
+        'related_links': [{
+            'name': 'Create Organizational Customer',
+            'url': '/base/organization/create'
+        },{
+            'name': 'Record Individual Customer',
+            'url': '/base/individual/create'
+        }]}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
     success_url = reverse_lazy("invoicing:home")

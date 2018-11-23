@@ -24,15 +24,17 @@
             </thead>
             <tbody>
                 {% for t in entries %}
+                {% if t.primary_credit %}
                 <tr>
                     <td>{{t.date}}</td>
-                    <td>{{t.credit_set.first.account}}</td>
-                    <td>{{t.debit_set.first.account}}</td>
+                    <td>{{t.primary_credit}}</td>
+                    <td>{{t.primary_debit}}</td>
                     <td>{{t.memo}}</td>
                     <td>
                         <a href="{% url 'accounting:entry-detail' pk=t.pk %}" class="btn btn-success">Details</a>
                     </td>
                 </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

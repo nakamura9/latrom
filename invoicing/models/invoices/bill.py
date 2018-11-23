@@ -64,6 +64,9 @@ class Bill(AbstractSale):
             j.credit(line.expense.amount, line.expense.expense_account)
         j.debit(self.total, self.customer.account)#customer account
 
+        self.entry = j
+        self.save()
+
         return j
             
 class BillLine(models.Model):

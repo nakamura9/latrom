@@ -68,7 +68,7 @@ class Customer(models.Model):
 
     def save(self, *args, **kwargs):
         if self.account is None:
-            self.create_account()
+            self.create_customer_account()
         super(Customer, self).save(*args, **kwargs)
 
     @property

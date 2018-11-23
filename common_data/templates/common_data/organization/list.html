@@ -11,6 +11,14 @@
 {% block list_content %}
 {% for o in object_list %}
     <tr>
+        <td>
+            {% if o.logo %}
+                <img src="{{o.logo.url}}" class="img-thumbnail" width="128" height="128" alt="Photo thumbnail">
+            {% else %}
+                <div style="margin-left: 28px;"><i class="fas fa-building" style="font-size:72;"></i></div>
+                
+            {% endif %}
+        </td>
         <td>{{o.legal_name}}</td>
         <td>{{o.business_adddress}}</td>
         <td>{{o.members.count}}</td>
@@ -21,8 +29,8 @@
                             Actions
                         </button>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
-                    <a class="dropdown-item" href="{% url 'base:organization-update' pk=o.pk %}">Update</a>
-                    <a class="dropdown-item" href="{% url 'base:organization-detail' pk=o.pk %}">Detail</a>
+                    <a class="dropdown-item" href="{% url 'base:organization-update' pk=o.pk %}"> <i class="fas fa-edit"></i> Update</a>
+                    <a class="dropdown-item" href="{% url 'base:organization-detail' pk=o.pk %}"> <i class="fas fa-eye"></i> Detail</a>
                     </div>
             </div>
         </td>

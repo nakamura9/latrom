@@ -125,6 +125,9 @@ class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView
         
         process_data(items, inv)
 
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
+
         return resp
 
 class CombinedInvoicePaymentView(ExtraContext, CreateView):
@@ -141,6 +144,13 @@ class CombinedInvoicePaymentView(ExtraContext, CreateView):
             'combined_invoice': self.kwargs['pk'],
             'payment_for': 3
             }
+
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 
 class CombinedInvoicePaymentDetailView(ListView):

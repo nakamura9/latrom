@@ -56,8 +56,73 @@ class CombinedInvoice(AbstractSale):
             [i.subtotal for i in self.combinedinvoiceline_set.all()], 0)
 
     def create_entry(self):
-        print('[warning] A n entry method needs to be implemented that factors '
-        'in all the types of lines in a combined invoice')
+        j = JournalEntry.objects.create(
+                reference='INV' + str(self.invoice_number),
+                memo= 'Auto generated entry from sales invoice.',
+                date=self.date,
+                journal =Journal.objects.get(pk=1),#Cash receipts Journal
+                created_by = self.salesperson.employee.user
+            )
+        if self.sales_total > D(0):
+            j.credit(self.sales_total, Account.objects.get(pk=1004))#inventory
+        
+        if self.service_total > D(0):
+            pass
+            #what accounts are affected by a service?
+            #j.credit(self.service_total, Account.objects.get(pk=1004))
+
+        if self.expense_total > D(0):
+            for line in self.expense_lines:
+                j.credit(line.expense.amount, line.expense.expense_account)
+        
+
+        j.debit(self.total, self.customer.account)
+
+        if self.tax_amount > D(0):
+            j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+
+        self.entry = j
+        self.save()
+        return j
+
+    def _line_total(self, line_type):
+        total = D(0)
+        for line in line_type:
+            total += line.subtotal
+
+        return total
+
+    def _line_getter(self, type_id):
+        return CombinedInvoiceLine.objects.filter(
+            Q(invoice=self) & Q(line_type=type_id))
+    
+    @property
+    def sales_lines(self):
+        return _line_getter(1)
+
+    @property 
+    def sales_total(self):
+        return self._line_total(self.sales_lines)
+
+
+    @property
+    def service_lines(self):
+        self._line_getter(2)
+
+    @property
+    def service_total(self):
+        return self._line_total(self.service_lines)
+        
+
+    @property
+    def expense_lines(self):
+        self._line_getter(3)
+
+    @property
+    def expense_total(self):
+        return self._line_total(self.expense_lines)
+        
+
 
 class CombinedInvoiceLine(models.Model):
     LINE_CHOICES = [

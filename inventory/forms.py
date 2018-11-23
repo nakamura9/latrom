@@ -196,7 +196,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Basic', 
-                    'issue_date',
+                    'date',
                     'expected_receipt_date',
                     'supplier',
                     'status',
@@ -205,7 +205,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                 Tab('Payment',
                 'tax',
                 'type_of_order',
-                'deferred_date'),
+                'due'),
                 Tab('Shipping and Notes', 
                     'bill_to', 
                     'ship_to',
@@ -274,6 +274,12 @@ class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
 class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
+        model = models.InventoryController
+
+
+class InventoryControllerUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "employee",
         model = models.InventoryController
 
 class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):

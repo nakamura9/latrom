@@ -56,7 +56,7 @@ class Organization(models.Model):
     tax_clearance = models.CharField(max_length=64, blank=True)
     email=models.CharField(max_length=128, blank=True)
     phone = models.CharField(max_length=32, blank=True)
-    
+    logo = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return self.legal_name

@@ -1,6 +1,7 @@
 {% extends "common_data/list_template.html" %}
 {% block list_headings %}
 <tr>
+    <td></td>
     <td>Full Name</td>
     <td>Organization</td>
     <td>Phone</td>
@@ -11,6 +12,13 @@
 {% block list_content %}
 {% for o in object_list %}
     <tr>
+        <td>
+            {% if o.photo %}
+                <img src="{{o.photo.url}}" class="img-thumbnail" width="128" height="128" alt="Photo thumbnail">
+            {% else %}
+                
+                <div style="margin-left: 28px;"><i class="fas fa-user" style="font-size:72;"></i></div>
+            {% endif %}
         <td>{{o}}</td>
         <td>{{o.organization}}</td>
         <td>{{o.phone}}</td>
@@ -21,8 +29,8 @@
                             Actions
                         </button>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
-                    <a class="dropdown-item" href="{% url 'base:individual-update' pk=o.pk %}">Update</a>
-                    <a class="dropdown-item" href="{% url 'base:individual-detail' pk=o.pk %}">Detail</a>
+                    <a class="dropdown-item" href="{% url 'base:individual-update' pk=o.pk %}"> <i class="fas fa-edit"></i> Update</a>
+                    <a class="dropdown-item" href="{% url 'base:individual-detail' pk=o.pk %}"> <i class="fas fa-eye"></i> Detail</a>
                     </div>
             </div>
         </td>

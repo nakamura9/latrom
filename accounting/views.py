@@ -57,7 +57,10 @@ class JournalEntryCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     model = models.JournalEntry
     form_class = forms.SimpleJournalEntryForm
     success_url = reverse_lazy('accounting:dashboard')
-    extra_context = {"title": "Create New Journal Entry"}
+    extra_context = {
+        "title": "Create New Journal Entry",
+        "description": "Register Financial Transactions with the accounting system."
+        }
 
 class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
     '''This type of journal entry can have any number of 
@@ -108,7 +111,8 @@ class AccountTransferPage(BookkeeperCheckMixin, ExtraContext, CreateView):
     success_url = reverse_lazy('accounting:dashboard')
     form_class = forms.SimpleJournalEntryForm
     extra_context = {
-        'title': 'Transfer between Accounts'
+        'title': 'Transfer between Accounts',
+        'description': 'Move money directly between accounts using a simplified interface. Journal Entries are created automatically'
     }
 
 class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
@@ -164,7 +168,12 @@ class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
     extra_context = {
-        'title': 'Add Global Taxes'
+        'title': 'Add Global Taxes',
+        'description': 'These tax objects are used in orders and invoices. Not to be confused with payroll taxes',
+        'related_links': [{
+            'name': 'Create Payroll Tax',
+            'url': '/employees/create-payroll-tax'
+        }]
     }
 
 

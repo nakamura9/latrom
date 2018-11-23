@@ -394,7 +394,7 @@ class SalesInvoiceTests(TestCase):
     def test_create_entry(self):
         pre_bal = Account.objects.get(pk=4009).balance
         self.inv.create_entry()
-        self.assertEqual(Account.objects.get(pk=4009).balance, pre_bal - 10)
+        self.assertEqual(Account.objects.get(pk=1004).balance, pre_bal - 10)
         #rollback
         self.inv.status = "invoice"
         self.inv.save()

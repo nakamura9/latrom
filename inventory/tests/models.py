@@ -103,7 +103,7 @@ def create_test_inventory_models(cls):
     )
     cls.order = models.Order.objects.create(
             expected_receipt_date = TODAY,
-            issue_date = TODAY,
+            date = TODAY,
             tax = Tax.objects.first(), #10%
             supplier=cls.supplier,
             bill_to = 'Test Bill to',
@@ -141,7 +141,7 @@ def create_test_inventory_models(cls):
     )
 
     cls.transfer = models.TransferOrder.objects.create(
-        issue_date = TODAY,
+        date = TODAY,
         expected_completion_date = TODAY,
         issuing_inventory_controller = Employee.objects.first(),
         receiving_inventory_controller = Employee.objects.first(),
@@ -291,7 +291,7 @@ class ItemManagementModelTests(TestCase):
     def test_create_order(self):
         obj = models.Order.objects.create(
             expected_receipt_date = TODAY,
-            issue_date = TODAY,
+            date = TODAY,
             type_of_order=1,
             supplier=self.supplier,
             bill_to = 'Test Bill to',
@@ -434,7 +434,7 @@ class ItemManagementModelTests(TestCase):
     
     def test_create_transfer_order(self):
         obj = models.TransferOrder.objects.create(
-            issue_date = TODAY,
+            date = TODAY,
             expected_completion_date = TODAY,
             issuing_inventory_controller = Employee.objects.first(),
             receiving_inventory_controller = Employee.objects.first(),

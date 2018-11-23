@@ -85,8 +85,6 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ExtraContex
         self.set_payment_amount()
         return resp
     
-    
-
 
 class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     model = SalesInvoice
@@ -105,6 +103,11 @@ class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
         
         process_data(items, self.object)
 
+        print(self.object.status)
+        if self.object.status in ["invoice", "paid"]:
+            self.object.create_entry()
+            print('entry created')
+
         return resp
 
 
@@ -116,6 +119,7 @@ class SalesInvoiceUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     form_class = forms.SalesInvoiceUpdateForm
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
+
 
 
 class SalesInvoiceAPIViewSet(viewsets.ModelViewSet):
@@ -137,6 +141,13 @@ class SalesInvoicePaymentView(SalesRepCheckMixin,ExtraContext, CreateView):
             'sales_invoice': self.kwargs['pk'],
             'payment_for': 0
             }
+
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 
 class SalesInvoicePaymentDetailView(SalesRepCheckMixin, ListView):

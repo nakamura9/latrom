@@ -30,7 +30,15 @@ class ServiceCreateView(ServiceCheckMixin, ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('services:dashboard')
     extra_context = {
-        'title': 'Create new service Listing'
+        'title': 'Create Service',
+        'description': 'Make service listings, including features like the procedure, cost and frequency.',
+        'related_links': [{
+            'name': 'Create Procedure',
+            'url': '/services/create-procedure'
+        },{
+            'name': 'Create Service Category',
+            'url': '/services/create-category/'
+        }]
     }
 
 class ServiceUpdateView(ServiceCheckMixin, ExtraContext, UpdateView):
@@ -39,7 +47,15 @@ class ServiceUpdateView(ServiceCheckMixin, ExtraContext, UpdateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('services:dashboard')
     extra_context = {
-        'title': 'Update existing service Listing'
+        'title': 'Update Service',
+        'description': 'Make service listings, including features like the procedure, cost and frequency.',
+        'related_links': [{
+            'name': 'Create Procedure',
+            'url': '/services/create-procedure'
+        },{
+            'name': 'Create Service Category',
+            'url': '/services/create-category/'
+        }]
     }
 
 class ServiceListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):

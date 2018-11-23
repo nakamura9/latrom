@@ -69,8 +69,7 @@ export default class OrderTable extends Component{
     render(){
         let headStyle = {
             color: "white",
-            backgroundColor: 'black',
-            borderRight: '1px solid white',
+            backgroundColor: '#07f',
             padding: '15px'
         }
         return(
@@ -191,9 +190,15 @@ class OrderTableEntry extends Component{
     }
 
     render(){
+        let headStyle = {
+            color: "white",
+            backgroundColor: '#07f',
+            padding: '5mm',
+            margin:'2mm'
+        }
         return(
             <Aux>
-                <tr>
+                <tr style={headStyle}>
                     <td colSpan={2}>
                         <InventorySelectWidget
                             list={this.props.itemList}
@@ -218,7 +223,7 @@ class OrderTableEntry extends Component{
                     </td>
                     <td>
                     <button type="button" 
-                    className="btn btn-primary btn-lg"
+                    className="btn  btn-lg"
                     onClick={this.insertHandler}>Insert</button>
                     </td>
                 </tr>

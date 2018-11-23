@@ -85,6 +85,7 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMix
 
         inv = self.object
         items = request.POST.get("item_list", None)
+        
         if inv.status in ['invoice', 'paid']:
             inv.create_entry()
         
@@ -121,6 +122,8 @@ class ServiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
         items = request.POST.get("item_list", None)
         
         process_data(items, inv)
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
 
         return resp
 
@@ -139,6 +142,12 @@ class ServiceInvoicePaymentView(ExtraContext, CreateView):
             'payment_for': 1
             }
 
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
 
 class ServiceInvoicePaymentDetailView(ListView):
     template_name = os.path.join('invoicing', 'service_invoice', 

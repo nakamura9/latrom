@@ -41,7 +41,8 @@ class AbstractSale(models.Model):
         null=True)
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
-    
+    entry = models.ForeignKey('accounting.JournalEntry', 
+        on_delete=None, blank=True, null=True)
     @property
     def overdue(self):
         '''returns boolean'''
@@ -100,7 +101,7 @@ class AbstractSale(models.Model):
 
     @property
     def tax_amount(self):
-        if self.tax:
+        if self.tax and self.tax.rate != 0:
             return self.subtotal * D((self.tax.rate / 100.0)).quantize(D('1.00'))
         return 0
 

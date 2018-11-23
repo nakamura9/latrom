@@ -95,18 +95,25 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext,
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("inventory", "order", "create.html")
     extra_context = {
-        "title": "Create New Purchase Order",
-        "modals": [
-        Modal(**{
-            'title': 'Add Supplier',
-            'action': reverse_lazy('inventory:supplier-create'),
-            'form': forms.SupplierForm
-        }),
-        Modal(**{
-            'title': 'Quick Product',
-            'action': reverse_lazy('inventory:product-create'),
-            'form': forms.QuickProductForm
-        })]}
+        "title": "Create Purchase Order",
+        "description": "Use this form to order inventory from suppliers. Afterwards inventory may be added to stock using the receive inventory form.",
+        "related_links": [
+            {
+                'name': 'Add Supplier',
+                'url': '/inventory/supplier-create/'
+            },{
+                'name': 'Add Product',
+                'url': '/inventory/product-create/'
+            },{
+                'name': 'Add Equipment',
+                'url': '/inventory/equipment-create/'
+            },{
+                'name': 'Add Consumable',
+                'url': '/inventory/consumable-create/'
+            },
+
+        ]
+        }
 
     def get_initial(self):
         if self.kwargs.get('supplier', None):
@@ -215,7 +222,7 @@ class ShippingAndHandlingView(InventoryControllerCheckMixin,
         entry.simple_entry(
             form.cleaned_data['amount'],
             Account.objects.get(pk=1000),
-            Account.objects.get(pk=4009)
+            Account.objects.get(pk=1004)
             )
         
         return resp

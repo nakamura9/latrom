@@ -45,16 +45,32 @@ class InventoryControllerCreateView(ExtraContext, CreateView):
     template_name = CREATE_TEMPLATE
     success_url =  reverse_lazy('inventory:inventory-controller-list')
     extra_context = {
-        'title': 'Assign new Inventory Controller'
+        'title': 'Create Inventory Controller',
+        'description': 'Assign an existing employee to the role of inventory controller and provide the permissions for their role.',
+        'related_links': [{
+            'name': 'Create Employee',
+            'url': '/employees/create-employee/'
+        }]
     }
     
+class InventoryControllerUpdateView(ExtraContext, UpdateView):
+    form_class = forms.InventoryControllerUpdateForm
+    template_name = CREATE_TEMPLATE
+    queryset = models.InventoryController.objects.all()
+    success_url =  reverse_lazy('inventory:inventory-controller-list')
+    extra_context = {
+        'title': 'Update Inventory Controller',
+        
+    }
 
-class InventoryControllerListView(ExtraContext, ListView):
+class InventoryControllerListView(ExtraContext, InventoryControllerCheckMixin,  PaginationMixin, FilterView):
     queryset = models.InventoryController.objects.all()
     template_name = os.path.join('inventory', 'inventory_controller_list.html')
+    filterset_class = filters.ControllerFilter
     extra_context = {
         'title': 'List of Inventory Controllers',
-        'new_link': reverse_lazy('inventory:create-inventory-controller')
+        'new_link': reverse_lazy('inventory:create-inventory-controller'),
+        'description': 'These are employees with user privileges assigned to manage inventory creation, movement and verification.'
     }
 
 
