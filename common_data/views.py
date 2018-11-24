@@ -145,8 +145,10 @@ class IndividualListView(ExtraContext, PaginationMixin, FilterView):
 class WorkFlowView(TemplateView):
     template_name = os.path.join("common_data", "workflow.html")
 
-class ReactTest(TemplateView):
-    template_name = os.path.join("common_data", "react_test.html")
+class AboutView(TemplateView):
+    template_name = os.path.join("common_data", "about.html")
+
+
 
 class GlobalConfigView(ExtraContext, UpdateView):
     template_name = CREATE_TEMPLATE
@@ -156,6 +158,8 @@ class GlobalConfigView(ExtraContext, UpdateView):
     extra_context = {
         'title': 'Configure global application features'
     }
+
+
 
 def config_JSON_API(request):
     return JsonResponse(SalesConfig.get_config_dict())

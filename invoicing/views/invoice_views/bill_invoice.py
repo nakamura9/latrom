@@ -189,7 +189,6 @@ class BillPDFView(ConfigMixin, PDFTemplateView):
         return context
 
 
-
 class BillEmailSendView(EmailPlusPDFMixin):
     inv_class = Bill
     success_url = reverse_lazy('invoicing:bills-list')

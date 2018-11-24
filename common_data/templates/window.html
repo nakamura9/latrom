@@ -7,7 +7,7 @@
 <nav class="navbar navbar-expand-sm bg-light" >
         <ul class="navbar-nav">
             <!--{% url 'base:workflow' %}-->
-            <a class="navbar-brand" href="/base/workflow"  >Latrom</a>
+            <a class="navbar-brand" href="/base/workflow"  >SBS</a>
             {% if request.user %}
                 
                 <li>
@@ -70,20 +70,36 @@
     {% block content %}{% endblock %}
 </article>
 <hr class="my-2" />
-<footer class="bg-info" style="">
-    <ul style="list-style-type:none;">
-        <li ><a style="color:white;" href="/logout?next=/login/">Logout</a></li>
-        <li><a style="color:white;" href="/login">Login</a></li>
-        <li><a style="color:white;" href="#">About</a></li>
-        <li style="color:white;">{{request.user.username}} is logged in.</li>
-        {% if request.user.is_superuser %}
-        <li><a style="color:white;" href="{% url 'base:config' pk=1 %}">Global Settings</a></li>
-        {% endif %}
-        <li>
-            <a style="color:white;" href="{% url 'employees:time-logger' %}">Run Time logger</a>
-        </li>
-        
+<footer class="bg-primary" >
+    <div style="padding:1cm;">
+        <div class="text-white" style="padding:1cm;display:inline-block;">
+        <h5>Users</h5>
+        <ul style="list-style-type:none">
+            <li style="color:white;">{{request.user.username}} is logged in.</li>
+            <li ><a style="color:white;" href="/logout?next=/login/">Logout</a></li>    
+        </ul>
+    </div>
+    <div class="text-white" style="padding:1cm;display:inline-block;border-left:3px solid white;">
+        <h5>Quick Actions</h5>
+        <ul style="list-style-type:none">
+            {% if request.user.is_superuser %}
+            <li><a style="color:white;" href="{% url 'base:config' pk=1 %}">Global Settings</a></li>
+            {% endif %}
+            <li>
+                <a style="color:white;" href="{% url 'employees:time-logger' %}">Run Time logger</a>
+            </li>
+        </ul>
+    </div>
+    <div class="text-white" style="padding:1cm;display:inline-block;border-left:3px solid white;">
+        <h5>About</h5>
+        <ul style="list-style-type:none;">
+        <li><a style="color:white;" href="/base/about/">About</a></li>
+        <li><a style="color:white;" href="#">Software License</a></li>
+
     </ul>
+    </div>
+    </div>
+    
 </footer>
 <script type="text/javascript">
     $(".ui-date-picker").datepicker();
