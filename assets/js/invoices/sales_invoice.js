@@ -210,16 +210,11 @@ class EntryRow extends Component{
                         dataURL="/inventory/api/product/"
                         displayField="name"
                         idField="id"
+                        canCreateNewItem={true}
+                        newLink='/inventory/product-create/'
                         onSelect={this.onSelect}
                         onClear={this.onClear}
                     />
-                        <button 
-                            style={{width:"100%"}}
-                            className="btn "
-                            onClick={() => window.open(
-                                '/inventory/product-create/' ,'popup','width=900,height=480')}>
-                            Create New Product <i className="fas fa-plus"></i>
-                        </button>
                    
                 </td>
                 <td>{this.state.inputs.unit_price.toFixed(2)}</td>

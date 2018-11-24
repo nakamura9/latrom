@@ -44,15 +44,11 @@ class ServiceEntry extends Component{
                         dataURL="/services/api/service/"
                         displayField="name"
                         idField="id"
+                        canCreateNewItem={true}
+                        newLink='/services/create-service'
                         onSelect={this.props.onSelect}
                         onClear={this.props.onClear} />
-                    <button 
-                        style={{width:"100%"}}
-                        className="btn btn-success"
-                        onClick={() => window.open(
-                            '/services/create-service' ,'popup','width=900,height=480')}>
-                        Add Service <i className="fas fa-plus"></i>
-                    </button>
+                    
                 </div>
                 <div style={{...inlineStyles, width:"30%"}}>
                     <input 
@@ -101,15 +97,10 @@ class ProductEntry extends Component{
                         dataURL="/inventory/api/product/"
                         displayField="name"
                         idField="id"
+                        canCreateNewItem={true}
+                        newLink='/inventory/product-create/'
                         onSelect={this.props.onSelect}
                         onClear={this.props.onClear} />
-                    <button 
-                        style={{width:"100%"}}
-                        className="btn btn-success"
-                        onClick={() => window.open(
-                            '/inventory/product-create' ,'popup','width=900,height=480')}>
-                        Add Product <i className="fas fa-plus"></i>
-                    </button>
                 </div>
                 <div style={{...inlineStyles, width:"30%"}}>
                     <input 

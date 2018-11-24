@@ -238,15 +238,11 @@ class EntryRow extends Component{
                             dataURL="/services/api/service/"
                             displayField="name"
                             idField="id"
+                            canCreateNewItem={true}
+                            newLink='/services/create-service'
                             onClear={this.onClear}
                             onSelect={this.onSelect}/>
-                        <button 
-                            style={{width:"100%"}}
-                            className="btn"
-                            onClick={() => window.open(
-                                '/services/create-service' ,'popup','width=900,height=480')}>
-                            Add New Service <i className="fas fa-plus"></i>
-                        </button>
+                        
                     </td>
                     <td style={{width: "10%"}}>{this.state.currentRate}</td>
                     <td style={{width: "15%"}}>

@@ -163,6 +163,7 @@ class SearchableWidget extends Component {
         let rendered;
         if(this.state.selectedValue === ""){
             rendered = (
+                <div className="input-group mb-3">
                 <input 
                     type="text"
                     className="form-control"
@@ -170,6 +171,23 @@ class SearchableWidget extends Component {
                     onChange={this.handleChange}
                     placeholder="Select item..."
                     list="id_list"/>
+                {this.props.canCreateNewItem 
+                    ?<div className="input-group-append">
+                        <button 
+                            type="button"
+                            style={{
+                                minHeight: "42px",
+                            }}
+                            className="btn btn-outline"
+                            onClick={() => window.open(
+                                this.props.newLink ,'popup','width=900,height=480')}>
+                            <i className="fas fa-plus"></i>
+                        </button>
+                     </div>
+                    : null
+                }                
+                </div>
+                
             )
         }else{
             rendered = (
