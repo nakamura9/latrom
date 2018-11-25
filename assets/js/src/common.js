@@ -179,8 +179,11 @@ class SearchableWidget extends Component {
                                 minHeight: "42px",
                             }}
                             className="btn btn-outline"
-                            onClick={() => window.open(
-                                this.props.newLink ,'popup','width=900,height=480')}>
+                            onClick={() => {
+                                $('#popup-frame').attr('src', this.props.newLink);
+                                var modal = document.getElementById('id-my-modal');
+                                    modal.style.display = 'block';
+                            }}>
                             <i className="fas fa-plus"></i>
                         </button>
                      </div>
