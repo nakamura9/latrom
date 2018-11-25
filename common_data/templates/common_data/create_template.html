@@ -10,9 +10,14 @@
             
             <script>
                 function linkClickHandler(link){
+                    /*
                     window.open(link ,'popup','width=900,height=480');
                     $('#refresher-button').css('display', 'block');
                     return false;
+                    */
+                   $('#popup-frame').attr('src', link);
+                   var modal = document.getElementById('id-my-modal');
+                    modal.style.display = 'block';
                 }   
             </script>
             <div class="btn btn-group">

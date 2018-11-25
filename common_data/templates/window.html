@@ -4,7 +4,7 @@
 {% endblock %}
 {% block window %}
 
-<nav class="navbar navbar-expand-sm bg-light" >
+<nav class="navbar navbar-expand-sm bg-light" id="navbar" >
         <ul class="navbar-nav">
             <!--{% url 'base:workflow' %}-->
             <a class="navbar-brand" href="/base/workflow"  >SBS</a>
@@ -67,10 +67,15 @@
         
         {% endif %}
     </div>
+    <!--
+    <button id="id-trigger-button">
+        Trigger Modal
+    </button>
+    -->
     {% block content %}{% endblock %}
 </article>
 <hr class="my-2" />
-<footer class="bg-primary" >
+<footer class="bg-primary" id="footer">
     <div style="padding:1cm;">
         <div class="text-white" style="padding:1cm;display:inline-block;">
         <h5>Users</h5>
