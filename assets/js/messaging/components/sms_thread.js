@@ -35,9 +35,12 @@ class SMSMessageThreadView extends Component{
     
     render(){
         return(
-            <div>
+            <div style={{
+                "maxHeight": "400px",
+                "maxWidth" : "600px",
+                "margin" : "0px auto",
+            }}>
                 <div style={{
-                    "maxHeight": "500px",
                     "overflowY": "auto"
                 }}>
                     {this.state.messages.map((message) =>(
@@ -49,24 +52,29 @@ class SMSMessageThreadView extends Component{
                     ))}
                 </div>
                 <div>
-                    <textarea 
-                        cols={3} 
-                        style={{
-                            borderRadius: "10px",
-                            border: "1px solid #09f",
-                            width: "85%"
-                        }} 
-                        value={this.state.inputText}
-                        onChange={this.inputHandler}/>
+                    <div className="input-group">
+                        <textarea 
+                            className="form-control"
+                            cols={3} 
+                            style={{
+                                borderRadius: "10px",
+                                border: "1px solid #09f",
+                                width: "85%"
+                            }} 
+                            value={this.state.inputText}
+                            onChange={this.inputHandler}/>
+                    <div className="input-group-append">
                         <button 
                             style={{
                                 color: "white",
-                                backgroundColor: "#55f",
+                                backgroundColor: "#07f",
                                 border:"0px",
-                                borderRadius: "20px",
-                                padding: '10px'
+                                height: '64px',
+                                borderRadius: "5px"
                             }}
                             onClick={this.sendMessage}>Send</button>
+                    </div>
+                    </div>
                 </div>
             </div>
         )

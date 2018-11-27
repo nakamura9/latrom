@@ -44,6 +44,7 @@ const event = (props) =>{
                 position: "absolute",
                 left: props.view === "month" ? "0px" :"40px",
                 top: `${startY}px`,
+                border: '1px solid white',
                 height: `${height}px`,
                 width: props.view === "day" 
                         ? "600px" : "200px",
