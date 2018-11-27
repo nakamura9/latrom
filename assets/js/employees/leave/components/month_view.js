@@ -58,7 +58,7 @@ class MonthView extends Component{
                         </tbody>
                     </table>
                     {this.state.leave.map((leave, i) =>(
-                        <Leave data={leave} key={i} />
+                        <Leave data={leave} offset={i * 20} key={i} />
                     ))}
                 </div>
             </div>

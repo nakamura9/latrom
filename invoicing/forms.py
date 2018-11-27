@@ -40,6 +40,12 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
             Tab('Financial Data Presentation',
                 'currency',
                 ),
+            Tab('Invoice Types',
+                'use_sales_invoice',
+                'use_combined_invoice',
+                'use_bill_invoice',
+                'use_service_invoice',
+                ),
             Tab('Business Information',
                 'logo',
                 'business_address',
@@ -48,6 +54,8 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 'payment_details',
                 'contact_details')
         ))
+
+        
 class CustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'account']
