@@ -24,6 +24,32 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.InventorySettings
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Inventory Settings',
+                    'inventory_check_date',
+                    'inventory_check_frequency',
+                    'order_template_theme',
+                    'product_sales_pricing_method',
+                    'inventory_valuation_method',
+                    'stock_valuation_period'),
+                Tab('WareHousing Settings',
+                    'use_warehousing_model',
+                    'use_storage_media_model'),
+                Tab('Inventory Types',
+                    'use_product_inventory',
+                    'use_equipment_inventory',
+                    'use_consumables_inventory')
+            )
+        )
+        
+        self.helper.add_input(Submit('submit', 'Submit'))
+    
+
 
 class SupplierForm(forms.ModelForm, BootstrapMixin):
     class Meta:

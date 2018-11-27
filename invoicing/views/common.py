@@ -16,11 +16,12 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rest_framework import generics, viewsets
 
 from accounting.forms import TaxForm
-from common_data.utilities import ExtraContext, Modal, apply_style
+from common_data.utilities import ExtraContext, ConfigMixin
 from inventory.forms import QuickProductForm
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
+
 
 
 class SalesRepCheckMixin(UserPassesTestMixin):
@@ -33,7 +34,7 @@ class SalesRepCheckMixin(UserPassesTestMixin):
         else:
             return False
 
-class Home(SalesRepCheckMixin, TemplateView):
+class Home(SalesRepCheckMixin, ConfigMixin, TemplateView):
     template_name = os.path.join("invoicing", "home.html")
 
         
