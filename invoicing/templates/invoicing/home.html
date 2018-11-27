@@ -9,6 +9,7 @@
 <div class="col-sm-2"></div>
 <div class="col-sm-8">
     <div class="card-deck">
+            {% if use_sales_invoice %}
             <div class="card bg-primary text-white">
                 <div class="card-header">
                     <h4 class="card-title">Sales Invoices</h4>
@@ -24,6 +25,8 @@
                     </ul>
                 </div>
             </div>
+            {% endif %}
+            {% if use_service_invoice %}
             <div class="card bg-primary text-white">
                 <div class="card-header">
                     <h4 class="card-title">Service Invoices</h4>
@@ -37,6 +40,8 @@
                     <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:service-invoice-list' %}">Manage Service Invoices</a></li>
                 </div>
             </div>
+            {% endif %}
+            {% if use_bill_invoice %}
             <div class="card bg-primary text-white">
                 <div class="card-header">
                       <h4 class="card-title">Bill Customers</h4>
@@ -49,9 +54,11 @@
                       </ul>
                 </div>
             </div>
+            {% endif %}
     </div>
     <hr class="my-4"/>
     <div class="card-deck">
+            {% if use_combined_invoice %}
             <div class="card bg-primary text-white">
                 <div class="card-header">
                     <h4 class="card-title">Combined Invoices</h4>
@@ -63,6 +70,7 @@
                     </ul>
                 </div>
             </div>
+            {% endif %}
             <div class="card bg-primary text-white">
                 <div class="card-header">
                     <h4 class="card-title">Customers</h4>

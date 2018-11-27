@@ -14,6 +14,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card-deck">
+                {% if use_product_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Products</h4>
@@ -29,6 +30,8 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
+                {% if use_equipment_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Equipment</h4>
@@ -45,6 +48,8 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
+                {% if use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Consumables</h4>
@@ -61,6 +66,7 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
             </div>
 
             <hr class="my-4" />
@@ -102,6 +108,7 @@
                         </ul>
                     </div>
                 </div>
+                {% if use_warehousing_model %}
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
@@ -118,10 +125,12 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
             </div>
 
             <hr class="my-4" />
             <div class="card-deck">
+            {% if use_equipment_inventory or use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Requisitions</h4>
@@ -138,6 +147,7 @@
                         </ul>
                     </div>
                 </div>
+            {% endif %}
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">

@@ -5,6 +5,7 @@ import json
 import os
 import urllib
 
+from inventory.views.util import InventoryConfigMixin 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
@@ -74,7 +75,9 @@ class InventoryControllerListView(ExtraContext, InventoryControllerCheckMixin,  
     }
 
 
-class InventoryDashboard(InventoryControllerCheckMixin, TemplateView):
+class InventoryDashboard(InventoryControllerCheckMixin, 
+    InventoryConfigMixin, 
+    TemplateView):
     template_name = os.path.join("inventory", "dashboard.html")
 
 
