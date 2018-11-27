@@ -206,3 +206,20 @@ class Consumable(BaseItem):
             Q(consumable=self),
             Q(quantity__gt=0)
             )
+"""
+class RawMaterial(BaseItem):
+    '''Model for representing the most basic inputs in a process'''
+
+
+#not inherited because some parent fields do not carry over
+class WorkInProgress(models.Model):
+    name = models.CharField(max_length = 64)
+    width = models.FloatField(default=0.0)
+    height = models.FloatField(default=0.0)
+    image = models.FileField(blank=True, null=True, 
+        upload_to=settings.MEDIA_ROOT)
+    description = models.TextField(blank=True, default="")
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,
+        blank=True, default=1)
+    
+"""
