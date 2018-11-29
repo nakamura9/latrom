@@ -207,9 +207,6 @@ class Consumable(BaseItem):
             Q(quantity__gt=0)
             )
 """
-class RawMaterial(BaseItem):
-    '''Model for representing the most basic inputs in a process'''
-
 
 #not inherited because some parent fields do not carry over
 class WorkInProgress(models.Model):
