@@ -39,6 +39,7 @@ USER_APPS = [
     'services',
     'planner',
     'messaging',
+    'manufacturing'
 ]
 
 INSTALLED_APPS = [

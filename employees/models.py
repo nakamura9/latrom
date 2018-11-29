@@ -208,6 +208,10 @@ class Employee(Person):
         return hasattr(self, 'serviceperson')
 
     @property
+    def is_manufacturing_associate(self):
+        return hasattr(self, 'manufacturingassociate')
+
+    @property
     def agenda_items(self):
         #check participants as well
         return planner.models.Event.objects.filter(
