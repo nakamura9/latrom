@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DayField from './day_field';
-import TimeField from './time_field';
+import TimeField from '../../../src/components/time_field';
 
 class EditLine extends Component{
     state = {

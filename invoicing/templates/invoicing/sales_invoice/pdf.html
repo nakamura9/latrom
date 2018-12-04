@@ -88,7 +88,7 @@
                             <td>{{item.product.name}}</td>
                             <td>{{item.price | floatformat:2 }}</td>
                             {% if include_units_in_sales_invoice %}
-                            <td>{{item.item.unit}}</td>
+                            <td>{{item.product.unit}}</td>
                             {% endif %}
                             <td>{{item.subtotal | floatformat:2 }}</td>
 

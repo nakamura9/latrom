@@ -145,6 +145,9 @@ class IndividualListView(ExtraContext, PaginationMixin, FilterView):
 class WorkFlowView(TemplateView):
     template_name = os.path.join("common_data", "workflow.html")
 
+class ReactTestView(TemplateView):
+    template_name = os.path.join("common_data", "react_test.html")
+
 class AboutView(TemplateView):
     template_name = os.path.join("common_data", "about.html")
 
