@@ -40,30 +40,33 @@ class Totals extends Component{
     }
     render(){
         let contents;
+        const cellStyle = {
+            padding: '10px'
+        }
         if(this.state.tax === null){
             contents = (
                 <tfoot>
-                    <tr>
-                        <th colSpan={this.props.span - 1}>Total</th>
-                        <td>{this.state.total}</td>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Total</th>
+                        <td style={cellStyle}>{this.state.total}</td>
                     </tr>
                 </tfoot>
             )
         }else{
             contents = (
                 <tfoot>    
-                    <tr>
-                            <th colSpan={this.props.span - 1}>Subtotal</th>
-                            <td>{this.state.subtotal.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <th colSpan={this.props.span - 1}>Tax</th>
-                            <td>{this.state.tax.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <th colSpan={this.props.span - 1}>Total</th>
-                            <td>{this.state.total.toFixed(2)}</td>
-                        </tr>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Subtotal</th>
+                        <td style={cellStyle}>{this.state.subtotal.toFixed(2)}</td>
+                    </tr>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Tax</th>
+                        <td style={cellStyle}>{this.state.tax.toFixed(2)}</td>
+                    </tr>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Total</th>
+                        <td style={cellStyle}>{this.state.total.toFixed(2)}</td>
+                    </tr>
                 </tfoot>
                 )
         }

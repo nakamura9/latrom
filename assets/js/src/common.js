@@ -197,7 +197,8 @@ class SearchableWidget extends Component {
                 <div style={{
                     width:'100%', 
                     margin: '0px', 
-                    minHeight: '35px',
+                    padding: '7px',
+                    minHeight: '42px',
                     backgroundColor: '#ccc'
                 }} >
                     <span>{this.state.selectedValue}</span>
@@ -208,8 +209,8 @@ class SearchableWidget extends Component {
                                 color: 'white',
                                 border: '0px',
                                 boxShadow: 'none',
-                                minHeight: '35px',
-                                minWidth: '35px'
+                                minHeight: '28px',
+                                minWidth: '28px'
                             }}
                             onClick={() =>{
                                 this.setState({

@@ -12,6 +12,7 @@ class AsyncSelect extends Component{
             url: this.props.dataURL
         }).then(res => {
             const dataList = this.props.resProcessor(res);
+            // returns a list of objects with value and name properties
             this.setState({options: dataList});
         }
             )
