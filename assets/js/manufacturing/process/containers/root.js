@@ -16,7 +16,9 @@ class ProcessRoot extends Component{
                 <div className="col-sm-8">
                     <div>
                         <h4>Inputs</h4>
-                        <h5>Bill of Materials</h5>
+                        <h5>Bill of Materials <a 
+                            className="btn btn-info"
+                            href="/inventory/raw-material-create/">Create New</a></h5>
                         <hr />
                         <GenericTable 
                             hasLineTotal={false}
@@ -28,7 +30,7 @@ class ProcessRoot extends Component{
                                     type: 'search',
                                     width: 40,
                                     required: true,
-                                    url: '/manufacturing/api/process-product/',
+                                    url: '/inventory/api/raw-material/',
                                     idField: 'id',
                                     displayField: 'name'
                                 },
@@ -48,7 +50,7 @@ class ProcessRoot extends Component{
                                 }
                             ]}/>
                         <hr />
-                        <h5>Process Equipment</h5>
+                        <h5>Process Equipment </h5>
                         <hr />
                         <h6>Machine(s)</h6>
                         <GenericTable 

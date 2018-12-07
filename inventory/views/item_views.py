@@ -205,3 +205,62 @@ class EquipmentCreateView(InventoryControllerCheckMixin, ExtraContext,
             'url': '/inventory/category-create/'
         }],
         }
+
+
+####################################################
+#                Raw Material Views                #
+####################################################
+
+
+class RawMaterialAPIView(ModelViewSet):
+    queryset = models.RawMaterial.objects.all()
+    serializer_class = serializers.RawMaterialSerializer
+
+
+class RawMaterialUpdateView(InventoryControllerCheckMixin, ExtraContext, 
+        UpdateView):
+    form_class = forms.RawMaterialForm
+    model = models.RawMaterial
+    success_url = reverse_lazy('inventory:home')
+    template_name = CREATE_TEMPLATE
+    extra_context = {"title": "Update Existing Raw Materials Details"}
+
+
+class RawMaterialDetailView(InventoryControllerCheckMixin, DetailView):
+    model = models.RawMaterial
+    template_name = os.path.join("inventory", "item", 'raw_material', "detail.html")
+
+
+class RawMaterialListView(InventoryControllerCheckMixin, ExtraContext, 
+        PaginationMixin, FilterView):
+    paginate_by = 10
+    filterset_class = filters.RawMaterialFilter
+    template_name = os.path.join('inventory', 'item', 'raw_material', 'list.html')
+    extra_context = {
+        'title': 'RawMaterial List',
+        "new_link": reverse_lazy("inventory:raw-material-create")
+    }
+
+    def get_queryset(self):
+        return models.RawMaterial.objects.all().order_by('pk')
+
+
+class RawMaterialCreateView(InventoryControllerCheckMixin, ExtraContext, 
+        CreateView):
+    form_class = forms.RawMaterialForm
+    success_url = reverse_lazy('inventory:home')
+    template_name = os.path.join("common_data", "crispy_create_template.html")
+    extra_context = {
+        "title": "Add New Raw Material",
+        'description': 'Cycle  through the tabs to enter information regarding material description, quantity, dimensions and pricing. ',
+        'related_links': [{
+            'name': 'Create Supplier',
+            'url': '/inventory/supplier-create/'
+        },{
+            'name': 'Add Unit',
+            'url': '/inventory/unit-create/'
+        },{
+            'name': 'Add Inventory Category',
+            'url': '/inventory/category-create/'
+        }],
+        }

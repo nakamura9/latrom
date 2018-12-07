@@ -72,6 +72,24 @@
             <hr class="my-4" />
 
             <div class="card-deck">
+                {% if use_raw_materials_inventory %}
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Raw Materials</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:raw-material-create' %}">Create New Raw Material</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:raw-material-list' %}">Manage Raw Materials</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Orders</h4>
@@ -108,6 +126,11 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+
+            <hr class="my-4" />
+            <div class="card-deck">
+            
                 {% if use_warehousing_model %}
                 <div class="card bg-primary text-white">
                     <div class="card-body">
@@ -126,10 +149,6 @@
                     </div>
                 </div>
                 {% endif %}
-            </div>
-
-            <hr class="my-4" />
-            <div class="card-deck">
             {% if use_equipment_inventory or use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
@@ -165,6 +184,9 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+            <hr class="my-4" />
+            <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Configuration</h4>

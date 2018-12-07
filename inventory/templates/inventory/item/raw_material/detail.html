@@ -1,10 +1,10 @@
 {% extends 'window.html' %} {% block content %}
 <div class="jumbotron">
-    <h1 class="display-3">Product Detail</h1>
+    <h1 class="display-3">Raw Material Detail</h1>
     <p class="lead">Information concerning stock items. </p>
     <hr class="my-2">
     <p class="lead">
-        <a class="btn btn-success btn-lg" href="{% url 'inventory:product-update' pk=object.pk %}" role="button">Edit</a>
+        <a class="btn btn-success btn-lg" href="{% url 'inventory:raw-material-update' pk=object.pk %}" role="button">Edit</a>
     </p>
 </div>
 
@@ -39,9 +39,7 @@
                         </div>
                         <div class="card-body">
                             <p class="card-text">Purchase Price: {{object.unit_purchase_price}}</p>
-                            <p class="card-text">Sale Price: {{object.unit_sales_price}}</p>
                             <p class="card-text">Stock Value: {{object.stock_value}}</p>
-                            <p class="card-text">Total Sales to date: {{object.sales_to_date}}</p>
                         </div>
                     </div>
 
@@ -73,28 +71,7 @@
             <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Product Events</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-default">
-                            <thead>
-                                <th>Date</th>
-                                <th>Description</th>
-                            </thead>
-                            <tbody style="max-height:200px; overflow-y:auto;">
-                                {% for e in object.events %}
-                                    <tr>
-                                        <td>{{e.date}}</td>
-                                        <td>{{e.description}}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Product Locations</h4>
+                        <h4 class="card-title">Material Locations</h4>
                     </div>
                     <div class="card-body">
                         <table class="table table-default">

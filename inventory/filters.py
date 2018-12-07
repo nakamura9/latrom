@@ -16,6 +16,18 @@ class ProductFilter(django_filters.FilterSet):
             'category': ['exact'],
             }
 
+
+class RawMaterialFilter(django_filters.FilterSet):
+    
+    class Meta:
+        model = RawMaterial
+        fields = {
+            'name': ['icontains'],
+            'unit': ['exact'],
+            'supplier': ['exact'],
+            'category': ['exact'],
+            }
+
 class EquipmentFilter(django_filters.FilterSet):
     
     class Meta:

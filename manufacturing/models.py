@@ -292,3 +292,5 @@ class ProductionScheduleLine(models.Model):
     @property
     def shift(self):
         raise NotImplementedError()
+
+'''Work in progress must be part of manufacturing because the it is not ordered from suppliers or sold so it does not fit in with the rest of the inventory system.'''
