@@ -140,7 +140,7 @@ class SearchableWidget extends Component {
                 items: res.data,
                 choices: newChoices
             });
-        })
+        });
     }
 
     handleChange = (evt) => {
@@ -170,7 +170,8 @@ class SearchableWidget extends Component {
                     value={this.state.currValue}
                     onChange={this.handleChange}
                     placeholder="Select item..."
-                    list="id_list"/>
+
+                    list={this.props.dataURL + "id_list"}/>
                 {this.props.canCreateNewItem 
                     ?<div className="input-group-append">
                         <button 
@@ -228,7 +229,7 @@ class SearchableWidget extends Component {
         return(
             <div>
                 {rendered}   
-                <datalist id="id_list">
+                <datalist id={this.props.dataURL + "id_list"}>
                     {[...this.state.items].map((item, i) => {
                         //always display id and display field
                         return(<option key={i} >

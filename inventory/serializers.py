@@ -9,6 +9,12 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['unit_sales_price', 'unit_purchase_price', 'quantity',
             'id', 'name', 'description']
 
+class RawMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RawMaterial
+        fields = [ 'unit_purchase_price','unit', 'quantity',
+            'id', 'name', 'description']
+
 class ConsumableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable

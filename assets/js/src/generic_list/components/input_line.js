@@ -112,6 +112,7 @@ class inputLine extends Component{
                 break;
             case 'search': 
                 return <SearchableWidget 
+                    
                     list={this.props.lines}
                     dataURL={field.url}
                     idField={field.idField}

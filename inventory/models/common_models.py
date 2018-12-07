@@ -71,6 +71,7 @@ class InventorySettings(SingletonModel):
     use_product_inventory = models.BooleanField(default=True)
     use_equipment_inventory = models.BooleanField(default=True)
     use_consumables_inventory = models.BooleanField(default=True)
+    use_raw_materials_inventory = models.BooleanField(default=True)
 
 
 class InventoryController(models.Model):
