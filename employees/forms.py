@@ -47,6 +47,13 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
 
 
 class PayGradeForm(forms.ModelForm, BootstrapMixin):
+    allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
+    deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
+    payroll_taxes = forms.ModelMultipleChoiceField(
+        models.PayrollTax.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
     class Meta:
         fields = "__all__"
         model = models.PayGrade

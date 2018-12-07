@@ -229,7 +229,7 @@ class SearchableWidget extends Component {
             <div>
                 {rendered}   
                 <datalist id="id_list">
-                    {this.state.items.map((item, i) => {
+                    {[...this.state.items].map((item, i) => {
                         //always display id and display field
                         return(<option key={i} >
                                 {item[this.props.idField]} - {item[this.props.displayField]}

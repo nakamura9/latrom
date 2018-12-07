@@ -6,7 +6,24 @@ class ShiftSchedule extends Component{
     state = {
         lines: []
     }
-    
+
+    insertHandler = (data) =>{
+        let newLines = [...this.state.lines];
+        newLines.push(data);
+        this.setState({lines: newLines}, this.updateForm);
+    }
+    deleteHandler = (index) => {
+        let newLines = [...this.state.lines];
+        newLines.splice(index, 1);
+        this.setState({lines: newLines}, this.updateForm)
+
+    }
+
+    updateForm = () =>{
+        document.getElementById('id_shift_lines').value = encodeURIComponent(
+            JSON.stringify(
+                this.state.lines));
+    }
     render(){
         return(
             <table className="table">
@@ -22,14 +39,21 @@ class ShiftSchedule extends Component{
                         <th>Fri</th>
                         <th>Sat</th>
                         <th>Sun</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {this.state.lines.map((line, i) =>{
-                        <ShiftLine data={line} key={i} />
-                    })}
+                    {this.state.lines.map((line, i) =>(
+                        <ShiftLine 
+                            data={line} 
+                            key={i}
+                            index={i}
+                            deleteHandler={this.deleteHandler} />
+                    )
+                    )}
                 </tbody>
-                <ShiftEntryLine />
+                <ShiftEntryLine 
+                    insertHandler={this.insertHandler}/>
             </table>
         )
     }

@@ -1,3 +1,5 @@
+import urllib
+import json
 import os 
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView
@@ -29,6 +31,37 @@ class ShiftScheduleCreateView(ExtraContext,
     extra_context = {
         'title': 'Create Shift Schedule'
     }
+
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args, **kwargs)
+        if self.object is None:
+            return resp
+
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            data_string = form.cleaned_data['shift_lines']
+            data = json.loads(urllib.parse.unquote(data_string))
+
+        else: return resp
+
+        for line in data:
+            models.ShiftScheduleLine.objects.create(
+                schedule=self.object,
+                start_time = line['startTime'],
+                end_time = line['endTime'],
+                shift = models.Shift.objects.get(
+                    pk=line['shift'].split('-')[0]
+                ),
+                monday=line['monday'],
+                tuesday=line['tuesday'],
+                wednesday=line['wednesday'],
+                thursday=line['thursday'],
+                friday=line['friday'],
+                saturday=line['saturday'],
+                sunday=line['sunday'],
+            )
+
+        return resp
 
 class ShiftAPIView(ModelViewSet):
     queryset = models.Shift.objects.all()

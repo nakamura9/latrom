@@ -1,6 +1,10 @@
 {% extends "window.html" %} {% load static %} {% block head %}
 <link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
-
+<style>
+form li {
+    list-style-type: none;
+}
+</style>
 <div class="jumbotron">
     <div class="container">
         <h1 class="display-3">{{title}}</h1>
