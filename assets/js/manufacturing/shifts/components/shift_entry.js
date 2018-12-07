@@ -29,7 +29,8 @@ class ShiftEntry extends Component{
     }
     dayHandler = (evt) =>{
         let newState = {...this.state};
-        newState[evt.target.name] = evt.target.value;
+        
+        newState[evt.target.name] = !this.state[evt.target.name];
         this.setState(newState);
 
     }
@@ -43,7 +44,7 @@ class ShiftEntry extends Component{
                             resProcessor={(res) =>{
                                 return (res.data.map((shift, i) =>(
                                     {
-                                        value: shift.id,
+                                        value: shift.id + '-' + shift.name,
                                         name: shift.name
                                     }
                                 )))
@@ -112,9 +113,10 @@ class ShiftEntry extends Component{
                             onChange={this.dayHandler}
                             name="sunday" />
                     </td>
+                    <td></td>
                 </tr>
             <tr className="bg-primary text-white">
-                <td colSpan={10}>
+                <td colSpan={11}>
                     <button 
                         style={{
                             float: 'right'

@@ -88,7 +88,7 @@ export default class ServiceLineTable extends Component{
 
     render(){
         return(
-            <table>
+            <table className="table">
                 <thead>
                     <tr className="bg-primary text-white">
                         <th></th>

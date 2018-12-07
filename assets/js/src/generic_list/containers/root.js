@@ -2,18 +2,24 @@ import React, { Component } from 'react';
 import InputLine from '../components/input_line';
 import TitleBar from '../components/title_bar';
 import DataRow from '../components/row';
-import $ from 'jquery';
 import Totals from '../../components/totals_table';
+import axios from 'axios';
 
 /**
  * fieldOrder -array of strings 
  * formInputID - string 
  *  fields - array of objects 
+ * prepopulated - boolean
+ * urlFetcher - a function that returns the url with the prepoulation url
+ * resProcessor - a function which maps the fetched data onto the lines array
+ *  NB please supply a lineTotal for the fields that require it
  */
 
  /**
   * fields object must have at least a name property,
-  * a type property which is one of ('select', text', 'number', 'search')
+  * a type property which is one of ('select', text', 'number', 'search', 
+  * 'fetch')
+  * only one search and fetch field allowed per table 
   * and a width property, the sum for all fields must be 90
   * 
   * for search widgets additional fields must be supplied
@@ -33,6 +39,18 @@ class GenericTable extends Component{
     componentDidMount = () => {
         //for update views
         //come up with a common check for update views
+
+        if(this.props.prepopulated){
+            const url = this.props.urlFetcher();
+            axios.get(url)
+                .then(res => {
+                    this.setState({lines: this.props.resProcessor(res)})
+                }, ()=> console.log(this.state.lines));
+        }
+    }
+
+    taxChangeHandler = (id) =>{
+        document.getElementById('id_tax').value = id;
     }
 
     dataRowDeleteHandler = (index) =>{
@@ -61,12 +79,14 @@ class GenericTable extends Component{
     }
 
     updateForm = () =>{
-        $(`#${this.props.formInputID}`).val(
+        let field = document.getElementById(this.props.formInputID);
+        if(field){
+            field.value =
             encodeURIComponent(
-                JSON.stringify(this.state.lines
-                    )
-                )
-            );
+                JSON.stringify(this.state.lines)
+                );
+        }
+        
     }
     render(){
         return(
@@ -93,12 +113,16 @@ class GenericTable extends Component{
                     fields={this.props.fields}
                     calculateTotal={this.props.calculateTotal}
                     lines={this.state.lines}/>
-                <Totals 
-                    span={this.props.fields.length + 2}
-                    list={this.state.lines}
-                    subtotalReducer={function(x, y){
-                        return (x + y.lineTotal);
-                    }}/>
+                {this.props.hasTotal 
+                ?   <Totals 
+                        span={this.props.fields.length + 2}
+                        list={this.state.lines}
+                        taxFormField={this.props.taxFormField}
+                        subtotalReducer={function(x, y){
+                            return (x + y.lineTotal);
+                        }}/>
+                :   null}
+                
             </table>
         )
     }

@@ -32,6 +32,12 @@ input[type="checkbox"] {
     display: block;
 }
 
+label > input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    display: inline;
+}
+
 input[type="radio"] {
     width: 30px;
     height: 30px;

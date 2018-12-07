@@ -172,11 +172,6 @@ class Product(BaseItem):
             Q(quantity__gt=0)
             )
 
-
-class RawMaterial(BaseItem):
-    minimum_order_level = models.IntegerField( default=0)
-    maximum_stock_level = models.IntegerField(default=0)
-
 class Equipment(BaseItem):
     CONDITION_CHOICES = [
         ('excellent', 'Excellent'),
@@ -206,8 +201,13 @@ class Consumable(BaseItem):
             Q(consumable=self),
             Q(quantity__gt=0)
             )
-"""
 
+class RawMaterial(BaseItem):
+    minimum_order_level = models.IntegerField( default=0)
+    maximum_stock_level = models.IntegerField(default=0)
+
+
+"""
 #not inherited because some parent fields do not carry over
 class WorkInProgress(models.Model):
     name = models.CharField(max_length = 64)

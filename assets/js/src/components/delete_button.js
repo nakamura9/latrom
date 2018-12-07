@@ -18,3 +18,5 @@ DeleteButton.propTypes = {
     handler: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired
 }
+
+export default DeleteButton;

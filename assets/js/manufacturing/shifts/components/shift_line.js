@@ -1,9 +1,9 @@
 import React from 'react';
-
+import DeleteButton from '../../../src/components/delete_button';
 const shiftLine = (props) =>{
     return(
         <tr>
-            <td>{props.data.shiftName}</td>
+            <td>{props.data.shift}</td>
             <td>{props.data.startTime}</td>
             <td>{props.data.endTime}</td>
             <td><input 
@@ -41,6 +41,9 @@ const shiftLine = (props) =>{
                 type="checkbox"
                 checked={props.data.sunday} />
             </td>
+            <td><DeleteButton 
+                    handler={props.deleteHandler}
+                    index={props.index}/></td>
         </tr>
     )
 };

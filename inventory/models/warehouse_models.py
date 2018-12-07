@@ -116,7 +116,8 @@ class WareHouseItem(models.Model):
     ITEM_TYPE_CHOICES = [
         (1, 'Product'),
         (2, 'Consumable'),
-        (3, 'Equipment')
+        (3, 'Equipment'),
+        (4, 'Raw Material')
     ]
     
     item_type = models.PositiveSmallIntegerField()
@@ -124,6 +125,8 @@ class WareHouseItem(models.Model):
     consumable = models.ForeignKey('inventory.Consumable', on_delete=None, 
         null=True)
     equipment = models.ForeignKey('inventory.Equipment', on_delete=None, 
+        null=True)
+    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=None, 
         null=True)
     quantity = models.FloatField()
     warehouse = models.ForeignKey('inventory.Warehouse', on_delete=None, 

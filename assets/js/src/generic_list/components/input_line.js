@@ -35,7 +35,7 @@ class inputLine extends Component{
     
     componentDidUpdate(prevProps, prevState) {
         if(this.state.selectedPk !==  prevState.selectedPk && 
-                this.fetchField !== null){
+                this.state.fetchField !== null){
             this.state.fetchField.dataGetter(
                     this, 
                     this.state.fetchField.name, 
@@ -48,13 +48,12 @@ class inputLine extends Component{
         //clear field values before passing data to parent
         // iterate over every
         if(this.props.hasLineTotal){
-            console.log('has line total');
             let newData = {...this.state.data};
             newData['lineTotal'] = this.props.calculateTotal(this.state.data);
             this.props.insertHandler(newData);
             
         }else{
-            this.props.insertHandler(this.state.data)
+            this.props.insertHandler(this.state.data);
         }
         this.resetFields();
     }
