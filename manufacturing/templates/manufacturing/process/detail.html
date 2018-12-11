@@ -1,0 +1,123 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Process Detail</h1>
+    <p class="lead">Information regarding general process features and a summary of the required inputs and nature of process outputs</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="/manufacturing/process/update/{{object.id}}" role="button">Edit</a>
+        <a class="btn btn-primary" href="" role="button">Dashboard View</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="card-header">
+                        <h4 class="card-title">Process Details</h4>
+                    </div>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Description: {{object.description}}</p>
+                    <p class="card-text">Type: {{object.process_type_string}}</p>
+                    {% if object.type == 0 %}
+                    <p class="card-text">
+                        Process Production Rate: {{object.rate}}</p>
+                    {% else %}
+                    <p class="card-text">
+                        Duration of Process: {{object.duration}}</p>
+                    {% endif %}
+                    <p class="card-text">Parent Process: {% if object.is_subprocess %} {{object.parent_process}} {% else %} None {% endif %}</p>
+                    <p class="card-text">Child process(es): 
+                        {% if object.child_processes.count > 0 %}
+                        <ul>
+                            {% for p in object.child_processes %}
+                            <li>{{p.name}}</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        None 
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <hr class="my-4" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="card-header">
+                        <h4 class="card-title">Inputs</h4>   
+                    </div>
+                    <h5>Raw Materials</h5>
+                    {% if object.bill_of_materials %}
+                    <p class="card-text">Bill of materials: {{object.bill_of_materials}}</p>
+                    <p class="card-text">Description: {{object.bill_of_materials.description}}</p>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Raw Material</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mat in object.bill_of_materials.billofmaterialsline_set.all %}
+                                <tr>
+                                    <td>{{mat.raw_material}}</td>
+                                    <td>{{mat.unit}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                    <h5>Equipment</h5>
+                    {% if object.process_equipment %}
+                        <ul>
+                            {% for mech in object.process_equipment.machines %}
+                            <li>{{mech}}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="card-header">
+                        <h4 class="card-title">Outputs</h4>   
+                    </div>
+                    <h5>Process Products</h5>
+                    {% if object.product_list %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>Name</td>
+                                <td>Type</td>
+                                <td>Unit</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in object.product_list.products %}
+                                <tr>
+                                    <td>{{p}}</td>
+                                    <td>{{p.type_string}}</td>
+                                    <td>{{p.unit}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

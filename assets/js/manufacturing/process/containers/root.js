@@ -16,12 +16,17 @@ class ProcessRoot extends Component{
                 <div className="col-sm-8">
                     <div>
                         <h4>Inputs</h4>
-                        <h5>Bill of Materials <a 
+                        <h5>Bill of Materials <button 
                             className="btn btn-info"
-                            href="/inventory/raw-material-create/">Create New</a></h5>
+                            onClick={() => {
+                                $('#popup-frame').attr('src', "/inventory/raw-material-create/");
+                                var modal = document.getElementById('id-my-modal');
+                                    modal.style.display = 'block';
+                            }}>Create New</button></h5>
                         <hr />
                         <GenericTable 
                             hasLineTotal={false}
+                            formInputID="id_materials"
                             hasTotal={false}
                             fieldOrder={['raw material','unit']}
                             fields={[
@@ -52,9 +57,16 @@ class ProcessRoot extends Component{
                         <hr />
                         <h5>Process Equipment </h5>
                         <hr />
-                        <h6>Machine(s)</h6>
+                        <h6>Machine(s) <button 
+                        className="btn btn-info"
+                        onClick={() => {
+                            $('#popup-frame').attr('src', "/manufacturing/process-machine/create");
+                            var modal = document.getElementById('id-my-modal');
+                                modal.style.display = 'block';
+                        }}>Create New</button></h6>
                         <GenericTable 
                             hasLineTotal={false}
+                            formInputID="id_equipment"
                             hasTotal={false}
                             fieldOrder={['machine']}
                             fields={[
@@ -73,9 +85,16 @@ class ProcessRoot extends Component{
                     <div>
                         <h4>Outputs</h4>
                         <hr />
-                        <h5>Products</h5>
+                        <h5>Products <button 
+                        className="btn btn-info"
+                        onClick={() => {
+                            $('#popup-frame').attr('src', "/manufacturing/process-product/create");
+                            var modal = document.getElementById('id-my-modal');
+                                modal.style.display = 'block';
+                        }}>Create New</button></h5>
                         <GenericTable 
                             hasLineTotal={false}
+                            formInputID="id_products"
                             hasTotal={false}
                             fieldOrder={['process product']}
                             fields={[
@@ -84,7 +103,7 @@ class ProcessRoot extends Component{
                                     type: 'search',
                                     width: 40,
                                     required: true,
-                                    url: '/manufacturing/api/process-machine/',
+                                    url: '/manufacturing/api/process-product/',
                                     idField: 'id',
                                     displayField: 'name'
                                 }

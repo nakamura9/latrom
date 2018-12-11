@@ -21,7 +21,9 @@ class AsyncSelect extends Component{
         return(
             <select 
                 onChange={(evt) => this.props.handler(evt.target.value)}
-                className="form-control">
+                className="form-control"
+                name={this.props.name}
+                >
                 <option value="">-------</option>
                 {this.state.options.map((opt, i) =>{
                     return(<option 

@@ -1,0 +1,113 @@
+{% extends "window.html" %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Shift Schedule Details</h1>
+    <p class="lead">Details for shift working days hours and teams</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="" role="button">Edit</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+        <div class="card">
+            <div class="card-body bg-primary text-white">
+                <h4 class="card-title">Schedule Details</h4>
+                <p class="card-text">Name: {{object.name}}</p>
+                <p class="card-text">Number of Shifts: {{object.shifts.count}}</p>
+                <p class="card-text">Supervisors: 
+                    <ul>
+                        {% for shift in object.shifts %}
+                        <li>{{shift.shift.supervisor}}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+        </div>
+        </div>
+        <div class="col-sm-8"></div>
+    </div>
+        <hr class="my-4" />
+
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Shift</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                        <th>Sunday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shift in object.shifts %}
+                        <tr>
+                            <td>{{shift.shift}}</td>
+                            <td>{{shift.start_time}}</td>
+                            <td>{{shift.end_time}}</td>
+                            <td>
+                                {% if shift.monday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shift.tuesday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shift.wednesday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shift.thursday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shift.friday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shift.saturday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shift.sunday %} 
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

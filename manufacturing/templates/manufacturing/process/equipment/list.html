@@ -1,0 +1,27 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info">Name</td>
+    <td class="info">Description</td>
+    <td class="info">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} {% for item in object_list %}
+<tr>
+    <td>{{item.name}}</td>
+    <td>{{item.description}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="/manufacturing/process-machine/detail/{{item.pk}}">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+                <a class="dropdown-item" href="/manufacturing/process-machine/update/{{item.pk}}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+            </div>
+        </div>
+</tr>
+{% endfor %} {% endblock %}

@@ -19,7 +19,8 @@ from . import models
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     automate_payroll_for = forms.ModelMultipleChoiceField(
         models.Employee.objects.all(), 
-        widget = forms.CheckboxSelectMultiple
+        widget = forms.CheckboxSelectMultiple,
+        required=False
     )
     #when running payroll - a message must be raised that the hours of 
     #hourly workers must be calculated first
@@ -210,7 +211,9 @@ class TimeLoggerForm(BootstrapMixin, forms.Form):
 class PayrollForm(BootstrapMixin, forms.Form):
     start_period = forms.DateField()
     end_period = forms.DateField()
-    employees = forms.ModelMultipleChoiceField(models.Employee.objects.all())
+    employees = forms.ModelMultipleChoiceField(
+        models.Employee.objects.all(),
+        widget= forms.CheckboxSelectMultiple)
 
 
 class LeaveRequestForm(forms.ModelForm, BootstrapMixin):
