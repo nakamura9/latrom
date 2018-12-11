@@ -7,55 +7,55 @@
     
 </div>
 <div class="card-deck">
+    
+    <div class="card bg-primary text-white">
+        <div class="card-body">
+            <h4 class="card-title">Orders</h4>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{% url 'manufacturing:create-production-order' %}">Create Production Order</a></li>
+                <li class="list-group-item"><a href="{% url 'manufacturing:list-production-order' %}">Manage Production Orders</a></li>
+                <li class="list-group-item"><a href="{% url 'manufacturing:create-production-order' %}">Production Calendar</a></li>
+            </ul>
+
+        </div>
+    </div>
     <div class="card bg-primary text-white">
         <div class="card-body">
             <h4 class="card-title">Shifts</h4>
             <ul class="list-group">
                 <li class="list-group-item"><a href="{% url 'manufacturing:create-shift-schedule' %}">Create Shift Schedule</a></li>
                 <li class="list-group-item"><a href="{% url 'manufacturing:create-shift' %}">Create Shift</a></li>
-                <li class="list-group-item"><a href="">Manage Shifts</a></li>
-                <li class="list-group-item"><a href="">Manage Shift Schedules</a></li>
+                <li class="list-group-item"><a href="/manufacturing/shift/list">Manage Shifts</a></li>
+                <li class="list-group-item"><a href="/manufacturing/shift-schedule/list">Manage Shift Schedules</a></li>
 
             </ul>
         </div>
     </div>
+    <div class="card bg-primary text-white" >
+        <div class="card-body">
+            <h4 class="card-title">Machinery</h4>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{% url 'manufacturing:create-process-machine' %}">Add Process Machine</a></li>
+                <li class="list-group-item"><a href="/manufacturing/process-machine/list">Manage Process Machines</a></li>
+                <li class="list-group-item"><a href="/manufacturing/process-machine-group/list">Manage Machine Groups</a></li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="card-deck">
     <div class="card  bg-primary text-white">
         <div class="card-body">
             <h4 class="card-title">Processes</h4>
             <ul class="list-group">
                 <li class="list-group-item"><a href="{% url 'manufacturing:create-process' %}">Create Process</a></li>
-                <li class="list-group-item"><a href="">Process List</a></li>
-                <li class="list-group-item"><a href="{% url 'manufacturing:create-process-product' %}">Manage Process Products</a></li>
+                <li class="list-group-item"><a href="{% url 'manufacturing:list-process' %}">Process List</a></li>
+                <li class="list-group-item"><a href="{% url 'manufacturing:list-process-product' %}">Manage Process Products</a></li>
                 <li class="list-group-item"><a href="{% url 'manufacturing:create-bill-of-materials' %}">Manage Process Material Inputs</a></li>
-
             </ul>
         </div>
     </div>
-</div>
-<hr />
-<div class="card-deck">
-    <div class="card bg-primary text-white" >
-        <div class="card-body">
-            <h4 class="card-title">Process Equipment</h4>
-            <ul class="list-group">
-                <li class="list-group-item"><a href="{% url 'manufacturing:create-process-machine' %}">Manage Process Machinery</a></li>
-                <li class="list-group-item"><a href="">Process Machine Groups</a></li>
-
-            </ul>
-        </div>
-    </div>
-    <div class="card bg-primary text-white">
-        <div class="card-body">
-            <h4 class="card-title">Production Orders</h4>
-            <ul class="list-group">
-                <li class="list-group-item"><a href="{% url 'manufacturing:create-production-order' %}">Manage Production Orders</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-<hr />
-
-<div class="card-deck">
     <div class="card bg-primary text-white">
         <div class="card-body">
             <h4 class="card-title">Configuration</h4>
@@ -65,4 +65,6 @@
         </div>
     </div>
 </div>
+<hr />
+
 {% endblock %}

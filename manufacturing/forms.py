@@ -1,8 +1,14 @@
 from django import forms 
 from common_data.forms import BootstrapMixin
 from manufacturing import models
-
+from employees.models import Employee
 class ShiftForm(forms.ModelForm, BootstrapMixin):
+    employees = forms.ModelMultipleChoiceField(
+        Employee.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    
     class Meta:
         model = models.Shift
         fields = "__all__"
@@ -18,7 +24,13 @@ class ShiftScheduleForm(forms.ModelForm, BootstrapMixin):
 class ProcessForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.Process
+        fields = "name", "description", "type", "duration", "rate"
+
+class ProcessUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.Process
         fields = "__all__"
+
 
 class ProcessMachineForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -26,10 +38,6 @@ class ProcessMachineForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
 
 
-class ProcessEquipmentForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        model = models.ProcessEquipment
-        fields = "__all__"
 
 class ProcessRateForm(forms.ModelForm, BootstrapMixin):
     class Meta:

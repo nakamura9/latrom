@@ -1,0 +1,39 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Notification Detail</h1>
+    <p class="lead">View detailed information regarding system generated messages</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="{{object.action}}" role="button">Take Action</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Meta Data</h4>
+                    <p class="card-text">Target: {{object.user}}</p>
+                    <p class="card-text">Title: {{object.title}}</p>
+                    <p class="card-text">Created: {{object.timestamp}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Notification Message</h4>
+                    <p class="card-text">{{object.message}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+
+{% endblock %}

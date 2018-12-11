@@ -1,0 +1,43 @@
+{% extends "window.html" %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Shift Details</h1>
+    <p class="lead">Additional shift information concerning personnel and equipment</p>
+    <hr class="my-2">
+    <p>Actions </p>
+    <p class="lead">
+        <a class="btn btn-primary" href="{% url 'manufacturing:update-shift' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h4 class="card-title">Meta Data</h4>
+                <p class="card-text">Name: {{object}}</p>
+                <p class="card-text">Team: {{object.team}}</p>
+                <p class="card-text">Supervisor: {{object.supervisor}}</p>
+                <p class="card-text">Machine: {{object.machine}}</p>
+            </div>
+        </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Members</h4>
+                    <p class="card-text">Employees: 
+                    <ul>
+                        {% for emp in object.employees.all %}
+                        <li>{{emp}}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+{% endblock %}

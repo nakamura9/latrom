@@ -9,8 +9,14 @@ class ProcessDetails extends Component{
     state = {
         process: null,
         processRate: {},
-        type: 0
+        type: 0,
+        token: ""
 
+    }
+
+    componentDidMount(){
+        const token =document.querySelector('input[name="csrfmiddlewaretoken"]');
+        this.setState({token: token.value});
     }
 
     processHandler =(processID) =>{
@@ -42,6 +48,10 @@ class ProcessDetails extends Component{
         return(
             <div>
                 <form action="" method="POST">
+                <input type="hidden" name="materials" id="id_materials" value=""/>
+                <input type="hidden" name="equipment" id="id_equipment" value=""/>
+                <input type="hidden" name="products" id="id_products" value=""/>
+                <input type="hidden" name="csrfmiddlewaretoken" value={this.state.token}/>
                 <p>Name</p>
                     <input 
                         type="text" 

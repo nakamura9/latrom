@@ -74,10 +74,10 @@ class Process(models.Model):
  #property 
     parent_process = models.ForeignKey('manufacturing.Process', 
         on_delete=None, blank=True, null=True) 
-    process_equipment = models.ForeignKey('manufacturing.ProcessEquipment', 
-        on_delete=None)
+    process_equipment = models.ForeignKey('manufacturing.ProcessMachineGroup', 
+        on_delete=None, blank=True, null=True)
     name = models.CharField(max_length = 255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     bill_of_materials = models.ForeignKey('manufacturing.BillOfMaterials', 
         on_delete=None, blank=True, null=True)
     type = models.PositiveSmallIntegerField(choices = [
@@ -86,11 +86,24 @@ class Process(models.Model):
     rate = models.ForeignKey(
         'manufacturing.ProcessRate', on_delete=None, blank=True, null=True)
     product_list = models.ForeignKey('manufacturing.ProductList', 
-        on_delete=None)
+        on_delete=None, blank=True, null=True)
+
+
+    @property
+    def process_type_string(self):
+        mapping = {
+            0: 'Line',
+            1: 'Batch'
+        }
+        return mapping[self.type]
 
     @property
     def is_subprocess(self):
         return self.parent_process != None
+
+    @property
+    def child_processes(self):
+        return Process.objects.filter(parent_process=self)
 
     def __str__(self):
         return self.name
@@ -122,6 +135,9 @@ class ProductList(models.Model):
 
     def __str__(self):
         return self.name
+
+    def products(self):
+        return ProcessProduct.objects.filter(product_list=self)
         
 
 class ProcessProduct(models.Model):
@@ -140,9 +156,12 @@ class ProcessProduct(models.Model):
     product_list = models.ForeignKey('manufacturing.ProductList', on_delete=None, 
         blank=True, 
         null=True)
+
     def __str__(self):
         return self.name
         
+    def type_string(self):
+        return dict(self.PRODUCT_TYPES)[self.type]
 
 class WasteGenerationReport(models.Model):
     product = models.ForeignKey('manufacturing.ProcessProduct', on_delete=None)
@@ -178,15 +197,6 @@ class BillOfMaterialsLine(models.Model):
         else:
             return str(self.product)
         
-class ProcessEquipment(models.Model):
-    name = models.CharField(max_length=255)
-    machine = models.ForeignKey('manufacturing.ProcessMachine', on_delete=None, 
-        blank=True, null=True)
-    machine_group = models.ForeignKey('manufacturing.ProcessMachineGroup', 
-        on_delete=None, blank=True, null=True)
-
-    def __str__(self):
-        return self.name 
     
 class ProcessMachineGroup(models.Model):
     name = models.CharField(max_length=255)
@@ -194,6 +204,10 @@ class ProcessMachineGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def machines(self):
+        return ProcessMachine.objects.filter(machine_group=self)
 
 class ProcessMachine(models.Model):
     name = models.CharField(max_length=255)
@@ -245,6 +259,10 @@ class ShiftSchedule(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def shifts(self):
+        return ShiftScheduleLine.objects.filter(schedule=self)
+
 class ShiftScheduleLine(models.Model):
     schedule = models.ForeignKey('manufacturing.ShiftSchedule', on_delete=None)
     start_time = models.TimeField()
@@ -261,6 +279,8 @@ class ShiftScheduleLine(models.Model):
 
     def __str__(self):
         return str(self.schedule) + ' ' + str(self.shift)
+
+    
 
 '''
 ====================================================

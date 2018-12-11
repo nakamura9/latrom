@@ -19,7 +19,8 @@ class RateWidget extends Component{
         <div>
             <fieldset>
                 <legend>Rate</legend>
-                <AsyncSelect 
+                <AsyncSelect
+                    name="process_rate_unit"
                     dataURL="/inventory/api/unit/"
                     handler={this.unitHandler}
                     resProcessor={(res) => {
@@ -31,6 +32,7 @@ class RateWidget extends Component{
                 <select 
                     className="form-control"                    
                     onChange={this.rateHandler}
+                    name="process_rate_unit_time"
                     style={{display: 'inline'}}>
                     <option value={0}>Per Second</option>
                     <option value={1}>Per Minute</option>
