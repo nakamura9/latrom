@@ -53,11 +53,13 @@
                 <a class="nav-link" href="{% url 'employees:dashboard' %}">Employees</a>
             </li>
             {% endif %}
+            <!--
             {% if request.user.is_superuser or request.user.employee.is_manufacturing_associate %}
             <li>
                 <a class="nav-link" href="{% url 'manufacturing:dashboard' %}">Manufacturing</a>
             </li>
             {% endif %}
+            -->
         </ul>
 </nav>
 <article>
