@@ -6,6 +6,7 @@ import os
 import urllib
 
 from django.core.mail import EmailMessage
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
@@ -24,14 +25,51 @@ from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
+class SalesInvoiceMixin(object):
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        if isinstance(self, UpdateView):
+            #update actions 
+            if self.object.status == "draft":
+                resp = super().post(request, *args, **kwargs)
 
-def process_data(items, inv):
-    if items:
-        items = json.loads(urllib.parse.unquote(items))
-        for item in items:
-            pk, name = item['item_name'].split('-')
-            inv.add_product(Product.objects.get(pk=pk), 
-                item['quantity'])
+                item_string = request.POST.get('item_list', None)
+                if not item_string:
+                    messages.info(request, 'No items were added to this invoice. Please provide some data')
+                for line in self.object.salesinvoiceline_set.all():
+                    line.delete()
+
+                self.process_data(item_string)
+            else:
+                resp = super().post(request, *args, **kwargs)
+
+        else:
+            
+            resp = super().post(request, *args, **kwargs)
+
+            if not self.object:
+                return resp
+        
+            #new invoice actions
+            item_string = request.POST.get('item_list', None)
+            if not item_string:
+                messages.info(request, 'No items were added to this invoice. Please provide some data')
+            self.process_data(item_string)
+
+        #valid for both new and existing invoices
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()
+
+        self.set_payment_amount()
+        return resp
+
+    def process_data(self, items):
+        if items:
+            items = json.loads(urllib.parse.unquote(items))
+            for item in items:
+                pk, name = item['product'].split('-')
+                self.object.add_product(Product.objects.get(pk=pk), 
+                    item['quantity'])
     
 
 class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, 
@@ -56,7 +94,12 @@ class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         return context
 
         
-class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ExtraContext, ConfigMixin, CreateView):
+class SalesInvoiceCreateView(SalesRepCheckMixin, 
+        SalesInvoiceMixin, 
+        InvoiceCreateMixin, 
+        ExtraContext, 
+        ConfigMixin, 
+        CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -71,44 +114,12 @@ class SalesInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ExtraContex
     model = SalesInvoice
     payment_for = 0
 
-    def post(self, request, *args, **kwargs):
-        resp = super(SalesInvoiceCreateView, self).post(request, *args, **kwargs)
-        if not self.object:
-            return resp
-
-        items = request.POST.get("item_list", None)
-        process_data(items, self.object)
-
-        if self.object.status in ["invoice", 'paid']:
-            self.object.create_entry()
-        
-        self.set_payment_amount()
-        return resp
-    
 
 class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     model = SalesInvoice
     form_class = forms.SalesInvoiceForm
     template_name = os.path.join('invoicing', 'sales_invoice','create.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
-
-    def post(self, request, *args, **kwargs):
-        resp = super(SalesDraftUpdateView, self).post(request, *args, **kwargs)
-
-        #remove existing lines
-        for line in self.object.salesinvoiceline_set.all():
-            line.delete()
-        #create new lines 
-        items = request.POST.get("item_list", None)
-        
-        process_data(items, self.object)
-
-        print(self.object.status)
-        if self.object.status in ["invoice", "paid"]:
-            self.object.create_entry()
-            print('entry created')
-
-        return resp
 
 
 class SalesInvoiceUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):

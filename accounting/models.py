@@ -555,7 +555,7 @@ class Expense(AbstractExpense):
         self.customer.account \
         if self.billable \
         else Account.objects.get(pk=1000),#cash account
-        Account.objects.get(name=expense_choices[self.category]), )
+        Account.objects.get(name=expense_choices[self.category_string]), )
        
 
     def save(self, *args, **kwargs):

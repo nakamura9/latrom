@@ -30,8 +30,12 @@ class PaginationMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
+        if not self.queryset and hasattr(self, 'get_queryset'):
+            self.queryset = self.get_queryset()
+            
         filter = self.filterset_class(self.request.GET, queryset=self.queryset)
         object_list = filter.qs
+        
         
         if not self.paginate_by:
             self.paginate_by = 10

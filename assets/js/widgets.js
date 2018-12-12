@@ -64,9 +64,7 @@ if(storageMedia){
     ReactDOM.render(<MessageDetail />, threadView);
 }else if(testView){
     
-    const calculateTotalFunc = (data)=>{
-        return(data.quantity * data.price);
-    }
+    
 
 
     const calculateServiceTotalFunc = (data)=>{
