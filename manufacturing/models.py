@@ -295,7 +295,6 @@ class ShiftScheduleLine(models.Model):
 class ManufacturingAssociate(models.Model):
     employee = models.ForeignKey('employees.Employee', on_delete=None)
 
-
     def __str__(self):
         return str(self.employee)
 
@@ -303,7 +302,7 @@ class ProductionSchedule(models.Model):
     machine = models.ForeignKey('manufacturing.ProcessMachine', on_delete=None)
 
 
-class ProductionScheduleLine(models.Model):
+class ProductionScheduleLine(models.Model):#rename event 
     order = models.ForeignKey('manufacturing.ProductionOrder', on_delete=None)
     date = models.DateField()
     start_time = models.TimeField()
