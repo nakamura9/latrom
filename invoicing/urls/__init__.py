@@ -24,10 +24,22 @@ customer_router.register(r'api/customer', views.CustomerAPIViewSet, base_name='c
 
 
 customer_urls = [
-    re_path(r'^create-customer$', views.CustomerCreateView.as_view(), name='create-customer'),
-    re_path(r'^update-customer/(?P<pk>[\w]+)$', views.CustomerUpdateView.as_view(), name='update-customer'),
+    re_path(r'^create-customer/individual/?$', 
+        views.IndividualCustomerCreateView.as_view(), 
+        name='create-individual-customer'),
+    re_path(r'^create-customer/organization/?$', 
+        views.OrganizationCustomerCreateView.as_view(), 
+        name='create-organization-customer'),
+    re_path(r'^update-customer/(?P<pk>[\w]+)$', 
+        views.CustomerUpdateView.as_view(), 
+        name='update-customer'),
     re_path(r'^delete-customer/(?P<pk>[\w]+)$', views.CustomerDeleteView.as_view(), name='delete-customer'),
-    re_path(r'^customers-list$', views.CustomerListView.as_view(), name='customers-list'),
+    re_path(r'^customers-list/organization/?$', 
+        views.OrganizationCustomerListView.as_view(), 
+        name='organization-customers-list'),
+    re_path(r'^customers-list/individual/?$', 
+        views.IndividualCustomerListView.as_view(), 
+        name='individual-customers-list'),
 ] + customer_router.urls
 
 sales_rep_router = DefaultRouter()

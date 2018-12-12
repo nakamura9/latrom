@@ -20,6 +20,7 @@ class InvoiceCreateMixin(object):
     def form_valid(self, form):
         '''initially set the amount to zero until the post method sets the actual value of the payment'''
         resp =  super().form_valid(form)
+        #from the checkbox
         if form.cleaned_data['apply_payment']:
             payment_data = {
                 'payment_for': self.payment_for,

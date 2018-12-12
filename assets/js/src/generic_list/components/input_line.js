@@ -25,7 +25,10 @@ class inputLine extends Component{
         for( i in this.props.fields){
             newData[this.props.fields[i].name] = "";
         }
-        this.setState({data: newData});
+        this.setState({
+            data: newData,
+            selectedPk: null
+        });
 
     }
 
@@ -59,6 +62,7 @@ class inputLine extends Component{
     }
     searchHandler = (name, value) =>{
         //for searchable widget and asyncwidget
+        console.log('search');
         let newData = {...this.state.data};
         newData[name] = value;
         const pk = value.split('-')[0];

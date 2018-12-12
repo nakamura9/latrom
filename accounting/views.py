@@ -455,6 +455,8 @@ class RecurringExpenseDetailView(BookkeeperCheckMixin, DetailView):
 class RecurringExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.RecurringExpense
+    success_url = "/accounting/recurring-expense/list"
+
 
 
 ####################################################

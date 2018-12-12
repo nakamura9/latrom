@@ -92,7 +92,7 @@ class GenericTable extends Component{
         return(
             <table className="table table-striped">
                 <TitleBar 
-                    fieldOrder={this.props.fieldOrder}
+                    fieldOrder={this.props.fieldDescriptions}
                     fields={this.props.fields}
                     hasLineTotal={this.props.hasLineTotal}/>
                 <tbody>

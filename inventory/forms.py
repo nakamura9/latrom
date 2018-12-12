@@ -52,7 +52,18 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
     
 
 
-class SupplierForm(forms.ModelForm, BootstrapMixin):
+class IndividualSupplierForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'account', 'organization']
+        model = models.Supplier
+
+class OrganizationSupplierForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'account', 'individual']
+        model = models.Supplier
+
+
+class SupplierUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'account']
         model = models.Supplier

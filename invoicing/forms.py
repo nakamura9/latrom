@@ -5,7 +5,7 @@ from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django import forms
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
 
-from accounting.models import Account, Journal
+from accounting.models import Account, Journal,Tax
 from common_data.forms import BootstrapMixin, PeriodReportForm
 
 from . import models
@@ -56,9 +56,19 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
         ))
 
         
-class CustomerForm(forms.ModelForm, BootstrapMixin):
+class OrganizationCustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = ['active', 'account']
+        exclude = ['active', 'account', 'individual']
+        model = models.Customer
+
+class IndividualCustomerForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'account', 'organization']
+        model = models.Customer
+        
+class CustomerUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'account', 'individual', 'organization']
         model = models.Customer
 
 class SalesRepForm(forms.ModelForm, BootstrapMixin):
@@ -79,6 +89,7 @@ class InvoiceCreateMixin(forms.Form):
 
 class SalesInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    tax=forms.ModelChoiceField(Tax.objects.all(), widget=forms.HiddenInput)
     class Meta:
         exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'entry'
         model = models.SalesInvoice

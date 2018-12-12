@@ -26,8 +26,18 @@ from invoicing.models import SalesConfig
 from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 
-class SupplierCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView):
-    form_class = forms.SupplierForm
+class IndividualSupplierCreateView(InventoryControllerCheckMixin, ExtraContext, 
+        CreateView):
+    form_class = forms.IndividualSupplierForm
+    model = models.Supplier
+    success_url = reverse_lazy('inventory:home')
+    template_name = CREATE_TEMPLATE
+    extra_context = {"title": "Create New Supplier"}
+
+
+class OrganizationSupplierCreateView(InventoryControllerCheckMixin, 
+        ExtraContext, CreateView):
+    form_class = forms.OrganizationSupplierForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = CREATE_TEMPLATE
@@ -36,24 +46,39 @@ class SupplierCreateView(InventoryControllerCheckMixin, ExtraContext, CreateView
 
 class SupplierUpdateView(InventoryControllerCheckMixin, 
     ExtraContext, UpdateView):
-    form_class = forms.SupplierForm
+    form_class = forms.SupplierUpdateForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = CREATE_TEMPLATE
     extra_context = {"title": "Update Existing Supplier"}
 
 
-class SupplierListView(InventoryControllerCheckMixin, ExtraContext, 
-    PaginationMixin, FilterView):
+class IndividualSupplierListView(InventoryControllerCheckMixin, ExtraContext, 
+        PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier", "list.html")
-    extra_context = {"title": "Supplier List",
+    extra_context = {"title": "Individual Supplier List",
                     "new_link": reverse_lazy(
-                        "inventory:supplier-create")}
+                        "inventory:individual-supplier-create")}
 
     def get_queryset(self):
-        return models.Supplier.objects.all().order_by('pk')
+        return models.Supplier.objects.filter(
+            individual__isnull=False).order_by('pk')
+
+class OrganizationSupplierListView(InventoryControllerCheckMixin, ExtraContext, 
+        PaginationMixin, FilterView):
+    paginate_by = 10
+    filterset_class = filters.SupplierFilter
+    template_name = os.path.join("inventory", "supplier", "list.html")
+    extra_context = {"title": "Organization Supplier List",
+                    "new_link": reverse_lazy(
+                        "inventory:organization-supplier-create")}
+
+    def get_queryset(self):
+        return models.Supplier.objects.filter(
+            organization__isnull=False).order_by('pk')
+
 
 
 class SupplierDeleteView(InventoryControllerCheckMixin, 
