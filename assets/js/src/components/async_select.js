@@ -13,7 +13,11 @@ class AsyncSelect extends Component{
         }).then(res => {
             const dataList = this.props.resProcessor(res);
             // returns a list of objects with value and name properties
-            this.setState({options: dataList});
+            if(this.props.onPopulated){
+                this.setState({options: dataList}, this.props.onPopulated);
+            }else{
+                this.setState({options: dataList});
+            }
         }
             )
     }

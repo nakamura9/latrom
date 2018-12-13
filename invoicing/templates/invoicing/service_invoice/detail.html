@@ -19,7 +19,7 @@
         <tr>
             <td colspan="2" id="title">
                 <h1>
-                    Service Invoice
+                    Service {% if object.status == 'quotation' %}Quotation{% else %} Invoice {% endif %}{% if object.status == 'draft' %}(Draft){% endif %}
                 </h1>
             </td>
         </tr>
@@ -51,10 +51,24 @@
                             <td>Date:</td>
                             <td>{{object.date}}</td>
                         </tr>
+                        {% if object.status != "draft" %}
                         <tr>
-                            <td>Invoice Number:</td>
-                            <td>SERV{{object.id | stringformat:"06d"}}</td>
+                            
+                            <td>
+                            {% if object.status == "quotation" %}
+                            Quotation Number:
+                            {% else %}
+                            Invoice Number:
+                            {% endif %}</td>
+                            <td>
+                            {% if object.status == "quotation" %}
+                            QUOT{{object.quotation_number | stringformat:"06d"}}
+                            {% else %}
+                            SRV{{object.invoice_number | stringformat:"06d"}}
+                            {% endif %}
+                            </td>
                         </tr>
+                        {% endif %}
                         <tr>
                             <td>Due Date:</td>
                             <td>{{object.due}}</td>

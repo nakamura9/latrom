@@ -51,10 +51,25 @@
                             <td>Date:</td>
                             <td>{{object.date}}</td>
                         </tr>
+                        {% if object.status != "draft" %}
                         <tr>
-                            <td>Invoice Number:</td>
-                            <td>SALES{{object.id | stringformat:"06d"}}</td>
+                            
+                            <td>
+                            {% if object.status == "quotation" %}
+                            Quotation Number:
+                            {% else %}
+                            Invoice Number:
+                            {% endif %}</td>
+                            <td>
+                            {% if object.status == "quotation" %}
+                            QUOT{{object.quotation_number | stringformat:"06d"}}
+                            {% else %}
+                            SALES{{object.invoice_number | stringformat:"06d"}}
+                            {% endif %}
+                            </td>
                         </tr>
+                        {% endif %}
+                        
                         <tr>
                             <td>Due Date:</td>
                             <td>{{object.due}}</td>
