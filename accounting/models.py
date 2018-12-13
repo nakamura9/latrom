@@ -543,6 +543,7 @@ class Expense(AbstractExpense):
 
     def create_entry(self):
         #verified
+        print(self.category_string)
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
             date = self.date,
@@ -555,7 +556,7 @@ class Expense(AbstractExpense):
         self.customer.account \
         if self.billable \
         else Account.objects.get(pk=1000),#cash account
-        Account.objects.get(name=expense_choices[self.category_string]), )
+        Account.objects.get(name=self.category_string), )
        
 
     def save(self, *args, **kwargs):
@@ -614,7 +615,7 @@ class RecurringExpense(AbstractExpense):
             created_by = self.recorded_by
         )
         j.simple_entry(self.amount, 
-        Account.objects.get(name=expense_choices[self.category]), 
+        Account.objects.get(name=self.category_string), 
         self.debit_account)
         self.last_created_date = datetime.date.today()
         self.save()
