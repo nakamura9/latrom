@@ -31,11 +31,40 @@ if(sales){
                                         .toFixed(2);
             comp.setState({data: newData});
         });
-
-    
     }
+    const URL = window.location.href;
+    const  decomposed = URL.split('/');
+    const tail = decomposed[decomposed.length - 1];
+    
+    const isUpdate = tail !== 'create-sales-invoice';
+    
+    const urlFetcher = () =>{
+        const URL = window.location.href;
+        const  decomposed = URL.split('/');
+        const tail = decomposed[decomposed.length - 1];
+    
+        return '/invoicing/api/sales-invoice/' + tail;
+    }
+    
+    const resProcessor = (res) =>{
+        return res.data.salesinvoiceline_set.map((line) =>(
+            {
+                product: line.product.id + '-' + line.product.name,
+                unit_price: line.product.unit_sales_price,
+                quantity: line.quantity,
+                lineTotal: parseFloat(line.quantity) * 
+                            parseFloat(line.product.unit_sales_price)
+            }
+        ))
+        }
+              
+    console.log(isUpdate);
+            
     ReactDOM.render(<GenericTable hasLineTotal={true}
         hasTotal={true}
+        prepopulated={isUpdate}
+        resProcessor={resProcessor}
+        urlFetcher={urlFetcher}
         taxFormField="id_tax"
         calculateTotal={calculateTotalFunc}
         fieldDescriptions={['Product', 'Unit Price', 'Quantity']} 

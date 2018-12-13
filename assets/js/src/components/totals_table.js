@@ -11,6 +11,13 @@ class Totals extends Component{
         subtotal: 0.00,
         total: 0.00
     }
+    
+    setInitialTax = () =>{
+        const tax = document.getElementById('id_tax').value;
+        console.log(tax);
+        const taxField = document.getElementsByName('total_tax');
+        taxField[0].value = tax;
+    }
 
     handleTaxChange = (id) =>{
         axios.get('/accounting/api/tax/' + id)
@@ -72,12 +79,14 @@ class Totals extends Component{
                         <td>
                             <AsyncSelect
                                 dataURL="/accounting/api/tax/"
+                                name="total_tax"
                                 resProcessor={(res) => {
                                     return(res.data.map((tax) =>({
                                         value: tax.id,
                                         name: tax.name
                                     })))
                                 }}
+                                onPopulated={this.setInitialTax}
                                 handler={this.handleTaxChange} />
                         </td>
                         <td style={cellStyle}>{this.state.tax.toFixed(2)}</td>
