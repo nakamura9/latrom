@@ -40,8 +40,8 @@ class MultipleSelectWidget extends Component{
             }).then((res) =>{
                 const dataList = this.props.resProcessor(res);
                 this.setState({selectedList: dataList}, () =>{
-                    this.removeDuplicates()
-                    this.updateForm()
+                    this.removeDuplicates();
+                    this.updateForm();
                 })
             })
         }

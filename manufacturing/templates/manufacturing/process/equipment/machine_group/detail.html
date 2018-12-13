@@ -1,0 +1,37 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Machine Group Detail</h1>
+    <p class="lead">States machine group name and machines that constitute the group</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+         <h2>Group: {{object.name}}</h2>
+    </div>
+    <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Machines</h4>
+                    <ul>
+                        {% for mech in object.machines %}
+                        <li>{{mech}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

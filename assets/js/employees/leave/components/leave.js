@@ -23,12 +23,14 @@ const leave = (props) =>{
         color: 'white',
         backgroundColor: '#07f'
     };
+    console.log(props.offset);
     return(
         <a 
             style={{
                 zIndex: 1,
                 position: "absolute",
-                left: "40px",
+                left: `${40 + props.offset}px`,
+                border: '1px solid white',
                 top: `${startY}px`,
                 height: `${height}px`, 
                 width: "150px",

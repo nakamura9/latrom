@@ -186,14 +186,19 @@ class OrderItem(models.Model):
     ITEM_TYPE_CHOICES =[
         (1, 'Product'),
         (2, 'Consumable'),
-        (3, 'Equipment')
+        (3, 'Equipment'),
+        (4, 'Raw Material')
         ]
     order = models.ForeignKey('inventory.Order', on_delete=None, )
     item_type = models.PositiveSmallIntegerField(default=1, 
         choices=ITEM_TYPE_CHOICES)
     product = models.ForeignKey('inventory.product', on_delete=None,null=True)
-    consumable = models.ForeignKey('inventory.consumable', on_delete=None,null=True)
-    equipment = models.ForeignKey('inventory.equipment', on_delete=None,null=True)
+    consumable = models.ForeignKey('inventory.consumable', on_delete=None,
+        null=True)
+    equipment = models.ForeignKey('inventory.equipment', on_delete=None,
+        null=True)
+    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=None,
+        null=True)
     quantity = models.FloatField()
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
@@ -203,7 +208,8 @@ class OrderItem(models.Model):
         self.mapping = {
             1: self.product,
             2: self.consumable,
-            3: self.equipment
+            3: self.equipment,
+            4: self.raw_material
         }
 
     @property

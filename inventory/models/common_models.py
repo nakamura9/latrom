@@ -66,7 +66,13 @@ class InventorySettings(SingletonModel):
     )
     use_warehousing_model = models.BooleanField(default=True)
     use_storage_media_model = models.BooleanField(default=True)
-    stock_valuation_period = models.IntegerField(choices=INVENTORY_VALUATION_PERIOD, default=365)
+    stock_valuation_period = models.IntegerField(
+        choices=INVENTORY_VALUATION_PERIOD, default=365)
+    use_product_inventory = models.BooleanField(default=True)
+    use_equipment_inventory = models.BooleanField(default=True)
+    use_consumables_inventory = models.BooleanField(default=True)
+    use_raw_materials_inventory = models.BooleanField(default=True)
+
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
@@ -149,7 +155,7 @@ class Supplier(models.Model):
             #will overwrite if error occurs
             self.account = Account.objects.create(
                 name= "Supplier: %s" % self.name,
-                id = 2100 + n_suppliers,
+                id = 2100 + n_suppliers + 1, # the + 1 for the default supplier
                 balance =0,
                 type = 'liability',
                 description = 'Account which represents debt owed to a supplier',

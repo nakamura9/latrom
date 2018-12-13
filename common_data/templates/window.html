@@ -4,7 +4,7 @@
 {% endblock %}
 {% block window %}
 
-<nav class="navbar navbar-expand-sm bg-light" >
+<nav class="navbar navbar-expand-sm bg-light" id="navbar" >
         <ul class="navbar-nav">
             <!--{% url 'base:workflow' %}-->
             <a class="navbar-brand" href="/base/workflow"  >SBS</a>
@@ -47,10 +47,19 @@
             <li>
                 <a href="{% url 'services:dashboard' %}" class="nav-link">Services</a>
             </li>
+            {% endif %}
+            {% if request.user.is_superuser or request.user.employee.is_payroll_officer %}
             <li>
                 <a class="nav-link" href="{% url 'employees:dashboard' %}">Employees</a>
             </li>
             {% endif %}
+            <!--
+            {% if request.user.is_superuser or request.user.employee.is_manufacturing_associate %}
+            <li>
+                <a class="nav-link" href="{% url 'manufacturing:dashboard' %}">Manufacturing</a>
+            </li>
+            {% endif %}
+            -->
         </ul>
 </nav>
 <article>
@@ -67,10 +76,15 @@
         
         {% endif %}
     </div>
+    <!--
+    <button id="id-trigger-button">
+        Trigger Modal
+    </button>
+    -->
     {% block content %}{% endblock %}
 </article>
 <hr class="my-2" />
-<footer class="bg-primary" >
+<footer class="bg-primary" id="footer">
     <div style="padding:1cm;">
         <div class="text-white" style="padding:1cm;display:inline-block;">
         <h5>Users</h5>

@@ -14,6 +14,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card-deck">
+                {% if use_product_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Products</h4>
@@ -29,6 +30,8 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
+                {% if use_equipment_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Equipment</h4>
@@ -45,6 +48,8 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
+                {% if use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Consumables</h4>
@@ -61,11 +66,30 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
             </div>
 
             <hr class="my-4" />
 
             <div class="card-deck">
+                {% if use_raw_materials_inventory %}
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Raw Materials</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:raw-material-create' %}">Create New Raw Material</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:raw-material-list' %}">Manage Raw Materials</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Orders</h4>
@@ -96,12 +120,21 @@
                                 <a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:supplier-list'%} ">Manage Suppliers</a>
+                                <a href="{% url 'inventory:individual-supplier-list'%} ">Manage Individual Suppliers</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:organization-supplier-list'%} ">Manage Organization Suppliers</a>
                             </li>
 
                         </ul>
                     </div>
                 </div>
+            </div>
+
+            <hr class="my-4" />
+            <div class="card-deck">
+            
+                {% if use_warehousing_model %}
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
@@ -118,10 +151,8 @@
                         </ul>
                     </div>
                 </div>
-            </div>
-
-            <hr class="my-4" />
-            <div class="card-deck">
+                {% endif %}
+            {% if use_equipment_inventory or use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Requisitions</h4>
@@ -138,6 +169,7 @@
                         </ul>
                     </div>
                 </div>
+            {% endif %}
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
@@ -155,6 +187,9 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+            <hr class="my-4" />
+            <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <h4 class="card-title">Configuration</h4>

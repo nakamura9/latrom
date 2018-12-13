@@ -140,7 +140,7 @@ class SearchableWidget extends Component {
                 items: res.data,
                 choices: newChoices
             });
-        })
+        });
     }
 
     handleChange = (evt) => {
@@ -170,7 +170,8 @@ class SearchableWidget extends Component {
                     value={this.state.currValue}
                     onChange={this.handleChange}
                     placeholder="Select item..."
-                    list="id_list"/>
+
+                    list={this.props.dataURL + "id_list"}/>
                 {this.props.canCreateNewItem 
                     ?<div className="input-group-append">
                         <button 
@@ -179,8 +180,11 @@ class SearchableWidget extends Component {
                                 minHeight: "42px",
                             }}
                             className="btn btn-outline"
-                            onClick={() => window.open(
-                                this.props.newLink ,'popup','width=900,height=480')}>
+                            onClick={() => {
+                                $('#popup-frame').attr('src', this.props.newLink);
+                                var modal = document.getElementById('id-my-modal');
+                                    modal.style.display = 'block';
+                            }}>
                             <i className="fas fa-plus"></i>
                         </button>
                      </div>
@@ -194,7 +198,8 @@ class SearchableWidget extends Component {
                 <div style={{
                     width:'100%', 
                     margin: '0px', 
-                    minHeight: '35px',
+                    padding: '7px',
+                    minHeight: '42px',
                     backgroundColor: '#ccc'
                 }} >
                     <span>{this.state.selectedValue}</span>
@@ -205,8 +210,8 @@ class SearchableWidget extends Component {
                                 color: 'white',
                                 border: '0px',
                                 boxShadow: 'none',
-                                minHeight: '35px',
-                                minWidth: '35px'
+                                minHeight: '28px',
+                                minWidth: '28px'
                             }}
                             onClick={() =>{
                                 this.setState({
@@ -224,8 +229,8 @@ class SearchableWidget extends Component {
         return(
             <div>
                 {rendered}   
-                <datalist id="id_list">
-                    {this.state.items.map((item, i) => {
+                <datalist id={this.props.dataURL + "id_list"}>
+                    {[...this.state.items].map((item, i) => {
                         //always display id and display field
                         return(<option key={i} >
                                 {item[this.props.idField]} - {item[this.props.displayField]}

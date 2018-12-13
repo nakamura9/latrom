@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
+import AsyncSelect from './async_select';
+import $ from 'jquery';
 
 class Totals extends Component{
     state = {
@@ -10,60 +11,90 @@ class Totals extends Component{
         subtotal: 0.00,
         total: 0.00
     }
-    componentDidMount(){
-        //get sales tax
-        axios({
-            method: "GET",
-            url: "/invoicing/api/config/1"
-        }).then(res =>{
-            this.setState({taxObj: res.data.sales_tax})
-        })
+    
+    setInitialTax = () =>{
+        const tax = document.getElementById('id_tax').value;
+        console.log(tax);
+        const taxField = document.getElementsByName('total_tax');
+        taxField[0].value = tax;
     }
+
+    handleTaxChange = (id) =>{
+        axios.get('/accounting/api/tax/' + id)
+            .then(res => {
+                this.setState({taxObj: res.data});
+                $(`#${this.props.taxFormField}`).val(id);
+            })
+    }
+
+    calculateTax = () =>{
+        let subtotal = this.props.list.reduce(this.props.subtotalReducer, 0);
+            
+        let taxAmount;
+        if(this.state.taxObj){
+            taxAmount = subtotal * (this.state.taxObj.rate / 100);
+        }else{
+            taxAmount = 0.0;
+        }
+        let total = subtotal + taxAmount;
+        this.setState({
+            subtotal : subtotal,
+            tax : taxAmount,
+            total : total
+        });
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(prevProps.list !== this.props.list){
             //update totals 
-            let subtotal = this.props.list.reduce(this.props.subtotalReducer, 0);
-            
-            let taxAmount;
-            if(this.state.taxObj){
-                taxAmount = subtotal * (this.state.taxObj.rate / 100);
-            }else{
-                taxAmount = 0.0;
-            }
-            let total = subtotal + taxAmount;
-            this.setState({
-                subtotal : subtotal,
-                tax : taxAmount,
-                total : total
-            });
+           this.calculateTax(); 
+        }if(prevState.taxObj !== this.state.taxObj){
+            this.calculateTax();
         }
     }
+
     render(){
         let contents;
+        const cellStyle = {
+            padding: '10px'
+        }
         if(this.state.tax === null){
             contents = (
                 <tfoot>
-                    <tr>
-                        <th colSpan={this.props.span - 1}>Total</th>
-                        <td>{this.state.total}</td>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Total</th>
+                        <td style={cellStyle}>{this.state.total}</td>
                     </tr>
                 </tfoot>
             )
         }else{
             contents = (
                 <tfoot>    
-                    <tr>
-                            <th colSpan={this.props.span - 1}>Subtotal</th>
-                            <td>{this.state.subtotal.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <th colSpan={this.props.span - 1}>Tax</th>
-                            <td>{this.state.tax.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <th colSpan={this.props.span - 1}>Total</th>
-                            <td>{this.state.total.toFixed(2)}</td>
-                        </tr>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Subtotal</th>
+                        <td style={cellStyle}>{this.state.subtotal.toFixed(2)}</td>
+                    </tr>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 2}>Tax</th>
+                        <td>
+                            <AsyncSelect
+                                dataURL="/accounting/api/tax/"
+                                name="total_tax"
+                                resProcessor={(res) => {
+                                    return(res.data.map((tax) =>({
+                                        value: tax.id,
+                                        name: tax.name
+                                    })))
+                                }}
+                                onPopulated={this.setInitialTax}
+                                handler={this.handleTaxChange} />
+                        </td>
+                        <td style={cellStyle}>{this.state.tax.toFixed(2)}</td>
+                    </tr>
+                    <tr className="bg-primary text-white">
+                        <th style={cellStyle} colSpan={this.props.span - 1}>Total</th>
+                        <td style={cellStyle}>{this.state.total.toFixed(2)}</td>
+                    </tr>
                 </tfoot>
                 )
         }

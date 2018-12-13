@@ -81,7 +81,7 @@ class AbstractSale(models.Model):
 
     @property
     def is_quotation(self):
-        return self.status in ['quotation', 'draft']
+        return self.status == 'quotation'
 
     @property
     def on_credit(self):
@@ -115,16 +115,18 @@ class AbstractSale(models.Model):
     def set_quote_invoice_number(self):
         # add feature to allow invoices to be viewed as
         config = inv_models.SalesConfig.objects.first() 
-        if self.is_quotation and self.quotation_number is None:
-            self.quotation_number = config.next_quotation_number
-            config.next_quotation_number += 1
-            config.save()
-            self.save()
-        if not self.is_quotation and self.invoice_number is None:
-            self.invoice_number = config.next_invoice_number
-            config.next_invoice_number += 1
-            config.save()
-            self.save()
+        if self.is_quotation:
+            if self.quotation_number is None:
+                self.quotation_number = config.next_quotation_number
+                config.next_quotation_number += 1
+                config.save()
+                self.save()
+        elif self.status != 'draft':
+            if self.invoice_number is None:
+                self.invoice_number = config.next_invoice_number
+                config.next_invoice_number += 1
+                config.save()
+                self.save()
         else:
             return
 

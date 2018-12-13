@@ -19,7 +19,9 @@ class AccountingSettings(SingletonModel):
     default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True, blank=True, on_delete=None)
 
 class Bookkeeper(models.Model):
-    '''Model that gives employees access to the bookkeeping function of the 
+    '''
+    mutable
+    Model that gives employees access to the bookkeeping function of the 
     software such as order creation and the like.'''
     employee = models.OneToOneField('employees.Employee', 
         on_delete=None, default=1, limit_choices_to=Q(user__isnull=False))
@@ -40,7 +42,7 @@ class Transaction(models.Model):
     '''
     Transaction
     ===========
-
+    immutable
     An abstract base class for all debits and credits.
     Does not create a table on the database.
     Is an aggregate component of a JournalEntry
@@ -61,6 +63,7 @@ class Debit(Transaction):
     '''
     Debit
     ==========
+    immutable
     Inherits from transaction, is an aggregate part of a JournalEntry
     and subtracts from the account when saved.
     '''
@@ -76,6 +79,8 @@ class Credit(Transaction):
     '''
     Credit
     ==========
+    immutable 
+
     Inherits from transaction, is an aggregate part of a JournalEntry
     and adds to the account when saved.
     '''
@@ -91,6 +96,7 @@ class JournalEntry(models.Model):
     '''
     JournalEntry
     ============
+    immutable
     Represents a single entry in a journal and can consist of multiple debits and credits
     in any configuration.
     Includes a reference for identification and a memo to describe the entry.
@@ -172,6 +178,7 @@ class JournalEntry(models.Model):
         
 class Journal(models.Model):
     '''
+    name - immutable
     Represents the document of first entry for all transactions
     Each journal is made up of multiple entries
     They have a name and description
@@ -273,7 +280,9 @@ class AbstractAccount(models.Model):
         abstract = True
 
 class Account(AbstractAccount):
-
+    '''
+    balance- mutable(not directly)
+    '''
     @staticmethod
     def total_debit():
         return reduce(lambda x, y: x + y.debit, 
@@ -308,6 +317,9 @@ class Account(AbstractAccount):
     
 
 class InterestBearingAccount(AbstractAccount):
+    '''
+    mutable 
+    '''
     interest_rate = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     interest_interval = models.IntegerField(choices = [(0, 'monthly'), (1, 'annually')], default=1)
     interest_method = models.IntegerField(choices = [(0, 'Simple')], default=0)
@@ -340,6 +352,7 @@ class InterestBearingAccount(AbstractAccount):
                 self._interest_interval_days
         return date
 
+#delete?
 class Ledger(models.Model):
     '''
     Summarizes the accounts and journal entries
@@ -354,11 +367,13 @@ class Ledger(models.Model):
 
 class Tax(models.Model):
     '''
+    rate immutable, create new tax if tax rate changes
     Used in invoices and payroll, tax is a cost incurred as a
      percentage of income. Will implement more complex tax features as required
     '''
     name = models.CharField(max_length=64)
     rate = models.FloatField()
+    
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -381,11 +396,17 @@ class Adjustmet(models.Model):
     '''
     An adjustment records the necessary changes to journal entries that 
     will balance the books. In this way, the journal entries become immutable.
+    
     Not yet implemented
+    the form for this model will have journal entry fields as well as 
+    the adjustment fields
     '''
-    entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.CASCADE, null=True)
-    workbook = models.ForeignKey('accounting.WorkBook', on_delete=models.CASCADE,null=True)
+    entry = models.ForeignKey('accounting.JournalEntry', 
+        on_delete=models.CASCADE, null=True)
+    workbook = models.ForeignKey('accounting.WorkBook', 
+        on_delete=models.CASCADE,null=True)
     description = models.TextField()
+
 
 DEPRECIATION_METHOD = [
     (0, 'Straight Line'),
@@ -534,7 +555,7 @@ class Expense(AbstractExpense):
         self.customer.account \
         if self.billable \
         else Account.objects.get(pk=1000),#cash account
-        Account.objects.get(name=expense_choices[self.category]), )
+        Account.objects.get(name=expense_choices[self.category_string]), )
        
 
     def save(self, *args, **kwargs):

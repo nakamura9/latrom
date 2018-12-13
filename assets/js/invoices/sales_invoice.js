@@ -49,7 +49,6 @@ export default class SalesInvoiceForm extends Component{
                 url: '/invoicing/api/sales-invoice/' + tail,
                 method: 'GET',
             }).then(res =>{
-                console.log(res.data);
                 let itemList = res.data.salesinvoiceline_set.map((line) =>{
                     return {
                         item_name: line.product.id + '-' + line.product.name,

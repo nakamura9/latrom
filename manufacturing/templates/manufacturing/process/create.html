@@ -1,0 +1,9 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+{% csrf_token %}
+<div id="process"></div>
+
+{% render_bundle "manufacturing" %}
+{% endblock %}
+

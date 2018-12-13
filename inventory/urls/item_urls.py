@@ -31,6 +31,19 @@ consumable_urls = [
 ] + consumable_router.urls
 
 
+raw_material_router = routers.DefaultRouter()
+raw_material_router.register(r'^api/raw-material', views.RawMaterialAPIView)
+
+raw_material_urls = [
+    re_path(r'^raw-material-create/?$', views.RawMaterialCreateView.as_view(), name="raw-material-create"),
+    re_path(r'^raw-material-list/?$', views.RawMaterialListView.as_view(), name="raw-material-list"),
+    re_path(r'^raw-material-update/(?P<pk>[\w]+)/?$', views.RawMaterialUpdateView.as_view(), 
+        name="raw-material-update"),
+    re_path(r'^raw-material-detail/(?P<pk>[\w]+)/?$', views.RawMaterialDetailView.as_view(), 
+        name="raw-material-detail"),
+] + raw_material_router.urls
+
+
 equipment_router = routers.DefaultRouter()
 equipment_router.register(r'^api/equipment', views.EquipmentAPIView)
 
@@ -43,4 +56,4 @@ equipment_urls = [
         views.EquipmentDetailView.as_view(), name="equipment-detail"),
 ] + equipment_router.urls
 
-item_urls = product_urls + equipment_urls + consumable_urls
+item_urls = product_urls + equipment_urls + consumable_urls + raw_material_urls

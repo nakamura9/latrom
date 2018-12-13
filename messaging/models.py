@@ -119,7 +119,8 @@ class Inbox(models.Model):
         if message.is_reply:
             thread = MessageThread.objects.get(
                 _from =message.recipient, 
-                _to= message.sender)
+                _to= message.sender,
+                closed=False)
 
             initiator = thread._from.inbox
             if not thread in initiator.threads.all():

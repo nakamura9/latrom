@@ -51,6 +51,8 @@ class BaseItem(models.Model):
             items = inventory.models.WareHouseItem.objects.filter(consumable=self)
         if isinstance(self, Equipment):
             items = inventory.models.WareHouseItem.objects.filter(equipment=self)
+        if isinstance(self, RawMaterial):
+            items = inventory.models.WareHouseItem.objects.filter(raw_material=self)
         return reduce(lambda x, y: x + y, [i.quantity for i in items], 0)
 
     @property
@@ -172,11 +174,6 @@ class Product(BaseItem):
             Q(quantity__gt=0)
             )
 
-
-class RawMaterial(BaseItem):
-    minimum_order_level = models.IntegerField( default=0)
-    maximum_stock_level = models.IntegerField(default=0)
-
 class Equipment(BaseItem):
     CONDITION_CHOICES = [
         ('excellent', 'Excellent'),
@@ -206,3 +203,24 @@ class Consumable(BaseItem):
             Q(consumable=self),
             Q(quantity__gt=0)
             )
+
+class RawMaterial(BaseItem):
+    minimum_order_level = models.IntegerField( default=0)
+    maximum_stock_level = models.IntegerField(default=0)
+
+    @property 
+    def stock_value(self):
+        return 0
+"""
+#not inherited because some parent fields do not carry over
+class WorkInProgress(models.Model):
+    name = models.CharField(max_length = 64)
+    width = models.FloatField(default=0.0)
+    height = models.FloatField(default=0.0)
+    image = models.FileField(blank=True, null=True, 
+        upload_to=settings.MEDIA_ROOT)
+    description = models.TextField(blank=True, default="")
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,
+        blank=True, default=1)
+    
+"""

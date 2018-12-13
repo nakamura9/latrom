@@ -59,6 +59,9 @@ class SalesInvoice(AbstractSale):
         First a journal entry is made to debit the inventory and credit the 
         customer account. If the invoice is on credit nothing further happens.
         However if it is a cash invoice, the payment object is created along with its accompanying entry.'''
+        #only one entry per invoice
+        if self.entry:
+            return
         j = JournalEntry.objects.create(
                 reference='INV' + str(self.invoice_number),
                 memo= 'Auto generated entry from sales invoice.',

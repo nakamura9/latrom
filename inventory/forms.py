@@ -24,8 +24,46 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.InventorySettings
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-class SupplierForm(forms.ModelForm, BootstrapMixin):
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Inventory Settings',
+                    'inventory_check_date',
+                    'inventory_check_frequency',
+                    'order_template_theme',
+                    'product_sales_pricing_method',
+                    'inventory_valuation_method',
+                    'stock_valuation_period'),
+                Tab('WareHousing Settings',
+                    'use_warehousing_model',
+                    'use_storage_media_model'),
+                Tab('Inventory Types',
+                    'use_product_inventory',
+                    'use_equipment_inventory',
+                    'use_consumables_inventory',
+                    'use_raw_materials_inventory')
+            )
+        )
+        
+        self.helper.add_input(Submit('submit', 'Submit'))
+    
+
+
+class IndividualSupplierForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'account', 'organization']
+        model = models.Supplier
+
+class OrganizationSupplierForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = ['active', 'account', 'individual']
+        model = models.Supplier
+
+
+class SupplierUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['active', 'account']
         model = models.Supplier
@@ -311,3 +349,40 @@ class ShippingAndHandlingForm(BootstrapMixin, forms.Form):
     description = forms.CharField(widget=forms.Textarea, required=False)
     recorded_by = forms.ModelChoiceField(User.objects.all())
     reference = forms.CharField(widget=forms.HiddenInput)
+
+
+class RawMaterialForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Description', 
+                    'name',
+                    'description'),
+                Tab('Stocking Information',
+                    'minimum_order_level',
+                    'maximum_stock_level',
+                    'supplier'),
+                Tab('Pricing', 
+                    'unit',
+                    'unit_purchase_price'),
+                Tab('Categories', 
+                    'category'),
+                Tab('Dimensions', 
+                    'length', 
+                    'width',
+                    'height'),
+                Tab('Image', 'image'),
+                Tab('Initial Inventory', 
+                    'initial_quantity', 
+                    'warehouse',
+                    )
+            )
+            )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+    class Meta:
+        exclude =  'active',
+        model = models.RawMaterial

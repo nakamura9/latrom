@@ -1,0 +1,105 @@
+{% extends 'window.html' %} {% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Raw Material Detail</h1>
+    <p class="lead">Information concerning stock items. </p>
+    <hr class="my-2">
+    <p class="lead">
+        <a class="btn btn-success btn-lg" href="{% url 'inventory:raw-material-update' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Item Image</h4>
+                    </div>
+                    <div class="card-body">
+                        <img width="300" height="300" {% if object.image %} src="{{object.image.url}}" {% else %} src="" {% endif %}alt="Item Image" />
+                    </div>
+                </div>
+
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Basic Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Name: {{object.name}}</p>
+                        <p class="card-text">Code: {{object.id}}</p>
+                        <p class="card-text">Category: {{object.category}}</p>
+                        <p class="card-text">Description: {{object.description}}</p>
+                    </div>
+                </div>
+
+                <div class="card bg-primary text-white">
+                        <div class="card-header">
+                            <h4 class="card-title">Pricing Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Purchase Price: {{object.unit_purchase_price}}</p>
+                            <p class="card-text">Stock Value: {{object.stock_value}}</p>
+                        </div>
+                    </div>
+
+            </div>
+            <hr class="my-4">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Supplier Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Name: {{object.supplier}}</p>
+                        <p class="card-text">Address: {{object.supplier.physical_address}}</p>
+                    </div>
+                </div>
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Stock Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Stock Quantity: {{object.quantity}}</p>
+                        <p class="card-text">Minimum Stock Level: {{object.minimum_order_level}}</p>
+                        <p class="card-text">Maximum Stock Level: {{object.maximum_stock_level}}</p>
+
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-header">
+                        <h4 class="card-title">Material Locations</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-default">
+                            <thead>
+                                <th>Warehouse</th>
+                                <th>Location</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </thead>
+                            <tbody style="max-height:200px; overflow-y:auto;">
+                                {% for l in object.locations %}
+                                    <tr>
+                                        <td>{{l.warehouse}}</td>
+                                        <td>{{l.location}}</td>
+                                        <td>{{l.quantity}}</td>
+                                        <td>
+                                            <a class="btn" style="color:white;" href="{% url 'inventory:storage-media-detail' pk=l.location.pk %}"> Detail</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

@@ -363,7 +363,7 @@ class AssetCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
         'description': 'Used to formally record valuable property belonging to the organization'
     }
 
-class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, CreateView):
+class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, UpdateView):
     form_class = forms.AssetForm
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
@@ -455,6 +455,8 @@ class RecurringExpenseDetailView(BookkeeperCheckMixin, DetailView):
 class RecurringExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.RecurringExpense
+    success_url = "/accounting/recurring-expense/list"
+
 
 
 ####################################################

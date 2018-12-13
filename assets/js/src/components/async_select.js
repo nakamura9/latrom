@@ -12,7 +12,12 @@ class AsyncSelect extends Component{
             url: this.props.dataURL
         }).then(res => {
             const dataList = this.props.resProcessor(res);
-            this.setState({options: dataList});
+            // returns a list of objects with value and name properties
+            if(this.props.onPopulated){
+                this.setState({options: dataList}, this.props.onPopulated);
+            }else{
+                this.setState({options: dataList});
+            }
         }
             )
     }
@@ -20,7 +25,9 @@ class AsyncSelect extends Component{
         return(
             <select 
                 onChange={(evt) => this.props.handler(evt.target.value)}
-                className="form-control">
+                className="form-control"
+                name={this.props.name}
+                >
                 <option value="">-------</option>
                 {this.state.options.map((opt, i) =>{
                     return(<option 

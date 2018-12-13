@@ -26,40 +26,66 @@ class CustomerAPIViewSet(viewsets.ModelViewSet):
 
 #No customer list, overlooked!
 
-class CustomerCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
+class OrganizationCustomerCreateView(SalesRepCheckMixin, ExtraContext, 
+        CreateView):
     extra_context = {
-        "title": "New Customer",
-        'description': 'Register new customers which may be organizational or private individuals. ',
+        "title": "New Organizational Customer",
+        'description': 'Register new customers that are organizations',
         'related_links': [{
-            'name': 'Create Organizational Customer',
+            'name': 'Create Organization',
             'url': '/base/organization/create'
-        },{
-            'name': 'Record Individual Customer',
-            'url': '/base/individual/create'
-        }]}
+        },]}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
     success_url = reverse_lazy("invoicing:home")
-    form_class = forms.CustomerForm
+    form_class = forms.OrganizationCustomerForm
+
+
+class IndividualCustomerCreateView(SalesRepCheckMixin, ExtraContext, 
+        CreateView):
+    extra_context = {
+        "title": "New Individual Customer",
+        'description': 'Register new customers that are private individuals',
+        'related_links': [{
+            'name': 'Add Individual',
+            'url': '/base/individual/create'
+        },]}
+    template_name = os.path.join("common_data", "create_template.html")
+    model = Customer
+    success_url = reverse_lazy("invoicing:home")
+    form_class = forms.IndividualCustomerForm
 
 
 class CustomerUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
     extra_context = {"title": "Update Existing Customer"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
-    form_class = forms.CustomerForm
+    form_class = forms.CustomerUpdateForm
     success_url = reverse_lazy("invoicing:home")
 
 
-class CustomerListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
-    extra_context = {"title": "List of Customers",
-                    "new_link": reverse_lazy("invoicing:create-customer")}
+class IndividualCustomerListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+    extra_context = {"title": "List of Individual Customers",
+                    "new_link": reverse_lazy(
+                        "invoicing:create-individual-customer")}
     template_name = os.path.join("invoicing", "customer_list.html")
     filterset_class = filters.CustomerFilter
     paginate_by = 10
 
     def get_queryset(self):
-        return Customer.objects.all().order_by('pk')
+        return Customer.objects.filter(individual__isnull=False).order_by('pk')
+
+
+class OrganizationCustomerListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+    extra_context = {"title": "List of Organizational Customers",
+                    "new_link": reverse_lazy(
+                        "invoicing:create-organization-customer")}
+    template_name = os.path.join("invoicing", "customer_list.html")
+    filterset_class = filters.CustomerFilter
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Customer.objects.filter(organization__isnull=False).order_by('pk')
 
 
 class CustomerDeleteView(SalesRepCheckMixin, DeleteView):

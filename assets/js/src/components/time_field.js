@@ -24,8 +24,6 @@ class TimeField extends Component{
 
 
     render(){
-        console.log(this.props.initial === "");
-        console.log(this.state.valid);
         return(
             <input 
                 type="text"

@@ -12,6 +12,7 @@ module.exports = {
         inventory: './js/inventory',
         calendar: './js/calendar',
         services: './js/services',
+        manufacturing: './js/manufacturing',
         widgets: './js/widgets'
     },
     output: {
