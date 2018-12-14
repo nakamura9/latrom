@@ -6,6 +6,7 @@ import os
 import urllib
 
 from django.core.mail import EmailMessage
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
@@ -24,12 +25,53 @@ from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
+class ServiceInvoiceMixin(object):
+    def post(self, request, *args, **kwargs):
+        if isinstance(self, UpdateView):
+            self.object = self.get_object()
+            #if an existing object is saved as a draft again
+            # if an existing object is saved from draft to quote or invoice
+            if self.object.status == "draft":
+                resp = super().post(request, *args, **kwargs)
 
-def process_data(items, inv):
-    if items:
-        items = json.loads(urllib.parse.unquote(items))
-        for item in items:
-            inv.add_line(item['id'], item['hours'])
+                item_string = request.POST.get('item_list', None)
+                if not item_string or item_string =="":
+                    messages.info(request, 'No items were added to this invoice. Please provide some data')
+                else:
+                    for line in self.object.serviceinvoiceline_set.all():
+                        line.delete()
+
+                    self.process_data(item_string)
+            else:
+                resp = super().post(request, *args, **kwargs)
+
+        else:
+            
+            resp = super().post(request, *args, **kwargs)
+
+            if not self.object:
+                return resp
+        
+            #new invoice actions
+            item_string = request.POST.get('item_list', None)
+            if not item_string:
+                messages.info(request, 'No items were added to this invoice. Please provide some data')
+            self.process_data(item_string)
+
+        #valid for both new and existing invoices
+        if self.object.status in ["invoice", 'paid']:
+            self.object.create_entry()#if existing method returns none
+
+        self.set_payment_amount()
+        return resp
+
+    def process_data(self, items):
+        print(items)
+        if items:
+            items = json.loads(urllib.parse.unquote(items))
+            for item in items:
+
+                self.object.add_line(item['service'].split('-')[0], item['hours'])
                 
         # moved here because the invoice item data must first be 
         # saved in the database before inventory and entries 
@@ -56,7 +98,11 @@ class ServiceInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     template_name = os.path.join("invoicing", "service_invoice",
         'detail.html')
 
-class ServiceInvoiceUpdateView(ExtraContext, UpdateView):
+class ServiceInvoiceUpdateView(SalesRepCheckMixin, 
+                                InvoiceCreateMixin, 
+                                ExtraContext, 
+                                ServiceInvoiceMixin, 
+                                UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = reverse_lazy('invoicing:service-invoice-list')
     model = ServiceInvoice
@@ -64,7 +110,11 @@ class ServiceInvoiceUpdateView(ExtraContext, UpdateView):
     extra_context = {
         'title': 'Update Service Invoice'
     }
-class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
+class ServiceInvoiceCreateView(SalesRepCheckMixin, 
+                                ServiceInvoiceMixin, 
+                                InvoiceCreateMixin, 
+                                ConfigMixin, 
+                                CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -76,26 +126,12 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMix
     success_url = reverse_lazy("invoicing:service-invoice-list")
     payment_for = 1
 
-    def post(self, request, *args, **kwargs):
-        print(self.payment_for)
-        resp = super(ServiceInvoiceCreateView, self).post(request, *args, **kwargs)
-        
-        if not self.object:
-            return resp
 
-        inv = self.object
-        items = request.POST.get("item_list", None)
-        
-        if inv.status in ['invoice', 'paid']:
-            inv.create_entry()
-        
-        process_data(items, inv)
-        self.set_payment_amount()
-
-        return resp
-
-
-class ServiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
+class ServiceDraftUpdateView(SalesRepCheckMixin,
+                            InvoiceCreateMixin,         
+                            ServiceInvoiceMixin, 
+                            ConfigMixin, 
+                            UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -107,25 +143,6 @@ class ServiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
     success_url = reverse_lazy("invoicing:service-invoice-list")
     model = ServiceInvoice
 
-
-    def post(self, request, *args, **kwargs):
-        resp = super(ServiceDraftUpdateView, self).post(request, *args, **kwargs)
-        
-        if not self.object:
-            return resp
-
-        #remove existing items
-        for line in self.object.serviceinvoiceline_set.all():
-            line.delete()
-        
-        inv = self.object
-        items = request.POST.get("item_list", None)
-        
-        process_data(items, inv)
-        if self.object.status in ["invoice", 'paid']:
-            self.object.create_entry()
-
-        return resp
 
 class ServiceInvoicePaymentView(ExtraContext, CreateView):
     model = Payment

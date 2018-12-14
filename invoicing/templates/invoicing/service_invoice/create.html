@@ -14,6 +14,7 @@
     <table class="table">
             <form action="" method="POST">
                 {% csrf_token %}
+            <input type="hidden" name="item_list" value="" id="id-item-list"/>
         <tbody>
             <tr>
                 <td colspan="2"><center><h1>Service Invoice</h1></center></td>
@@ -37,7 +38,6 @@
                     <p>Discount</p>
                     <p>{{form.discount}}</p>
                     -->
-                    <p>Tax</p>
                     <p>{{form.tax}}</p>
                     <p>Apply Payment?</p>
                     <p>{{form.apply_payment}}</p>

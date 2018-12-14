@@ -117,6 +117,7 @@ class ServiceInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
         models.ServiceInvoice.objects.all(), widget=forms.HiddenInput
         )
     
+    
     payment_for = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = ['sales_invoice', 'bill', 'combined_invoice']
@@ -125,6 +126,7 @@ class ServiceInvoicePaymentForm(forms.ModelForm, BootstrapMixin):
 class ServiceInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     apply_payment = forms.BooleanField(required=False)
+    tax=forms.ModelChoiceField(Tax.objects.all(), widget=forms.HiddenInput)
 
     class Meta:
         exclude = "active", 'invoice_number', 'quotation_number', 'discount', 'entry'

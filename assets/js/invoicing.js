@@ -16,6 +16,10 @@ const creditNote = document.getElementById('credit-note-table');
 const directPurchase =  document.getElementById('direct-purchase-table');
 const combinedInvoce = document.getElementById('combined-invoice-contents');
 
+const URL = window.location.href;
+const  decomposed = URL.split('/');
+const tail = decomposed[decomposed.length - 1];
+    
 
 if(sales){
     const calculateTotalFunc = (data)=>{
@@ -32,9 +36,6 @@ if(sales){
             comp.setState({data: newData});
         });
     }
-    const URL = window.location.href;
-    const  decomposed = URL.split('/');
-    const tail = decomposed[decomposed.length - 1];
     
     const isUpdate = tail !== 'create-sales-invoice';
     
@@ -58,7 +59,6 @@ if(sales){
         ))
         }
               
-    console.log(isUpdate);
             
     ReactDOM.render(<GenericTable hasLineTotal={true}
         hasTotal={true}
@@ -101,7 +101,101 @@ if(sales){
 }else if(bill){
     ReactDOM.render(<BillTable />, bill);
 }else if(services){
-    ReactDOM.render(<ServiceLineTable />, services);
+    
+    const isUpdate = tail !== 'create-service-invoice';
+
+    const urlFetcher = () =>{
+        const URL = window.location.href;
+        const  decomposed = URL.split('/');
+        const tail = decomposed[decomposed.length - 1];
+    
+        return '/invoicing/api/service-invoice/' + tail;
+    }
+
+    const calculateTotalFunc = (data)=>{
+        console.log(data);
+        return(parseFloat(data.fixed_fee) + (
+            parseFloat(data.rate) * parseFloat(
+                data.hours)));
+    }
+
+    const rateGetter = (comp, fieldName, pk) =>{
+        axios({
+            url: '/services/api/service/' + pk,
+            method:'get'
+        }).then(res => {
+            console.log(res.data);
+            let newData = {...comp.state.data};
+            newData[fieldName] = parseFloat(res.data.hourly_rate)
+                                        .toFixed(2);
+            newData['fixed_fee'] = parseFloat(res.data.flat_fee)
+                                        .toFixed(2);
+            comp.setState({data: newData});
+        });
+    }
+
+    const fixedFeeGetter = (comp, fieldName, pk) =>{
+        return;
+        //actual data set in rate getter to avoid hitting the server twice
+    }
+
+    const resProcessor = (res) =>{
+        return res.data.serviceinvoiceline_set.map((line) =>(
+            {
+                service: line.service.id + '-' + line.service.name,
+                rate: line.service.hourly_rate,
+                hours: line.hours,
+                fixed_fee: line.service.flat_fee,
+                lineTotal: (parseFloat(
+                    line.service.hourly_rate) * parseFloat(line.hours)) + parseFloat(line.service.flat_fee)
+            }
+        ))
+        }
+    
+
+    ReactDOM.render(<GenericTable
+        hasTotal
+        hasLineTotal
+        prepopulated={isUpdate}
+        resProcessor={resProcessor}
+        urlFetcher={urlFetcher}
+        taxFormField="id_tax"
+        calculateTotal={calculateTotalFunc}
+        fieldDescriptions={['Service','Fixed Fee', 'Hourly Rate', 'Hours']} 
+        fieldOrder={['service', 'fixed_fee', 'rate','hours']}
+        formInputID={'id-item-list'}
+        fields={[{
+            'name': 'service',
+            'type': 'search',
+            'width': 35,
+            'required': true,
+            'url': '/services/api/service/',
+            'idField': 'id',
+            'canCreateNewItem': true,
+            'newLink': '/services/create-service',
+            'displayField': 'name'
+        }, 
+        {
+            'name': 'fixed_fee',
+            'type': 'fetch',
+            'width': 10,
+            required: true,
+            dataGetter: fixedFeeGetter
+        }, 
+        {
+            'name': 'rate',
+            'type': 'fetch',
+            'width': 10,
+            required: true,
+            dataGetter: rateGetter
+        }, {
+            'name': 'hours',
+            'type': 'number',
+            'width': 15,
+            'required': true
+        }]}
+         />, services);
+
 }else if(creditNote){
     ReactDOM.render(<CreditNoteTable />, creditNote)
 }else if(directPurchase){

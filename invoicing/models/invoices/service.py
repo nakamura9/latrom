@@ -36,6 +36,7 @@ class ServiceInvoice(AbstractSale):
     def create_entry(self):
         print('[warning] A n entry method needs to be implemented that factors '
         'in all the types of lines in a combined invoice')
+        # not verified #?
 
 class ServiceInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.ServiceInvoice', on_delete=models.CASCADE,)
