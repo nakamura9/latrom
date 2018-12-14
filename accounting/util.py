@@ -6,7 +6,7 @@ class AccountingTaskService(object):
         self.today  = datetime.date.today()
 
     def run(self):
-        #self.run_recurring_expenses()
+        self.run_recurring_expenses()
         self.run_interest_on_accounts()
         self.depreciate_assets()
 
