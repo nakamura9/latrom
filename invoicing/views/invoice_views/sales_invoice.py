@@ -27,19 +27,20 @@ from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 class SalesInvoiceMixin(object):
     def post(self, request, *args, **kwargs):
-        print(request.POST)
         if isinstance(self, UpdateView):
             #update actions 
+            self.object = self.get_object()
             if self.object.status == "draft":
                 resp = super().post(request, *args, **kwargs)
 
                 item_string = request.POST.get('item_list', None)
-                if not item_string:
+                if not item_string or item_string == "":
                     messages.info(request, 'No items were added to this invoice. Please provide some data')
-                for line in self.object.salesinvoiceline_set.all():
-                    line.delete()
+                else:
+                    for line in self.object.salesinvoiceline_set.all():
+                        line.delete()
 
-                self.process_data(item_string)
+                    self.process_data(item_string)
             else:
                 resp = super().post(request, *args, **kwargs)
 
@@ -115,14 +116,21 @@ class SalesInvoiceCreateView(SalesRepCheckMixin,
     payment_for = 0
 
 
-class SalesDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
+class SalesDraftUpdateView(SalesRepCheckMixin, 
+                            InvoiceCreateMixin,
+                            SalesInvoiceMixin, 
+                            ConfigMixin, 
+                            UpdateView):
     model = SalesInvoice
     form_class = forms.SalesInvoiceForm
     template_name = os.path.join('invoicing', 'sales_invoice','create.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
 
 
-class SalesInvoiceUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
+class SalesInvoiceUpdateView(SalesRepCheckMixin, 
+                            ExtraContext, 
+                            InvoiceCreateMixin,
+                            UpdateView):
     extra_context = {
         'title': 'Edit Sales Invoice Details'
     }
