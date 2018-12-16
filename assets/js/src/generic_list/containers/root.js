@@ -8,11 +8,15 @@ import axios from 'axios';
 /**
  * fieldOrder -array of strings 
  * formInputID - string 
- *  fields - array of objects 
- * prepopulated - boolean
+ * fields - array of objects 
+ * prepopulated - boolean for update views 
  * urlFetcher - a function that returns the url with the prepoulation url
  * resProcessor - a function which maps the fetched data onto the lines array
- *  NB please supply a lineTotal for the fields that require it
+ * taxFormField - a string representing the id of the tax field if required for 
+ * totals
+ * calculateTotal - function used to add cumulative total for tables with total fields( takes a rows data and returns a number that represents the total for that row)
+ * fieldDescriptions - headings used at the top of fields, in order
+ * NB please supply a lineTotal for the fields that require it
  */
 
  /**
@@ -45,7 +49,7 @@ class GenericTable extends Component{
             axios.get(url)
                 .then(res => {
                     this.setState({lines: this.props.resProcessor(res)})
-                }, ()=> console.log(this.state.lines));
+                });
         }
     }
 

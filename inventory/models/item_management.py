@@ -200,6 +200,8 @@ class OrderItem(models.Model):
     raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=None,
         null=True)
     quantity = models.FloatField()
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None, 
+        default=1)
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
 

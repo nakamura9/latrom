@@ -15,8 +15,7 @@ class InventorySelectWidget extends Component {
             this.setState({
                 currValue : "",
                 selectedValue: ""
-            })
-            //remove selected choice from list of choices 
+            }) 
         }
     }
 
