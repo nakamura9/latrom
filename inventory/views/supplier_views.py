@@ -85,7 +85,7 @@ class SupplierDeleteView(InventoryControllerCheckMixin,
         DeleteView):
     template_name = os.path.join('common_data', 
         'delete_template.html')
-    success_url=reverse_lazy('inventory:supplier-list')
+    success_url=reverse_lazy('inventory:organization-supplier-list')
     model = models.Supplier
 
 class SupplierListAPIView(ListAPIView):

@@ -8,7 +8,7 @@ import { SearchableWidget, AsyncSelect } from '../../common';
 class inputLine extends Component{
     state = {
         data: {
-        },
+            },
         fetchField: null,
         selectedPk: null,
     }
@@ -62,7 +62,6 @@ class inputLine extends Component{
     }
     searchHandler = (name, value) =>{
         //for searchable widget and asyncwidget
-        console.log('search');
         let newData = {...this.state.data};
         newData[name] = value;
         const pk = value.split('-')[0];
@@ -125,6 +124,12 @@ class inputLine extends Component{
                     newLink={field.newLink}
                     onSelect={(val) => this.searchHandler(field.name, val)}
                     onClear={() => this.searchHandler(field.name, "")}/>
+                break;
+
+            case 'widget':
+                // function that takes the component as 
+                // an argument so it can independantly set state etc.
+                return field.widgetCreator(this);
                 break;
             default:
                 return null;

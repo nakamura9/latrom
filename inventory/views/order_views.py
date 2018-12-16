@@ -51,14 +51,23 @@ class OrderPOSTMixin(object):
                 i.delete()
 
         for data in items:
-            item_type = data['pk'][0]
-            pk = data['pk'].strip(item_type)
+            id, _ = data['item'].split('-') # name is discarded
+            item_type = id[0] # one of P, C or E
+            pk = id.strip(item_type) # removes letter from pk
+            
+            unit_id = 1 # default value
+            if data['unit'] != "":
+                unit_id, _ = data['unit'].split('-')
+            
+            unit = models.UnitOfMeasure.objects.get(
+                        pk=unit_id)
             if item_type == 'P':
                 product = models.Product.objects.get(pk=pk)
                 order.orderitem_set.create(
                     product=product,
                     item_type=1,
                     quantity=data['quantity'],
+                    unit=unit,
                     order_price=data['order_price'])
             elif item_type == 'E':
                 equipment = models.Equipment.objects.get(pk=pk)
@@ -66,6 +75,7 @@ class OrderPOSTMixin(object):
                     equipment=equipment,
                     item_type=3,
                     quantity=data['quantity'],
+                    unit=unit,
                     order_price=data['order_price'])
             elif item_type == 'C':
                 consumable = models.Consumable.objects.get(pk=pk)
@@ -73,6 +83,7 @@ class OrderPOSTMixin(object):
                     consumable=consumable,
                     item_type=2,
                     quantity=data['quantity'],
+                    unit=unit,
                     order_price=data['order_price'])   
         
         #create transaction after loading all the items
@@ -125,7 +136,7 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext,
 
 class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext, 
         OrderPOSTMixin,UpdateView):
-    form_class = forms.OrderForm
+    form_class = forms.OrderUpdateForm
     model = models.Order
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("inventory", "order", "update.html")

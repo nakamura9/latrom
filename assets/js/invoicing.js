@@ -40,9 +40,6 @@ if(sales){
     const isUpdate = tail !== 'create-sales-invoice';
     
     const urlFetcher = () =>{
-        const URL = window.location.href;
-        const  decomposed = URL.split('/');
-        const tail = decomposed[decomposed.length - 1];
     
         return '/invoicing/api/sales-invoice/' + tail;
     }
@@ -104,11 +101,7 @@ if(sales){
     
     const isUpdate = tail !== 'create-service-invoice';
 
-    const urlFetcher = () =>{
-        const URL = window.location.href;
-        const  decomposed = URL.split('/');
-        const tail = decomposed[decomposed.length - 1];
-    
+    const urlFetcher = () =>{  
         return '/invoicing/api/service-invoice/' + tail;
     }
 

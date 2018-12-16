@@ -38,7 +38,9 @@ label > input[type="checkbox"] {
     display: inline;
 }
 
-input[type="radio"] {
+label > input[type="radio"] {
     width: 30px;
     height: 30px;
+    display: inline-block;
+  
 }

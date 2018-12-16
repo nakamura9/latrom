@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
-from accounting.models import Account, Expense
+from accounting.models import Account, Expense, Tax
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 
@@ -227,17 +227,21 @@ class ProductUpdateForm(forms.ModelForm, BootstrapMixin):
         fields = '__all__'
         model = models.Product
 
-class OrderForm(forms.ModelForm, BootstrapMixin): 
+class OrderForm(forms.ModelForm, BootstrapMixin):
+    tax=forms.ModelChoiceField(
+        Tax.objects.all(),
+        widget=forms.HiddenInput
+    )
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('Basic', 
+                Tab('Basic',
                     'date',
                     'expected_receipt_date',
                     'supplier',
-                    'status',
+                    'status', # would prefer hidden input
                     'issuing_inventory_controller'
                     ),
                 Tab('Payment',
@@ -254,9 +258,20 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
             )
         self.helper.add_input(Submit('submit', 'Submit'))
     class Meta:
-        exclude = ["entry", "received_to_date", ]
+        exclude = ["entry", "received_to_date", 'status']
         model = models.Order
         
+
+class OrderUpdateForm(forms.ModelForm, BootstrapMixin):
+    tax=forms.ModelChoiceField(
+        Tax.objects.all(),
+        widget=forms.HiddenInput
+    )
+    class Meta:
+        model = models.Order
+        fields = ['date', 'expected_receipt_date', 
+            'type_of_order', 'due', 'supplier', 'bill_to',
+            'notes', 'tax']
         
 class StockReceiptForm(forms.ModelForm, BootstrapMixin):
     order = forms.ModelChoiceField(models.Order.objects.all(),     
