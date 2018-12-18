@@ -62,7 +62,6 @@ export default class InventoryChecker extends Component {
             encodeURIComponent(
                 JSON.stringify(this.state.adjustments)
             ));
-        console.log(this.state.adjustments)
     }
 
     adjustInventory = (data) => {

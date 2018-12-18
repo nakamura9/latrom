@@ -41,10 +41,6 @@ class Order(models.Model):
     receive - quickly generates a stock receipt where all items are 
         marked fully received 
     '''
-    ORDER_TYPE_CHOICES = [
-        (0, 'Cash Order'),
-        (1, 'Deffered Payment Order'),
-        (2, 'Pay on Receipt') ]
     ORDER_STATUS_CHOICES = [
         ('received-partially', 'Partially Received'),
         ('received', 'Received in Total'),
@@ -54,11 +50,9 @@ class Order(models.Model):
     
     expected_receipt_date = models.DateField()
     date = models.DateField()
-    type_of_order = models.IntegerField(choices=ORDER_TYPE_CHOICES,
-         default=0)
     due = models.DateField(blank=True, null=True)
     supplier = models.ForeignKey('inventory.supplier', 
-        on_delete=None, blank=True, null=True)
+        on_delete=None, default=1)
     supplier_invoice_number = models.CharField(max_length=32, 
         blank=True,  default="")
     bill_to = models.CharField(max_length=128, blank=True, 
@@ -102,6 +96,20 @@ class Order(models.Model):
         return D(0.0)
     
     @property
+    def payments(self):
+        return OrderPayment.objects.filter(order=self)
+    
+    @property
+    def payment_status(self):
+        total_paid = reduce(lambda x, y: x + y.amount,  self.payments, 0)
+        if total_paid >= self.total:
+            return "paid"
+        elif total_paid > 0 and total_paid < self.total:
+            return "paid-partially"
+        else:
+            return "unpaid"
+
+    @property
     def received_total(self):
         return reduce(lambda x, y: x + y , [item.received_total for item in self.items], 0)
     
@@ -143,15 +151,10 @@ class Order(models.Model):
         else:
             j = self.entry
 
-        if not self.entry and self.type_of_order == 0:
-            # remove from accounts payable
-            j.debit(self.total, self.supplier.account)
-    
-            #other payments are made manually for credit purchases
-        
         if not self.entry:
             self.entry = j
     
+        
     def receive(self):
         if self.status != 'received':
             sr = StockReceipt.objects.create(
@@ -251,6 +254,49 @@ class OrderItem(models.Model):
     def subtotal(self):
         '''The total value of the item as ordered, not received'''
         return D(self.quantity) * self.order_price
+
+
+class OrderPayment(models.Model):
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=6,decimal_places=2)
+    order = models.ForeignKey('inventory.order', on_delete=None)
+    comments = models.TextField()
+    entry = models.ForeignKey('accounting.JournalEntry', on_delete=None, 
+        blank=True, null=True)
+
+    def create_entry(self, comments=""):
+        j = JournalEntry.objects.create(
+                reference='PMT' + str(self.pk),
+                memo= 'Auto generated journal entry from order payment.' \
+                    if comments == "" else comments,
+                date=self.date,
+                journal =Journal.objects.get(pk=4),
+                created_by = self.order.issuing_inventory_controller
+            )
+        
+        # split into sales tax and sales
+        if not self.order.tax:
+            j.simple_entry(
+                self.amount,
+                Account.objects.get(
+                    pk=1000),#cash in checking account
+                self.order.supplier.account,
+            )
+        else:
+            tax_amount = self.amount * D(self.order.tax.rate / 100.0) 
+
+            # will now work for partial payments
+            j.debit(self.amount, self.order.supplier.account)
+            # calculate tax as a proportion of the amount paid
+            
+            # purchases account
+            j.credit(self.amount - tax_amount, Account.objects.get(pk=4006))
+            # tax
+            j.debit(tax_amount, Account.objects.get(pk=2001))
+
+        if not self.entry:
+            self.entry = j
+            self.save()
 
 #Note as currently designed it cannot be known when exactly an item entered inventory
 class StockReceipt(models.Model):
@@ -354,11 +400,10 @@ class TransferOrder(models.Model):
     receive_notes = models.TextField(blank=True)
     completed = models.BooleanField(default=False)
     
-    #link expenses 
     def complete(self):
-        for line in self.transferorderline_set.all():
-            self.source_warehouse.decrement_item(line.product, line.quantity)
-            self.receiving_warehouse.add_item(line.product, line.quantity)
+        '''move all the outstanding items at the same time.'''
+        for line in self.transferorderline_set.filter(moved=False):
+            line.move()
         self.completed = True
         self.save()
 
@@ -368,7 +413,16 @@ class TransferOrderLine(models.Model):
     product = models.ForeignKey('inventory.Product', on_delete=None)
     quantity = models.FloatField()
     transfer_order = models.ForeignKey('inventory.TransferOrder', on_delete=None)
+    moved = models.BooleanField(default=False)
 
+    def move(self):
+        '''performs the actual transfer of the item between warehouses'''
+        self.transfer_order.source_warehouse.decrement_item(
+            self.product, self.quantity)
+        self.transfer_order.receiving_warehouse.add_item(
+            self.product, self.quantity)
+        self.moved=True
+        self.save()
 
 class InventoryScrappingRecord(models.Model):
     date = models.DateField()

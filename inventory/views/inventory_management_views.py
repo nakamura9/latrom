@@ -7,6 +7,7 @@ import urllib
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -32,6 +33,10 @@ from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 
 class InventoryCheckCreateView(CreateView):
+    '''
+    Also Known as stock take. Used to compare actual inventory versus recorded inventory. Each item in a warehouse is examined and verified. 
+    Changes are made to each warehouse based on data recorded here.
+    '''
     template_name = os.path.join('inventory', 'inventory_check', 'create.html')
     form_class = forms.InventoryCheckForm
     success_url = reverse_lazy('inventory:warehouse-list') 
@@ -87,6 +92,10 @@ class StockAdjustmentAPIView(ModelViewSet):
 
 
 class TransferOrderCreateView(CreateView):
+    '''
+    Page for moving inventory between warehouses.
+    Currently only supports products.
+    '''
     template_name = os.path.join('inventory', 'transfer', 'create.html')
     form_class = forms.TransferOrderForm
     success_url = reverse_lazy('inventory:home')
@@ -106,11 +115,15 @@ class TransferOrderCreateView(CreateView):
         for i in data:
             pk, _ = i['item'].split('-')[0]
             product = models.Product.objects.get(pk=pk)
-            models.TransferOrderLine.objects.create(
-                product = product,
-                quantity = i['quantity'],
-                transfer_order = self.object
-            )
+            wh_item = self.object.source_warehouse.get_item(product)
+            if wh_item and wh_item.quantity >= float(i['quantity']):
+                models.TransferOrderLine.objects.create(
+                    product = product,
+                    quantity = i['quantity'],
+                    transfer_order = self.object
+                )
+            else:
+                messages.info(request, 'The selected source warehouse has insufficient quantity of item %s to make the transfer' % product)
         return resp
 
 class TransferOrderListView(ExtraContext, PaginationMixin, FilterView):
@@ -118,14 +131,23 @@ class TransferOrderListView(ExtraContext, PaginationMixin, FilterView):
     template_name = os.path.join('inventory', 'transfer', 'list.html')
     paginate_by =10
     extra_context = {
-        'title': 'List of Transfer Orders'
+        'title': 'List of Transfer Orders',
+        
     }
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['warehouse'] = self.kwargs['pk']
+        context['new_link'] = '/inventory/create-transfer-order/' + \
+            self.kwargs['pk']
+        return context
 
     def get_queryset(self):
         warehouse = models.WareHouse.objects.get(pk=self.kwargs['pk'])
         return models.TransferOrder.objects.filter(Q(source_warehouse=warehouse) | Q(receiving_warehouse=warehouse))
 
     
+
+
 
 class TransferOrderDetailView(DetailView):
     model = models.TransferOrder
@@ -147,6 +169,9 @@ class TransferOrderReceiveView(ExtraContext, UpdateView):
 
         self.object.complete()
         return resp
+
+
+
 
 #######################################################
 #               Goods Received Views                  #

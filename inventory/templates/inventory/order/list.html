@@ -58,6 +58,19 @@
                     <i class="fas fa-receipt"></i> Add Shipping And Handling Expenses
                     <!--Change this ! -->
                 </a>
+                {% if order.payment_status != "paid" %}
+                <a href="{% url 'inventory:order-payment' pk=order.pk %}" class="dropdown-item">
+                    <i class="fas fa-receipt"></i> Make Payment
+                    <!--Change this ! -->
+                </a>
+                {% endif %}
+                {% if order.payment_status != "unpaid" %}
+                <a  class="dropdown-item"
+                    href="{% url 'inventory:order-payment-list' pk=order.pk %}">
+                    <i class="fas fa-receipt"></i> View Payments
+                    <!--Change this ! -->
+                </a>
+                {% endif %}
                 {% endif %}
             </div>
         </div>

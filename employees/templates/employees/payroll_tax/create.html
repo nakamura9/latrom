@@ -17,6 +17,7 @@
                     <form action="" method="POST">
                         {% csrf_token %}
                         {{form.as_p}}
+                        <input type="hidden" name="brackets" id="id_brackets" />
                         <button class="btn btn-primary">Submit</button>
                     </form>
                 </div>

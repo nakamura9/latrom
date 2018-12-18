@@ -91,18 +91,20 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('Description', 
                     'name',
-                    'description',),
+                    'description',
+                    'unit_purchase_price',
+                    'direct_price'
+                    ),
                 Tab('Stocking Information',
                     'minimum_order_level',
                     'maximum_stock_level',
                     'supplier'),
                 Tab('Pricing', 
                     'unit',
-                    'unit_purchase_price',
                     'pricing_method',
                     'markup',
                     'margin',
-                    'direct_price'),
+                    ),
                 Tab('Categories', 
                     'category'),
                 Tab('Dimensions', 
@@ -133,12 +135,13 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                 Tab('Description', 
                     'name',
                     'description',
-                    'condition'),
+                    'condition',
+                    'unit_purchase_price',
+                    ),
                 Tab('Ordering Information',
                     'supplier'),
                 Tab('Purchase Information', 
                     'unit',
-                    'unit_purchase_price',
                     'asset_data'),
                 Tab('Categories', 
                     'category'),
@@ -167,14 +170,15 @@ class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('Description', 
                     'name',
-                    'description',),
+                    'description',
+                    'unit_purchase_price',),
                 Tab('Ordering Information',
                     'minimum_order_level',
                     'maximum_stock_level',
                     'supplier'),
                 Tab('Purchase Information', 
                     'unit',
-                    'unit_purchase_price',),
+                    ),
                 Tab('Categories', 
                     'category'),
                 Tab('Dimensions', 
@@ -232,6 +236,8 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         Tax.objects.all(),
         widget=forms.HiddenInput
     )
+    make_payment= forms.BooleanField(initial=False, required=False)
+    
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -246,7 +252,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     ),
                 Tab('Payment',
                 'tax',
-                'type_of_order',
+                'make_payment',
                 'due'),
                 Tab('Shipping and Notes', 
                     'bill_to', 
@@ -270,8 +276,16 @@ class OrderUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.Order
         fields = ['date', 'expected_receipt_date', 
-            'type_of_order', 'due', 'supplier', 'bill_to',
+             'due', 'supplier', 'bill_to',
             'notes', 'tax']
+        
+
+class OrderPaymentForm(forms.ModelForm, BootstrapMixin):
+    order = forms.ModelChoiceField(
+        models.Order.objects.all(), widget=forms.HiddenInput)
+    class Meta:
+        exclude = "entry",
+        model = models.OrderPayment
         
 class StockReceiptForm(forms.ModelForm, BootstrapMixin):
     order = forms.ModelChoiceField(models.Order.objects.all(),     

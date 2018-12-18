@@ -233,7 +233,7 @@ class SearchableWidget extends Component {
                     {[...this.state.items].map((item, i) => {
                         //always display id and display field
                         return(<option key={i} >
-                                {item[this.props.idField]} - {item[this.props.displayField]}
+                                {item[this.props.idField]} - {item[this.props.displayField].replace('-', '_')}
                             </option>)
                     })}
                     
@@ -276,7 +276,7 @@ class AsyncSelect extends Component{
                 {this.state.options.map((opt, i) =>{
                     return(<option 
                                 value={opt.value}
-                                key={i}>{opt.name}</option>)
+                                key={i}>{opt.name.replace('-', '_')}</option>)
                 })}
             </select>
         )

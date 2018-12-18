@@ -439,7 +439,6 @@ class OrderViewTests(TestCase):
             'bill_to' : 'Test Bill to',
             'ship_to' : cls.warehouse.pk,
             'tax': 1,
-            'type_of_order': 0,
             'tracking_number' : '34234',
             'notes' : 'Test Note',
             'status' : 'draft',

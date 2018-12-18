@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import InventorySelectWidget from './inventory/combined_inventory_select';
 import ItemReceiptTable from './inventory/stock_receipt';
-import TransferItems from './inventory/transfer_order';
 import InventoryChecker from './inventory/inventory_check';
-import ScrappingTable from './inventory/scrapping';
 import GenericTable from './src/generic_list/containers/root';
 
 const order = document.getElementById('order-root');
@@ -115,7 +113,54 @@ if(inventoryCheck){
 }else if(stockReceipt){
     ReactDOM.render(<ItemReceiptTable />, stockReceipt);
 }else if(transferOrder){
-    ReactDOM.render(<TransferItems />, transferOrder);
+    ReactDOM.render(<GenericTable
+        fieldDescriptions={['Item', 'Quantity']}
+        fieldOrder={['item', 'quantity']}
+        formInputID='id_items'
+        fields={[
+            {
+                name: 'item',
+                type: 'search',
+                width: 45,
+                url: '/inventory/api/product/', //will get all inventory soon
+                idField: 'id',
+                displayField: 'name',
+                required: true,
+            },
+            {
+                name: 'quantity',
+                type: 'number',
+                width: 25,
+                required: true
+            }
+        ]} />, transferOrder);
 }else if(scrappingApp){
-    ReactDOM.render(<ScrappingTable />, scrappingApp);
+    
+    ReactDOM.render(<GenericTable
+        fieldDescriptions={['Item', 'Quantity', 'Note']}
+        fieldOrder={['item', 'quantity', 'note']}
+        formInputID='id_items'
+        fields={[
+            {
+                name: 'item',
+                type: 'search',
+                width: 25,
+                url: '/inventory/api/product/', //will get all inventory soon
+                idField: 'id',
+                displayField: 'name',
+                required: true,
+            },
+            {
+                name: 'quantity',
+                type: 'number',
+                width: 15,
+                required: true
+            },
+            {
+                name: 'note',
+                type: 'text',
+                width: 30,
+                required: true
+            }
+        ]} />, scrappingApp);
 }

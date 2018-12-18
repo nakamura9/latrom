@@ -31,7 +31,8 @@ class ScrappingRecordCreateView(CreateView):
         item_list = json.loads(urllib.parse.unquote(raw_data))
 
         for line in item_list:
-            item = models.Product.objects.get(pk=line['pk'])
+            pk, _ = line['item'].split('-')
+            item = models.Product.objects.get(pk=pk)
             models.InventoryScrappingRecordLine.objects.create(
                 product=item,
                 scrapping_record = self.object,

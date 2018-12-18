@@ -2,9 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {ProcedureViews, InventorySelectWidgets} from '../js/services/procedure';
 import MultipleSelectWidget from '../js/src/components/multiple_select';
-import ConsumableRequisitionTable from './services/requisition/consumable';
-import EquipmentRequisitionTable from './services/requisition/equipment';
-
+import GenericTable from './src/generic_list/containers/root';
 
 const procedure = document.getElementById('procedure-widgets');
 const inventory = document.getElementById('inventory-widgets');
@@ -24,7 +22,6 @@ if(personnel){
     const tail = splitURL[splitURL.length - 1];
     let populatedURL  = null;
     if(tail !== 'team-create'){
-        //const pk =  splitURL[splitURL.length - 2];
         populatedURL = '/services/api/team/'+ tail;
     }
 
@@ -67,8 +64,77 @@ if(workOrderPersons){
                         resProcessor={resProcessor}/>, workOrderPersons)
 }
 if (consumableTable){
-    ReactDOM.render(<ConsumableRequisitionTable />, consumableTable)
+    ReactDOM.render(<GenericTable
+        fieldDescriptions={['Item', 'Unit', 'Quantity']}
+        fieldOrder={['item', 'unit', 'quantity']}
+        formInputID='id_items'
+        fields={[
+            {
+                name: 'item',
+                type: 'search',
+                width: 25,
+                url: '/inventory/api/consumable/',                idField: 'id',
+                displayField: 'name',
+                required: true,
+            },
+            {
+                name: 'unit',
+                type: 'select',
+                width: 15,
+                required: true,
+                url: '/inventory/api/unit/'
+            },
+            {
+                name: 'quantity',
+                type: 'number',
+                width: 15,
+                required: true
+            }
+        ]} />, consumableTable)
 }
 if (equipmentTable){
-    ReactDOM.render(<EquipmentRequisitionTable />, equipmentTable)
+    ReactDOM.render(<GenericTable
+        fieldDescriptions={['Item', 'Condition', 'Quantity']}
+        fieldOrder={['item', 'condition', 'quantity']}
+        formInputID='id_items'
+        fields={[
+            {
+                name: 'item',
+                type: 'search',
+                width: 30,
+                url: "/inventory/api/equipment/", 
+                idField: 'id',
+                displayField: 'name',
+                required: true,
+            },
+            {
+                name: "condition",
+                type: "widget",
+                widgetCreator: (comp) =>{
+                    return(
+                        <select
+                            className="form-control"
+                            onChange={(evt) =>{
+                                let newData = {...comp.state.data};
+                                newData['condition'] = evt.target.value;
+                                comp.setState({data: newData});
+                            }}>
+                            <option value="">-------</option>
+                            {['excellent', 'good', 'poor', 'broken'].map(
+                                (el, i) =>{
+                                    return(<option 
+                                                key={i}
+                                                value={el}>{el}</option>)
+                            })}
+                        </select>
+                    )
+                }
+            },
+            {
+                name: 'quantity',
+                type: 'number',
+                width: 15,
+                required: true
+            }
+        ]} />, equipmentTable)
 }

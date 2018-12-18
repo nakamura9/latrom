@@ -292,7 +292,6 @@ class ItemManagementModelTests(TestCase):
         obj = models.Order.objects.create(
             expected_receipt_date = TODAY,
             date = TODAY,
-            type_of_order=1,
             supplier=self.supplier,
             bill_to = 'Test Bill to',
             ship_to = self.warehouse,

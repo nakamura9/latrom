@@ -14,6 +14,7 @@
                         {{form.errors}}
                         {% csrf_token %}
                         {{form.as_p}}
+                        <input type="hidden" name="items" id="id_items" />
                         <button class="btn btn-primary">Submit</button>
                     </form>
                 </div>

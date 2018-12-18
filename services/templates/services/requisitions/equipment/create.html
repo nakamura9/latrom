@@ -16,9 +16,10 @@
                     <form action="" method="POST">
                         {% csrf_token %}
                         {{form.as_p}}
-                        <div id="equipment-requisition-table"></div>
+                        <input type="hidden" name="equipment" id="id_items" />
                         <button class="btn btn-primary">Submit</button>
                     </form>
+                    <div id="equipment-requisition-table"></div>
                 </div>
             </div>
         </div>

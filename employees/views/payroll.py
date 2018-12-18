@@ -182,7 +182,7 @@ class PayslipViewset(viewsets.ModelViewSet):
     serializer_class = serializers.PayslipSerializer
 
 class PayrollTaxCreateView(AdministratorCheckMixin, CreateView):
-    template_name = os.path.join('employees','payroll_tax.html')
+    template_name = os.path.join('employees','payroll_tax', 'create.html')
     form_class = forms.PayrollTaxForm
     success_url = reverse_lazy('employees:dashboard')
     
@@ -211,12 +211,12 @@ class PayrollTaxUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
     }
 
 class PayrollTaxDetailView(AdministratorCheckMixin, DetailView):
-    template_name = os.path.join('employees', 'payroll_tax_detail.html')
+    template_name = os.path.join('employees', 'payroll_tax', 'detail.html')
     model = models.PayrollTax
 
 class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, PaginationMixin,
         FilterView):
-    template_name = os.path.join('employees', 'payroll_tax_list.html')
+    template_name = os.path.join('employees', 'payroll_tax', 'list.html')
     queryset = models.PayrollTax.objects.all()
     extra_context = {
         'title': 'Payroll Tax List',

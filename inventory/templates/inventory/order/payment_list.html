@@ -1,0 +1,52 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Order Payments</h1>
+    <p class="lead">List of payments for a single order.</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary" href="{% url 'inventory:order-payment' pk=object.pk %}" role="button">Create New</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Order Details</h4>
+                    <p class="card-text">Order ID: {{object.pk}}</p>
+                    <p class="card-text">Supplier: {{object.supplier}}</p>
+                    <p class="card-text">Date Created: {{object.date}}</p>
+                    <p class="card-text">Due Date: {{object.due}}</p>
+                    <p class="card-text">Payment Status: {{object.payment_status}}</p>
+                    <p class="card-text">Receipt Status: {{object.status}}</p>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <table class="table">
+                <thead>
+                    <tr class="bg-primary">
+                        <th>Date</th>
+                        <th>Payment ID</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pmt in object.payments %}
+                    <tr>
+                        <td>{{pmt.date}}</td>
+                        <td>{{pmt.pk}}</td>
+                        <td>{{pmt.amount}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
