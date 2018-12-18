@@ -287,18 +287,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var reac
 
 /***/ }),
 
-/***/ "./js/src/components/time_field.js":
-/*!*****************************************!*\
-  !*** ./js/src/components/time_field.js ***!
-  \*****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n\n\nclass TimeField extends react__WEBPACK_IMPORTED_MODULE_0__[\"Component\"] {\n    constructor(...args) {\n        var _temp;\n\n        return _temp = super(...args), this.state = {\n            value: this.props.intial === \"\" ? \"HH:MM\" : this.props.initial,\n            valid: false\n        }, this.componentDidMount = () => {\n            this.setState({ valid: !(this.props.initial === \"\") });\n        }, this.handler = evt => {\n            const value = evt.target.value;\n            const valid = /[012]\\d:[0-5]\\d/.test(value);\n            this.setState({\n                value: value,\n                valid: valid\n            }, () => this.props.handler(this.state, this.props.name));\n        }, _temp;\n    }\n\n    render() {\n        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(\"input\", {\n            type: \"text\",\n            value: this.state.value,\n            onChange: this.handler,\n            className: \"form-control\",\n            placeholder: \"HH:MM\",\n            style: {\n                border: `${this.state.valid ? '0' : '1'}px solid red`\n            } });\n    }\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (TimeField);\n\n//# sourceURL=webpack:///./js/src/components/time_field.js?");
-
-/***/ }),
-
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
   !*** ./node_modules/axios/index.js ***!
