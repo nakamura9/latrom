@@ -1,0 +1,39 @@
+{% extends 'common_data/list_template.html' %}
+
+{% block list_headings %}
+    <tr>
+        <th>Slip #</th>
+        <th>Payroll ID</th>
+        <th>Employee</th>
+        <th>Period</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for item in object_list %}
+        <tr>
+            <td>{{item.pk}}</td>
+            <td>{{item.pay_roll_id}}</td>
+            <td>{{item.employee}}</td>
+            <td>{{item.start_period}} - {{item.end_period}}</td>
+            <td>{{item.status}}</td>
+            <td>
+                <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item" href="{% url 'employees:pay-slip-detail' pk=item.pk %}">
+                        <i class="fas fa-eye"></i>View</a>
+                    {% if item.status == "draft" %}
+                    <a class="dropdown-item" href="{% url 'employees:pay-slip-verify' pk=item.pk %}"><i class="fas fa-check"></i> Verify</a>
+                    {% endif %}
+                </div>
+            </div>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}

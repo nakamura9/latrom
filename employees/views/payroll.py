@@ -4,10 +4,12 @@ import json
 import os
 import urllib
 
+from reversion.views import RevisionMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
@@ -36,7 +38,7 @@ class DeductionCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
     }
 
 class DeductionUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
-    form_class = forms.DeductionForm
+    form_class = forms.DeductionUpdateForm
     model = models.Deduction
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
@@ -70,7 +72,7 @@ class AllowanceCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
     }
 
 class AllowanceUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
-    form_class = forms.AllowanceForm
+    form_class = forms.AllowanceUpdateForm
     model = models.Allowance
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
@@ -92,7 +94,7 @@ class CommissionCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
     }
 
 class CommissionUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
-    form_class = forms.CommissionForm
+    form_class = forms.CommissionUpdateForm
     model = models.CommissionRule
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
@@ -104,7 +106,6 @@ class CommissionDeleteView(AdministratorCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('employees:util-list')
     model = models.CommissionRule
-
 
 
 class PayGradeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
@@ -134,7 +135,7 @@ class PayGradeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
         ] 
     }
 
-class PayGradeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class PayGradeUpdateView(AdministratorCheckMixin, RevisionMixin ,ExtraContext, UpdateView):
     form_class = forms.PayGradeForm
     template_name =CREATE_TEMPLATE
     success_url = reverse_lazy('employees:list-pay-grades')
@@ -158,15 +159,16 @@ class PayGradeDeleteView(AdministratorCheckMixin, DeleteView):
     success_url = reverse_lazy('employees:list-pay-grades')
     model = models.PayGrade
 
-
-
 class PayslipView(AdministratorCheckMixin, ConfigMixin, DetailView):
-    template_name = os.path.join('employees', 'payslip.html')
+    template_name = os.path.join('employees', 'payslip', 'detail.html')
     model= models.Payslip
     
-class PayslipListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class PayslipListView(AdministratorCheckMixin, 
+        ExtraContext, 
+        PaginationMixin, 
+        FilterView):
     filterset_class = filters.PayslipFilter
-    template_name = os.path.join('employees', 'payslip_list.html')
+    template_name = os.path.join('employees', 'payslip', 'list.html')
     paginate_by = 10
     extra_context = {
         'title': 'List of Payslips',
@@ -175,7 +177,35 @@ class PayslipListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, Fi
 
     def get_queryset(self):
         return models.Payslip.objects.all().order_by('start_period')
-        
+  
+class PayslipVerificationView(AdministratorCheckMixin, 
+        ConfigMixin,
+        DetailView):
+    template_name = os.path.join('employees', 'payslip', 'verify.html')
+    model= models.Payslip
+
+class PayslipDeleteView(AdministratorCheckMixin, DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')
+    model = models.Payslip
+
+
+def verify_payslip(request, pk=None):
+    slip = get_object_or_404(models.Payslip, pk=pk)
+    slip.status = 'verified'
+    slip.save()
+
+    return HttpResponseRedirect('/employees/list-pay-slips')
+
+def execute_payroll(request):
+    slips = models.Payslip.objects.filter(status='verified')
+    for slip in slips:
+        slip.create_entry()
+
+    messages.info(request, '%d payslips have been paid' % slips.count())
+    return HttpResponseRedirect('/employees/')
+
+class BulkPayslipVerificationView(AdministratorCheckMixin, FormView):
+    pass
 
 class PayslipViewset(viewsets.ModelViewSet):
     queryset = models.Payslip.objects.all()

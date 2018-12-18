@@ -35,15 +35,29 @@ class AllowanceForm(forms.ModelForm, BootstrapMixin):
         exclude="active",
         model = models.Allowance
 
+class AllowanceUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude="active", 'amount', 'taxable' 
+        model = models.Allowance
     
 class CommissionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active",
         model = models.CommissionRule
 
+class CommissionUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude="active", " min_sales", "rate"
+        model = models.CommissionRule
+
 class DeductionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active",
+        model = models.Deduction
+
+class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "name",
         model = models.Deduction
 
 
@@ -229,13 +243,9 @@ class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
         (2, 'Declined')
         ])
     notes = forms.CharField(widget=forms.Textarea, required=False)    
-    '''
-        filter(
-            Q(payrollofficer__isnull=False)) & 
-            Q(user__isnull=False)
-    '''
+    
     authorized_by = forms.ModelChoiceField(
-        models.Employee.objects.all())
+        models.Employee.objects.filter(payroll_officer__isnull=False))
     password = forms.CharField(widget=forms.PasswordInput)
     
 

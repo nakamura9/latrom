@@ -67,9 +67,7 @@ class AbstractSale(models.Model):
         invoices = itertools.chain(sales, service, bill, combined)
 
         return invoices
-
-        if self.status == "draft":
-    
+ 
     @property
     def total(self):
         return self.subtotal + self.tax_amount

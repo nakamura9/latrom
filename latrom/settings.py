@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
-    'generic_scaffold'
+    'generic_scaffold',
+    'reversion'
 ] + USER_APPS
 
 LOGIN_REQUIRED_FOR_CRUD = True

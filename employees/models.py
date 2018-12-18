@@ -5,7 +5,7 @@ import random
 import datetime
 from decimal import Decimal as D
 from functools import reduce
-
+import reversion
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -17,7 +17,7 @@ import invoicing
 
 
 class EmployeesSettings(SingletonModel):
-    PAYROLL_DATE_CHOICES = [(i, i) for i in range(28, 1)]
+    PAYROLL_DATE_CHOICES = [(i, i) for i in range(1, 29)]
     PAYROLL_CYCLE_CHOICES = [
         ('weekly', 'Weekly'), 
         ('bi-monthly', 'Bi-monthly'), 
@@ -49,8 +49,13 @@ class EmployeesSettings(SingletonModel):
         on_delete=None,
         related_name="payroll_officer",
         blank=True, 
-        null=True
+        null=True,
+        limit_choices_to={'payroll_officer__isnull': False}
     )
+    payroll_account = models.ForeignKey(
+        'accounting.account',
+        on_delete=None,
+        default=1000 )
     payroll_counter = models.IntegerField(default=0)
     
 
@@ -263,6 +268,10 @@ class Deduction(models.Model):
         default=0)
     rate = models.FloatField(default=0)
     amount = models.FloatField(default=0)
+    account_paid_into = models.ForeignKey(
+        'accounting.account',
+        on_delete=None,
+        default=5008)# salaries 
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -314,7 +323,7 @@ class CommissionRule(models.Model):
         self.active=False
         self.save()
 
-    
+@reversion.register()    
 class PayGrade(models.Model):
     '''
     This model describes the common pay features applied to a group of employees.
@@ -391,19 +400,34 @@ class Payslip(models.Model):
     overtime_one_hours = models.FloatField()
     overtime_two_hours = models.FloatField()
     pay_roll_id = models.IntegerField()
+    pay_grade = models.ForeignKey('employees.paygrade', on_delete=None, 
+        default=1)
+    pay_grade_version = models.PositiveSmallIntegerField(default=0)
+    status = models.CharField(choices=[
+        ('draft', 'Draft'),
+        ('verified', 'Verified'),
+        ('paid', 'Paid'),
+        ], max_length=16,
+        default='draft')
+    entry = models.ForeignKey('accounting.journalentry', 
+        on_delete=None, 
+        blank=True, 
+        null=True)
 
+    @property 
+    def paygrade_(self):
+        versions = reversion.models.Version.objects.get_for_object(
+            self.pay_grade)
+        return versions[len(versions) - self.pay_grade_version].field_dict
+    
     def __str__(self):
         return str(self.employee) 
     
-    def save(self, *args, **kwargs):
-        super(Payslip, self).save(*args, **kwargs)
-        #add leave for each month
-        self.employee.leave_days += self.employee.pay_grade.monthly_leave_days
-        self.employee.save()
 
     @property
     def commission_pay(self):
-        if not self.employee.pay_grade.commission:
+        commission = self.paygrade_['commission_id']
+        if not commission:
             return 0
         
         elif not hasattr(self.employee, 'salesrepresentative'):
@@ -413,69 +437,81 @@ class Payslip(models.Model):
                 self.start_period, 
                 self.end_period)
             
-            if total_sales < self.employee.pay_grade.commission.min_sales:
+            if total_sales < commission.min_sales:
                 return 0
 
-            commissionable_sales = total_sales - \
-                self.employee.pay_grade.commission.min_sales
+            commissionable_sales = total_sales - commission.min_sales
   
-            return self.employee.pay_grade.commission.rate * \
-                commissionable_sales
+            return commission.rate * commissionable_sales
 
     @property 
     def normal_pay(self):
-        return self.employee.pay_grade.hourly_rate * self.normal_hours
+        return self.paygrade_['hourly_rate'] * self.normal_hours
 
     @property
     def overtime_one_pay(self):
-        return self.employee.pay_grade.overtime_rate * self.overtime_one_hours
+        return self.paygrade_['overtime_rate'] * self.overtime_one_hours
 
 
     @property
     def overtime_two_pay(self):
-        return self.employee.pay_grade.overtime_two_rate * self.overtime_two_hours
+        return self.paygrade_['overtime_two_rate'] * self.overtime_two_hours
 
     @property
     def overtime_pay(self):
         return self.overtime_one_pay + self.overtime_two_pay
 
-    '''
-    #Deprecate
     @property
-    def calculated_payroll_taxes_list(self):
-        return [{
-            'name': tax.name,
-            'amount': tax.tax(self.taxable_gross_pay)} \
-                for tax in self.employee.pay_grade.payroll_taxes.all()]
-    '''
+    def total_allowances(self):
+        total = 0
+        for pk in self.paygrade_['allowances']:
+            total += Allowance.objects.get(pk=pk).amount
 
+        return total
+
+
+    @property
+    def tax_free_benefits(self):
+        total = 0
+        for pk in self.paygrade_['allowances']:
+            allowance = Allowance.objects.get(pk=pk)
+            if not allowance.taxable:
+                total += allowance.amount
+
+        return total
 
     @property
     def gross_pay(self):
-        gross = self.employee.pay_grade.monthly_salary
+        gross = self.paygrade_['monthly_salary']
         gross += self.normal_pay
         gross += self.overtime_one_pay
         gross += self.overtime_two_pay
-        gross += self.employee.pay_grade.total_allowances
+        gross += self.total_allowances
         gross += self.commission_pay
         return gross
 
     @property 
     def taxable_gross_pay(self):
-        return self.gross_pay - self.employee.pay_grade.tax_free_benefits
+        return self.gross_pay - self.tax_free_benefits
 
 
     @property
     def _deductions(self):
-        return reduce(lambda x, y: x + y, 
-            [d.deduct(self) \
-                for d in self.employee.pay_grade.deductions.all()], 0)
+        total = 0
+        for pk in self.paygrade_['deductions']:
+            deduction = Deduction.objects.get(pk=pk)
+            total += deduction.deduct(self)
+        
+        return total
 
     @property
     def total_payroll_taxes(self):
-        return reduce(lambda x, y: x + y, 
-            [t.tax(self.gross_pay) \
-                for t in self.employee.pay_grade.payroll_taxes.all()], 0)
+        total = 0
+        for pk in self.paygrade_['payroll_taxes']:
+            tax = PayrollTax.objects.get(pk=pk)
+            total += tax.tax(self.gross_pay)
+        
+        return total
 
     @property
     def total_deductions(self):
@@ -485,6 +521,59 @@ class Payslip(models.Model):
     def net_pay(self):
         return D(self.gross_pay) - D(self.total_deductions)
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is  None
+        if not is_new:
+            self.employee.leave_days += \
+                self.paygrade_['monthly_leave_days']
+            self.employee.save()
+        
+        super().save(*args, **kwargs)
+        if self.pay_grade != self.employee.pay_grade \
+                or is_new:
+            self.pay_grade = self.employee.pay_grade
+            revision_count = len(
+                reversion.models.Version.objects.get_for_object(
+                    self.pay_grade)
+                    )
+            self.pay_grade_version = revision_count
+            self.save()
+
+    def create_entry(self):
+        '''This method updates the accounting system for payroll actions
+        the selected account from settingsis deducted for all payments.
+        deductions with specific accounts deposit into those accounts 
+        payroll taxes deposit into their own account
+        net income is deposited into account 5008
+        '''
+        settings = EmployeesSettings.objects.first()
+
+        if settings.require_verification_before_posting_payslips and \
+                self.status != 'verified':
+            #only work on verified payslips
+            return
+
+        j = accounting.models.JournalEntry.objects.create(
+                reference='PAYSLIP' + str(self.pk),
+                memo= 'Auto generated entry from verified payslip.',
+                date=datetime.date.today(),
+                journal =accounting.models.Journal.objects.get(
+                    pk=2),#Cash disbursements Journal
+                created_by = settings.payroll_officer.user
+        )
+        j.debit(self.gross_pay, settings.payroll_account)
+        j.credit(self.net_pay, 
+            accounting.models.Account.objects.get(pk=5008))#salaries
+        j.credit(self.total_payroll_taxes, 
+            accounting.models.Account.objects.get(pk=5010))#payroll taxes
+        
+        for pk in self.paygrade_['deductions']:
+            deduction = Deduction.objects.get(pk=pk)
+            j.credit(deduction.deduct(self), deduction.account_paid_into)
+
+        self.entry = j
+        self.status = 'paid'
+        self.save()
 
 class PayrollTax(models.Model):
     name = models.CharField(max_length=64)
@@ -561,8 +650,12 @@ class Leave(models.Model):
         related_name='employee')
     category = models.PositiveSmallIntegerField(choices=LEAVE_CATEGORIES)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=0)
-    authorized_by = models.ForeignKey('employees.Employee', on_delete=None, 
-        related_name='authority', null=True)
+    authorized_by = models.ForeignKey('employees.Employee', 
+            on_delete=None, 
+            related_name='authority', 
+            null=True,
+            limit_choices_to={'payroll_officer__isnull': False}
+            )
     notes = models.TextField(blank=True)
     recorded = models.BooleanField(default=False)
     @property

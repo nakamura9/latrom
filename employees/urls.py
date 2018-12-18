@@ -35,6 +35,10 @@ pay_urls = [
     re_path(r'^list-pay-grades/?$', views.PayGradeListView.as_view(), name='list-pay-grades'),
     re_path(r'^list-pay-slips/?$', views.PayslipListView.as_view(), name='list-pay-slips'),
     re_path(r'^pay-slip-detail/(?P<pk>[\w]+)/?$', views.PayslipView.as_view(), name='pay-slip-detail'),
+    re_path(r'^pay-slip-verify/(?P<pk>[\w]+)/?$', views.PayslipVerificationView.as_view(), name='pay-slip-verify'),
+    re_path(r'^pay-slip-delete/(?P<pk>[\w]+)/?$', views.PayslipDeleteView.as_view(), name='pay-slip-delete'),
+    re_path(r'^pay-slip-verify-status/(?P<pk>[\w]+)/?$', views.verify_payslip, name='pay-slip-verify-status'),
+    re_path(r'^execute-payroll/?$', views.execute_payroll, name='execute-payroll'),
 ]
 
 
