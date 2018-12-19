@@ -1,0 +1,27 @@
+{% extends "common_data/iframe_list_template.html" %}
+{% block list_headings %}
+        <tr>
+            <th>Date</th>
+            <th>REF</th>
+            <th>Amount</th>
+            <th>Debits </th>
+            <th>Credits </th>
+        </tr>
+{% endblock %}
+{% block list_content %}
+        {% for t in object_list %}
+        <tr>
+            <td scope="row">{{t.date}}</td>
+            <td>{{t.reference}}</td>
+            <td>{{t.str_total}}</td>
+            <td>{{t.debit_set.all.count}}</td>
+            <td>{{t.credit_set.all.count}}</td>
+            <td>
+                <a class="btn btn-success" href="{% url 'accounting:entry-detail' pk=t.pk %}">View</a>  
+                <!--
+                <a class="btn btn-danger" href="#">Delete</a> -->
+            </td>
+        </tr>
+        {% endfor %}
+    
+{% endblock %}

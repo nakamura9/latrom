@@ -88,7 +88,12 @@ account_urls = [
         views.AccountUpdateView.as_view(), 
         name='account-update'),
     re_path(r'^account-list/?$', views.AccountListView.as_view(), 
-        name='account-list'),]
+        name='account-list'),
+    re_path(r'^account/(?P<pk>[\w]+)/entry-list/credit/?$', 
+        views.AccountCreditIframeView.as_view(), name="account-credits"),
+    re_path(r'^account/(?P<pk>[\w]+)/entry-list/debit/?$', 
+        views.AccountDebitIframeView.as_view(), name="account-debits")
+        ]
 
 bookkeeper_urls = [
     re_path(r'^create-bookkeeper/?$', views.BookkeeperCreateView.as_view(), 
@@ -157,8 +162,11 @@ journal_urls = [
         name='create-journal'),
     re_path(r'^journal-list/?$', views.JournalListView.as_view(), 
         name='journal-list'),
-    re_path(r'^journal-detail/(?P<pk>[\w]+)/?$', views.JournalDetailView.as_view(), 
-        name='journal-detail')
+    re_path(r'^journal-detail/(?P<pk>[\w]+)/?$', 
+        views.JournalDetailView.as_view(), 
+        name='journal-detail'),
+    re_path(r'^journal/(?P<pk>[\w]+)/entry-list/?$', 
+        views.JournalEntryIframeView.as_view(), name="journal-entries")
     ]
 
 

@@ -62,6 +62,15 @@ class JournalEntryCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
         "description": "Register Financial Transactions with the accounting system."
         }
 
+class JournalEntryIframeView(ListView):
+    template_name = os.path.join('accounting', 'journal', 'entry_list.html')
+    paginate_by =10
+    def get_queryset(self):
+        return models.JournalEntry.objects.filter(
+            journal= models.Journal.objects.get(pk=self.kwargs['pk'])
+        ).order_by('date')
+
+
 class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
     '''This type of journal entry can have any number of 
     credits and debits. The front end page uses react to dynamically 
@@ -133,12 +142,31 @@ class AccountUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
 
 
 class AccountDetailView(BookkeeperCheckMixin, DetailView):
-    template_name = os.path.join('accounting', 'account_detail.html')
+    template_name = os.path.join('accounting', 'account','detail.html')
     model = models.Account 
     
 
-class AccountListView(BookkeeperCheckMixin, PaginationMixin, FilterView,  ExtraContext):
-    template_name = os.path.join('accounting', 'account_list.html')
+class AccountCreditIframeView(ListView):
+    template_name = os.path.join('accounting', 'account', 'entry_list.html')
+    paginate_by =10
+    def get_queryset(self):
+        return models.Credit.objects.filter(
+            account= models.Account.objects.get(pk=self.kwargs['pk'])
+        ).order_by('pk')
+
+
+class AccountDebitIframeView(ListView):
+    template_name = os.path.join('accounting', 'account', 'entry_list.html')
+    paginate_by =10
+    def get_queryset(self):
+        return models.Debit.objects.filter(
+            account= models.Account.objects.get(pk=self.kwargs['pk'])
+        ).order_by('pk')
+
+
+class AccountListView(BookkeeperCheckMixin, PaginationMixin, FilterView,  
+        ExtraContext):
+    template_name = os.path.join('accounting', 'account','list.html')
     filterset_class = filters.AccountFilter
     paginate_by = 10
     queryset = models.Account.objects.all()
@@ -320,11 +348,11 @@ class JournalCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
         "description": 'A virtual document used to record all financial transactions in a business.'}
 
 class JournalDetailView(BookkeeperCheckMixin, DetailView):
-    template_name = os.path.join('accounting', 'journal_detail.html')
+    template_name = os.path.join('accounting', 'journal', 'detail.html')
     model = models.Journal
 
 class JournalListView(BookkeeperCheckMixin, ExtraContext, PaginationMixin, FilterView):
-    template_name = os.path.join('accounting', 'journal_list.html')
+    template_name = os.path.join('accounting', 'journal', 'list.html')
     filterset_class = filters.JournalFilter
     paginate_by = 10
     extra_context = {

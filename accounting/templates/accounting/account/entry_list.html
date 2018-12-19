@@ -1,0 +1,20 @@
+{% extends "common_data/iframe_list_template.html" %}
+{% block list_headings %}
+    <tr>
+        <th>Entry ID</th>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Amount</th>
+    </tr>
+{% endblock %}
+{% block list_content %}
+        {% for t in object_list %}
+            <tr>
+                <td><a href="{% url 'accounting:entry-detail' pk=t.entry.id %}" >{{t.entry.id}}</a></td>
+                <td>{{t.entry.date}}</td>
+                <td>{{t.entry.memo}}</td>
+                <td>{{t.amount}}</td>
+            </tr>
+        {% endfor %}
+    
+{% endblock %}
