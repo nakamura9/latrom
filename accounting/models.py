@@ -543,7 +543,6 @@ class Expense(AbstractExpense):
 
     def create_entry(self):
         #verified
-        print(self.category_string)
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
             date = self.date,

@@ -66,7 +66,6 @@ class ServiceInvoiceMixin(object):
         return resp
 
     def process_data(self, items):
-        print(items)
         if items:
             items = json.loads(urllib.parse.unquote(items))
             for item in items:

@@ -136,8 +136,6 @@ currency_urls = [
 misc_urls = [    
     re_path(r'^transfer/?$', views.AccountTransferPage.as_view(), 
     name='transfer'),
-    re_path(r'^non-invoiced-cash-sale/?$', views.NonInvoicedCashSale.as_view() ,
-        name='non-invoiced-cash-sale'),
     re_path(r'^create-tax/?$', views.TaxCreateView.as_view(), 
         name='create-tax'),
     re_path(r'^tax-list/?$', views.TaxListView.as_view(), name='tax-list'),

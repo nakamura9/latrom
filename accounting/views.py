@@ -272,61 +272,6 @@ class AccountConfigView(BookkeeperCheckMixin, UpdateView):
     success_url = reverse_lazy('accounting:dashboard')
     model = models.AccountingSettings
 
-class NonInvoicedCashSale(BookkeeperCheckMixin, FormView):
-    '''
-    A transaction handled entirely in the accounting part of the application
-    No invoice is generated but the relevant accounts are transacted on and 
-    the appropriate inventory is updated.
-    React is used to provide a table of items that can be added to the cash
-    sale. It communicates with the server in the form of json submitted as 
-    part of a number of hidden fields called 'items[]'.
-    '''
-    form_class = forms.NonInvoicedSaleForm
-    template_name = os.path.join('accounting', 'non_invoiced_cash_sale.html')
-    success_url = reverse_lazy('accounting:dashboard')
-
-    def post(self, request, *args, **kwargs):
-        resp = super(NonInvoicedCashSale, self).post(request, *args, **kwargs)
-        total = 0
-        form =self.form_class(request.POST)
-        
-        #clean data
-        if form.is_valid():
-            for item in request.POST.getlist('items[]'):
-                data = json.loads(urllib.parse.unquote(item))
-                quantity = float(data['quantity'])
-                #item-fix
-                product = Product.objects.get(pk=data['id'])
-                #update inventory
-                warehouse =form.cleaned_data['sold_from']
-                if warehouse.has_item(product):
-                    warehouse.decrement_item(product, quantity)
-                
-                amount_sold = product.unit_sales_price * decimal.Decimal(quantity) 
-                discount = amount_sold * decimal.Decimal(float(data['discount']) / 100.0)
-                total += amount_sold - discount
-                # record discounts in accounts
-                #fix
-                date = form.cleaned_data['date'].strftime('%Y-%m-%d')
-            
-            #add taxes here from the config
-
-
-            j = models.JournalEntry.objects.create(
-                    date=date,
-                    memo = request.POST['comments'],
-                    reference = "Journal Entry derived from non invoiced cash sale",
-                    journal = models.Journal.objects.get(pk=3),#sales journal
-                    created_by = request.user
-                    
-                )
-            j.simple_entry(
-                total,
-                models.Account.objects.get(pk=1004),#inventory
-                models.Account.objects.get(pk=1000),#sales
-            )
-        return resp
-
 class DirectPaymentList(BookkeeperCheckMixin, ExtraContext, TemplateView):
     template_name = os.path.join('accounting', 'direct_payment_list.html')
     extra_context = {

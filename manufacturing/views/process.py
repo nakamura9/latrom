@@ -28,7 +28,6 @@ class ProcessCreateView(ManufacturingCheckMixin, CreateView):
         if not self.object:
             return resp
 
-        print(request.POST)
         material_data =json.loads(
             urllib.parse.unquote(
                 request.POST['materials'])) if request.POST['materials'] != "" else []

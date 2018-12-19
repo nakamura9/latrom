@@ -34,7 +34,6 @@ class CurrencyConversionLineSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        print(validated_data)
         curr = models.Currency.objects.create(
             **validated_data['currency']
         )
@@ -55,7 +54,6 @@ class CurrencyConversionTableSerializer(serializers.ModelSerializer):
         validators = []
 
     def create(self, validated_data):
-        print(validated_data)
         
         table = models.CurrencyConversionTable.objects.create(
             reference_currency = validated_data['reference_currency'],
