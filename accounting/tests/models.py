@@ -9,6 +9,7 @@ import urllib
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase
+from decimal import Decimal as D
 
 from accounting.models import *
 from common_data.tests import create_account_models, create_test_user
@@ -19,7 +20,6 @@ from django.contrib.auth.models import User
 
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
-
 
 class SimpleModelTests(TestCase):
     # use fixtures later
@@ -210,6 +210,37 @@ class AccountModelTests(TestCase):
             description='Some description'
         )
         self.assertIsInstance(obj, Account)
+
+    def test_account_credit_balance(self):
+        obj = Account.objects.create(
+            name= 'Test Account',
+            balance=100,
+            type='asset',
+            description='Some description'
+        )
+        self.assertEqual(obj.credit, D(100))
+        self.assertEqual(obj.debit, D(0))
+
+    def test_account_debit_balance(self):
+        obj = Account.objects.create(
+            name= 'Test Account',
+            balance=-100,
+            type='asset',
+            description='Some description'
+        )
+        self.assertEqual(obj.debit, D(100))
+        self.assertEqual(obj.credit, D(0))
+    
+    def test_delete_account(self):
+        obj = Account.objects.create(
+            name= 'Test Account',
+            balance=100,
+            type='asset',
+            description='Some description'
+        )
+        obj.delete()
+        self.assertEqual(obj.active, False)
+
 
     def test_create_interest_bearing_account(self):
         obj = InterestBearingAccount.objects.create(

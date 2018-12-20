@@ -264,17 +264,6 @@ class AbstractAccount(models.Model):
         self.active = False
         self.save()
     
-    @property
-    def transaction_list(self):
-        #might need to stream this when the transactions become numerous
-        debits = list(self.debit_set.all())
-        credits = list(self.credit_set.all())
-        return sorted(debits + credits)
-
-    @property
-    def recent_entries(self):
-        return [i.entry for i in self.transaction_list[:5]]
-        
 
     class Meta:
         abstract = True

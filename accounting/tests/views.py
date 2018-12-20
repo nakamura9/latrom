@@ -65,9 +65,6 @@ class CommonViewTests(TestCase):
         resp = self.client.get(reverse('accounting:transfer'))
         self.assertTrue(resp.status_code == 200)
 
-    def test_get_cash_sale(self):
-        resp = self.client.get(reverse('accounting:non-invoiced-cash-sale'))
-        self.assertTrue(resp.status_code == 200)
 
     def test_create_tax(self):
         t=Tax.objects.create(name='sales tax',
