@@ -418,7 +418,7 @@ class Payslip(models.Model):
     def paygrade_(self):
         versions = reversion.models.Version.objects.get_for_object(
             self.pay_grade)
-        return versions[len(versions) - self.pay_grade_version].field_dict
+        return versions[len(versions) - self.pay_grade_version + 1].field_dict
     
     def __str__(self):
         return str(self.employee) 

@@ -12,6 +12,7 @@ from django.test import Client, TestCase
 from decimal import Decimal as D
 
 from accounting.models import *
+from employees import models as employee_models
 from common_data.tests import create_account_models, create_test_user
 from employees.tests.models import create_test_employees_models
 from inventory.tests import create_test_inventory_models
@@ -41,6 +42,20 @@ class SimpleModelTests(TestCase):
     def test_create_bookkeeper(self):
         obj = Bookkeeper.objects.create(employee=self.employee)
         self.assertIsInstance(obj, Bookkeeper)
+        # for __str__
+        self.assertEqual(str(obj), "First Last")
+
+    def test_delete_bookkeeper(self):
+        #create another employee
+        employee = employee_models.Employee.objects.create(
+            hire_date=datetime.date.today(),
+            title='employee',
+            first_name='name',
+            last_name='name',
+        )
+        obj = Bookkeeper.objects.create(employee=employee)
+        obj.delete()
+        self.assertEqual(obj.active, False)
 
     def test_create_journal(self):
         obj = Journal.objects.create(name='Test Book')
@@ -61,6 +76,7 @@ class SimpleModelTests(TestCase):
             entry= self.entry
         )
         self.assertIsInstance(obj, Debit)
+        self.assertEqual(str(obj), 'Debit')
         self.assertEqual(self.account_c.balance, pre_bal - 10)
 
     def test_create_credit(self):
@@ -71,9 +87,10 @@ class SimpleModelTests(TestCase):
             entry= self.entry
         )
         self.assertIsInstance(obj, Credit)
+        self.assertEqual(str(obj), 'Credit')
         self.assertEqual(self.account_c.balance, pre_bal + 10)
 
-
+    
     def test_create_asset(self):
         
         obj = Asset.objects.create(
@@ -193,6 +210,38 @@ class JournalEntryModelTests(TestCase):
 
     def test_entry_balanced(self):
         self.assertTrue(self.entry.balanced)
+
+    def test_compare_transactions(self):
+        '''compares date of creation'''
+        pre_bal = self.account_c.balance
+        
+        j = JournalEntry.objects.create(
+            memo='record of test entry',
+            date=TODAY,
+            journal =self.journal,
+            reference = "test reference",
+            created_by = self.usr
+        )
+
+        j.credit(10, self.account_c)
+
+        j_2 = JournalEntry.objects.create(
+            memo='record of test entry',
+            date=TODAY + datetime.timedelta(days=1),
+            journal =self.journal,
+            reference = "test reference",
+            created_by = self.usr
+        )
+
+        j_2.credit(10, self.account_c)
+
+        self.assertTrue(
+            Credit.objects.get(entry=j) < Credit.objects.get(entry=j_2))
+        
+        #revert
+        self.account_c.balance = pre_bal
+        self.account_c.save()
+
 
 class AccountModelTests(TestCase):
     # use fixtures later

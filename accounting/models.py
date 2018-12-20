@@ -237,7 +237,6 @@ class AbstractAccount(models.Model):
 
     properties
     ------------
-    transaction_list - returns an ordered list of transactions on the account
     '''
     name = models.CharField(max_length=64)
     balance = models.DecimalField(max_digits=9, decimal_places=2)
@@ -264,7 +263,6 @@ class AbstractAccount(models.Model):
         self.active = False
         self.save()
     
-
     class Meta:
         abstract = True
 
@@ -274,12 +272,17 @@ class Account(AbstractAccount):
     '''
     @staticmethod
     def total_debit():
+        '''returns the total amount debited to the accounting system
+        may need to limit scope to a period
+        '''
         return reduce(lambda x, y: x + y.debit, 
             Account.objects.all().exclude(balance=0), D(0.0))
 
 
     @staticmethod
     def total_credit():
+        '''returns the total amount credited to the accounting system
+        may need to limit scope to a period'''
         return reduce(lambda x, y: x + y.credit, 
             Account.objects.all().exclude(balance=0), D(0.0))
 
@@ -532,7 +535,6 @@ class Expense(AbstractExpense):
 
     def create_entry(self):
         #verified
-        print(self.category_string)
         j = JournalEntry.objects.create(
             reference = "Expense. ID: " + str(self.pk),
             date = self.date,

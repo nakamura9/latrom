@@ -295,10 +295,6 @@ class ManualPayrollService(object):
     def run(self):
         print('running manual payroll service')
         for employee in self.employees:
-            print(employee)
-            print(self.check_existing_payslip(employee))
-            print(self.start)
-            print(self.end)
             if self.check_existing_payslip(employee):
                 Notification.objects.create(
                     user=self.settings.payroll_officer.user,
@@ -310,10 +306,8 @@ class ManualPayrollService(object):
                     action=""
                 )
             elif employee.uses_timesheet:
-                print('wages')
                 self.generate_wage_payslip(employee)
             else:
-                print('no sheet')
                 self.generate_salaried_payslip(employee)
 
 
@@ -347,9 +341,7 @@ class ManualPayrollService(object):
         NOW = datetime.datetime.now()
         sheet = self.get_employee_timesheet(employee)
         if sheet:
-            print('has sheet')
             if sheet.complete:
-                print('is complete')
                 models.Payslip.objects.create(
                     start_period = self.start,
                     end_period = self.end,

@@ -197,7 +197,6 @@ class OrderPaymentCreateView(InventoryControllerCheckMixin, ExtraContext,
     }
 
     def get_initial(self):
-        print('called')
         return {
             'order': self.kwargs['pk']
         }

@@ -58,7 +58,6 @@ class LeaveAuthorizationView(AdministratorCheckMixin, ExtraContext, FormView):
 
     def form_valid(self, cleaned_data):
         resp = super().form_valid(cleaned_data)
-        print(dir(cleaned_data['leave_request']))
         leave_obj = models.Leave.objects.get(
             pk=cleaned_data['leave_request'].value())
         leave_obj.status = cleaned_data['status'].value()
@@ -111,7 +110,6 @@ def get_month_data(request, year=None, month=None):
 def get_year_data(request, year=None):
     leave_data = []
     for i in range(12):
-        print(i)
         leave_data.append(_month_data(year, (i+1)))
     data = {
         'leave': leave_data

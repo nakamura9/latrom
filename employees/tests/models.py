@@ -3,6 +3,7 @@ import decimal
 import json
 import os
 import urllib
+import reversion
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase
@@ -18,6 +19,7 @@ TODAY = datetime.date.today()
 
 
 def create_test_employees_models(cls):
+    
     cls.allowance = Allowance.objects.create(
             name='Model Test Allowance',
             amount=50
@@ -41,9 +43,14 @@ def create_test_employees_models(cls):
             overtime_two_rate=4,
             commission= cls.commission,
         )
+
+    
     cls.grade.allowances.add(cls.allowance)
     cls.grade.deductions.add(cls.deduction)
     cls.grade.save()
+
+    with reversion.create_revision():
+        cls.grade.save()
 
     cls.employee = Employee.objects.create(
             first_name = 'First',
@@ -72,7 +79,8 @@ def create_test_employees_models(cls):
             normal_hours=100,
             overtime_one_hours=0,
             overtime_two_hours=0,
-            pay_roll_id = 1
+            pay_roll_id = 1,
+            pay_grade = cls.employee.pay_grade
     )
 
 class CommonModelTests(TestCase):

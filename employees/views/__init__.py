@@ -154,7 +154,6 @@ class AutomatedPayrollService(object):
                 Q(recorded=False) &
                 Q(status=1)):
             if leave.start_date <= self.TODAY:
-                print(leave)
                 leave.recorded = True
                 leave.employee.leave_days -= leave.duration
                 leave.save()
