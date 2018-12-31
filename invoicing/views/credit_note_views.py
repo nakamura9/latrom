@@ -17,7 +17,7 @@ from django_filters.views import FilterView
 from rest_framework import generics, viewsets
 
 from accounting.forms import TaxForm
-from common_data.utilities import ConfigMixin, ExtraContext, Modal
+from common_data.utilities import ConfigMixin, ContextMixin
 from common_data.views import PaginationMixin
 from inventory.forms import QuickProductForm
 from inventory.models import Product
@@ -27,10 +27,10 @@ from invoicing.models import CreditNote, SalesConfig, SalesInvoiceLine
 from .common import SalesRepCheckMixin
 
 #########################################
-#           Credit Note Views              #
+#           Credit Note Views           #
 #########################################
 
-class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
+class CreditNoteCreateView(SalesRepCheckMixin, ContextMixin, CreateView):
     '''Credit notes are created along with react on the front end.
     each note tracks each invoice item and returns the quantity 
     of the item that was returned. The data is shared as a single 
@@ -69,7 +69,7 @@ class CreditNoteCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
         return resp
 
 
-class CreditNoteUpdateView(SalesRepCheckMixin, ExtraContext, UpdateView):
+class CreditNoteUpdateView(SalesRepCheckMixin, ContextMixin, UpdateView):
     extra_context = {"title": "Update Existing Credit Note"}
     template_name = os.path.join("invoicing", "create_credit_note.html")
     model = CreditNote
@@ -88,7 +88,7 @@ class CreditNoteDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
 
 #Deprecated
 #credit notes now accessed on an invoice by invoice basis
-class CreditNoteListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class CreditNoteListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Credit Notes"}
     template_name = os.path.join("invoicing", "sales_invoice", "credit_note", "list.html")
     filterset_class = filters.CreditNoteFilter

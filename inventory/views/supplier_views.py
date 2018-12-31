@@ -26,7 +26,7 @@ from invoicing.models import SalesConfig
 from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 
-class IndividualSupplierCreateView(InventoryControllerCheckMixin, ExtraContext, 
+class IndividualSupplierCreateView(InventoryControllerCheckMixin, ContextMixin, 
         CreateView):
     form_class = forms.IndividualSupplierForm
     model = models.Supplier
@@ -36,7 +36,7 @@ class IndividualSupplierCreateView(InventoryControllerCheckMixin, ExtraContext,
 
 
 class OrganizationSupplierCreateView(InventoryControllerCheckMixin, 
-        ExtraContext, CreateView):
+        ContextMixin, CreateView):
     form_class = forms.OrganizationSupplierForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
@@ -45,7 +45,7 @@ class OrganizationSupplierCreateView(InventoryControllerCheckMixin,
 
 
 class SupplierUpdateView(InventoryControllerCheckMixin, 
-    ExtraContext, UpdateView):
+    ContextMixin, UpdateView):
     form_class = forms.SupplierUpdateForm
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
@@ -53,7 +53,7 @@ class SupplierUpdateView(InventoryControllerCheckMixin,
     extra_context = {"title": "Update Existing Supplier"}
 
 
-class IndividualSupplierListView(InventoryControllerCheckMixin, ExtraContext, 
+class IndividualSupplierListView(InventoryControllerCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
@@ -66,7 +66,7 @@ class IndividualSupplierListView(InventoryControllerCheckMixin, ExtraContext,
         return models.Supplier.objects.filter(
             individual__isnull=False).order_by('pk')
 
-class OrganizationSupplierListView(InventoryControllerCheckMixin, ExtraContext, 
+class OrganizationSupplierListView(InventoryControllerCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter

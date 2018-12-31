@@ -18,8 +18,8 @@ from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ExtraContext, apply_style
-from common_data.views import EmailPlusPDFMixin, PaginationMixin
+from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.views import EmailPlusPDFView, PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.common import SalesRepCheckMixin
@@ -80,7 +80,7 @@ class ServiceInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ServiceInvoiceSerializer
     queryset = ServiceInvoice.objects.all()
 
-class ServiceInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin,
+class ServiceInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin,
         FilterView):
     extra_context = {"title": "Service Invoice List",
                     "new_link": reverse_lazy("invoicing:create-service-invoice")}
@@ -99,7 +99,7 @@ class ServiceInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
 
 class ServiceInvoiceUpdateView(SalesRepCheckMixin, 
                                 InvoiceCreateMixin, 
-                                ExtraContext, 
+                                ContextMixin, 
                                 ServiceInvoiceMixin, 
                                 UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
@@ -143,7 +143,7 @@ class ServiceDraftUpdateView(SalesRepCheckMixin,
     model = ServiceInvoice
 
 
-class ServiceInvoicePaymentView(ExtraContext, CreateView):
+class ServiceInvoicePaymentView(ContextMixin, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.ServiceInvoicePaymentForm
@@ -191,7 +191,7 @@ class ServiceInvoicePDFView(ConfigMixin, PDFTemplateView):
         context['object'] = ServiceInvoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class ServiceInvoiceEmailSendView(EmailPlusPDFMixin):
+class ServiceInvoiceEmailSendView(EmailPlusPDFView):
     inv_class = ServiceInvoice
     pdf_template_name = os.path.join("invoicing", "service_invoice",
             'pdf.html')

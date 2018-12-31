@@ -17,8 +17,8 @@ from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ExtraContext, apply_style
-from common_data.views import EmailPlusPDFMixin, PaginationMixin
+from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
@@ -73,7 +73,7 @@ class SalesInvoiceMixin(object):
                     item['quantity'])
     
 
-class SalesInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, 
+class SalesInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, 
         FilterView):
     extra_context = {"title": "Sales Invoice List",
                     "new_link": reverse_lazy("invoicing:create-sales-invoice")}
@@ -98,7 +98,7 @@ class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
 class SalesInvoiceCreateView(SalesRepCheckMixin, 
         SalesInvoiceMixin, 
         InvoiceCreateMixin, 
-        ExtraContext, 
+        ContextMixin, 
         ConfigMixin, 
         CreateView):
     '''Quotes and Invoices are created with React.js help.
@@ -128,7 +128,7 @@ class SalesDraftUpdateView(SalesRepCheckMixin,
 
 
 class SalesInvoiceUpdateView(SalesRepCheckMixin, 
-                            ExtraContext, 
+                            ContextMixin, 
                             InvoiceCreateMixin,
                             UpdateView):
     extra_context = {
@@ -146,7 +146,7 @@ class SalesInvoiceAPIViewSet(viewsets.ModelViewSet):
     queryset = SalesInvoice.objects.all()
 
 
-class SalesInvoicePaymentView(SalesRepCheckMixin,ExtraContext, CreateView):
+class SalesInvoicePaymentView(SalesRepCheckMixin,ContextMixin, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.SalesInvoicePaymentForm
@@ -212,7 +212,7 @@ class SalesInvoicePDFView(ConfigMixin, PDFTemplateView):
         context['object'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class SalesInvoiceEmailSendView(SalesRepCheckMixin, EmailPlusPDFMixin):
+class SalesInvoiceEmailSendView(SalesRepCheckMixin, EmailPlusPDFView):
     inv_class = SalesInvoice
     pdf_template_name = os.path.join("invoicing", "sales_invoice",
             'pdf.html')

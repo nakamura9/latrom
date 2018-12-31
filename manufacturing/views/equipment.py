@@ -9,7 +9,7 @@ from django_filters.views import FilterView
 from manufacturing.views.util import ManufacturingCheckMixin
 from manufacturing import models
 from manufacturing import forms 
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from manufacturing import serializers
 from manufacturing import filters
 from rest_framework.viewsets import ModelViewSet

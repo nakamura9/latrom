@@ -16,8 +16,8 @@ from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ExtraContext, apply_style
-from common_data.views import EmailPlusPDFMixin, PaginationMixin
+from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
@@ -44,7 +44,7 @@ def process_data(items, inv):
     else:#includes drafts and quotations
         pass
 
-class CombinedInvoiceListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class CombinedInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "Combined Invoice List",
                     "new_link": reverse_lazy("invoicing:create-combined-invoice")}
     template_name = os.path.join("invoicing", "combined_invoice","list.html")
@@ -89,7 +89,7 @@ class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMi
         self.set_payment_amount()
         return resp
 
-class CombinedInvoiceUpdateView(ExtraContext, UpdateView):
+class CombinedInvoiceUpdateView(ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = reverse_lazy('invoicing:combined-invoice-list')
     model =CombinedInvoice
@@ -130,7 +130,7 @@ class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView
 
         return resp
 
-class CombinedInvoicePaymentView(ExtraContext, CreateView):
+class CombinedInvoicePaymentView(ContextMixin, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.CombinedInvoicePaymentForm
@@ -179,7 +179,7 @@ class CombinedInvoicePDFView(ConfigMixin, PDFTemplateView):
         context['object'] = CombinedInvoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class CombinedInvoiceEmailSendView(EmailPlusPDFMixin):
+class CombinedInvoiceEmailSendView(EmailPlusPDFView):
     inv_class = CombinedInvoice
     success_url = reverse_lazy('invoicing:combined-invoice-list')
     pdf_template_name = os.path.join("invoicing", "combined_invoice",

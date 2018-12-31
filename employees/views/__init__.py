@@ -1,23 +1,25 @@
 import os
 import datetime
+from dateutil import *
 from messaging.models import Notification
 
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 
 from employees import forms, models
 from .employee import *
 from .leave import *
 from .payroll import *
 from .timesheets import *
+
 from employees.views.util import AdministratorCheckMixin 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
-class DashBoard(AdministratorCheckMixin, ExtraContext, TemplateView):
+class DashBoard(AdministratorCheckMixin, ContextMixin, TemplateView):
     template_name = os.path.join('employees', 'dashboard.html')
     extra_context = {
         'employees': models.Employee.objects.all()
@@ -37,7 +39,7 @@ class DashBoard(AdministratorCheckMixin, ExtraContext, TemplateView):
         service.run()
         return super().get(request)
 
-class PayrollConfig(AdministratorCheckMixin, ExtraContext, UpdateView):
+class PayrollConfig(AdministratorCheckMixin, ContextMixin, UpdateView):
     model = models.EmployeesSettings
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy("employees:dashboard")
@@ -57,6 +59,17 @@ class AutomatedPayrollService(object):
             self.settings.payroll_date_three,
             self.settings.payroll_date_four
         ]
+
+        self.start = None
+        if self.settings.last_payroll_date:
+            self.start = self.settings.last_payroll_date
+        else:
+            if self.settings.payroll_cycle == "monthly":
+                self.start = self.TODAY - relativedelta.relativedelta(months=1)
+            if self.settings.payroll_cycle == "bi-monthly":
+                self.start = self.TODAY - datetime.timedelta(days=14)
+            else:
+                self.start = self.TODAY - datetime.timedelta(days=7)
 
     def run(self):
         print("running payroll service")
@@ -80,8 +93,10 @@ class AutomatedPayrollService(object):
             uses_timesheet=False
             )
         for employee in salaried:
+            
+
             models.Payslip.objects.create(
-                start_period = self.settings.last_payroll_date,
+                start_period = self.start,
                 end_period = self.TODAY,
                 employee = employee,
                 normal_hours = 0,
@@ -101,11 +116,11 @@ class AutomatedPayrollService(object):
             if sheet:
                 if sheet.complete:
                     models.Payslip.objects.create(
-                        start_period = self.settings.last_payroll_date,
+                        start_period = self.start,
                         end_period = self.TODAY,
                         employee = employee,
-                        normal_hours = sheet.normal_hours,
-                        overtime_one_hours = sheet.overtime,
+                        normal_hours = sheet.normal_hours.seconds / 3600,
+                        overtime_one_hours = sheet.overtime.seconds / 3600,
                         overtime_two_hours = 0,
                         pay_roll_id = payroll_id
                     )
@@ -144,7 +159,7 @@ class AutomatedPayrollService(object):
 
     def adjust_leave_days(self):
         for employee in models.Employee.objects.all():
-            if not employee.last_leave_day_increment or \
+            if employee.last_leave_day_increment is None  or \
                     (self.TODAY -  employee.last_leave_day_increment).days > 30:
                 employee.leave_days += employee.pay_grade.monthly_leave_days
                 employee.last_leave_day_increment = self.TODAY
@@ -153,6 +168,7 @@ class AutomatedPayrollService(object):
         for leave in models.Leave.objects.filter(
                 Q(recorded=False) &
                 Q(status=1)):
+        
             if leave.start_date <= self.TODAY:
                 leave.recorded = True
                 leave.employee.leave_days -= leave.duration

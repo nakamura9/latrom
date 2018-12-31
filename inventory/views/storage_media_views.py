@@ -9,7 +9,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from inventory import forms, models, serializers
 
 from .common import InventoryControllerCheckMixin
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 
 #!fix prevent updates from assigining parent media to child media.
 
@@ -75,7 +75,7 @@ class StorageMediaNestedListAPIView(ListAPIView):
             )
         return models.StorageMedia.objects.filter(location=None) 
 
-class AutogenerateStorageMediaView(InventoryControllerCheckMixin, ExtraContext, FormView):
+class AutogenerateStorageMediaView(InventoryControllerCheckMixin, ContextMixin, FormView):
     form_class = forms.AutoStorageMedia
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = reverse_lazy('inventory:home')

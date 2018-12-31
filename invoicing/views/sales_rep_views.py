@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import SalesRepresentative
@@ -22,7 +22,7 @@ from .common import SalesRepCheckMixin
 #           Sales Rep Views             #
 #########################################
 
-class SalesRepCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
+class SalesRepCreateView(SalesRepCheckMixin, ContextMixin, CreateView):
     extra_context = {"title": "Add New Sales Rep."}
     template_name = os.path.join("common_data", "create_template.html")
     model = SalesRepresentative
@@ -30,7 +30,7 @@ class SalesRepCreateView(SalesRepCheckMixin, ExtraContext, CreateView):
     form_class = forms.SalesRepForm
 
 
-class SalesRepUpdateView(SalesRepCheckMixin,ExtraContext, UpdateView):
+class SalesRepUpdateView(SalesRepCheckMixin,ContextMixin, UpdateView):
     extra_context = {"title": "Update Existing Sales Rep."}
     template_name = os.path.join("common_data", "create_template.html")
     model = SalesRepresentative
@@ -38,7 +38,7 @@ class SalesRepUpdateView(SalesRepCheckMixin,ExtraContext, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class SalesRepListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class SalesRepListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Sales Representatives",
                     "new_link": reverse_lazy("invoicing:create-sales-rep")}
     template_name = os.path.join("invoicing", "sales_rep_list.html")

@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
-from common_data.models import Person, SingletonModel
+from common_data.models import Person, SingletonModel, SoftDeletionModel
 import planner
 import accounting
 import invoicing
@@ -27,13 +27,16 @@ class EmployeesSettings(SingletonModel):
         choices = PAYROLL_DATE_CHOICES
         )
     payroll_date_two = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES
+        choices = PAYROLL_DATE_CHOICES,
+        blank=True, null=True
     )
     payroll_date_three = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES
+        choices = PAYROLL_DATE_CHOICES,
+        blank=True, null=True
     )
     payroll_date_four = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES
+        choices = PAYROLL_DATE_CHOICES,
+        blank=True, null=True
     )
     last_payroll_date = models.DateField(blank=True, null=True)
     payroll_cycle = models.CharField(
@@ -59,8 +62,6 @@ class EmployeesSettings(SingletonModel):
     payroll_counter = models.IntegerField(default=0)
     
 
-    
-
 class EmployeeTimeSheet(models.Model):
     MONTH_CHOICES = [
         (i, i) for i in range(0, 13)
@@ -68,10 +69,12 @@ class EmployeeTimeSheet(models.Model):
     YEAR_CHOICES = [
         (i, i) for i in range(2000, 2051)
     ] 
-    employee = models.ForeignKey('employees.employee', on_delete=None, related_name='target')
+    employee = models.ForeignKey('employees.employee', on_delete=None, 
+        related_name='target')
     month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
     year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
-    recorded_by = models.ForeignKey('employees.employee', on_delete=None, related_name='recorder', null=True)
+    recorded_by = models.ForeignKey('employees.employee', on_delete=None, 
+        related_name='recorder', null=True)
     complete=models.BooleanField(default=False, blank=True)
 
     @property
@@ -128,7 +131,7 @@ class AttendanceLine(models.Model):
             self.lunch_duration = self.timesheet.employee.pay_grade.lunch_duration
             self.save()
 
-class Employee(Person):
+class Employee(Person, SoftDeletionModel):
     '''
     Represents an individual employee of the business. Records their personal 
     details as well as their title, pay grade and leave days.
@@ -157,12 +160,8 @@ class Employee(Person):
     uses_timesheet = models.BooleanField(default=False, blank=True)
     user = models.OneToOneField('auth.User', null=True,
          on_delete=models.CASCADE)#not all are users
-    active = models.BooleanField(default=True)
     pin = models.PositiveSmallIntegerField(default=1000)
     
-    def delete(self):
-        self.active = False
-        self.save()
 
     def __str__(self):
         return self.first_name + " " + self.last_name
@@ -176,7 +175,7 @@ class Employee(Person):
         
         return Payslip.objects.filter(Q(employee=self) \
             & Q(start_period__gte=start) \
-            & Q(end_period__lte=end)) 
+            & Q(end_period__lte=end))
     
     @property
     def deductions_YTD(self):
@@ -225,22 +224,17 @@ class Employee(Person):
 
 
 #Change to benefits 
-class Allowance(models.Model):
+class Allowance(SoftDeletionModel):
     '''simple object that tracks a fixed benefit or allowance granted as 
     part of a pay grade'''
     name = models.CharField(max_length = 32)
     amount = models.FloatField()
-    active = models.BooleanField(default=True)
     taxable = models.BooleanField(default=True)
     def __str__(self):
         return self.name
     
-    def delete(self):
-        '''prevents deletion of objects'''
-        self.active = False
-        self.save()
 
-class Deduction(models.Model):
+class Deduction(SoftDeletionModel):
     '''
     Many deductions are complex and this model reflects those features.
     For simple deductions a fixed amount can be applied.
@@ -272,7 +266,6 @@ class Deduction(models.Model):
         'accounting.account',
         on_delete=None,
         default=5008)# salaries 
-    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -284,20 +277,14 @@ class Deduction(models.Model):
                 return (self.rate / 100) * payslip.gross_pay
             elif self.trigger == 1:
                 #taxable income
-                return (self.rate / 100) * (payslip.gross_pay - 300)
+                return (self.rate / 100) * (payslip.taxable_gross_pay)
             elif self.trigger == 2:
                 # % PAYE
-                return (self.rate / 100) * payslip.income_tax
+                return (self.rate / 100) * float(payslip.total_payroll_taxes)
             else:
                 return 0
         else:
             return self.amount
-
-    def delete(self):
-        '''prevents deletion of objects as they may remain part of legacy
-        objects'''
-        self.active = False
-        self.save()
 
 
 class PayrollOfficer(models.Model):
@@ -307,21 +294,16 @@ class PayrollOfficer(models.Model):
     can_create_payroll_elements = models.BooleanField(default=False, blank=True)
     can_register_new_employees = models.BooleanField(default=False, blank=True)
 
-class CommissionRule(models.Model):
+class CommissionRule(SoftDeletionModel):
     '''simple model for giving sales representatives commission based on 
     the product they sell. Given a sales target and a percentage, the commission can
     be calculated.'''
     name = models.CharField(max_length=32)
     min_sales = models.FloatField()
     rate = models.FloatField()
-    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
-    
-    def delete(self):
-        self.active=False
-        self.save()
 
 @reversion.register()    
 class PayGrade(models.Model):
@@ -355,7 +337,7 @@ class PayGrade(models.Model):
     allowances = models.ManyToManyField('employees.Allowance', blank=True)
     deductions = models.ManyToManyField('employees.Deduction', blank=True)
     payroll_taxes = models.ManyToManyField('employees.PayrollTax', blank=True)
-    subtract_lunch_time_from_working_hours = models.BooleanField(default=False)
+    subtract_lunch_time_from_working_hours = models.BooleanField(default=False, blank=True)
     lunch_duration = models.DurationField(
         choices=LUNCH_CHOICES,
         default=datetime.timedelta(hours=1)
@@ -418,7 +400,10 @@ class Payslip(models.Model):
     def paygrade_(self):
         versions = reversion.models.Version.objects.get_for_object(
             self.pay_grade)
-        return versions[len(versions) - self.pay_grade_version + 1].field_dict
+        version =len(versions) -self.pay_grade_version \
+            if self.pay_grade_version != 0 else -1
+        
+        return versions[version].field_dict
     
     def __str__(self):
         return str(self.employee) 
@@ -426,7 +411,7 @@ class Payslip(models.Model):
 
     @property
     def commission_pay(self):
-        commission = self.paygrade_['commission_id']
+        commission = CommissionRule.objects.get(pk=self.paygrade_['commission_id'])
         if not commission:
             return 0
         
@@ -436,13 +421,12 @@ class Payslip(models.Model):
             total_sales = self.employee.salesrepresentative.sales(
                 self.start_period, 
                 self.end_period)
-            
             if total_sales < commission.min_sales:
                 return 0
 
-            commissionable_sales = total_sales - commission.min_sales
+            commissionable_sales = total_sales - D(commission.min_sales)
   
-            return commission.rate * commissionable_sales
+            return (float(commission.rate) / 100.0) * float(commissionable_sales)
 
     @property 
     def normal_pay(self):
@@ -509,7 +493,7 @@ class Payslip(models.Model):
         total = 0
         for pk in self.paygrade_['payroll_taxes']:
             tax = PayrollTax.objects.get(pk=pk)
-            total += tax.tax(self.gross_pay)
+            total += tax.tax(self.taxable_gross_pay)
         
         return total
 
@@ -547,7 +531,6 @@ class Payslip(models.Model):
         net income is deposited into account 5008
         '''
         settings = EmployeesSettings.objects.first()
-
         if settings.require_verification_before_posting_payslips and \
                 self.status != 'verified':
             #only work on verified payslips
@@ -608,17 +591,8 @@ class PayrollTax(models.Model):
             rate=rate,
             deduction=deduction)
 
-    def delete_bracket(self, bracket_id):
-        TaxBracket.objects.get(pk=bracket_id).delete()
 
-    def update_bracket(self, bracket_id, lower, upper, rate, deduction):
-        tb = TaxBracket.objects.get(pk=bracket_id)
-        tb.lower = lower
-        tb.upper = upper
-        tb.rate = rate
-        tb.deduction = deduction
-        tb.save()
-
+    @property
     def list_brackets(self):
         return TaxBracket.objects.filter(payroll_tax =self).order_by('upper_boundary')
 
@@ -637,7 +611,7 @@ class Leave(models.Model):
         (3, 'Study Leave'),
         (4, 'Maternity Leave'),
         (5, 'Parental Leave'),
-        (5, 'Bereavement Leave')
+        (6, 'Bereavement Leave')
     ]
     STATUS_CHOICES = [
         (0, 'Pending'),
@@ -658,6 +632,7 @@ class Leave(models.Model):
             )
     notes = models.TextField(blank=True)
     recorded = models.BooleanField(default=False)
+
     @property
     def status_string(self):
         return dict(self.STATUS_CHOICES)[self.status]

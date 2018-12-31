@@ -69,14 +69,6 @@ report_urls = [
     re_path(r'^income-statement-form/?$', report_views.IncomeStatementFormView.as_view(), name='income-statement-form')
 ]
 
-entry_urls = [
-    re_path(r'^create-entry/?$', views.JournalEntryCreateView.as_view(), 
-    name='create-entry'),
-    re_path(r'^compound-entry/?$', views.ComplexEntryView.as_view(), 
-    name='compound-entry'),
-    re_path(r'^entry-detail/(?P<pk>[\w]+)/?$', views.JournalEntryDetailView.as_view(), 
-    name='entry-detail'),
-]
 account_urls = [
     re_path(r'^create-account/?$', views.AccountCreateView.as_view(), 
         name='create-account'),
@@ -148,12 +140,20 @@ misc_urls = [
     re_path(r'^direct-payment/?$', views.DirectPaymentFormView.as_view(), 
         name='direct-payment'),
     re_path(r'^(?P<supplier>[\w]+)/direct-payment/?$', 
-        views.DirectPaymentFormView.as_view(), name='direct-payment'),
+        views.DirectPaymentFormView.as_view(), name='direct-payment-supplier'),
     re_path(r'^direct-payment-list/?$', views.DirectPaymentList.as_view(), 
         name='direct-payment-list'),
     
     ]
 
+entry_urls = [
+    re_path(r'^create-entry/?$', views.JournalEntryCreateView.as_view(), 
+    name='create-entry'),
+    re_path(r'^compound-entry/?$', views.ComplexEntryView.as_view(), 
+    name='compound-entry'),
+    re_path(r'^entry-detail/(?P<pk>[\w]+)/?$', views.JournalEntryDetailView.as_view(), 
+    name='entry-detail'),
+]
 
 journal_urls = [
     re_path(r'^create-journal/?$', views.JournalCreateView.as_view(), 

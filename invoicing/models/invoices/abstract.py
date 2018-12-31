@@ -13,9 +13,9 @@ from django.utils import timezone
 from accounting.models import Account, Expense, Journal, JournalEntry, Tax
 from invoicing import models as inv_models
 from services.models import Service
+from common_data.models import SoftDeletionModel
 
-
-class AbstractSale(models.Model):
+class AbstractSale(SoftDeletionModel):
     DEFAULT_TAX = 1
     DEFAULT_SALES_REP = 1
     DEFAULT_CUSTOMER = 1
@@ -33,7 +33,6 @@ class AbstractSale(models.Model):
     customer = models.ForeignKey("invoicing.Customer", on_delete=None,default=DEFAULT_CUSTOMER)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative',
         on_delete=None, default=DEFAULT_SALES_REP)
-    active = models.BooleanField(default=True)
     due= models.DateField( default=datetime.date.today)
     date= models.DateField(default=datetime.date.today)
     discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)

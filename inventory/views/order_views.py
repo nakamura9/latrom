@@ -24,7 +24,7 @@ from wkhtmltopdf.views import PDFTemplateView
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 from common_data.utilities import *
-from common_data.views import PaginationMixin, EmailPlusPDFMixin
+from common_data.views import PaginationMixin, EmailPlusPDFView
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from accounting.models import Expense, JournalEntry, Account, Journal
@@ -99,7 +99,7 @@ class OrderPOSTMixin(object):
             )
         return resp        
 
-class OrderCreateView(InventoryControllerCheckMixin, ExtraContext, 
+class OrderCreateView(InventoryControllerCheckMixin, ContextMixin, 
         OrderPOSTMixin, CreateView):
     '''The front end page combines with react to create a dynamic
     table for entering items in the form.
@@ -139,7 +139,7 @@ class OrderCreateView(InventoryControllerCheckMixin, ExtraContext,
     
 
 
-class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext, 
+class OrderUpdateView(InventoryControllerCheckMixin, ContextMixin, 
         OrderPOSTMixin,UpdateView):
     form_class = forms.OrderUpdateForm
     model = models.Order
@@ -148,7 +148,7 @@ class OrderUpdateView(InventoryControllerCheckMixin, ExtraContext,
     extra_context = {"title": "Update Existing Purchase Order"}
 
 
-class OrderListView(InventoryControllerCheckMixin, ExtraContext, 
+class OrderListView(InventoryControllerCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.OrderFilter
@@ -160,7 +160,7 @@ class OrderListView(InventoryControllerCheckMixin, ExtraContext,
         return models.Order.objects.all().order_by('pk')
 
 
-class OrderStatusView(InventoryControllerCheckMixin, ExtraContext, DetailView):
+class OrderStatusView(InventoryControllerCheckMixin, ContextMixin, DetailView):
     template_name = os.path.join('inventory', 'order', 'status.html')
     model = models.Order
 
@@ -171,7 +171,7 @@ class OrderDeleteView(InventoryControllerCheckMixin, DeleteView):
     success_url = reverse_lazy('inventory:order-list')
 
 
-class OrderDetailView(InventoryControllerCheckMixin, ExtraContext, 
+class OrderDetailView(InventoryControllerCheckMixin, ContextMixin, 
         ConfigMixin, DetailView):
     model = models.Order
     template_name = os.path.join('inventory', 'order', 'detail.html')
@@ -186,7 +186,7 @@ class OrderPaymentDetailView(InventoryControllerCheckMixin,
    
 
 
-class OrderPaymentCreateView(InventoryControllerCheckMixin, ExtraContext,
+class OrderPaymentCreateView(InventoryControllerCheckMixin, ContextMixin,
         ConfigMixin, CreateView):
     model = models.OrderPayment
     template_name= CREATE_TEMPLATE
@@ -216,7 +216,7 @@ class OrderPDFView(ConfigMixin, PDFTemplateView):
         context['object'] = models.Order.objects.get(pk=self.kwargs['pk'])
         return context
 
-class OrderEmailSendView(EmailPlusPDFMixin):
+class OrderEmailSendView(EmailPlusPDFView):
     inv_class = models.Order
     pdf_template_name = os.path.join("inventory", "order",
             'pdf.html')
@@ -232,7 +232,7 @@ class OrderEmailSendView(EmailPlusPDFMixin):
         }
 
 class ShippingAndHandlingView(InventoryControllerCheckMixin, 
-        ExtraContext, FormView):
+        ContextMixin, FormView):
     template_name = CREATE_TEMPLATE
     form_class = forms.ShippingAndHandlingForm
     success_url = reverse_lazy("inventory:order-list")

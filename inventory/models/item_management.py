@@ -12,12 +12,12 @@ from django.db.models import Q
 
 import inventory
 from accounting.models import Account, Journal, JournalEntry
-from common_data.models import SingletonModel
+from common_data.models import SingletonModel, SoftDeletionModel
 
 from .warehouse_models import StorageMedia, WareHouseItem
 
 
-class Order(models.Model):
+class Order(SoftDeletionModel):
     '''The record of all purchase orders for inventory of items that 
     will eventually be sold. Contains the necessary data to update 
     inventory and update the Purchases Journal.
@@ -66,7 +66,6 @@ class Order(models.Model):
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=24, 
         choices=ORDER_STATUS_CHOICES)
-    active = models.BooleanField(default=True)
     received_to_date = models.FloatField(default=0.0)
     issuing_inventory_controller = models.ForeignKey('auth.user', 
         default=1, on_delete=None)

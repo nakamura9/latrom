@@ -22,7 +22,21 @@ class Person(models.Model):
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name)
 
-class Individual(Person):
+class SoftDeletionModel(models.Model):
+    class Meta:
+        abstract = True
+
+    active = models.BooleanField(default=True)
+
+
+    def delete(self):
+        self.active = False
+        self.save()
+
+    def hard_delete(self):
+        super().delete()
+
+class Individual(Person, SoftDeletionModel):
     '''inherits from the base person class in common data
     represents clients of the business with entry specific details.
     the customer can also have an account with the business for credit 
@@ -35,12 +49,9 @@ class Individual(Person):
         on_delete=models.CASCADE,null=True, blank=True)
     photo = models.ImageField(null=True, blank=True)
     
-    def delete(self):
-        self.active = False
-        self.save()
-
+  
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return self.full_name
 
 
 class Note(models.Model):
@@ -65,6 +76,10 @@ class Organization(models.Model):
     def members(self):
         return self.individual_set.all()
 
+    def add_member(self, individual):
+        individual.organization = self
+        individual.save()
+        
 
 class SingletonModel(models.Model):
     class Meta:
@@ -84,7 +99,7 @@ class SingletonModel(models.Model):
 
 class GlobalConfig(SingletonModel):
     email_host = models.CharField(max_length=32, blank=True, default="")
-    email_port = models.IntegerField(null=True)
+    email_port = models.IntegerField(null=True, blank=True)
     email_user = models.CharField(max_length=32, blank=True, default="")
     email_password = models.CharField(max_length=255, blank=True, default="")
 
@@ -96,6 +111,8 @@ class GlobalConfig(SingletonModel):
             fields = self.__dict__
             del fields['_state']
             json.dump(fields, fil)
+
+
 
 
 '''

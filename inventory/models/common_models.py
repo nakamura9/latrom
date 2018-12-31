@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models import Q
 
 from accounting.models import Account, Journal, JournalEntry
-from common_data.models import SingletonModel
+from common_data.models import SingletonModel, SoftDeletionModel
 
 
 from .item_models import Product, Equipment, Consumable
@@ -85,7 +85,7 @@ class InventoryController(models.Model):
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
 
 
-class Supplier(models.Model):
+class Supplier(SoftDeletionModel):
     '''The businesses and individuals that provide the organization with 
     products it will sell. Basic features include contact details address and 
     contact people.
@@ -97,7 +97,6 @@ class Supplier(models.Model):
     individual = models.OneToOneField('common_data.Individual', 
         on_delete=None, blank=True, 
         null=True)
-    active = models.BooleanField(default=True)
     account = models.ForeignKey('accounting.Account', 
         on_delete=None, 
         blank=True, null=True)
@@ -170,7 +169,7 @@ class Supplier(models.Model):
 
 
 
-class UnitOfMeasure(models.Model):
+class UnitOfMeasure(SoftDeletionModel):
     '''Class for arepresenting units of inventory.
     can be a base unit where no calculations are required.
     can also be a derived unit where the quantity is calculated back into the base unit for each element.'''
@@ -179,7 +178,6 @@ class UnitOfMeasure(models.Model):
     eval_string = models.CharField(max_length=255, default="")
     is_derived = models.BooleanField(default = False)
     base_unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None, null=True, blank=True)
-    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

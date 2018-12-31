@@ -13,16 +13,14 @@ from django.db.models import Q
 import inventory
 import invoicing
 from accounting.models import Account, Journal, JournalEntry
-from common_data.models import SingletonModel
+from common_data.models import SingletonModel, SoftDeletionModel
 
-
-class BaseItem(models.Model):
+class BaseItem(SoftDeletionModel):
     class Meta:
         abstract = True
 
     name = models.CharField(max_length = 64)
     category = models.ForeignKey('inventory.Category', on_delete=None,default=1)
-    active = models.BooleanField(default=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
@@ -136,9 +134,6 @@ class Product(BaseItem):
             [D(item.quantity) * item.price for item in items], 0)
         return total_sales
     
-    def delete(self):
-        self.active = False
-        self.save()
 
     @property
     def events(self):

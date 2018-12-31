@@ -17,7 +17,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 
 from . import filters, forms, models, serializers
@@ -81,7 +81,7 @@ class EventUpdateView(LoginRequiredMixin, EventParticipantMixin, UpdateView):
     model = models.Event
 
 
-class EventListView(ExtraContext, LoginRequiredMixin, PaginationMixin, FilterView):
+class EventListView(ContextMixin, LoginRequiredMixin, PaginationMixin, FilterView):
     template_name = os.path.join('planner', 'events', 'list.html')
     filterset_class = filters.EventFilter
     extra_context = {

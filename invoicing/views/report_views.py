@@ -7,12 +7,12 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, FormView
 
-from common_data.utilities import ExtraContext, extract_period
+from common_data.utilities import ContextMixin, extract_period
 from invoicing import forms, models
 from invoicing.models import AbstractSale
 
 
-class CustomerReportFormView(ExtraContext, FormView):
+class CustomerReportFormView(ContextMixin, FormView):
     extra_context = {
         'title': 'Customer Statement Report',
         'action': reverse_lazy('invoicing:customer-statement')

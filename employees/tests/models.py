@@ -4,19 +4,22 @@ import json
 import os
 import urllib
 import reversion
+import time
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase
 
 from common_data.tests import create_test_user
+from inventory.tests import create_test_inventory_models
 from employees.models import *
 from latrom import settings
-
+from accounting.models import Account, JournalEntry
+from invoicing.models import (SalesRepresentative, 
+                              SalesInvoice, 
+                              SalesInvoiceLine
+                              )
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
-
-
-
 
 def create_test_employees_models(cls):
     
@@ -31,7 +34,7 @@ def create_test_employees_models(cls):
         )
     cls.commission=CommissionRule.objects.create(
             name='Model Test Commission',
-            min_sales = 5000,
+            min_sales = 0,
             rate=15
         )
     cls.grade = PayGrade.objects.create(
@@ -47,8 +50,18 @@ def create_test_employees_models(cls):
     
     cls.grade.allowances.add(cls.allowance)
     cls.grade.deductions.add(cls.deduction)
-    cls.grade.save()
 
+    cls.prt = PayrollTax.objects.create(name='Test Tax', paid_by=0)
+
+    cls.tb = TaxBracket.objects.create(
+            payroll_tax=cls.prt,
+            lower_boundary=0,
+            upper_boundary=1000,
+            rate=10.0,
+            deduction=0)
+
+    cls.grade.payroll_taxes.add(cls.prt)
+    cls.grade.save()
     with reversion.create_revision():
         cls.grade.save()
 
@@ -62,19 +75,10 @@ def create_test_employees_models(cls):
             title='test role',
             pay_grade = cls.grade
         )
-    cls.prt = PayrollTax.objects.create(name='Test Tax', paid_by=0)
-    cls.tb = TaxBracket.objects.create(
-            payroll_tax=cls.prt,
-            lower_boundary=0,
-            upper_boundary=1000,
-            rate=10.0,
-            deduction=0)
-    cls.grade.payroll_taxes.add(cls.prt)
-    cls.grade.save()
 
     cls.slip = Payslip.objects.create(
         start_period=TODAY,
-            end_period=TODAY + datetime.timedelta(days=30),
+            end_period=TODAY,
             employee=cls.employee,
             normal_hours=100,
             overtime_one_hours=0,
@@ -82,6 +86,7 @@ def create_test_employees_models(cls):
             pay_roll_id = 1,
             pay_grade = cls.employee.pay_grade
     )
+
 
 class CommonModelTests(TestCase):
     @classmethod
@@ -102,6 +107,65 @@ class CommonModelTests(TestCase):
         )
         self.assertIsInstance(obj, EmployeesSettings)
 
+class TimesheetTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        cls.timesheet = EmployeeTimeSheet.objects.create(
+            employee=cls.employee,
+            month=1,
+            year=2018,
+            recorded_by=cls.employee,
+            complete=True
+        )
+        cls.line = AttendanceLine.objects.create(
+            timesheet=cls.timesheet,
+            date= datetime.date.today(), 
+            time_in = datetime.datetime(2018, 1, 1, 8, 0).time(),
+            time_out = datetime.datetime(2018, 1, 1, 17, 0).time(),
+        )
+
+    def test_create_timesheet(self):
+        obj = EmployeeTimeSheet.objects.create(
+            employee=self.employee,
+            month=1,
+            year=2018,
+            recorded_by=self.employee,
+            complete=True
+        )
+        self.assertIsInstance(obj, EmployeeTimeSheet)
+
+    def test_timesheet_normal_time(self):
+        self.assertEqual(self.timesheet.normal_hours, datetime.timedelta(seconds=28800))
+
+        
+
+    def test_timesheet_overtime(self):
+        self.assertEqual(self.timesheet.overtime, datetime.timedelta(0))
+        
+
+    def test_create_attendance_line(self):
+        obj = AttendanceLine.objects.create(
+            timesheet=self.timesheet,
+            date= datetime.date.today(),
+            time_in = datetime.datetime(2018, 1, 1, 8, 0).time(),
+            time_out = datetime.datetime(2018, 1, 1, 17, 0).time(),
+        )
+        self.assertIsInstance(obj, AttendanceLine)
+
+    def test_line_total_time(self):
+        self.assertEqual(self.line.total_time, datetime.timedelta(
+            seconds=32400))
+
+    def test_line_working_time(self):
+        self.assertEqual(self.line.working_time, 
+            datetime.timedelta(hours=8))
+
+    def test_line_noraml_time(self):
+        self.assertEqual(self.line.normal_time, datetime.timedelta(hours=8))
+
+    def test_line_overtime(self):
+        self.assertEqual(self.line.overtime, datetime.timedelta(0))
 
 class EmployeeModelTests(TestCase):
     @classmethod
@@ -120,6 +184,9 @@ class EmployeeModelTests(TestCase):
             pay_grade = self.grade
         )
         self.assertIsInstance(obj, Employee)
+
+    
+
 
     def test_get_payslips(self):
         slips = self.employee._payslips_YTD
@@ -173,6 +240,7 @@ class DeductionModelTest(TestCase):
     def test_deduction_from_payslip_if_fixed(self):
         fixed_deduction = Deduction.objects.create(
             name='test fixed deduction',
+            trigger=1,
             method=1,
             amount=10
             )
@@ -189,6 +257,16 @@ class DeductionModelTest(TestCase):
             )
         deducted = rated_deduction.deduct(self.slip)
         self.assertEqual(deducted, (0.1 * self.slip.gross_pay))
+
+    def test_deduction_from_payslip_paye_triggered(self):
+        rated_deduction = Deduction.objects.create(
+            name='test rated deduction',
+            method=0,
+            trigger=2,
+            rate=10
+            )
+        deducted = rated_deduction.deduct(self.slip)
+        self.assertEqual(deducted, 5.5)
 
 
 class CommissionRuleModelTest(TestCase):
@@ -238,9 +316,13 @@ class PayGradeModelTests(TestCase):
         self.assertEqual(self.grade.tax_free_benefits, 50)
 
 class PaySlipModelTests(TestCase):
+    fixtures = ['common.json', 'accounts.json', 'employees.json','inventory.json', 'invoicing.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        create_test_inventory_models(cls)
+        create_test_user(cls)
+
 
     def test_create_pay_slip(self):
         obj = Payslip.objects.create(
@@ -253,19 +335,39 @@ class PaySlipModelTests(TestCase):
             pay_roll_id = 1
         )
         self.assertIsInstance(obj, Payslip)
+        self.assertIsInstance(str(obj), str)
 
-    def test_commission_pay(self):
+    def test_commission_basic_pay(self):
         # create per test commission 
-        commission = CommissionRule.objects.create(
-            name = 'Test commission', 
-            min_sales = 0,
-            rate = 10
-        )
-        self.grade.commission = commission
-        self.grade.save()
-
-        #because there is no sales representative
+        
         self.assertEqual(self.slip.commission_pay, 0)
+
+    def test_commission_pay_with_sales_representative(self):
+        
+        rep = SalesRepresentative.objects.create(
+            employee=self.employee
+        )
+
+        self.assertEqual(self.slip.commission_pay, 0)
+        rep.hard_delete()
+
+    def test_commission_pay_with_commission(self):
+        rep = SalesRepresentative.objects.create(
+            employee=self.employee
+        )
+        
+        # create invoice with sales of 10 dollars
+        inv = SalesInvoice.objects.create(
+            status="paid",
+            salesperson = rep
+        )
+        line = SalesInvoiceLine.objects.create(
+            invoice= inv,
+            product=self.product,
+            quantity=1   
+        )
+        self.assertEqual(self.slip.commission_pay, 1.5)
+
 
     def test_pay_schemes(self):
         self.slip.normal_hours = 100
@@ -285,6 +387,14 @@ class PaySlipModelTests(TestCase):
 
     def test_deductions(self):
         self.assertEqual(self.slip._deductions, 10)
+        self.assertIsInstance(str(self.deduction), str)
+        # testing other triggers
+        self.deduction.trigger=1
+        self.deduction.save()
+        self.assertEqual(self.deduction.deduct(self.slip), 10)
+        self.deduction.trigger=2
+        self.deduction.save()
+        self.assertEqual(self.deduction.deduct(self.slip), 10)
 
     def test_payroll_taxes(self):
         self.assertEqual(self.slip.total_payroll_taxes, 60)
@@ -294,6 +404,22 @@ class PaySlipModelTests(TestCase):
 
     def test_net_pay(self):
         self.assertEqual(self.slip.net_pay, 485)
+
+    def test_payslip_create_entry_not_verified(self):
+        self.slip.create_entry()
+        self.assertEqual(self.slip.entry, None)
+
+    def test_payslip_create_verified(self):
+        settings = EmployeesSettings.objects.first()
+        self.employee.user = self.user
+        self.employee.save()
+        settings.payroll_officer = self.employee
+        settings.save()
+
+        self.slip.status = 'verified'
+        self.slip.save()
+        self.slip.create_entry()
+        self.assertIsInstance(self.slip.entry, JournalEntry)
 
 class TaxBracketModelTests(TestCase):
     @classmethod
@@ -307,6 +433,11 @@ class TaxBracketModelTests(TestCase):
 
         self.assertIsInstance(obj, PayrollTax)
 
+    def test_payroll_tax_paid_by_string(self):
+        self.assertIsInstance(self.prt.paid_by_string, str)
+
+
+
     def test_create_tax_bracket(self):
         obj = TaxBracket.objects.create(
             payroll_tax=self.prt,
@@ -316,3 +447,55 @@ class TaxBracketModelTests(TestCase):
             deduction=25)
 
         self.assertIsInstance(obj, TaxBracket)
+
+    def test_list_brackets(self):
+        self.assertEqual(self.prt.list_brackets.count(), 1)
+
+    def test_add_bracket(self):
+        self.prt.add_bracket(0, 300, 10, 0)
+        self.assertEqual(self.prt.list_brackets.count(), 2)
+        TaxBracket.objects.latest('pk').delete()
+        
+class LeaveModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        cls.leave = Leave.objects.create(
+            start_date = datetime.date.today(),
+            end_date = datetime.date.today(),
+            employee=cls.employee,
+            category=1,
+            status=1,
+            authorized_by=cls.employee
+        )
+    def test_create_leave_object(self):
+        obj = Leave.objects.create(
+            start_date = datetime.date.today(),
+            end_date = datetime.date.today(),
+            employee=self.employee,
+            category=1,
+            status=1,
+            authorized_by=self.employee
+        )
+        self.assertIsInstance(obj, Leave)
+        self.assertIsInstance(str(obj), str)
+
+    def test_status_string(self):
+        self.assertEqual(self.leave.status_string, 'Authorized')
+
+    def test_leave_duration(self):
+        self.assertEqual(self.leave.duration, 1)
+
+    def test_leave_duration_negative(self):
+        self.leave.end_date = datetime.date.today() - datetime.timedelta(days=1)
+        self.leave.save()
+        self.assertEqual(self.leave.duration, 0)
+
+    def test_leave_duration_long(self):
+        self.leave.end_date = datetime.date.today() + datetime.timedelta(days=5)
+        self.leave.save()
+        self.assertEqual(self.leave.duration, 5)
+
+    def test_leave_category_string(self):
+        self.assertEqual(self.leave.category_string, 'Annual Leave')
+

@@ -37,7 +37,7 @@ class ProductDeleteView(InventoryControllerCheckMixin, DeleteView):
     success_url = reverse_lazy('inventory:product-list')
 
 
-class ProductUpdateView(InventoryControllerCheckMixin, ExtraContext, UpdateView):
+class ProductUpdateView(InventoryControllerCheckMixin, ContextMixin, UpdateView):
     form_class = forms.ProductUpdateForm
     model = models.Product
     success_url = reverse_lazy('inventory:home')
@@ -50,7 +50,7 @@ class ProductDetailView(InventoryControllerCheckMixin, DetailView):
     template_name = os.path.join("inventory", "item", "product", "detail.html")
 
 
-class ProductListView(InventoryControllerCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class ProductListView(InventoryControllerCheckMixin, ContextMixin, PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.ProductFilter
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
@@ -63,7 +63,7 @@ class ProductListView(InventoryControllerCheckMixin, ExtraContext, PaginationMix
         return models.Product.objects.all().order_by('pk')
 
 
-class ProductCreateView(InventoryControllerCheckMixin, ExtraContext, 
+class ProductCreateView(InventoryControllerCheckMixin, ContextMixin, 
         CreateView):
     form_class = forms.ProductForm
     success_url = reverse_lazy('inventory:home')
@@ -85,7 +85,7 @@ class ProductCreateView(InventoryControllerCheckMixin, ExtraContext,
 
 
 class QuickProductCreateView(InventoryControllerCheckMixin, 
-        ExtraContext, CreateView):
+        ContextMixin, CreateView):
     form_class = forms.QuickProductForm
     model = models.Product
     success_url = reverse_lazy('inventory:home')
@@ -100,7 +100,7 @@ class ConsumableAPIView(ModelViewSet):
     serializer_class = serializers.ConsumableSerializer
 
 
-class ConsumableUpdateView(InventoryControllerCheckMixin, ExtraContext,
+class ConsumableUpdateView(InventoryControllerCheckMixin, ContextMixin,
         UpdateView):
     form_class = forms.ConsumableForm
     model = models.Consumable
@@ -114,7 +114,7 @@ class ConsumableDetailView(InventoryControllerCheckMixin, DetailView):
     template_name = os.path.join("inventory", "item", 'consumable',"detail.html")
 
 
-class ConsumableListView(InventoryControllerCheckMixin, ExtraContext, 
+class ConsumableListView(InventoryControllerCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.ConsumableFilter
@@ -128,7 +128,7 @@ class ConsumableListView(InventoryControllerCheckMixin, ExtraContext,
         return models.Consumable.objects.all().order_by('pk')
 
 
-class ConsumableCreateView(InventoryControllerCheckMixin, ExtraContext, 
+class ConsumableCreateView(InventoryControllerCheckMixin, ContextMixin, 
         CreateView):
     form_class = forms.ConsumableForm
     success_url = reverse_lazy('inventory:home')
@@ -158,7 +158,7 @@ class EquipmentAPIView(ModelViewSet):
     serializer_class = serializers.EquipmentSerializer
 
 
-class EquipmentUpdateView(InventoryControllerCheckMixin, ExtraContext, 
+class EquipmentUpdateView(InventoryControllerCheckMixin, ContextMixin, 
         UpdateView):
     form_class = forms.EquipmentForm
     model = models.Equipment
@@ -172,7 +172,7 @@ class EquipmentDetailView(InventoryControllerCheckMixin, DetailView):
     template_name = os.path.join("inventory", "item", 'equipment', "detail.html")
 
 
-class EquipmentListView(InventoryControllerCheckMixin, ExtraContext, 
+class EquipmentListView(InventoryControllerCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.EquipmentFilter
@@ -186,7 +186,7 @@ class EquipmentListView(InventoryControllerCheckMixin, ExtraContext,
         return models.Equipment.objects.all().order_by('pk')
 
 
-class EquipmentCreateView(InventoryControllerCheckMixin, ExtraContext, 
+class EquipmentCreateView(InventoryControllerCheckMixin, ContextMixin, 
         CreateView):
     form_class = forms.EquipmentForm
     success_url = reverse_lazy('inventory:home')
@@ -217,7 +217,7 @@ class RawMaterialAPIView(ModelViewSet):
     serializer_class = serializers.RawMaterialSerializer
 
 
-class RawMaterialUpdateView(InventoryControllerCheckMixin, ExtraContext, 
+class RawMaterialUpdateView(InventoryControllerCheckMixin, ContextMixin, 
         UpdateView):
     form_class = forms.RawMaterialForm
     model = models.RawMaterial
@@ -231,7 +231,7 @@ class RawMaterialDetailView(InventoryControllerCheckMixin, DetailView):
     template_name = os.path.join("inventory", "item", 'raw_material', "detail.html")
 
 
-class RawMaterialListView(InventoryControllerCheckMixin, ExtraContext, 
+class RawMaterialListView(InventoryControllerCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.RawMaterialFilter
@@ -245,7 +245,7 @@ class RawMaterialListView(InventoryControllerCheckMixin, ExtraContext,
         return models.RawMaterial.objects.all().order_by('pk')
 
 
-class RawMaterialCreateView(InventoryControllerCheckMixin, ExtraContext, 
+class RawMaterialCreateView(InventoryControllerCheckMixin, ContextMixin, 
         CreateView):
     form_class = forms.RawMaterialForm
     success_url = reverse_lazy('inventory:home')

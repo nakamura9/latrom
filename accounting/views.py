@@ -17,7 +17,7 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
 from django_filters.views import FilterView
 from rest_framework import viewsets
 
-from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
 from inventory.models import Product
 from accounting.util import AccountingTaskService
@@ -51,7 +51,7 @@ class Dashboard(BookkeeperCheckMixin, TemplateView):
 # update and delete removed for security, only adjustments can alter the state 
 # of an entry 
 
-class JournalEntryCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
+class JournalEntryCreateView(BookkeeperCheckMixin, ContextMixin, CreateView):
     '''This type of journal entry has only one credit and one debit'''
     template_name = CREATE_TEMPLATE
     model = models.JournalEntry
@@ -71,7 +71,7 @@ class JournalEntryIframeView(ListView):
         ).order_by('date')
 
 
-class ComplexEntryView(BookkeeperCheckMixin, ExtraContext, CreateView):
+class ComplexEntryView(BookkeeperCheckMixin, ContextMixin, CreateView):
     '''This type of journal entry can have any number of 
     credits and debits. The front end page uses react to dynamically 
     alter the content of page hence the provided data from react is 
@@ -115,7 +115,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AccountSerializer
 
 
-class AccountTransferPage(BookkeeperCheckMixin, ExtraContext, CreateView):
+class AccountTransferPage(BookkeeperCheckMixin, ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('accounting:dashboard')
     form_class = forms.SimpleJournalEntryForm
@@ -124,7 +124,7 @@ class AccountTransferPage(BookkeeperCheckMixin, ExtraContext, CreateView):
         'description': 'Move money directly between accounts using a simplified interface. Journal Entries are created automatically'
     }
 
-class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
+class AccountCreateView(BookkeeperCheckMixin, ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
     form_class = forms.AccountForm
@@ -133,7 +133,7 @@ class AccountCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
         "title": "Create New Account",
         'description': "Use accounts to manage income and expenses in an intuitive way. A default chart of expenses is already implemented."}
 
-class AccountUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
+class AccountUpdateView(BookkeeperCheckMixin, ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
     form_class = forms.AccountUpdateForm
@@ -165,7 +165,7 @@ class AccountDebitIframeView(ListView):
 
 
 class AccountListView(BookkeeperCheckMixin, PaginationMixin, FilterView,  
-        ExtraContext):
+        ContextMixin):
     template_name = os.path.join('accounting', 'account','list.html')
     filterset_class = filters.AccountFilter
     paginate_by = 10
@@ -184,8 +184,8 @@ class TaxViewset(viewsets.ModelViewSet):
     queryset = models.Tax.objects.all()
     serializer_class = serializers.TaxSerializer
 
-class TaxUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
-    form_class = forms.TaxForm
+class TaxUpdateView(BookkeeperCheckMixin, ContextMixin, UpdateView):
+    form_class = forms.TaxUpdateForm
     model= models.Tax
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
@@ -193,7 +193,7 @@ class TaxUpdateView(BookkeeperCheckMixin, ExtraContext, UpdateView):
         'title': 'Editing Existing Tax'
     }
 
-class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
+class TaxCreateView(BookkeeperCheckMixin, ContextMixin, CreateView):
     form_class = forms.TaxForm
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
@@ -207,7 +207,7 @@ class TaxCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
     }
 
 
-class TaxListView(BookkeeperCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class TaxListView(BookkeeperCheckMixin, ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.TaxFilter
     template_name = os.path.join('accounting','tax_list.html')
     paginate_by =10
@@ -221,7 +221,7 @@ class TaxDeleteView(BookkeeperCheckMixin, DeleteView):
     success_url = reverse_lazy('employees:util-list')
     model = models.Tax
 
-class DirectPaymentFormView(BookkeeperCheckMixin, ExtraContext, FormView):
+class DirectPaymentFormView(BookkeeperCheckMixin, ContextMixin, FormView):
     '''Uses a simple form view as a wrapper for a transaction in the journals
     for transactions involving two accounts.
     '''
@@ -272,7 +272,7 @@ class AccountConfigView(BookkeeperCheckMixin, UpdateView):
     success_url = reverse_lazy('accounting:dashboard')
     model = models.AccountingSettings
 
-class DirectPaymentList(BookkeeperCheckMixin, ExtraContext, TemplateView):
+class DirectPaymentList(BookkeeperCheckMixin, ContextMixin, TemplateView):
     template_name = os.path.join('accounting', 'direct_payment_list.html')
     extra_context = {
         'entries': lambda : models.JournalEntry.objects.filter(
@@ -283,7 +283,7 @@ class DirectPaymentList(BookkeeperCheckMixin, ExtraContext, TemplateView):
 #                    Journal Views                         #
 #############################################################
 
-class JournalCreateView(BookkeeperCheckMixin, ExtraContext, CreateView):
+class JournalCreateView(BookkeeperCheckMixin, ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     model = models.Journal
     form_class = forms.JournalForm
@@ -296,7 +296,7 @@ class JournalDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'journal', 'detail.html')
     model = models.Journal
 
-class JournalListView(BookkeeperCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class JournalListView(BookkeeperCheckMixin, ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('accounting', 'journal', 'list.html')
     filterset_class = filters.JournalFilter
     paginate_by = 10
@@ -318,16 +318,8 @@ class ExpenseAPIView(viewsets.ModelViewSet):
     queryset = models.Expense.objects.all()
     serializer_class = serializers.ExpenseSerializer
 
-class AssetViewGroup(ModelViewGroup):
-    model = models.Asset
-    create_form = forms.AssetForm
-    create_template = os.path.join('accounting', 'asset_create.html')
-    list_template = os.path.join('accounting', 'asset_list.html')
-    delete_template = os.path.join('common_data', 'delete_template.html')
-    success_url = "/accounting/"
 
-
-class AssetCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
+class AssetCreateView(ContextMixin, BookkeeperCheckMixin, CreateView):
     form_class = forms.AssetForm
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
@@ -336,7 +328,7 @@ class AssetCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
         'description': 'Used to formally record valuable property belonging to the organization'
     }
 
-class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, UpdateView):
+class AssetUpdateView(ContextMixin, BookkeeperCheckMixin, UpdateView):
     form_class = forms.AssetForm
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
@@ -346,7 +338,7 @@ class AssetUpdateView(ExtraContext, BookkeeperCheckMixin, UpdateView):
     model = models.Asset
 
 
-class AssetListView(ExtraContext, BookkeeperCheckMixin, PaginationMixin, 
+class AssetListView(ContextMixin, BookkeeperCheckMixin, PaginationMixin, 
         FilterView):
     template_name = os.path.join('accounting', 'asset_list.html')
     model = models.Asset
@@ -361,7 +353,7 @@ class AssetDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'asset_detail.html')
     model = models.Asset
 
-class ExpenseCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
+class ExpenseCreateView(ContextMixin, BookkeeperCheckMixin, CreateView):
     form_class = forms.ExpenseForm
     template_name = CREATE_TEMPLATE
     success_url = "/accounting/"
@@ -370,7 +362,7 @@ class ExpenseCreateView(ExtraContext, BookkeeperCheckMixin, CreateView):
         'description': 'Record costs incurred in the process of running a business.'
     }
 
-class ExpenseListView(ExtraContext, BookkeeperCheckMixin, PaginationMixin, 
+class ExpenseListView(ContextMixin, BookkeeperCheckMixin, PaginationMixin, 
         FilterView):
     template_name = os.path.join('accounting', 'expense_list.html')
     model = models.Expense
@@ -390,7 +382,7 @@ class ExpenseDeleteView(BookkeeperCheckMixin, DeleteView):
     model = models.Expense
     success_url = "/accounting/expense-list"
 
-class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin, 
+class RecurringExpenseCreateView(ContextMixin, BookkeeperCheckMixin, 
         CreateView):
     form_class = forms.RecurringExpenseForm
     template_name = CREATE_TEMPLATE
@@ -400,7 +392,7 @@ class RecurringExpenseCreateView(ExtraContext, BookkeeperCheckMixin,
         'description': 'Record costs that occur periodically'
     }
 
-class RecurringExpenseUpdateView(ExtraContext, BookkeeperCheckMixin, 
+class RecurringExpenseUpdateView(ContextMixin, BookkeeperCheckMixin, 
         UpdateView):
     form_class = forms.RecurringExpenseForm
     template_name = CREATE_TEMPLATE
@@ -410,7 +402,7 @@ class RecurringExpenseUpdateView(ExtraContext, BookkeeperCheckMixin,
     }
     model = models.RecurringExpense
 
-class RecurringExpenseListView(ExtraContext, BookkeeperCheckMixin, 
+class RecurringExpenseListView(ContextMixin, BookkeeperCheckMixin, 
         PaginationMixin, FilterView):
     template_name = os.path.join('accounting', 'recurring_expense_list.html')
     model = models.RecurringExpense
@@ -470,7 +462,7 @@ class BookkeeperDetailView(BookkeeperCheckMixin, DetailView):
     template_name = os.path.join('accounting', 'bookkeeper_detail.html')
     
     
-class BookkeeperDeleteView(ExtraContext, BookkeeperCheckMixin, DeleteView):
+class BookkeeperDeleteView(ContextMixin, BookkeeperCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.Bookkeeper
     extra_context = {
@@ -484,11 +476,13 @@ class CurrencyConverterView(BookkeeperCheckMixin, TemplateView):
 class CurrencyCreateView(BookkeeperCheckMixin, CreateView):
     template_name = CREATE_TEMPLATE
     model = models.Currency
+    fields = "__all__"
     success_url = "accounting/currency-converter"
 
 class CurrencyUpdateView(BookkeeperCheckMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.Currency
+    fields = "__all__"
     success_url = "accounting/currency-converter"
 
 
@@ -496,12 +490,14 @@ class CurrencyConversionLineCreateView(BookkeeperCheckMixin,
         CreateView):
     template_name = CREATE_TEMPLATE
     model = models.CurrencyConversionLine
+    fields = "__all__"
     success_url = "accounting/currency-converter"
 
 class CurrencyConversionLineUpdateView(BookkeeperCheckMixin, 
         UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.CurrencyConversionLine
+    fields = "__all__"
     success_url = "accounting/currency-converter"
 
 class CurrencyAPIView(viewsets.ModelViewSet):

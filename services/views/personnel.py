@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
 from services.views.util import ServiceCheckMixin
@@ -17,7 +17,7 @@ from services.views.util import ServiceCheckMixin
 ####################################################
 #                Service Employees                 #
 ####################################################
-class ServicePersonCreateView(ServiceCheckMixin, ExtraContext, CreateView):
+class ServicePersonCreateView(ServiceCheckMixin, ContextMixin, CreateView):
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.ServicePersonForm
     success_url = reverse_lazy('services:service-person-list')
@@ -25,7 +25,7 @@ class ServicePersonCreateView(ServiceCheckMixin, ExtraContext, CreateView):
         'title': 'Add Employee to Service Personnel'
     }
 
-class ServicePersonUpdateView(ServiceCheckMixin, ExtraContext, UpdateView):
+class ServicePersonUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.ServicePersonForm
     success_url = reverse_lazy('services:service-person-list')
@@ -34,7 +34,7 @@ class ServicePersonUpdateView(ServiceCheckMixin, ExtraContext, UpdateView):
         'title': 'Update Service Person Details'
     }
 
-class ServicePersonListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class ServicePersonListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'personnel', 'list.html')
     queryset = models.ServicePerson.objects.all()
     paginate_by = 10
@@ -89,7 +89,7 @@ class ServiceTeamDetailView(ServiceCheckMixin, DetailView):
         'detail.html')
     model = models.ServiceTeam
 
-class ServiceTeamListView(ServiceCheckMixin, ExtraContext, ListView):
+class ServiceTeamListView(ServiceCheckMixin, ContextMixin, ListView):
     template_name = os.path.join('services', 'personnel', 'teams', 
         'list.html')
     queryset = models.ServiceTeam.objects.all()

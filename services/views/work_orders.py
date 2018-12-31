@@ -10,7 +10,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
 from services.views.util import ServiceCheckMixin
@@ -37,7 +37,7 @@ class WorkOrderCRUDMixin(object):
 
 
 
-class WorkOrderCreateView(ServiceCheckMixin, WorkOrderCRUDMixin, ExtraContext,
+class WorkOrderCreateView(ServiceCheckMixin, WorkOrderCRUDMixin, ContextMixin,
         CreateView):
     template_name = os.path.join('services', 'work_order', 'create.html')
     form_class = forms.ServiceWorkOrderForm
@@ -88,7 +88,7 @@ class WorkOrderDetailView(ServiceCheckMixin, DetailView):
         )
         return context
 
-class WorkOrderListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class WorkOrderListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'work_order', 'list.html')
     filterset_class = filters.WorkOrderFilter
     queryset = models.ServiceWorkOrder.objects.all()

@@ -41,7 +41,7 @@ class InventoryControllerCheckMixin(UserPassesTestMixin):
             return False
 
 
-class InventoryControllerCreateView(ExtraContext, CreateView):
+class InventoryControllerCreateView(ContextMixin, CreateView):
     form_class = forms.InventoryControllerForm
     template_name = CREATE_TEMPLATE
     success_url =  reverse_lazy('inventory:inventory-controller-list')
@@ -54,7 +54,7 @@ class InventoryControllerCreateView(ExtraContext, CreateView):
         }]
     }
     
-class InventoryControllerUpdateView(ExtraContext, UpdateView):
+class InventoryControllerUpdateView(ContextMixin, UpdateView):
     form_class = forms.InventoryControllerUpdateForm
     template_name = CREATE_TEMPLATE
     queryset = models.InventoryController.objects.all()
@@ -64,7 +64,7 @@ class InventoryControllerUpdateView(ExtraContext, UpdateView):
         
     }
 
-class InventoryControllerListView(ExtraContext, InventoryControllerCheckMixin,  PaginationMixin, FilterView):
+class InventoryControllerListView(ContextMixin, InventoryControllerCheckMixin,  PaginationMixin, FilterView):
     queryset = models.InventoryController.objects.all()
     template_name = os.path.join('inventory', 'inventory_controller_list.html')
     filterset_class = filters.ControllerFilter
@@ -86,7 +86,7 @@ class InventoryDashboard(InventoryControllerCheckMixin,
 #######################################################
 
 
-class UnitCreateView(ExtraContext, InventoryControllerCheckMixin, CreateView):
+class UnitCreateView(ContextMixin, InventoryControllerCheckMixin, CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
@@ -95,7 +95,7 @@ class UnitCreateView(ExtraContext, InventoryControllerCheckMixin, CreateView):
         'title':'Create New Unit of measure'
     }
 
-class UnitUpdateView(ExtraContext, InventoryControllerCheckMixin, UpdateView):
+class UnitUpdateView(ContextMixin, InventoryControllerCheckMixin, UpdateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
@@ -109,7 +109,7 @@ class UnitDetailView(InventoryControllerCheckMixin, DetailView):
     template_name = os.path.join('inventory', 'unit', 'detail.html')
 
 
-class UnitListView(ExtraContext, InventoryControllerCheckMixin, PaginationMixin, FilterView):
+class UnitListView(ContextMixin, InventoryControllerCheckMixin, PaginationMixin, FilterView):
     filterset_class = filters.UnitFilter
     model = models.UnitOfMeasure
     paginate_by = 10

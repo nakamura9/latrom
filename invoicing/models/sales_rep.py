@@ -4,9 +4,9 @@ from django.db import models
 from django.db.models import Q
 
 from .invoices.abstract import AbstractSale
+from common_data.models import SoftDeletionModel
 
-
-class SalesRepresentative(models.Model):
+class SalesRepresentative(SoftDeletionModel):
     '''Really just a dummy class that points to an employee. 
     allows sales and commission to be tracked.
     
@@ -17,22 +17,15 @@ class SalesRepresentative(models.Model):
     '''
     employee = models.OneToOneField('employees.Employee', on_delete=None,)
     number = models.AutoField(primary_key=True)
-    active = models.BooleanField(default=True)
     can_reverse_invoices = models.BooleanField(default=True)
     can_offer_discounts = models.BooleanField(default=True)
 
-    def delete(self, deep=False):
-        if deep:
-            super().delete()
-            return
-        self.active = False
-        self.save()
 
     def __str__(self):
         return self.employee.first_name + ' ' + self.employee.last_name
 
     def sales(self, start, end):
-        invoices = AbstractSale.abstract_filter(Q(salesperson=self) \
+        invoices = AbstractSale.abstract_filter(Q(status="paid") & Q(salesperson=self) \
             & (Q(due__lt=end) \
             | Q(due__gte=start)))
         #should i filter for paid invoices?

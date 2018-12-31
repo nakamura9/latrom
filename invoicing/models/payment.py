@@ -2,8 +2,9 @@ from django.db import models
 
 from accounting.models import Account, Journal, JournalEntry
 from decimal import Decimal as D
+from common_data.models import SoftDeletionModel
 
-class Payment(models.Model):
+class Payment(SoftDeletionModel):
     '''Model represents payments made by credit customers only!
     These transactions are currently implemented to require full payment 
     of each invoice. Support for multiple payments for a single invoice
@@ -55,10 +56,6 @@ class Payment(models.Model):
     def due(self):
         return self.invoice.total - self.amount
 
-
-    def delete(self):
-        self.active = False
-        self.save()
     
     @property
     def invoice(self):

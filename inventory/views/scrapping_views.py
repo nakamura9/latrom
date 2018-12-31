@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView
 
-from common_data.utilities import ConfigMixin, ExtraContext
+from common_data.utilities import ConfigMixin, ContextMixin
 from inventory import forms, models
 from invoicing.models import SalesConfig
 
@@ -42,7 +42,7 @@ class ScrappingRecordCreateView(CreateView):
         
         return resp
 
-class ScrappingReportListView(ExtraContext, ListView):
+class ScrappingReportListView(ContextMixin, ListView):
     template_name = os.path.join('inventory', 'scrapping', 'list.html')
     extra_context = {
         'title': 'Scrapping History for Warehouse'
@@ -54,7 +54,7 @@ class ScrappingReportListView(ExtraContext, ListView):
 
     
 
-class ScrappingReportDetailView(ExtraContext, ConfigMixin, DetailView):
+class ScrappingReportDetailView(ContextMixin, ConfigMixin, DetailView):
     template_name = os.path.join('inventory', 'scrapping', 'detail.html')
     model = models.InventoryScrappingRecord
     extra_context = {

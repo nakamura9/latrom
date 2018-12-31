@@ -70,7 +70,7 @@ class InventoryCheckDetailView(DetailView):
     model = models.InventoryCheck
     template_name = os.path.join('inventory', 'inventory_check', 'summary.html')
 
-class InventoryCheckListView(ExtraContext ,PaginationMixin, FilterView):
+class InventoryCheckListView(ContextMixin ,PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.InventoryCheckFilter
     template_name = os.path.join("inventory", "inventory_check", 'list.html')
@@ -126,7 +126,7 @@ class TransferOrderCreateView(CreateView):
                 messages.info(request, 'The selected source warehouse has insufficient quantity of item %s to make the transfer' % product)
         return resp
 
-class TransferOrderListView(ExtraContext, PaginationMixin, FilterView):
+class TransferOrderListView(ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.TransferOrderFilter
     template_name = os.path.join('inventory', 'transfer', 'list.html')
     paginate_by =10
@@ -154,7 +154,7 @@ class TransferOrderDetailView(DetailView):
     template_name = os.path.join('inventory', 'transfer', 'detail.html')
 
 
-class TransferOrderReceiveView(ExtraContext, UpdateView):
+class TransferOrderReceiveView(ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.TransferReceiptForm
     model = models.TransferOrder

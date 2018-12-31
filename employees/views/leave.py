@@ -4,7 +4,7 @@ import os
 from django.views.generic.edit import CreateView, FormView
 
 from django.urls import reverse
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from django.views.generic import TemplateView, DetailView
 from employees.views.util import AdministratorCheckMixin
 from employees import forms
@@ -20,7 +20,7 @@ from django.http import JsonResponse
 class LeaveCalendarView(AdministratorCheckMixin, TemplateView):
     template_name = os.path.join('employees', 'leave', 'calendar.html')
 
-class LeaveRequestList(AdministratorCheckMixin, ExtraContext, 
+class LeaveRequestList(AdministratorCheckMixin, ContextMixin, 
         PaginationMixin, FilterView):
     filterset_class = LeaveRequestFilter
     queryset = models.Leave.objects.all()
@@ -29,7 +29,7 @@ class LeaveRequestList(AdministratorCheckMixin, ExtraContext,
         'title': 'List of Vaction Applications',
         'new_link': '/employees/leave-request'
     }
-class LeaveDayRequestView(ExtraContext, AdministratorCheckMixin, CreateView):
+class LeaveDayRequestView(ContextMixin, AdministratorCheckMixin, CreateView):
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.LeaveRequestForm
     extra_context = {
@@ -43,7 +43,7 @@ class LeaveDayDetailView(AdministratorCheckMixin, DetailView):
     template_name = os.path.join('employees', 'leave', 'detail.html')
     model = models.Leave
 
-class LeaveAuthorizationView(AdministratorCheckMixin, ExtraContext, FormView):
+class LeaveAuthorizationView(AdministratorCheckMixin, ContextMixin, FormView):
     form_class = forms.LeaveAuthorizationForm
     template_name = os.path.join('common_data', 'create_template.html')
     extra_context = {

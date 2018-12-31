@@ -49,6 +49,11 @@ class TaxForm(forms.ModelForm, BootstrapMixin):
         fields ='__all__'
         model = models.Tax
 
+class TaxUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields ='name',
+        model = models.Tax
+
 class SimpleJournalEntryForm(forms.ModelForm, BootstrapMixin):
     amount = forms.DecimalField()
     credit = forms.ModelChoiceField(models.Account.objects.all())

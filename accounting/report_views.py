@@ -9,7 +9,7 @@ from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import FormView
 
 from common_data.forms import PeriodReportForm
-from common_data.utilities import ExtraContext, extract_period, ConfigMixin
+from common_data.utilities import ContextMixin, extract_period, ConfigMixin
 from accounting.views import BookkeeperCheckMixin
 
 
@@ -103,7 +103,7 @@ class BalanceSheet(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
         return context
 
 
-class IncomeStatementFormView(BookkeeperCheckMixin ,ExtraContext, FormView):
+class IncomeStatementFormView(BookkeeperCheckMixin ,ContextMixin, FormView):
     form_class = PeriodReportForm
     template_name = os.path.join('common_data', 'reports', 'report_form.html')
     extra_context = {

@@ -3,6 +3,7 @@ import os
 from django.core.mail import EmailMessage
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse_lazy
@@ -17,7 +18,7 @@ from accounting.models import Journal
 from common_data import filters, models
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ExtraContext, apply_style
+from common_data.utilities import ContextMixin, apply_style
 from invoicing.models import SalesConfig
 from rest_framework.generics import RetrieveAPIView
 from common_data import serializers 
@@ -65,7 +66,7 @@ CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 #                  Organization Views                   #
 #########################################################
 
-class OrganizationCreateView(ExtraContext, CreateView):
+class OrganizationCreateView(ContextMixin, LoginRequiredMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.OrganizationForm
     success_url = reverse_lazy('invoicing:home')
@@ -73,7 +74,7 @@ class OrganizationCreateView(ExtraContext, CreateView):
         'title': 'Add Organization'
     }
 
-class OrganizationUpdateView(ExtraContext, UpdateView):
+class OrganizationUpdateView(ContextMixin, LoginRequiredMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.OrganizationForm
     model = models.Organization
@@ -83,12 +84,13 @@ class OrganizationUpdateView(ExtraContext, UpdateView):
     }
 
 
-class OrganizationDetailView(ExtraContext, DetailView):
+class OrganizationDetailView(ContextMixin, LoginRequiredMixin, DetailView):
     template_name = os.path.join('common_data', 'organization','detail.html')
     model = models.Organization
     
 
-class OrganizationListView(ExtraContext, PaginationMixin, FilterView):
+class OrganizationListView(ContextMixin, PaginationMixin,  LoginRequiredMixin, 
+        FilterView):
     template_name = os.path.join('common_data', 'organization', 'list.html')
     queryset = models.Organization.objects.all()
     filterset_class = filters.OrganizationFilter
@@ -103,7 +105,7 @@ class OrganizationListView(ExtraContext, PaginationMixin, FilterView):
 #                    Individual Views                   #
 #########################################################
 
-class IndividualCreateView(ExtraContext, CreateView):
+class IndividualCreateView(ContextMixin,  LoginRequiredMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.IndividualForm
     success_url = reverse_lazy('invoicing:home')
@@ -116,7 +118,7 @@ class IndividualCreateView(ExtraContext, CreateView):
         }]
     }
 
-class IndividualUpdateView(ExtraContext, UpdateView):
+class IndividualUpdateView(ContextMixin,  LoginRequiredMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.IndividualForm
     model = models.Individual
@@ -131,12 +133,13 @@ class IndividualUpdateView(ExtraContext, UpdateView):
     }
 
 
-class IndividualDetailView(ExtraContext, DetailView):
+class IndividualDetailView(ContextMixin,  LoginRequiredMixin, DetailView):
     template_name = os.path.join('common_data', 'individual','detail.html')
     model = models.Individual
     
 
-class IndividualListView(ExtraContext, PaginationMixin, FilterView):
+class IndividualListView(ContextMixin, PaginationMixin,  LoginRequiredMixin, 
+        FilterView):
     template_name = os.path.join('common_data', 'individual', 'list.html')
     queryset = models.Individual.objects.all()
     filterset_class = filters.IndividualFilter
@@ -146,18 +149,18 @@ class IndividualListView(ExtraContext, PaginationMixin, FilterView):
     }
 
 
-class WorkFlowView(TemplateView):
+class WorkFlowView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "workflow.html")
 
 class ReactTestView(TemplateView):
     template_name = os.path.join("common_data", "react_test.html")
 
-class AboutView(TemplateView):
+class AboutView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "about.html")
 
 
 
-class GlobalConfigView(ExtraContext, UpdateView):
+class GlobalConfigView(ContextMixin,  LoginRequiredMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.GlobalConfig
     form_class = forms.GlobalConfigForm
@@ -168,14 +171,11 @@ class GlobalConfigView(ExtraContext, UpdateView):
 
 
 
-def config_JSON_API(request):
-    return JsonResponse(SalesConfig.get_config_dict())
-
 def get_logo_url(request):
     return JsonResponse({'url': SalesConfig.logo_url() })
 
 
-class SendEmail(ExtraContext, FormView):
+class SendEmail(ContextMixin,  LoginRequiredMixin, FormView):
     template_name = CREATE_TEMPLATE
     form_class = forms.SendMailForm
     success_url= reverse_lazy('invoicing:home')
@@ -196,7 +196,7 @@ class SendEmail(ExtraContext, FormView):
             return resp
         return resp
 
-class EmailPlusPDFMixin(ExtraContext, FormView):
+class EmailPlusPDFView(ContextMixin, FormView):
     form_class = SendMailForm
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = None
@@ -215,7 +215,7 @@ class EmailPlusPDFMixin(ExtraContext, FormView):
         }
     
     def post(self,request, *args, **kwargs):
-        resp = super(EmailPlusPDFMixin, self).post(
+        resp = super(EmailPlusPDFView, self).post(
             request, *args, **kwargs)
         form = self.form_class(request.POST)
         

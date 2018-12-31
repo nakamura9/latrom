@@ -15,8 +15,8 @@ from rest_framework import viewsets
 from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ExtraContext, apply_style
-from common_data.views import EmailPlusPDFMixin, PaginationMixin
+from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
@@ -29,7 +29,7 @@ def process_data(items, inv):
         inv.add_line(item['pk'])
     
     
-class BillListView(SalesRepCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class BillListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
     template_name = os.path.join("invoicing", "bill","list.html")
@@ -120,7 +120,7 @@ class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
         return resp
 
 
-class BillUpdateView(ExtraContext, SalesRepCheckMixin, UpdateView):
+class BillUpdateView(ContextMixin, SalesRepCheckMixin, UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -140,7 +140,7 @@ class BillAPIViewSet(viewsets.ModelViewSet):
     queryset = Bill.objects.all()
 
 
-class BillPaymentView(ExtraContext, CreateView):
+class BillPaymentView(ContextMixin, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.BillPaymentForm
@@ -189,7 +189,7 @@ class BillPDFView(ConfigMixin, PDFTemplateView):
         return context
 
 
-class BillEmailSendView(EmailPlusPDFMixin):
+class BillEmailSendView(EmailPlusPDFView):
     inv_class = Bill
     success_url = reverse_lazy('invoicing:bills-list')
     pdf_template_name = os.path.join('invoicing', 'bill', 'pdf.html')

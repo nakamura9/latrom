@@ -19,7 +19,7 @@ from rest_framework import viewsets
 from django.db.models import Q
 
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, ConfigMixin, apply_style
+from common_data.utilities import ContextMixin, ConfigMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
@@ -29,7 +29,7 @@ from messaging.models import Notification
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 
-class DeductionCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
+class DeductionCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
     form_class = forms.DeductionForm
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:dashboard')
@@ -37,7 +37,7 @@ class DeductionCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
         'title': 'Add Deductions For Payroll'
     }
 
-class DeductionUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class DeductionUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
     form_class = forms.DeductionUpdateForm
     model = models.Deduction
     template_name = os.path.join('common_data','create_template.html')
@@ -63,7 +63,7 @@ class UtilsListView(AdministratorCheckMixin, TemplateView):
         return context
 
 
-class AllowanceCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
+class AllowanceCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
     form_class = forms.AllowanceForm
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:dashboard')
@@ -71,7 +71,7 @@ class AllowanceCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
         'title': 'Create New Allowance '
     }
 
-class AllowanceUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class AllowanceUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
     form_class = forms.AllowanceUpdateForm
     model = models.Allowance
     template_name = os.path.join('common_data','create_template.html')
@@ -85,7 +85,7 @@ class AllowanceDeleteView(AdministratorCheckMixin, DeleteView):
     success_url = reverse_lazy('employees:util-list')
     model = models.Allowance
 
-class CommissionCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
+class CommissionCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
     form_class = forms.CommissionForm
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:dashboard')
@@ -93,7 +93,7 @@ class CommissionCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
         'title': 'Add Commission Rule for pay grades'
     }
 
-class CommissionUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class CommissionUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
     form_class = forms.CommissionUpdateForm
     model = models.CommissionRule
     template_name = os.path.join('common_data','create_template.html')
@@ -108,7 +108,7 @@ class CommissionDeleteView(AdministratorCheckMixin, DeleteView):
     model = models.CommissionRule
 
 
-class PayGradeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
+class PayGradeCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
     form_class = forms.PayGradeForm
     template_name =CREATE_TEMPLATE
     success_url = reverse_lazy('employees:dashboard')
@@ -135,7 +135,7 @@ class PayGradeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
         ] 
     }
 
-class PayGradeUpdateView(AdministratorCheckMixin, RevisionMixin ,ExtraContext, UpdateView):
+class PayGradeUpdateView(AdministratorCheckMixin, RevisionMixin ,ContextMixin, UpdateView):
     form_class = forms.PayGradeForm
     template_name =CREATE_TEMPLATE
     success_url = reverse_lazy('employees:list-pay-grades')
@@ -164,7 +164,7 @@ class PayslipView(AdministratorCheckMixin, ConfigMixin, DetailView):
     model= models.Payslip
     
 class PayslipListView(AdministratorCheckMixin, 
-        ExtraContext, 
+        ContextMixin, 
         PaginationMixin, 
         FilterView):
     filterset_class = filters.PayslipFilter
@@ -187,6 +187,7 @@ class PayslipVerificationView(AdministratorCheckMixin,
 class PayslipDeleteView(AdministratorCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.Payslip
+    success_url = '/employees/'
 
 
 def verify_payslip(request, pk=None):
@@ -231,7 +232,7 @@ class PayrollTaxCreateView(AdministratorCheckMixin, CreateView):
 
         return resp
 
-class PayrollTaxUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class PayrollTaxUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
     template_name = os.path.join('common_data','create_template.html')
     form_class = forms.PayrollTaxForm
     success_url = reverse_lazy('employees:dashboard')
@@ -244,7 +245,7 @@ class PayrollTaxDetailView(AdministratorCheckMixin, DetailView):
     template_name = os.path.join('employees', 'payroll_tax', 'detail.html')
     model = models.PayrollTax
 
-class PayrollTaxListView(ExtraContext, AdministratorCheckMixin, PaginationMixin,
+class PayrollTaxListView(ContextMixin, AdministratorCheckMixin, PaginationMixin,
         FilterView):
     template_name = os.path.join('employees', 'payroll_tax', 'list.html')
     queryset = models.PayrollTax.objects.all()
@@ -260,8 +261,6 @@ class PayrollTaxDeleteView(DeleteView):
     model = models.PayrollTax
     success_url = reverse_lazy('employees:dashboard')
 
-def run_payroll(request):
-    pass
 
 class ManualPayrollConfig(AdministratorCheckMixin, FormView):
     template_name = os.path.join('employees', 'manual_config.html')
@@ -383,6 +382,3 @@ class ManualPayrollService(object):
             return models.EmployeeTimeSheet.objects.get(sheet_filters)
 
         return None
-
-    
-        

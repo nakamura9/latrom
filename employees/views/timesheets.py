@@ -17,7 +17,7 @@ from django_filters.views import FilterView
 from rest_framework import viewsets
 
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
@@ -79,7 +79,7 @@ class CreateTimeSheetView(AdministratorCheckMixin, TimeSheetMixin, CreateView):
     form_class = forms.TimesheetForm
     success_url = reverse_lazy('employees:dashboard')
 
-class ListTimeSheetView(ExtraContext, AdministratorCheckMixin, PaginationMixin, FilterView):
+class ListTimeSheetView(ContextMixin, AdministratorCheckMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'time_sheet_list.html')
     filterset_class = filters.TimeSheetFilter
     paginate_by = 10
@@ -106,7 +106,7 @@ class TimeSheetViewset(viewsets.ModelViewSet):
     queryset = models.EmployeeTimeSheet.objects.all()
     serializer_class = serializers.TimeSheetSerializer
 
-class TimeLoggerView(ExtraContext, FormView):
+class TimeLoggerView(ContextMixin, FormView):
     template_name = CREATE_TEMPLATE
     extra_context = {
         'title': 'Log Time In/Out'

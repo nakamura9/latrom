@@ -36,7 +36,7 @@
                             <a class="dropdown-item" href="{% url 'inventory:order-create'  supplier=supplier.pk  %}">
                                 <i class="fas fa-receipt"></i> Make Purchase Order
                             </a>
-                            <a class="dropdown-item" href="{% url 'accounting:direct-payment'  supplier=supplier.pk  %}">
+                            <a class="dropdown-item" href="{% url 'accounting:direct-payment-supplier'  supplier=supplier.pk  %}">
                                 <i class="fas fa-money-check"></i> Make Payment To supplier
                             </a>
             

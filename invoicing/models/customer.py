@@ -8,9 +8,9 @@ import inventory
 from accounting.models import Account
 
 from .invoices import AbstractSale
+from common_data.models import  SoftDeletionModel
 
-
-class Customer(models.Model):
+class Customer(SoftDeletionModel):
     '''The customer model represents business clients to whom products are 
     sold. Customers are typically businesses and the fields reflect that 
     likelihood. Individuals however can also be represented.
@@ -22,7 +22,6 @@ class Customer(models.Model):
         on_delete=models.CASCADE, blank=True,)    
     billing_address = models.TextField(default= "", blank=True)
     banking_details = models.TextField(default= "", blank=True)
-    active = models.BooleanField(default=True)
     account = models.ForeignKey('accounting.Account', on_delete=models.CASCADE,
         null=True)#created in save method
 
@@ -48,9 +47,6 @@ class Customer(models.Model):
     def is_organization(self):
         return self.organization != None
 
-    def delete(self):
-        self.active = False
-        self.save()
 
     def __str__(self):
         return self.name

@@ -29,7 +29,6 @@ class SimpleModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_account_models(cls)
-        create_test_employees_models(cls)
     
     def test_create_account(self):
         acc = Account.objects.create(name= 'Other Test Account',
@@ -40,10 +39,16 @@ class SimpleModelTests(TestCase):
         self.assertIsInstance(acc, Account)
 
     def test_create_bookkeeper(self):
-        obj = Bookkeeper.objects.create(employee=self.employee)
+        employee = employee_models.Employee.objects.create(
+            hire_date=datetime.date.today(),
+            title='employee',
+            first_name='name',
+            last_name='name',
+        )
+        obj = Bookkeeper.objects.create(employee=employee)
         self.assertIsInstance(obj, Bookkeeper)
         # for __str__
-        self.assertEqual(str(obj), "First Last")
+        self.assertEqual(str(obj), "name name")
 
     def test_delete_bookkeeper(self):
         #create another employee
@@ -67,7 +72,15 @@ class SimpleModelTests(TestCase):
                 rate=15)
         
         self.assertIsInstance(obj, Tax)
-        
+        self.assertEqual(str(obj), 'sales tax')
+
+    def test_delete_tax(self):
+        obj=Tax.objects.create(
+                name='sales tax',
+                rate=15)
+        obj.delete()
+        self.assertFalse(obj.active)
+
     def test_create_debit(self):
         pre_bal = self.account_c.balance
         obj = Debit.objects.create(
@@ -90,9 +103,51 @@ class SimpleModelTests(TestCase):
         self.assertEqual(str(obj), 'Credit')
         self.assertEqual(self.account_c.balance, pre_bal + 10)
 
+    def test_create_ledger(self):
+        obj = Ledger.objects.create(
+            name="Test Ledger"
+        )
+        self.assertIsInstance(obj, Ledger)
+
+    def test_create_workbook(self):
+        obj = WorkBook.objects.create(
+            name="Test Book"
+        )
+        self.assertIsInstance(obj, WorkBook)
     
-    def test_create_asset(self):
-        
+    def test_create_adjustment(self):
+        wkbk = WorkBook.objects.create(
+            name="Test Book"
+        )
+        obj = Adjustment.objects.create(
+            entry=self.entry,
+            adjusting_entry=self.entry,
+            workbook = wkbk,
+            description='description on adjustment',
+            created_by=self.bookkeeper
+        )
+
+class AssetTests(TestCase):
+    # use fixtures later
+    fixtures = ['accounts.json', 'journals.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        create_account_models(cls)
+        PAST = TODAY - datetime.timedelta(days=732)
+        cls.old_asset = Asset.objects.create(
+            name='Test Asset',
+            description='Test description',
+            category = 0,
+            initial_value = 100,
+            debit_account = cls.account_d,
+            depreciation_period = 5,
+            init_date = PAST,
+            depreciation_method = 0,
+            salvage_value = 20,
+        )
+    
+    def test_create_asset(self):    
         obj = Asset.objects.create(
             name='Test Asset',
             description='Test description',
@@ -105,14 +160,34 @@ class SimpleModelTests(TestCase):
             salvage_value = 20,
         )
         self.assertIsInstance(obj, Asset)
-        
+        self.assertEqual(str(obj), 'Test Asset')
+
     def test_asset_create_entry(self):
         pre_entry_debit_account_value = self.account_d.balance
-        #initial value of asset = 100
         self.asset.create_entry()
         self.assertEqual(
             self.account_d.balance,
             pre_entry_debit_account_value - 100)
+
+    def test_asset_account(self):
+        self.assertIsInstance(self.asset.account, Account)
+
+    def test_asset_salvage_date(self):
+        self.assertIsInstance(self.asset.salvage_date, datetime.date)
+
+    def test_asset_timedelta_years(self):
+        self.assertEqual(self.old_asset._timedelta, 2)
+
+    def test_asset_category_string(self):
+        self.assertEqual(self.asset.category_string, 'Land')
+
+    def test_asset_total_depreciation(self):
+        self.assertEqual(self.old_asset.total_depreciation, 32)
+
+    def test_asset_current_value(self):
+        self.assertEqual(self.old_asset.current_value, 68)
+
+
 
 class ExpenseModelTests(TestCase):
     # use fixtures later
@@ -150,18 +225,28 @@ class ExpenseModelTests(TestCase):
             amount=100,
             debit_account=self.account_d)
         self.assertIsInstance(obj, RecurringExpense)
+        self.assertEqual(obj.cycle_string, 'Weekly')
+        self.assertIsInstance(str(obj), str)
+
+    def test_expense_account_property(self):
+        self.assertIsInstance(self.expense.expense_account, Account)
+
+    def test_expense_entry(self):
+        self.assertIsNotNone(self.expense.entry)
+
+    def test_expense_category_string(self):
+        self.assertEqual(self.expense.category_string, "Advertising")
 
     def test_recurring_expense_is_current(self):
         self.assertTrue(self.recurring_entry.is_current)
 
+    def test_recurring_expense_standalone_expense(self):
+        self.assertIsInstance(self.recurring_entry.create_standalone_expense(), 
+            Expense)
 
-    def test_recurring_expense_entry(self):
-        pre_entry_debit_balance = self.recurring_entry.debit_account.balance
-        self.recurring_entry.create_entry()
-        #the expense value is 100
-        self.assertEqual(
-            pre_entry_debit_balance - 100,
-            self.recurring_entry.debit_account.balance)
+    def test_recurring_expense_related_payments(self):
+        self.recurring_entry.create_standalone_expense()
+        self.assertTrue(self.recurring_entry.related_payments.count() != 0)
 
 class JournalEntryModelTests(TestCase):
     # use fixtures later
@@ -242,6 +327,56 @@ class JournalEntryModelTests(TestCase):
         self.account_c.balance = pre_bal
         self.account_c.save()
 
+    def test_primary_credit(self):
+        j = JournalEntry.objects.create(
+            memo='record of test entry',
+            date=TODAY,
+            journal =self.journal,
+            reference = "test reference",
+            created_by = self.usr
+        )
+        self.assertTrue(j.primary_credit is None)
+        
+        j.credit(10, self.account_c)
+        
+        self.assertTrue(j.primary_credit is not None)
+
+    def test_primary_debit(self):
+        j = JournalEntry.objects.create(
+            memo='record of test entry',
+            date=TODAY,
+            journal =self.journal,
+            reference = "test reference",
+            created_by = self.usr
+        )
+        self.assertTrue(j.primary_debit is None)
+        
+        j.debit(10, self.account_c)
+        
+        self.assertTrue(j.primary_debit is not None)
+
+    def test_delete_journal(self):
+        j = Journal.objects.create(
+            name='test journal',
+            description='test description'
+        )
+        j.delete()
+        self.assertFalse(j.active)
+
+    def test_entries_over_period(self):
+        NEXT_WEEK = TODAY + datetime.timedelta(days=7)
+        j = JournalEntry.objects.create(
+            memo='record of test entry',
+            date=NEXT_WEEK,
+            journal =self.journal,
+            reference = "test reference",
+            created_by = self.usr
+        )
+        entries = self.journal.get_entries_over_period(
+            NEXT_WEEK - datetime.timedelta(days=1),
+            NEXT_WEEK + datetime.timedelta(days=1))
+
+        self.assertEqual(entries.count(), 1)
 
 class AccountModelTests(TestCase):
     # use fixtures later
@@ -250,6 +385,27 @@ class AccountModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_account_models(cls)
+        cls.interest_account = InterestBearingAccount.objects.create(
+            name= 'Test Interest Account',
+            balance=100,
+            type='asset',
+            description='Some description',
+            interest_rate= 5,
+            interest_interval = 1,
+            interest_method = 0
+        )
+        cls.basic_account = Account.objects.create(
+            name= 'Test Account',
+            balance=100,
+            type='asset',
+            description='Some description'
+        )
+
+    def  setUp(self):
+        self.basic_account.balance=100
+        self.basic_account.save()
+        self.interest_account.balance=100
+        self.interest_account.save()
 
     def test_create_account(self):
         obj = Account.objects.create(
@@ -261,24 +417,21 @@ class AccountModelTests(TestCase):
         self.assertIsInstance(obj, Account)
 
     def test_account_credit_balance(self):
-        obj = Account.objects.create(
-            name= 'Test Account',
-            balance=100,
-            type='asset',
-            description='Some description'
-        )
-        self.assertEqual(obj.credit, D(100))
-        self.assertEqual(obj.debit, D(0))
+        
+        self.assertEqual(self.basic_account.credit, D(100))
+        self.assertEqual(self.basic_account.debit, D(0))
+
+    def test_account_total_debit(self):
+        self.assertIsInstance(self.basic_account.total_debit(), D)
+
+    def test_account_total_credit(self):
+        self.assertIsInstance(self.basic_account.total_credit(), D)
 
     def test_account_debit_balance(self):
-        obj = Account.objects.create(
-            name= 'Test Account',
-            balance=-100,
-            type='asset',
-            description='Some description'
-        )
-        self.assertEqual(obj.debit, D(100))
-        self.assertEqual(obj.credit, D(0))
+        self.basic_account.balance = -100
+        self.basic_account.save()
+        self.assertEqual(self.basic_account.debit, D(100))
+        self.assertEqual(self.basic_account.credit, D(0))
     
     def test_delete_account(self):
         obj = Account.objects.create(
@@ -291,19 +444,79 @@ class AccountModelTests(TestCase):
         self.assertEqual(obj.active, False)
 
 
+    def test_account_increment_decrement_account(self):
+        acc_c_b4 = self.account_c.balance
+        self.assertEqual(self.account_c.increment(10), acc_c_b4 + 10)
+        self.assertEqual(self.account_c.decrement(10), acc_c_b4)
+
     def test_create_interest_bearing_account(self):
         obj = InterestBearingAccount.objects.create(
             name= 'Test Interest Account',
             balance=100,
             type='asset',
             description='Some description',
-            interest_rate= 6,
+            interest_rate= 5,
             interest_interval = 1,
             interest_method = 0
         )
         self.assertIsInstance(obj, InterestBearingAccount)
 
-    def test_account_increment_decrement_account(self):
-        acc_c_b4 = self.account_c.balance
-        self.assertEqual(self.account_c.increment(10), acc_c_b4 + 10)
-        self.assertEqual(self.account_c.decrement(10), acc_c_b4)
+
+    def test_add_interest_to_interest_bearing_account(self):
+        self.interest_account.add_interest()
+        self.assertEqual(self.interest_account.balance, 105)
+
+    def test_interest_bearing_account_interest_calculation(self):
+        self.assertEqual(self.interest_account.interest_per_interval, 5)
+
+
+    def test_interest_bearing_account_should_earn_interest(self):
+        NEXT_YEAR = TODAY + datetime.timedelta(366)
+        self.assertFalse(self.interest_account.should_receive_interest(TODAY))
+        self.assertTrue(self.interest_account.should_receive_interest(
+            NEXT_YEAR
+        ))
+
+        # if has last interest earned date 
+        self.interest_account.last_interest_earned_date = TODAY
+        self.interest_account.save()
+        self.assertTrue(self.interest_account.should_receive_interest(
+            NEXT_YEAR))
+
+    
+class CurrencyTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.currency = Currency.objects.create(
+            name="Test",
+            symbol="$"
+        )
+        cls.currency_table = CurrencyConversionTable.objects.create(
+            name="table",
+            reference_currency=cls.currency
+        )
+    
+    def test_create_currency(self):
+        obj = Currency.objects.create(
+            name="Dollar",
+            symbol="$"
+        )
+        self.assertIsInstance(obj, Currency)
+        self.assertEqual(str(obj), "Dollar")
+
+    def test_create_conversion_table(self):
+        obj = CurrencyConversionTable.objects.create(
+            name="table",
+            reference_currency=self.currency
+        )
+        self.assertIsInstance(obj, CurrencyConversionTable)
+        self.assertEqual(str(obj), 'table')
+
+    def test_currency_conversion_line(self):
+        obj = CurrencyConversionLine.objects.create(
+            currency=self.currency,
+            exchange_rate= 4,
+            conversion_table=self.currency_table
+        )
+        self.assertIsInstance(obj, CurrencyConversionLine)
+

@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from inventory.models import Consumable, Equipment
 from services import filters, forms, models
@@ -52,7 +52,7 @@ class ProcedureCRUDMixin(object):
 
         return resp
 
-class ProcedureCreateView(ServiceCheckMixin, ProcedureCRUDMixin, ExtraContext, 
+class ProcedureCreateView(ServiceCheckMixin, ProcedureCRUDMixin, ContextMixin, 
         CreateView):
     form_class = forms.ServiceProcedureForm
     template_name = os.path.join('services', 'procedure', 'create.html')
@@ -80,7 +80,7 @@ class ProcedureDetailView(ServiceCheckMixin, DetailView):
     template_name = os.path.join('services', 'procedure', 'detail.html')
     model = models.ServiceProcedure
 
-class ProcedureListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class ProcedureListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'procedure', 'list.html')
     filterset_class = filters.ProcedureFilter
     model = models.ServiceProcedure

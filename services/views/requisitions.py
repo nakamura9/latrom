@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
 from common_data.forms import AuthenticateForm
-from common_data.utilities import ExtraContext
+from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from inventory.models import Consumable, Equipment, UnitOfMeasure
 from services import filters, forms, models, serializers
@@ -53,7 +53,7 @@ class EquipmentRequisitionDetailView(ServiceCheckMixin, DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class EquipmentRequisitionListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class EquipmentRequisitionListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
     queryset = models.EquipmentRequisition.objects.all()
     paginate_by = 10
@@ -154,7 +154,7 @@ class ConsumableRequisitionDetailView(ServiceCheckMixin, DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class ConsumableRequisitionListView(ServiceCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class ConsumableRequisitionListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.ConsumableRequisitionFilter
     queryset = models.ConsumablesRequisition.objects.all()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')

@@ -50,6 +50,6 @@ class SalesConfig(SingletonModel):
     @classmethod
     def logo_url(cls):
         conf = cls.objects.first()
-        if conf.logo:
+        if conf and conf.logo:
             return conf.logo.url
         return ""

@@ -15,6 +15,8 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.pagination import PageNumberPagination
+
 
 from common_data.models import GlobalConfig
 from common_data.utilities import *
@@ -24,7 +26,7 @@ from invoicing.models import SalesConfig
 from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 
-class WareHouseCreateView(ExtraContext, CreateView):
+class WareHouseCreateView(ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.WareHouseForm
     success_url = reverse_lazy('inventory:warehouse-list')
@@ -34,7 +36,7 @@ class WareHouseCreateView(ExtraContext, CreateView):
     }
 
 
-class WareHouseUpdateView(ExtraContext, UpdateView):
+class WareHouseUpdateView(ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.WareHouse
     form_class = forms.WareHouseForm
@@ -49,7 +51,7 @@ class WareHouseDetailView( DetailView):
     model = models.WareHouse
 
 
-class WareHouseListView(ExtraContext, ListView):
+class WareHouseListView(ContextMixin, ListView):
     template_name = os.path.join('inventory', 'warehouse', 'list.html')
     model = models.WareHouse
     paginate_by = 10
@@ -69,6 +71,11 @@ class WareHouseItemAPIView(RetrieveAPIView):
     serializer_class = serializers.WareHouseItemSerializer
     queryset = models.WareHouseItem.objects.all()
 
+
+class WareHousePaginator(PageNumberPagination):
+    page_size = 10
+    max_page_size = 10
+    page_size_query_description = 'page_size'
 
 class WareHouseItemListAPIView(ListAPIView):
     serializer_class = serializers.WareHouseItemSerializer

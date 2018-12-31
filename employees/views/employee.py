@@ -16,7 +16,7 @@ from django_filters.views import FilterView
 from rest_framework import viewsets
 
 from accounting.models import Tax
-from common_data.utilities import ExtraContext, ModelViewGroup, apply_style
+from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
@@ -29,7 +29,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = models.Employee.objects.all()
     serializer_class = serializers.EmployeeSerializer
 
-class EmployeeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
+class EmployeeCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
@@ -39,7 +39,7 @@ class EmployeeCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
     }
     
 
-class EmployeeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class EmployeeUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
@@ -48,7 +48,7 @@ class EmployeeUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
         'title': 'Edit Employee data on payroll system'
     }
 
-class EmployeeListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class EmployeeListView(AdministratorCheckMixin, ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'employee_list.html')
     filterset_class = filters.EmployeeFilter
     paginate_by = 10
@@ -68,7 +68,7 @@ class EmployeeDeleteView(AdministratorCheckMixin, DeleteView):
     model = models.Employee
 
 
-class PayrollOfficerCreateView(AdministratorCheckMixin, ExtraContext, CreateView):
+class PayrollOfficerCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.PayrollOfficerForm
     success_url = reverse_lazy('employees:dashboard')
@@ -77,16 +77,16 @@ class PayrollOfficerCreateView(AdministratorCheckMixin, ExtraContext, CreateView
         'description': 'Payroll officers are employees assigned to manage employee data such as income and vacation time as well as the roles of users within the system.'
     }
 
-class PayrollOfficerUpdateView(AdministratorCheckMixin, ExtraContext, UpdateView):
+class PayrollOfficerUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
-    form_class = forms.PayrollOfficerForm
+    form_class = forms.PayrollOfficerUpdateForm
     queryset = models.PayrollOfficer.objects.all()
     success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Update Payroll Officer'
     }
 
-class PayrollOfficerListView(AdministratorCheckMixin, ExtraContext, PaginationMixin, FilterView):
+class PayrollOfficerListView(AdministratorCheckMixin, ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'payroll_officer_list.html')
     paginate_by=10
     queryset = models.PayrollOfficer.objects.all()

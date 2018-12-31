@@ -7,7 +7,6 @@ urlpatterns = [
     re_path(r'^react-test/?$', views.ReactTestView.as_view(), 
         name="react-test"),    
     re_path(r'^about/?$', views.AboutView.as_view(), name="about"),
-    re_path(r'^api/config/?$', views.config_JSON_API, name='api-config'),
     re_path(r'^logo-url/?$', views.get_logo_url, name='logo-url'),
     re_path(r'^organization/create/?$', views.OrganizationCreateView.as_view(), 
         name='organization-create'),
@@ -29,6 +28,6 @@ urlpatterns = [
         name='config'),
     re_path(r'^email/?$', views.SendEmail.as_view(), 
         name='email'),
-    re_path('^api/current-user/?$', views.get_current_user,
+    re_path(r'^api/current-user/?$', views.get_current_user,
         name='api-current-user'),
 ]

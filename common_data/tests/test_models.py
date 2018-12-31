@@ -6,6 +6,8 @@ from django.test import TestCase
 
 from accounting.models import *
 from common_data import models
+import employees
+
 
 TODAY = datetime.date.today()
 
@@ -38,6 +40,9 @@ def create_account_models(cls):
         b. account_d - account that is commonly debited'''
     if not hasattr(cls, 'user'):
         create_test_user(cls)
+
+    employees.tests.create_test_employees_models(cls)
+
     if Journal.objects.all().count() < 5:
         call_command('loaddata', 'accounting/fixtures/accounts.json', 
             'accounting/fixtures/journals.json')
@@ -101,3 +106,12 @@ def create_account_models(cls):
         )
     else:
         cls.config = AccountingSettings.objects.first()
+
+    if not hasattr(cls, 'bookkeeper'):
+        cls.bookkeeper = Bookkeeper.objects.create(
+            employee=employees.models.Employee.objects.first()
+        )
+
+class ViewTests(TestCase):
+    pass
+    

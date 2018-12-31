@@ -63,12 +63,15 @@ class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class PayGradeForm(forms.ModelForm, BootstrapMixin):
     allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.CheckboxSelectMultiple,
+        required=False)
     deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.CheckboxSelectMultiple,
+        required=False)
     payroll_taxes = forms.ModelMultipleChoiceField(
         models.PayrollTax.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.CheckboxSelectMultiple,
+        required=False)
     class Meta:
         fields = "__all__"
         model = models.PayGrade
@@ -165,6 +168,11 @@ class PayrollOfficerForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.PayrollOfficer
 
+class PayrollOfficerUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "employee",
+        model = models.PayrollOfficer
+
 
 class TimeLoggerForm(BootstrapMixin, forms.Form):
     employee_number = forms.IntegerField()
@@ -245,13 +253,16 @@ class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
     notes = forms.CharField(widget=forms.Textarea, required=False)    
     
     authorized_by = forms.ModelChoiceField(
-        models.Employee.objects.filter(payroll_officer__isnull=False))
+        models.Employee.objects.filter(payrollofficer__isnull=False))
     password = forms.CharField(widget=forms.PasswordInput)
     
 
     def clean(self):
         cleaned_data = super().clean()
         usr = cleaned_data['authorized_by'].user
+        if not usr:
+            raise forms.ValidationError('The officer selected has no user profile')
+
         authenticated = authenticate(
             username=usr.username,
             password=cleaned_data['password']
