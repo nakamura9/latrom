@@ -7,6 +7,7 @@ from django.test import TestCase
 from accounting.models import *
 from common_data import models
 import employees
+from employees.tests.models import create_test_employees_models
 
 
 TODAY = datetime.date.today()
@@ -41,7 +42,7 @@ def create_account_models(cls):
     if not hasattr(cls, 'user'):
         create_test_user(cls)
 
-    employees.tests.create_test_employees_models(cls)
+    create_test_employees_models(cls)
 
     if Journal.objects.all().count() < 5:
         call_command('loaddata', 'accounting/fixtures/accounts.json', 

@@ -160,12 +160,11 @@ class Supplier(SoftDeletionModel):
                 description = 'Account which represents debt owed to a supplier',
                 balance_sheet_category='current-liabilities'
             )
-            self.save()
-
+    
     def save(self, *args, **kwargs):
         if self.account is None:
-            self.create_account()    
-        super(Supplier, self).save(*args, **kwargs)
+            self.create_account()
+        super().save(*args, **kwargs)
 
 
 

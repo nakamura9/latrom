@@ -98,7 +98,7 @@ class CombinedInvoice(AbstractSale):
     
     @property
     def sales_lines(self):
-        return _line_getter(1)
+        return self._line_getter(1)
 
     @property 
     def sales_total(self):
@@ -107,7 +107,7 @@ class CombinedInvoice(AbstractSale):
 
     @property
     def service_lines(self):
-        self._line_getter(2)
+        return self._line_getter(2)
 
     @property
     def service_total(self):
@@ -116,13 +116,12 @@ class CombinedInvoice(AbstractSale):
 
     @property
     def expense_lines(self):
-        self._line_getter(3)
+        return self._line_getter(3)
 
     @property
     def expense_total(self):
         return self._line_total(self.expense_lines)
         
-
 
 class CombinedInvoiceLine(models.Model):
     LINE_CHOICES = [

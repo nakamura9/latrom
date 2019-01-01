@@ -8,9 +8,8 @@ import time
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase
-
-from common_data.tests import create_test_user
-from inventory.tests import create_test_inventory_models
+from django.contrib.auth.models import User
+import inventory
 from employees.models import *
 from latrom import settings
 from accounting.models import Account, JournalEntry
@@ -320,8 +319,11 @@ class PaySlipModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        create_test_inventory_models(cls)
-        create_test_user(cls)
+        inventory.tests.create_test_inventory_models(cls)
+        if not hasattr(cls, 'user'):
+            cls.user = User.objects.create_superuser('Testuser', 
+                'admin@test.com', '123')
+            cls.user.save()
 
 
     def test_create_pay_slip(self):

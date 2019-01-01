@@ -1,10 +1,11 @@
 import datetime
 import json
+import urllib
 
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from accounting.models import Account, Expense
+from accounting.models import Account, Expense, Currency
 from common_data.tests import create_account_models, create_test_user
 from employees.models import Employee
 from invoicing.models import *
@@ -17,7 +18,8 @@ TODAY = datetime.datetime.today()
 settings.TEST_RUN_MODE = True
 
 class CommonViewsTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'invoicing.json',  ]
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'invoicing.json' ]
 
     @classmethod
     def setUpClass(cls):
@@ -42,14 +44,18 @@ class CommonViewsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_config_page(self):
+        Currency.objects.create(name="test", symbol="t")
         resp = self.client.post(reverse('invoicing:config', 
             kwargs={'pk': 1}),
             data={
                 "default_invoice_comments": "Test Comments",
                 "document_theme": 1,
-                "currency": "$",
                 "logo": "img.jpg",
-                "business_name": 'test name'
+                "business_name": 'test name',
+                "next_invoice_number": 1,
+                "next_quotation_number": 1,
+                "currency": 1
+
             })
         self.assertEqual(resp.status_code, 302)
 
@@ -62,7 +68,8 @@ class CommonViewsTests(TestCase):
     
 
 class ReportViewsTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'invoicing.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'invoicing.json']
 
     @classmethod
     def setUpClass(cls):
@@ -96,7 +103,8 @@ class ReportViewsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
 class CustomerViewsTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'invoicing.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'invoicing.json']
 
     @classmethod
     def setUpClass(cls):
@@ -116,12 +124,12 @@ class CustomerViewsTests(TestCase):
         self.client.login(username='Testuser', password='123')
 
     def test_get_customer_create_page(self):
-        resp = self.client.get(reverse('invoicing:create-customer'))
+        resp = self.client.get(reverse('invoicing:create-organization-customer'))
         self.assertEqual(resp.status_code, 200)
 
     def test_post_customer_create_page(self):
         resp = self.client.post(
-            reverse('invoicing:create-customer'),
+            reverse('invoicing:create-organization-customer'),
                 data=self.CUSTOMER_DATA)
         self.assertEqual(resp.status_code, 302)
 
@@ -161,13 +169,13 @@ class CustomerViewsTests(TestCase):
         self.assertEqual(resp.status_code, 302)
 
     def test_get_customer_list_page(self):
-        resp = self.client.get(reverse('invoicing:customers-list'))
+        resp = self.client.get(reverse('invoicing:organization-customers-list'))
         self.assertEqual(resp.status_code, 200)
 
 
 class SalesRepViewsTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'invoicing.json']
-
+    fixtures = ['common.json', 'accounts.json', 'employees.json', 
+        'invoicing.json']
 
     @classmethod
     def setUpClass(cls):
@@ -223,11 +231,12 @@ class SalesRepViewsTests(TestCase):
         resp = self.client.post(reverse('invoicing:delete-sales-rep', kwargs={'pk':2}))
 
         self.assertEqual(resp.status_code, 302)
-        obj.delete(deep=True)
+        obj.hard_delete()
 
 
 class BillViewTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'journals.json', 'accounts.json','invoicing.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'journals.json', 'invoicing.json']
     
     @classmethod
     def setUpClass(cls):
@@ -243,9 +252,7 @@ class BillViewTests(TestCase):
             'discount': 0,
             'terms': 'Test Terms',
             'comments': 'test comments',
-            'item_list': json.dumps([
-                {'pk': 1}
-                ])
+            'item_list': urllib.parse.quote(json.dumps([{'pk':1}]))
         }
 
     @classmethod
@@ -373,7 +380,8 @@ class BillViewTests(TestCase):
 
 
 class CombinedInvoiceViewTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'journals.json', 'accounts.json','invoicing.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'journals.json','invoicing.json']
     
     @classmethod
     def setUpClass(cls):
@@ -557,7 +565,8 @@ class CombinedInvoiceViewTests(TestCase):
 
 
 class SalesViewTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'journals.json', 'accounts.json','invoicing.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'journals.json', 'invoicing.json']
     
     @classmethod
     def setUpClass(cls):
@@ -566,6 +575,7 @@ class SalesViewTests(TestCase):
         cls.SALE_DATA = {
             'purchase_order_number': 'ref',
             'ship_from': 1,
+            'tax': 1,
             'status': 'invoice',
             'customer': cls.customer_org.pk,
             'salesperson': 1,
@@ -576,7 +586,7 @@ class SalesViewTests(TestCase):
             'comments': 'test comments',
             'item_list': json.dumps([
                 {
-                    'item_name': '1 - name',
+                    'product': '1 - name',
                     'quantity': 1
                 }
             ])
@@ -736,7 +746,8 @@ class SalesViewTests(TestCase):
 
 
 class ServiceInvoiceViewTests(TestCase):
-    fixtures = ['common.json', 'employees.json', 'journals.json', 'accounts.json','invoicing.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'journals.json','invoicing.json']
     
     @classmethod
     def setUpClass(cls):
@@ -744,6 +755,7 @@ class ServiceInvoiceViewTests(TestCase):
         cls.client=Client()
         cls.SERVICE_DATA = {
             'status': 'invoice',
+            'tax': 1,
             'customer': cls.customer_org.pk,
             'salesperson': 1,
             'due': TODAY.strftime('%m/%d/%Y'),
@@ -753,7 +765,7 @@ class ServiceInvoiceViewTests(TestCase):
             'comments': 'test comments',
             'item_list': json.dumps([
                 {
-                    'id': '1',
+                    'service': '1 - service',
                     'hours': '1'
                 }
             ])
@@ -762,6 +774,7 @@ class ServiceInvoiceViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_user(cls)
+        create_test_inventory_models(cls)
         create_test_invoicing_models(cls)
         
         cls.inv = ServiceInvoice.objects.create(

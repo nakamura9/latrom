@@ -1,5 +1,4 @@
-
-...<tr>
+<tr>
     <th><label for="id_default_invoice_comments">Default invoice comments:</label></th>
     <td><textarea name="default_invoice_comments" cols="40" rows="10" class="form-control textarea form-control" id="id_default_invoice_comments">
 Test Comments</textarea></td>
@@ -37,11 +36,7 @@ Test Comments</textarea></td>
 </tr>
 <tr>
     <th><label for="id_logo">Logo:</label></th>
-    <td>
-        <ul class="errorlist">
-            <li>This field is required.</li>
-        </ul><input type="file" name="logo" accept="image/*" class="form-control clearablefileinput" required id="id_logo">
-    </td>
+    <td><input type="file" name="logo" accept="image/*" class="form-control clearablefileinput" id="id_logo"></td>
 </tr>
 <tr>
     <th><label for="id_document_theme">Document theme:</label></th>
@@ -62,16 +57,15 @@ Test Comments</textarea></td>
 </tr>
 <tr>
     <th><label for="id_currency">Currency:</label></th>
-    <td><select name="currency" class="form-control select form-control" required id="id_currency">
+    <td>
+        <ul class="errorlist">
+            <li>Select a valid choice. That choice is not one of the available choices.</li>
+        </ul><select name="currency" class="form-control select form-control is-invalid" id="id_currency">
             <option value="">---------</option>
 
-            <option value="$" selected>Dollars($)</option>
-
-            <option value="R">Rand</option>
-
-        </select></td>
+        </select>
+    </td>
 </tr>
-
 <tr>
     <th><label for="id_business_name">Business name:</label></th>
     <td><input type="text" name="business_name" value="test name" maxlength="255" class="form-control textinput textInput form-control"
@@ -100,4 +94,39 @@ Test Comments</textarea></td>
     <th><label for="id_business_registration_number">Business registration number:</label></th>
     <td><input type="text" name="business_registration_number" maxlength="32" class="form-control textinput textInput form-control"
             id="id_business_registration_number"></td>
+</tr>
+<tr>
+    <th><label for="id_next_invoice_number">Next invoice number:</label></th>
+    <td>
+        <ul class="errorlist">
+            <li>This field is required.</li>
+        </ul><input type="number" name="next_invoice_number" class="form-control numberinput form-control is-invalid"
+            required id="id_next_invoice_number">
+    </td>
+</tr>
+<tr>
+    <th><label for="id_next_quotation_number">Next quotation number:</label></th>
+    <td>
+        <ul class="errorlist">
+            <li>This field is required.</li>
+        </ul><input type="number" name="next_quotation_number" class="form-control numberinput form-control is-invalid"
+            required id="id_next_quotation_number">
+    </td>
+</tr>
+<tr>
+    <th><label for="id_use_sales_invoice">Use sales invoice:</label></th>
+    <td><input type="checkbox" name="use_sales_invoice" class="form-control checkboxinput form-check-input" id="id_use_sales_invoice"></td>
+</tr>
+<tr>
+    <th><label for="id_use_service_invoice">Use service invoice:</label></th>
+    <td><input type="checkbox" name="use_service_invoice" class="form-control checkboxinput form-check-input" id="id_use_service_invoice"></td>
+</tr>
+<tr>
+    <th><label for="id_use_bill_invoice">Use bill invoice:</label></th>
+    <td><input type="checkbox" name="use_bill_invoice" class="form-control checkboxinput form-check-input" id="id_use_bill_invoice"></td>
+</tr>
+<tr>
+    <th><label for="id_use_combined_invoice">Use combined invoice:</label></th>
+    <td><input type="checkbox" name="use_combined_invoice" class="form-control
+checkboxinput form-check-input" id="id_use_combined_invoice"></td>
 </tr>

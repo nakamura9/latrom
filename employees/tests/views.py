@@ -8,7 +8,6 @@ from django.shortcuts import reverse
 from django.test import Client, TestCase
 from django.contrib.auth.models import User
 
-from common_data.tests import create_test_user
 from employees.models import *
 from latrom import settings
 from accounting.models import Account, JournalEntry
@@ -28,7 +27,7 @@ class GenericPageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         
 
     def setUp(self):
@@ -75,7 +74,7 @@ class PayGradePageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         
     def setUp(self):
         #wont work in setUpClass
@@ -120,7 +119,7 @@ class PaySlipPageTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         create_test_employees_models(cls)
         
     def setUp(self):
@@ -182,7 +181,7 @@ class EmployeePageTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         cls.EMPLOYEE_DATA = {
                 'first_name': 'Unit',
@@ -304,7 +303,7 @@ class BenefitsPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         cls.ALLOWANCE_DATA = {
                 'name': 'Other Test Allowance',
@@ -360,7 +359,7 @@ class CommissionPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         cls.COMMISSION_DATA = {
                 'name': 'Test Rule',
@@ -419,7 +418,7 @@ class DeductionPageTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         cls.DEDUCTION_DATA = {
                 'name': 'Other Test Deduction',
@@ -484,7 +483,7 @@ class PayrollTaxViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         
     @classmethod
@@ -551,7 +550,7 @@ class PayrollOfficerViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         
     @classmethod
@@ -609,7 +608,7 @@ class LeaveViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         
 
@@ -694,7 +693,7 @@ class TimesheetViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_test_user(cls)
+        cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         cls.client = Client()
         
 

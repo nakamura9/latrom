@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounting.models import Account, JournalEntry, Tax
-from common_data.models import Organization
+from common_data.models import Organization, Individual
 
 from common_data.tests import create_account_models, create_test_user
 from inventory import models
@@ -187,13 +187,14 @@ class CommonModelTests(TestCase):
         self.assertIsInstance(obj, models.InventoryController)
     
     def test_create_supplier(self):
-        org = Organization.objects.create(
-            legal_name="Test org",
+        ind = Individual.objects.create(
+            first_name="Test",
+            last_name="individual"
         )
-        org = models.Supplier.objects.create(
-            organization=org
+        obj = models.Supplier.objects.create(
+            individual=ind
         )
-        self.assertIsInstance(org, models.Supplier)
+        self.assertIsInstance(obj, models.Supplier)
         
 
     def test_supplier_name(self):

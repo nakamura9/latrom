@@ -26,7 +26,8 @@ from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 def process_data(items, inv):
     for item in items:
-        inv.add_line(item['pk'])
+        if isinstance(item, dict):
+            inv.add_line(item['pk'])
     
     
 class BillListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):

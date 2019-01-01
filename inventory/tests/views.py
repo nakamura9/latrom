@@ -47,17 +47,17 @@ class CommonViewTests(TestCase):
 
     def test_get_unit_form(self):
         resp = self.client.get(reverse('inventory:unit-create'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_home_page(self):
         resp = self.client.get(reverse('inventory:home'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
 
     def test_get_config_view(self):
         resp = self.client.get(reverse('inventory:config', 
             kwargs={'pk': 1}))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_config_view(self):
         resp = self.client.post(reverse('inventory:config',
@@ -72,7 +72,7 @@ class CommonViewTests(TestCase):
                 'use_storage_media_model': True,
                 'stock_valuation_period': 365,
             })
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_post_unit_form(self):
         resp = self.client.post(reverse('inventory:unit-create'), 
@@ -82,7 +82,7 @@ class CommonViewTests(TestCase):
     def test_get_unit_update_form(self):
         resp = self.client.get(reverse('inventory:unit-update',
             kwargs={'pk': 1}))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_unit_update_form(self):
         resp = self.client.post(reverse('inventory:unit-update',
@@ -168,7 +168,7 @@ class InventoryManagementViewTests(TestCase):
     def test_get_stock_receipt_form(self):
         resp = self.client.get(reverse('inventory:stock-receipt-create',
             kwargs={'pk': 1}))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_stock_receipt_form(self):
         inv_b4 = Account.objects.get(pk=1004).balance
@@ -187,7 +187,7 @@ class InventoryManagementViewTests(TestCase):
                         'medium': ""
                 }]))
             })
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_goods_received_page(self):
         resp = self.client.get(reverse('inventory:goods-received',
@@ -239,7 +239,7 @@ class InventoryManagementViewTests(TestCase):
                 'controller': 1,
                 'comments': 'Test',
                 'items': urllib.parse.quote(json.dumps([{
-                    'pk': 1,
+                    'item': "1 - item",
                     'quantity': 1,
                     'note': 'Test'
                 }]))
@@ -277,7 +277,8 @@ class ItemViewTests(TestCase):
             'description' : 'Test Description',
             'supplier' : cls.supplier.pk,
             'quantity' : 10,
-            'category' : cls.category.pk
+            'category' : cls.category.pk,
+            'initial_quantity': 0
         }
         cls.PRODUCT_DATA = {
             'margin' : 0.2,
@@ -311,116 +312,116 @@ class ItemViewTests(TestCase):
 
     def test_get_product_form(self):
         resp = self.client.get(reverse('inventory:product-create'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_product_form(self):
         resp = self.client.post(reverse('inventory:product-create'),
             data=self.PRODUCT_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_product_list(self):
         resp = self.client.get(reverse('inventory:product-list'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_product_update_form(self):
         resp = self.client.get(reverse('inventory:product-update',
             kwargs={
                 'pk': self.product.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
     
     def test_post_product_update_form(self):
         resp = self.client.post(reverse('inventory:product-update',
             kwargs={
                 'pk': self.product.pk
             }), data=self.PRODUCT_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_product_delete_form(self):
         resp = self.client.get(reverse('inventory:product-delete',
             kwargs={
                 'pk': self.product.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_product_delete_form(self):
         resp = self.client.post(reverse('inventory:product-delete',
             kwargs={
                 'pk': models.Product.objects.latest('pk').pk
             }))
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
     
     def test_get_product_detail(self):
         resp = self.client.get(reverse('inventory:product-detail',
             kwargs={
                 'pk': self.product.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
     
     #equipment
 
     def test_get_equipment_form(self):
         resp = self.client.get(reverse('inventory:equipment-create'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_equipment_form(self):
         resp = self.client.post(reverse('inventory:equipment-create'),
-            data=self.EQUIPMENT_DATA)
-        self.assertTrue(resp.status_code == 302)
+            data=self.EQUIPMENT_DATA)        
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_equipment_list(self):
         resp = self.client.get(reverse('inventory:equipment-list'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_equipment_update_form(self):
         resp = self.client.get(reverse('inventory:equipment-update',
             kwargs={
                 'pk': self.equipment.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
     
     def test_post_equipment_update_form(self):
         resp = self.client.post(reverse('inventory:equipment-update',
             kwargs={
                 'pk': self.equipment.pk
-            }), data=self.EQUIPMENT_DATA)
-        self.assertTrue(resp.status_code == 302)
+            }), data=self.EQUIPMENT_DATA)        
+        self.assertEqual(resp.status_code,  302)
     
     def test_get_equipment_detail(self):
         resp = self.client.get(reverse('inventory:equipment-detail',
             kwargs={
                 'pk': self.equipment.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
     
     #consumable
 
     def test_get_consumable_form(self):
         resp = self.client.get(reverse('inventory:consumable-create'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_consumable_form(self):
         resp = self.client.post(reverse('inventory:consumable-create'),
             data=self.CONSUMABLE_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_consumable_list(self):
         resp = self.client.get(reverse('inventory:consumable-list'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_consumable_update_form(self):
         resp = self.client.get(reverse('inventory:consumable-update',
             kwargs={
                 'pk': self.consumable.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
     
     def test_post_consumable_update_form(self):
         resp = self.client.post(reverse('inventory:consumable-update',
             kwargs={
                 'pk': self.consumable.pk
-            }), data=self.CONSUMABLE_DATA)
-        self.assertTrue(resp.status_code == 302)
+            }), data=self.CONSUMABLE_DATA)        
+        self.assertEqual(resp.status_code,  302)
 
 
 class OrderViewTests(TestCase):
@@ -443,8 +444,9 @@ class OrderViewTests(TestCase):
             'notes' : 'Test Note',
             'status' : 'draft',
             'items': urllib.parse.quote(json.dumps([{
-                'pk': 'P' + str(cls.product.pk),
+                'item': 'P' + str(cls.product.pk) + ' - Name',
                 'quantity': 10,
+                'unit': "1 - unit",
                 'order_price': 10
                 }])),
             'issuing_inventory_controller': 1
@@ -461,63 +463,63 @@ class OrderViewTests(TestCase):
 
     def test_get_order_form(self):
         resp = self.client.get(reverse('inventory:order-create'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_order_form(self):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
     
     def test_get_order_list(self):
         resp = self.client.get(reverse('inventory:order-list'))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_order_update_form(self):
         resp = self.client.get(reverse('inventory:order-update',
             kwargs={
                 'pk': self.order.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_order_update_form(self):
         resp = self.client.post(reverse('inventory:order-update',
             kwargs={
                 'pk': self.order.pk
             }), data=self.ORDER_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_order_delete_form(self):
         resp = self.client.get(reverse('inventory:order-delete',
             kwargs={
                 'pk': self.order.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_order_delete_form(self):
         resp = self.client.get(reverse('inventory:order-delete',
             kwargs={
                 'pk': models.Order.objects.latest('pk').pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_order_detail(self):
         resp = self.client.get(reverse('inventory:order-detail',
             kwargs={
                 'pk': self.order.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_order_status(self):
         resp = self.client.get(reverse('inventory:order-status',
             kwargs={
                 'pk': self.order.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_order_email(self):
         resp = self.client.get(reverse('inventory:order-email',
             kwargs={'pk': 1}))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     #order pdf assume that the detail view covers it
     #order emaiL only use the get view
@@ -545,38 +547,38 @@ class SupplierViewTests(TestCase):
         self.client.login(username='Testuser', password='123')
 
     def test_get_supplier_create(self):
-        resp = self.client.get(reverse('inventory:supplier-create'))
-        self.assertTrue(resp.status_code == 200)
+        resp = self.client.get('/inventory/supplier-create/individual')
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_supplier_create(self):
-        resp = self.client.post(reverse('inventory:supplier-create'),
+        resp = self.client.post('/inventory/supplier-create/individual',
             data=self.SUPPLIER_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_supplier_list(self):
-        resp = self.client.get(reverse('inventory:supplier-list'))
-        self.assertTrue(resp.status_code == 200)
+        resp = self.client.get('/inventory/supplier-list/individual')
+        self.assertEqual(resp.status_code,  200)
 
     def test_get_supplier_update(self):
         resp = self.client.get(reverse('inventory:supplier-update',
             kwargs={
                 'pk': self.supplier.pk
             }))
-        self.assertTrue(resp.status_code == 200)
+        self.assertEqual(resp.status_code,  200)
 
     def test_post_supplier_update(self):
         resp = self.client.post(reverse('inventory:supplier-update',
             kwargs={
                 'pk': self.supplier.pk
             }), data=self.SUPPLIER_DATA)
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code,  302)
 
     def test_get_supplier_delete(self):
         resp = self.client.get(reverse('inventory:supplier-delete',
             kwargs={
                 'pk': self.supplier.pk
             }))
-        self.assertTrue(resp.status_code == 200) 
+        self.assertEqual(resp.status_code,  200) 
 
 
 class WarehouseViewTests(TestCase):
