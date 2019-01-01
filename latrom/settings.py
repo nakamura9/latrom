@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
-    'generic_scaffold',
     'reversion'
 ] + USER_APPS
 
