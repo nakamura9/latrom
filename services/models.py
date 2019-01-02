@@ -51,8 +51,9 @@ class ServicePerson(models.Model):
     is_manager = models.BooleanField(default=False)
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
+    
     def __str__(self):
-        return str(self.employee)
+        return self.name
 
     @property
     def name(self):
@@ -91,9 +92,11 @@ class ServiceWorkOrder(models.Model):
         ), null=True, blank=True)
     service_people = models.ManyToManyField('services.ServicePerson', 
         blank=True)
-    team = models.ForeignKey('services.ServiceTeam', on_delete=None, null=True, blank=True)
+    team = models.ForeignKey('services.ServiceTeam', on_delete=None, null=True, 
+        blank=True)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, blank=True)
-    authorized_by = models.ForeignKey('employees.Employee', on_delete=models.CASCADE, null=True, 
+    authorized_by = models.ForeignKey('employees.Employee', 
+        on_delete=models.CASCADE, null=True, 
         blank=True,
         limit_choices_to=Q(user__isnull=False))#filter queryset
     comments = models.TextField(blank=True)
@@ -106,13 +109,15 @@ class BaseRequisition(models.Model):
         abstract = True
 
     date = models.DateField()
-    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.CASCADE, default=1)
+    warehouse = models.ForeignKey('inventory.WareHouse', 
+        on_delete=models.CASCADE, default=1)
     department = models.CharField(max_length=255)
     reference = models.CharField(max_length=255)
     
 
 class EquipmentRequisition(BaseRequisition):
-    requested_by = models.ForeignKey('employees.Employee', on_delete=models.CASCADE, 
+    requested_by = models.ForeignKey('employees.Employee', 
+        on_delete=models.CASCADE, 
         related_name='requested_by')
     authorized_by = models.ForeignKey('employees.Employee', 
         related_name='authorized_by', on_delete=models.CASCADE, null=True)#filter queryset
@@ -134,7 +139,8 @@ class EquipmentRequisitionLine(models.Model):
         choices=CONDITION_CHOICES)
     returned_condition = models.CharField(max_length=16, 
         choices=CONDITION_CHOICES, null=True)
-    requisition = models.ForeignKey('services.EquipmentRequisition', on_delete=models.CASCADE)
+    requisition = models.ForeignKey('services.EquipmentRequisition', 
+        on_delete=models.CASCADE)
 
 class ConsumablesRequisition(BaseRequisition):
     requested_by = models.ForeignKey('employees.Employee', 
@@ -149,11 +155,13 @@ class ConsumablesRequisitionLine(models.Model):
     unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None)
     quantity = models.FloatField()
     returned = models.FloatField(default=0.0)
-    requisition = models.ForeignKey('services.ConsumablesRequisition', on_delete=models.CASCADE)
+    requisition = models.ForeignKey('services.ConsumablesRequisition', 
+        on_delete=models.CASCADE)
 
 
 class Task(models.Model):
-    procedure = models.ForeignKey('services.ServiceProcedure', on_delete=models.CASCADE)
+    procedure = models.ForeignKey('services.ServiceProcedure', 
+        on_delete=models.CASCADE)
     description = models.TextField()
     def __str__(self):
         return self.description

@@ -398,12 +398,11 @@ class Payslip(models.Model):
 
     @property 
     def paygrade_(self):
-        versions = reversion.models.Version.objects.get_for_object(
+        all_versions = reversion.models.Version.objects.get_for_object(
             self.pay_grade)
-        version =len(versions) -self.pay_grade_version \
-            if self.pay_grade_version != 0 else -1
+        version =len(all_versions) -self.pay_grade_version
         
-        return versions[version].field_dict
+        return all_versions[version].field_dict
     
     def __str__(self):
         return str(self.employee) 

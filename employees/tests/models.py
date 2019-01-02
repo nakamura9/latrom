@@ -9,7 +9,6 @@ import time
 from django.shortcuts import reverse
 from django.test import Client, TestCase
 from django.contrib.auth.models import User
-import inventory
 from employees.models import *
 from latrom import settings
 from accounting.models import Account, JournalEntry
@@ -17,6 +16,7 @@ from invoicing.models import (SalesRepresentative,
                               SalesInvoice, 
                               SalesInvoiceLine
                               )
+from inventory.models import Product, UnitOfMeasure
 settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
@@ -315,15 +315,27 @@ class PayGradeModelTests(TestCase):
         self.assertEqual(self.grade.tax_free_benefits, 50)
 
 class PaySlipModelTests(TestCase):
-    fixtures = ['common.json', 'accounts.json', 'employees.json','inventory.json', 'invoicing.json']
+    fixtures = ['common.json', 'accounts.json', 'journals.json',
+         'employees.json','inventory.json', 'invoicing.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        inventory.tests.create_test_inventory_models(cls)
         if not hasattr(cls, 'user'):
             cls.user = User.objects.create_superuser('Testuser', 
                 'admin@test.com', '123')
             cls.user.save()
+
+        cls.product = Product.objects.create(
+            name='test name',
+            unit=UnitOfMeasure.objects.first(),
+            pricing_method=0, #KISS direct pricing
+            direct_price=10,
+            margin=0.5,
+            unit_purchase_price=10,
+            description='Test Description',
+            minimum_order_level = 0,
+            maximum_stock_level = 20,
+        )
 
 
     def test_create_pay_slip(self):
