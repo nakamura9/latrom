@@ -83,7 +83,8 @@ def create_test_employees_models(cls):
             overtime_one_hours=0,
             overtime_two_hours=0,
             pay_roll_id = 1,
-            pay_grade = cls.employee.pay_grade
+            pay_grade = cls.employee.pay_grade,
+            status="verified"
     )
 
 
@@ -184,12 +185,9 @@ class EmployeeModelTests(TestCase):
         )
         self.assertIsInstance(obj, Employee)
 
-    
-
-
     def test_get_payslips(self):
         slips = self.employee._payslips_YTD
-        self.assertTrue(slips.count() == 1)
+        self.assertEqual(slips.count(), 1)
 
     def test_deductions(self):
         deducted = self.employee.deductions_YTD

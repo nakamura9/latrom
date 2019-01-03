@@ -16,9 +16,7 @@
 </div>
 
 <div class="page">
-
-
-    <table style="height:25%">
+<table style="height:25%">
         <tbody>
             <tr>
                 <td style="width:60%">
@@ -101,11 +99,11 @@
                                     </tr>
                                 <tr style="border-bottom: 2px solid black;">
                                     <th>Total Benefits(breakdown below)</th>
-                                    <td>{{object.employee.paygrade.total_allowances | floatformat:2}}</td>
+                                    <td>{{object.total_allowances | floatformat:2}}</td>
                                 </tr>
-                                {% for a in object.paygrade_.allowances.all %}
+                                {% for a in object.allowances%}
                                 <tr>
-                                    <th>{{a.name}}</th>
+                                    <td>{{a.name}}</td>
                                     <td>{{a.amount | floatformat:2}}</td>
                                 </tr>
                                 {% endfor %}
@@ -137,18 +135,18 @@
                                 
                                 <tr style="border-bottom: 2px solid black;">
                                     <th>Total Deductions(breakdown below)</th>
-                                    <td>{{object.paygrade_.total_deductions | floatformat:2}}</td>
+                                    <td>{{object.total_deductions | floatformat:2}}</td>
                                 </tr>
-                                {% for d in object.paygrade_.deductions.all %}
+                                {% for d in object.deductions %}
                                 <tr>
-                                    <th>{{d.name}}</th>
+                                    <td>{{d.name}}</td>
                                     <td>{{d.amount | floatformat:2}}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
                                     <th colspan="2">Payroll Taxes</th>
                                 </tr>
-                                {% for tax in object.calculated_payroll_taxes_list %}
+                                {% for tax in object.calculated_payroll_taxes %}
                                 <tr>
                                     <td>{{tax.name}}</td>
                                     <td>{{tax.amount | floatformat:2}}</td>
@@ -176,7 +174,6 @@
         <div>
             {% block footer_statements %}{% endblock %}
         </div>
-
 </div>
 <thead>
     {% block content_headings %}{% endblock %}
