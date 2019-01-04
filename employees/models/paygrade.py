@@ -23,8 +23,6 @@ class PayGrade(models.Model):
 
     properties
     -----------
-    total_allowances - returns the numerical total of the applied allowance for 
-    a particular employee
     
     '''
     LUNCH_CHOICES = [
@@ -53,11 +51,3 @@ class PayGrade(models.Model):
 
     def __str__(self):
         return self.name
-
-    @property
-    def tax_free_benefits(self):
-        return reduce((lambda x, y: x + y), [a.amount for a in self.allowances.filter(taxable=False)], 0)
-
-    @property
-    def total_allowances(self):
-        return reduce((lambda x, y: x + y), [a.amount for a in self.allowances.all()], 0)

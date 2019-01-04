@@ -63,6 +63,7 @@ class ServiceModelTests(TestCase):
             is_listed=True
         )
         self.assertIsInstance(obj, Service)
+        self.assertIsInstance(str(obj), str)
 
     def test_create_service_category(self):
         obj = ServiceCategory.objects.create(
@@ -70,6 +71,8 @@ class ServiceModelTests(TestCase):
             description="the description"
         )
         self.assertIsInstance(obj, ServiceCategory)
+        self.assertEqual(obj.service_count, 0)
+
 
     def test_create_service_person(self):
         employee = Employee.objects.create(
@@ -91,6 +94,8 @@ class ServiceModelTests(TestCase):
         )
 
         self.assertIsInstance(obj, ServicePerson)
+        self.assertIsInstance(str(obj), str)
+
 
     def test_create_service_team(self):
         obj = ServiceTeam.objects.create(
@@ -100,18 +105,20 @@ class ServiceModelTests(TestCase):
         )
 
         self.assertIsInstance(obj, ServiceTeam)
+        self.assertIsInstance(str(obj), str)
 
     def test_create_service_work_order(self):
         obj = ServiceWorkOrder.objects.create(
             date=str(TODAY),
             time="17:00",
             description="desc",
-            completed=False,
-            expected_duration="00:30",
-            actual_duration="00:45",
+            completed=datetime.datetime.now(),
+            expected_duration=datetime.timedelta(seconds=3600),
+            actual_duration=datetime.timedelta(seconds=3600),
             comments=""
         )
         self.assertIsInstance(obj, ServiceWorkOrder)
+        self.assertIsInstance(str(obj), str)
 
     def test_create_equipment_requisition(self):
         obj = EquipmentRequisition.objects.create(
@@ -121,6 +128,8 @@ class ServiceModelTests(TestCase):
             requested_by=self.employee
         )
         self.assertIsInstance(obj, EquipmentRequisition)
+        self.assertIsInstance(str(obj), str)
+        
 
         obj_2 = EquipmentRequisitionLine.objects.create(
             equipment=Equipment.objects.first(),
@@ -131,6 +140,7 @@ class ServiceModelTests(TestCase):
             requisition=obj
         )
         self.assertIsInstance(obj_2, EquipmentRequisitionLine)
+        self.assertIsInstance(str(obj_2), str)
 
     def test_create_consumables_requistion(self):
         obj = ConsumablesRequisition.objects.create(
@@ -151,6 +161,8 @@ class ServiceModelTests(TestCase):
         )
 
         self.assertIsInstance(obj_2, ConsumablesRequisitionLine)
+        self.assertIsInstance(str(obj_2), str)
+
 
     def test_create_service_procedure(self):
         obj = ServiceProcedure.objects.create(
@@ -161,6 +173,8 @@ class ServiceModelTests(TestCase):
         )
 
         self.assertIsInstance(obj, ServiceProcedure)
+        self.assertIsInstance(str(obj), str)
+
 
         obj_2 = Task.objects.create(
             procedure=obj,
@@ -168,3 +182,7 @@ class ServiceModelTests(TestCase):
         )
 
         self.assertIsInstance(obj_2, Task)
+        self.assertIsInstance(str(obj_2), str)
+        
+        self.assertEqual(obj.steps.count(), 1)
+

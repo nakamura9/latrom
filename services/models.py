@@ -27,9 +27,6 @@ class Service(models.Model):
                                     ("yearly", "Yearly")])
     is_listed = models.BooleanField(default=False, blank=True)
 
-    def create_work_order(self):
-        pass
-
     def __str__(self):
         return self.name
 
@@ -114,6 +111,8 @@ class BaseRequisition(models.Model):
     department = models.CharField(max_length=255)
     reference = models.CharField(max_length=255)
     
+    def __str__(self):
+        return '%s: %s' % (self.date, self.reference)
 
 class EquipmentRequisition(BaseRequisition):
     requested_by = models.ForeignKey('employees.Employee', 
@@ -124,7 +123,7 @@ class EquipmentRequisition(BaseRequisition):
     released_by = models.ForeignKey('employees.Employee', 
         related_name='released_by', on_delete=models.CASCADE, null=True)
 
-
+    
 class EquipmentRequisitionLine(models.Model):
     CONDITION_CHOICES = [
         ('excellent', 'Excellent'),
@@ -142,6 +141,9 @@ class EquipmentRequisitionLine(models.Model):
     requisition = models.ForeignKey('services.EquipmentRequisition', 
         on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.equipment)
+
 class ConsumablesRequisition(BaseRequisition):
     requested_by = models.ForeignKey('employees.Employee', 
         related_name='consumable_requested_by', on_delete=None)
@@ -158,13 +160,18 @@ class ConsumablesRequisitionLine(models.Model):
     requisition = models.ForeignKey('services.ConsumablesRequisition', 
         on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.consumable)
+
 
 class Task(models.Model):
     procedure = models.ForeignKey('services.ServiceProcedure', 
         on_delete=models.CASCADE)
     description = models.TextField()
+    
     def __str__(self):
         return self.description
+
 
 class ServiceProcedure(models.Model):
     as_checklist = models.BooleanField(default=False, blank=True)
