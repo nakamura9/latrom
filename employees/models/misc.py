@@ -46,7 +46,7 @@ class EmployeesSettings(SingletonModel):
         related_name="payroll_officer",
         blank=True, 
         null=True,
-        limit_choices_to={'payroll_officer__isnull': False}
+        limit_choices_to={'payrollofficer__isnull': False}
     )
     payroll_account = models.ForeignKey(
         'accounting.account',
