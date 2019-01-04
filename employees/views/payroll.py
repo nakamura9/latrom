@@ -304,11 +304,13 @@ class ManualPayrollService(object):
                     """.format(str(employee)),
                     action=""
                 )
+                break
             elif employee.uses_timesheet:
                 self.generate_wage_payslip(employee)
             else:
                 self.generate_salaried_payslip(employee)
-
+            
+            self.adjust_leave_days(employee)
 
     def check_existing_payslip(self, employee):
         slips = models.Payslip.objects.filter(Q(employee=employee) & Q(Q(
@@ -326,7 +328,7 @@ class ManualPayrollService(object):
 
 
     def generate_salaried_payslip(self, employee):
-        models.Payslip.objects.create(
+        return models.Payslip.objects.create(
                 start_period = self.start,
                 end_period = self.end,
                 employee = employee,
@@ -337,11 +339,10 @@ class ManualPayrollService(object):
             )
 
     def generate_wage_payslip(self, employee):
-        NOW = datetime.datetime.now()
         sheet = self.get_employee_timesheet(employee)
         if sheet:
             if sheet.complete:
-                models.Payslip.objects.create(
+                return models.Payslip.objects.create(
                     start_period = self.start,
                     end_period = self.end,
                     employee = employee,
@@ -360,6 +361,7 @@ class ManualPayrollService(object):
                     recorded data.""".format(str(employee)),
                     action = reverse_lazy('employees:timesheet-update', kwargs={'pk': employee.pk})
                 )
+                return None
         else:
                 Notification.objects.create(
                     user = self.settings.payroll_officer.user,
@@ -370,6 +372,7 @@ class ManualPayrollService(object):
                     recorded data.""".format(str(employee)),
                     action = reverse_lazy('employees:timesheet-create')
                 )
+                return None
         
 
     def get_employee_timesheet(self, employee):
@@ -382,3 +385,21 @@ class ManualPayrollService(object):
             return models.EmployeeTimeSheet.objects.get(sheet_filters)
 
         return None
+
+    def adjust_leave_days(self, employee):
+        if employee.last_leave_day_increment is None  or \
+                (self.start -  employee.last_leave_day_increment).days >= 30:
+            employee.leave_days += employee.pay_grade.monthly_leave_days
+            employee.last_leave_day_increment = self.start
+            employee.save()
+
+        for leave in models.Leave.objects.filter(
+                Q(recorded=False) &
+                Q(status=1) &
+                Q(employee=employee)):
+        
+            if leave.start_date <= self.end:
+                leave.recorded = True
+                leave.employee.leave_days -= leave.duration
+                leave.save()
+                leave.employee.save()

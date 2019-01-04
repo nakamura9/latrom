@@ -3,6 +3,8 @@ from employees.views import AutomatedPayrollService, ManualPayrollService
 from employees.models import *
 from .models import create_test_employees_models
 import datetime
+from django.contrib.auth.models import User
+
 
 TODAY = datetime.date.today() 
 
@@ -111,22 +113,82 @@ class ManualServiceTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        
+        cls.usr = User.objects.create_superuser(
+            'Testuser', 'admin@test.com', '123')
+        cls.employee.user = cls.usr
+        cls.employee.save()
         cls.settings = EmployeesSettings.objects.create(
             payroll_date_one=datetime.date.today().day,
             payroll_cycle="monthly",
             payroll_officer=cls.employee
         )
-        cls.settings.automate_payroll_for.set(Employee.objects.all())
-        form_data = {
+        
+        cls.form_data = {
             'employees': Employee.objects.all(),
             'start_period': TODAY,
             'end_period': TODAY
         }
-        cls.service = ManualPayrollService(form_data)
+        cls.service = ManualPayrollService(cls.form_data)
+    
+    def setUp(self):
+        self.employee_two = Employee.objects.create(
+            first_name = 'Second',
+            last_name = 'Last',
+            address = 'Model test address',
+            email = 'test@mail.com',
+            phone = '1234535234',
+            hire_date=TODAY,
+            title='test role',
+            pay_grade = self.grade
+        )
+    
+    def tearDown(self):
+        self.employee_two.hard_delete()
+
+    def test_create_service(self):
+        obj = ManualPayrollService(self.form_data)
+        self.assertIsInstance(obj, ManualPayrollService)
 
     def test_manual_payroll_service_run(self):
-        #self.service.run()
-        pass
+        self.service.run()
+        self.assertEqual(Payslip.objects.count(), 1)
 
+    def test_existing_payslip(self):
+        self.assertTrue(self.service.check_existing_payslip(self.employee))
+        self.assertFalse(self.service.check_existing_payslip(self.employee_two))
 
+    def test_generate_salaried_payslip(self):
+        self.employee_two.uses_timesheet=False
+        self.employee_two.save()
+        obj = self.service.generate_salaried_payslip(self.employee_two)
+        self.assertIsInstance(obj, Payslip)
 
+    def test_get_timesheet_generate_wages_payslip(self):
+        sheet = EmployeeTimeSheet.objects.create(
+            employee=self.employee_two,
+            month=TODAY.month,
+            year=TODAY.year,
+            recorded_by=self.employee_two,
+            complete=True
+        )
+
+        line = AttendanceLine.objects.create(
+            timesheet=sheet,
+            date= TODAY, 
+            time_in = datetime.datetime(2018, 1, 1, 8, 0).time(),
+            time_out = datetime.datetime(2018, 1, 1, 17, 0).time(),
+        )
+
+        sheet_obj = self.service.get_employee_timesheet(self.employee_two)
+        self.assertIsInstance(sheet_obj, EmployeeTimeSheet)
+
+        obj = self.service.generate_wage_payslip(self.employee_two)
+        self.assertIsInstance(obj, Payslip)
+
+    def test_adjust_leave_days(self):
+        Leave.objects.create(
+            start_date=TODAY,
+            end_date=TODAY,
+
+        )
