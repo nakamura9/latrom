@@ -40,12 +40,12 @@ class Payslip(models.Model):
     '''
     start_period = models.DateField()
     end_period = models.DateField()
-    employee = models.ForeignKey('employees.Employee', on_delete=None)
+    employee = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True)
     normal_hours = models.FloatField()
     overtime_one_hours = models.FloatField()
     overtime_two_hours = models.FloatField()
     pay_roll_id = models.IntegerField()
-    pay_grade = models.ForeignKey('employees.paygrade', on_delete=None, 
+    pay_grade = models.ForeignKey('employees.paygrade', on_delete=models.SET_NULL, null=True, 
         default=1)
     pay_grade_version = models.PositiveSmallIntegerField(default=0)
     status = models.CharField(choices=[
@@ -55,7 +55,7 @@ class Payslip(models.Model):
         ], max_length=16,
         default='draft')
     entry = models.ForeignKey('accounting.journalentry', 
-        on_delete=None, 
+        on_delete=models.SET_NULL, 
         blank=True, 
         null=True)
 

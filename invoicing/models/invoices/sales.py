@@ -25,7 +25,7 @@ class SalesInvoice(AbstractSale):
     DEFAULT_WAREHOUSE = 1 #make fixture
     purchase_order_number = models.CharField(blank=True, max_length=32)
     #add has returns field
-    ship_from = models.ForeignKey('inventory.WareHouse', on_delete=None,
+    ship_from = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True,
          default=DEFAULT_WAREHOUSE)
 
     def add_product(self, product, quantity):
@@ -82,7 +82,7 @@ class SalesInvoice(AbstractSale):
 
 class SalesInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.SalesInvoice',on_delete=models.CASCADE,)
-    product = models.ForeignKey("inventory.Product", on_delete=None)
+    product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField(default=0.0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)

@@ -40,7 +40,7 @@ class ServiceInvoice(AbstractSale):
 
 class ServiceInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.ServiceInvoice', on_delete=models.CASCADE,)
-    service = models.ForeignKey('services.Service', on_delete=None)
+    service = models.ForeignKey('services.Service', on_delete=models.SET_NULL, null=True)
     hours = models.DecimalField(max_digits=6, decimal_places=2)
     
     @property

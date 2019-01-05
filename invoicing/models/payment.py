@@ -46,7 +46,7 @@ class Payment(SoftDeletionModel):
         default='transfer')
     reference_number = models.AutoField(primary_key=True)
     sales_rep = models.ForeignKey("invoicing.SalesRepresentative", 
-        on_delete=None,)
+        on_delete=models.SET_NULL, null=True,)
     comments = models.TextField(default="Thank you for your business")
 
     def __str__(self):

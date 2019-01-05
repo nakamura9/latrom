@@ -56,7 +56,7 @@ class Individual(Person, SoftDeletionModel):
 
 class Note(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey('auth.User', on_delete=None,)
+    author = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True,)
     note = models.TextField()
 
 

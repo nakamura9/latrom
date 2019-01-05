@@ -70,5 +70,5 @@ class Bill(AbstractSale):
         return j
             
 class BillLine(models.Model):
-    bill = models.ForeignKey('invoicing.Bill', on_delete=None)
-    expense = models.ForeignKey('accounting.Expense', on_delete=None)
+    bill = models.ForeignKey('invoicing.Bill', on_delete=models.SET_NULL, null=True)
+    expense = models.ForeignKey('accounting.Expense', on_delete=models.SET_NULL, null=True)

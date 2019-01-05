@@ -21,13 +21,13 @@ class SalesConfig(SingletonModel):
     default_quotation_comments = models.TextField(blank=True)
     default_credit_note_comments = models.TextField(blank=True)
     default_terms = models.TextField(blank=True)
-    sales_tax = models.ForeignKey('accounting.Tax', on_delete=None, null=True, blank="True")
+    sales_tax = models.ForeignKey('accounting.Tax', on_delete=models.SET_NULL,  null=True, blank="True")
     include_shipping_address = models.BooleanField(default=False)
     business_address = models.TextField(blank=True)
     logo = models.ImageField(null=True,upload_to="logo/", blank=True)
     document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES)
-    currency = models.ForeignKey('accounting.Currency', blank=True, null=True,
-        on_delete=None)
+    currency = models.ForeignKey('accounting.Currency', blank=True, 
+        on_delete=models.SET_NULL, null=True)
     business_name = models.CharField(max_length=255)
     payment_details = models.TextField(blank=True)
     contact_details = models.TextField(blank=True)

@@ -35,7 +35,7 @@ class Asset(models.Model):
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
     salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
-    created_by = models.ForeignKey('auth.user', default=1, on_delete=None)
+    created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
 
     def create_entry(self):
         '''debits the debit account and credits the appropriate asset account'''

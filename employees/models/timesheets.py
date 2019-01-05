@@ -21,11 +21,11 @@ class EmployeeTimeSheet(models.Model):
     YEAR_CHOICES = [
         (i, i) for i in range(2000, 2051)
     ] 
-    employee = models.ForeignKey('employees.employee', on_delete=None, 
+    employee = models.ForeignKey('employees.employee', on_delete=models.SET_NULL, null=True, 
         related_name='target')
     month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
     year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
-    recorded_by = models.ForeignKey('employees.employee', on_delete=None, 
+    recorded_by = models.ForeignKey('employees.employee', on_delete=models.SET_NULL, 
         related_name='recorder', null=True)
     complete=models.BooleanField(default=False, blank=True)
 
@@ -47,7 +47,7 @@ class EmployeeTimeSheet(models.Model):
 
 
 class AttendanceLine(models.Model):
-    timesheet = models.ForeignKey('employees.EmployeeTimeSheet', on_delete=None)
+    timesheet = models.ForeignKey('employees.EmployeeTimeSheet', on_delete=models.SET_NULL, null=True)
     date = models.DateField()
     time_in = models.TimeField(blank=True, null=True)
     time_out = models.TimeField(blank=True, null=True)

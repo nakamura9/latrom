@@ -38,7 +38,7 @@ class PayGrade(models.Model):
     hourly_rate = models.FloatField(default=0)
     overtime_rate = models.FloatField(default=0)
     overtime_two_rate = models.FloatField(default=0)
-    commission = models.ForeignKey('employees.CommissionRule', on_delete=None,
+    commission = models.ForeignKey('employees.CommissionRule', on_delete=models.SET_NULL,
         null=True, blank=True)
     allowances = models.ManyToManyField('employees.Allowance', blank=True)
     deductions = models.ManyToManyField('employees.Deduction', blank=True)

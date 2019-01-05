@@ -52,14 +52,14 @@ class Order(SoftDeletionModel):
     date = models.DateField()
     due = models.DateField(blank=True, null=True)
     supplier = models.ForeignKey('inventory.supplier', 
-        on_delete=None, default=1)
+        on_delete=models.SET_NULL, null=True, default=1)
     supplier_invoice_number = models.CharField(max_length=32, 
         blank=True,  default="")
     bill_to = models.CharField(max_length=128, blank=True, 
         default="")
     ship_to = models.ForeignKey('inventory.WareHouse', 
-        on_delete=None)
-    tax = models.ForeignKey('accounting.Tax',on_delete=None, 
+        on_delete=models.SET_NULL, null=True)
+    tax = models.ForeignKey('accounting.Tax',on_delete=models.SET_NULL, null=True, 
         default=1)
     tracking_number = models.CharField(max_length=64, blank=True, 
         default="")
@@ -68,9 +68,9 @@ class Order(SoftDeletionModel):
         choices=ORDER_STATUS_CHOICES)
     received_to_date = models.FloatField(default=0.0)
     issuing_inventory_controller = models.ForeignKey('auth.user', 
-        default=1, on_delete=None)
-    entry = models.ForeignKey('accounting.JournalEntry', null=True,
-         blank=True, on_delete=None)
+        default=1, on_delete=models.SET_NULL, null=True)
+    entry = models.ForeignKey('accounting.JournalEntry',
+         blank=True, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
         return 'ORD' + str(self.pk)
@@ -191,18 +191,18 @@ class OrderItem(models.Model):
         (3, 'Equipment'),
         (4, 'Raw Material')
         ]
-    order = models.ForeignKey('inventory.Order', on_delete=None, )
+    order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, null=True, )
     item_type = models.PositiveSmallIntegerField(default=1, 
         choices=ITEM_TYPE_CHOICES)
-    product = models.ForeignKey('inventory.product', on_delete=None,null=True)
-    consumable = models.ForeignKey('inventory.consumable', on_delete=None,
+    product = models.ForeignKey('inventory.product', on_delete=models.SET_NULL, null=True)
+    consumable = models.ForeignKey('inventory.consumable', on_delete=models.SET_NULL, 
         null=True)
-    equipment = models.ForeignKey('inventory.equipment', on_delete=None,
+    equipment = models.ForeignKey('inventory.equipment', on_delete=models.SET_NULL,
         null=True)
-    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=None,
+    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=models.SET_NULL,
         null=True)
     quantity = models.FloatField()
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None, 
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True, 
         default=1)
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
@@ -258,9 +258,9 @@ class OrderItem(models.Model):
 class OrderPayment(models.Model):
     date = models.DateField()
     amount = models.DecimalField(max_digits=6,decimal_places=2)
-    order = models.ForeignKey('inventory.order', on_delete=None)
+    order = models.ForeignKey('inventory.order', on_delete=models.SET_NULL, null=True)
     comments = models.TextField()
-    entry = models.ForeignKey('accounting.JournalEntry', on_delete=None, 
+    entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.SET_NULL,
         blank=True, null=True)
 
     def create_entry(self, comments=""):
@@ -310,8 +310,8 @@ class StockReceipt(models.Model):
     create_entry - method only called for instances where inventory 
     is paid for on receipt as per order terms.
     '''
-    order = models.ForeignKey('inventory.Order', on_delete=None)
-    received_by = models.ForeignKey('employees.Employee', on_delete=None,
+    order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, null=True)
+    received_by = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True,
         default=1, limit_choices_to=Q(user__isnull=False))
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
@@ -346,8 +346,8 @@ class StockReceipt(models.Model):
 class InventoryCheck(models.Model):
     date = models.DateField()
     next_adjustment_date = models.DateField(null=True, blank=True)#not required
-    adjusted_by = models.ForeignKey('employees.Employee', on_delete=None, limit_choices_to=Q(user__isnull=False) )
-    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None )
+    adjusted_by = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True, limit_choices_to=Q(user__isnull=False) )
+    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True )
     comments = models.TextField()
     
     @property 
@@ -360,10 +360,10 @@ class InventoryCheck(models.Model):
             [i.adjustment_value for i in self.adjustments], 0)
 
 class StockAdjustment(models.Model):
-    warehouse_item = models.ForeignKey('inventory.WareHouseItem', on_delete=None)
+    warehouse_item = models.ForeignKey('inventory.WareHouseItem', on_delete=models.SET_NULL, null=True)
     adjustment = models.FloatField()
     note = models.TextField()
-    inventory_check = models.ForeignKey('inventory.InventoryCheck', on_delete=None)
+    inventory_check = models.ForeignKey('inventory.InventoryCheck', on_delete=models.SET_NULL, null=True)
 
     @property
     def adjustment_value(self):
@@ -385,16 +385,16 @@ class TransferOrder(models.Model):
     expected_completion_date = models.DateField()
     issuing_inventory_controller = models.ForeignKey('employees.Employee',
         related_name='issuing_inventory_controller', 
-        on_delete=None, null=True,
+        on_delete=models.SET_NULL, null=True,
         limit_choices_to=Q(user__isnull=False))
     receiving_inventory_controller = models.ForeignKey('employees.Employee', 
-        on_delete=None, null=True, 
+        on_delete=models.SET_NULL, null=True, 
         limit_choices_to=Q(user__isnull=False))
     actual_completion_date =models.DateField(null=True)#provided later
     source_warehouse = models.ForeignKey('inventory.WareHouse',
-        related_name='source_warehouse', on_delete=None,)
+        related_name='source_warehouse', on_delete=models.SET_NULL, null=True,)
     receiving_warehouse = models.ForeignKey('inventory.WareHouse', 
-        on_delete=None,)
+        on_delete=models.SET_NULL, null=True,)
     order_issuing_notes = models.TextField(blank=True)
     receive_notes = models.TextField(blank=True)
     completed = models.BooleanField(default=False)
@@ -409,9 +409,9 @@ class TransferOrder(models.Model):
 class TransferOrderLine(models.Model):
     #fix
     # add support later for consumables and equipment
-    product = models.ForeignKey('inventory.Product', on_delete=None)
+    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
-    transfer_order = models.ForeignKey('inventory.TransferOrder', on_delete=None)
+    transfer_order = models.ForeignKey('inventory.TransferOrder', on_delete=models.SET_NULL, null=True)
     moved = models.BooleanField(default=False)
 
     def move(self):
@@ -426,9 +426,9 @@ class TransferOrderLine(models.Model):
 class InventoryScrappingRecord(models.Model):
     date = models.DateField()
     controller = models.ForeignKey('employees.Employee', 
-        on_delete=None,
+        on_delete=models.SET_NULL, null=True,
         limit_choices_to=Q(user__isnull=False))
-    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None)
+    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True)
     comments = models.TextField(blank=True)
 
     @property
@@ -452,10 +452,10 @@ class InventoryScrappingRecord(models.Model):
 
 class InventoryScrappingRecordLine(models.Model):
     #add support for equipment and consumables
-    product = models.ForeignKey('inventory.Product', on_delete=None)
+    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
     note = models.TextField(blank=True)
-    scrapping_record = models.ForeignKey('inventory.InventoryScrappingRecord', on_delete=None)
+    scrapping_record = models.ForeignKey('inventory.InventoryScrappingRecord', on_delete=models.SET_NULL, null=True)
 
     @property
     def scrapped_value(self):

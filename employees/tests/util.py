@@ -113,21 +113,23 @@ class ManualServiceTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        
-        cls.usr = User.objects.create_superuser(
-            'Testuser', 'admin@test.com', '123')
-        cls.employee.user = cls.usr
-        cls.employee.save()
         cls.settings = EmployeesSettings.objects.create(
             payroll_date_one=datetime.date.today().day,
             payroll_cycle="monthly",
             payroll_officer=cls.employee
         )
+        cls.settings.automate_payroll_for.set(Employee.objects.all())
+        
+        cls.usr = User.objects.create_superuser(
+            'Testuser', 'admin@test.com', '123')
+        cls.employee.user = cls.usr
+        cls.employee.save()
         
         cls.form_data = {
             'employees': Employee.objects.all(),
             'start_period': TODAY,
-            'end_period': TODAY
+            'end_period': TODAY,
+            'payroll_officer': cls.employee
         }
         cls.service = ManualPayrollService(cls.form_data)
     
@@ -190,5 +192,11 @@ class ManualServiceTests(TestCase):
         Leave.objects.create(
             start_date=TODAY,
             end_date=TODAY,
-
+            employee=self.employee_two,
+            category=1,
+            status=1,
         )
+
+        pre_leave_days = self.employee_two.leave_days
+        self.service.adjust_leave_days(self.employee_two)
+        self.assertNotEqual(pre_leave_days, self.employee_two.leave_days)

@@ -79,7 +79,7 @@ class InventoryController(models.Model):
     inventory controller and have the ability to make purchase orders,
     receive them, transfer inventory between warehouses and perform other 
     functions.'''
-    employee = models.OneToOneField('employees.Employee', on_delete=None, 
+    employee = models.OneToOneField('employees.Employee', on_delete=models.SET_NULL, null=True, 
         limit_choices_to=Q(user__isnull=False))
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
@@ -92,13 +92,13 @@ class Supplier(SoftDeletionModel):
     The account of the supplier is for instances when orders are made on credit.'''
     # one or the other 
     organization = models.OneToOneField('common_data.Organization',
-         on_delete=None, blank=True,
+         on_delete=models.SET_NULL, blank=True,
          null=True)
     individual = models.OneToOneField('common_data.Individual', 
-        on_delete=None, blank=True, 
+        on_delete=models.SET_NULL, blank=True, 
         null=True)
     account = models.ForeignKey('accounting.Account', 
-        on_delete=None, 
+        on_delete=models.SET_NULL, 
         blank=True, null=True)
 
     @property
@@ -176,7 +176,7 @@ class UnitOfMeasure(SoftDeletionModel):
     description = models.TextField(default="")
     eval_string = models.CharField(max_length=255, default="")
     is_derived = models.BooleanField(default = False)
-    base_unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None, null=True, blank=True)
+    base_unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -189,7 +189,7 @@ class UnitOfMeasure(SoftDeletionModel):
 class Category(models.Model):
     '''Used to organize inventory'''
     name = models.CharField(max_length=64)
-    parent = models.ForeignKey('inventory.Category', on_delete=None, blank=True, null=True)
+    parent = models.ForeignKey('inventory.Category', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(default="")
 
 

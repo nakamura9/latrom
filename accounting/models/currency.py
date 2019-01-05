@@ -17,15 +17,15 @@ class Currency(models.Model):
 class CurrencyConversionTable(models.Model):
     name = models.CharField(max_length=255)
     reference_currency = models.ForeignKey('accounting.Currency', 
-        on_delete=None, related_name="reference_currency", default=1)
+        on_delete=models.SET_NULL, null=True, related_name="reference_currency", default=1)
 
     def __str__(self):
         return self.name
 
 class CurrencyConversionLine(models.Model):
     currency = models.ForeignKey('accounting.Currency', 
-        on_delete=None, related_name="exchange_currency")
+        on_delete=models.SET_NULL, null=True, related_name="exchange_currency")
     exchange_rate = models.DecimalField(max_digits=9, decimal_places=2)
     conversion_table = models.ForeignKey('accounting.CurrencyConversionTable',
-        on_delete=None)
+        on_delete=models.SET_NULL, null=True)
 

@@ -129,10 +129,10 @@ class CombinedInvoiceLine(models.Model):
         (2, 'service'),
         (3, 'expense'),
     ]
-    invoice = models.ForeignKey('invoicing.CombinedInvoice', on_delete=None, default=1)
-    expense = models.ForeignKey('accounting.Expense',on_delete=None, null=True)
-    service = models.ForeignKey('services.Service',on_delete=None, null=True)
-    product = models.ForeignKey("inventory.Product", on_delete=None,null=True)
+    invoice = models.ForeignKey('invoicing.CombinedInvoice', on_delete=models.SET_NULL, null=True, default=1)
+    expense = models.ForeignKey('accounting.Expense',on_delete=models.SET_NULL, null=True, )
+    service = models.ForeignKey('services.Service',on_delete=models.SET_NULL, null=True,)
+    product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, null=True,)
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
     quantity_or_hours = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
 

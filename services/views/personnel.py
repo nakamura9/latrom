@@ -27,7 +27,7 @@ class ServicePersonCreateView(ServiceCheckMixin, ContextMixin, CreateView):
 
 class ServicePersonUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
-    form_class = forms.ServicePersonForm
+    form_class = forms.ServicePersonUpdateForm
     success_url = reverse_lazy('services:service-person-list')
     model = models.ServicePerson
     extra_context = {

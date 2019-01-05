@@ -233,6 +233,8 @@ class TimeLoggerForm(BootstrapMixin, forms.Form):
 class PayrollForm(BootstrapMixin, forms.Form):
     start_period = forms.DateField()
     end_period = forms.DateField()
+    payroll_officer = forms.ModelChoiceField(
+        models.Employee.objects.filter(payrollofficer__isnull=False))
     employees = forms.ModelMultipleChoiceField(
         models.Employee.objects.all(),
         widget= forms.CheckboxSelectMultiple)

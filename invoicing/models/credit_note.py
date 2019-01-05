@@ -23,7 +23,7 @@ class CreditNote(models.Model):
         are to be written off."""
     
     date = models.DateField()
-    invoice = models.ForeignKey('invoicing.SalesInvoice', on_delete=None)
+    invoice = models.ForeignKey('invoicing.SalesInvoice', on_delete=models.SET_NULL, null=True)
     comments = models.TextField()#never allow blank comments
 
     @property

@@ -53,7 +53,7 @@ class Deduction(SoftDeletionModel):
     amount = models.FloatField(default=0)
     account_paid_into = models.ForeignKey(
         'accounting.account',
-        on_delete=None,
+        on_delete=models.SET_NULL, null=True,
         default=5008)# salaries 
 
     def __str__(self):
@@ -127,7 +127,7 @@ class PayrollTax(models.Model):
         return TaxBracket.objects.filter(payroll_tax =self).order_by('upper_boundary')
 
 class TaxBracket(models.Model):
-    payroll_tax = models.ForeignKey('employees.PayrollTax', on_delete=None)
+    payroll_tax = models.ForeignKey('employees.PayrollTax', on_delete=models.SET_NULL, null=True)
     lower_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     upper_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     rate = models.DecimalField(max_digits=5, decimal_places=2)

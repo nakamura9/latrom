@@ -16,7 +16,7 @@ class Transaction(models.Model):
     Does not create a table on the database.
     Is an aggregate component of a JournalEntry
     '''
-    account = models.ForeignKey('accounting.Account', on_delete=None)
+    account = models.ForeignKey('accounting.Account', on_delete=models.SET_NULL, null=True)
     amount =models.DecimalField(max_digits=9, decimal_places=2)
     entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.CASCADE)
     class Meta:
@@ -86,10 +86,10 @@ class JournalEntry(models.Model):
     reference = models.CharField(max_length=128, default="")
     date = models.DateField(default=datetime.date.today)
     memo = models.TextField()
-    journal = models.ForeignKey('accounting.Journal', on_delete=None)
+    journal = models.ForeignKey('accounting.Journal', on_delete=models.SET_NULL, null=True)
     posted_to_general_ledger = models.BooleanField(default=False)
     adjusted = models.BooleanField(default=False)
-    created_by = models.ForeignKey('auth.user', default=1, on_delete=None)
+    created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
 
     @property
     def total_debits(self):

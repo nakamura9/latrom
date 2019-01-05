@@ -21,6 +21,11 @@ class ServicePersonForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.ServicePerson
 
+class ServicePersonUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "employee",
+        model = models.ServicePerson
+
 
 class ServiceTeamForm(forms.ModelForm, BootstrapMixin):
     #create members in react

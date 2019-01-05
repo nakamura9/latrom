@@ -15,7 +15,7 @@ class SalesRepresentative(SoftDeletionModel):
     sales - takes two dates as arguments and returns the 
     amount sold exclusive of tax. Used in commission calculation
     '''
-    employee = models.OneToOneField('employees.Employee', on_delete=None,)
+    employee = models.OneToOneField('employees.Employee', on_delete=models.SET_NULL, null=True,)
     number = models.AutoField(primary_key=True)
     can_reverse_invoices = models.BooleanField(default=True)
     can_offer_discounts = models.BooleanField(default=True)

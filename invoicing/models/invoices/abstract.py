@@ -30,18 +30,19 @@ class AbstractSale(SoftDeletionModel):
     status = models.CharField(max_length=16, choices=SALE_STATUS)
     invoice_number = models.PositiveIntegerField(null=True)
     quotation_number = models.PositiveIntegerField(null=True)
-    customer = models.ForeignKey("invoicing.Customer", on_delete=None,default=DEFAULT_CUSTOMER)
+    customer = models.ForeignKey("invoicing.Customer", on_delete=models.SET_NULL, null=True,default=DEFAULT_CUSTOMER)
     salesperson = models.ForeignKey('invoicing.SalesRepresentative',
-        on_delete=None, default=DEFAULT_SALES_REP)
+        on_delete=models.SET_NULL, null=True, default=DEFAULT_SALES_REP)
     due= models.DateField( default=datetime.date.today)
     date= models.DateField(default=datetime.date.today)
     discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    tax = models.ForeignKey('accounting.Tax', on_delete=None,blank=True, 
+    tax = models.ForeignKey('accounting.Tax', on_delete=models.SET_NULL, 
+        blank=True, 
         null=True)
     terms = models.CharField(max_length = 128, blank=True)
     comments = models.TextField(blank=True)
     entry = models.ForeignKey('accounting.JournalEntry', 
-        on_delete=None, blank=True, null=True)
+        on_delete=models.SET_NULL,  blank=True, null=True)
     @property
     def overdue(self):
         '''returns boolean'''

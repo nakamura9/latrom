@@ -20,7 +20,7 @@ class WareHouse(models.Model):
     address = models.TextField()
     description = models.TextField(blank=True)
     inventory_controller = models.ForeignKey('employees.Employee', 
-        on_delete=None, null=True, 
+        on_delete=models.SET_NULL, null=True, 
         blank=True,
         limit_choices_to=Q(user__isnull=False))
     length = models.FloatField(default=0.0)
@@ -121,19 +121,19 @@ class WareHouseItem(models.Model):
     ]
     
     item_type = models.PositiveSmallIntegerField()
-    product = models.ForeignKey('inventory.Product', on_delete=None, null=True)
-    consumable = models.ForeignKey('inventory.Consumable', on_delete=None, 
+    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
+    consumable = models.ForeignKey('inventory.Consumable', on_delete=models.SET_NULL, 
         null=True)
-    equipment = models.ForeignKey('inventory.Equipment', on_delete=None, 
+    equipment = models.ForeignKey('inventory.Equipment', on_delete=models.SET_NULL, 
         null=True)
-    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=None, 
+    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=models.SET_NULL,
         null=True)
     quantity = models.FloatField()
-    warehouse = models.ForeignKey('inventory.Warehouse', on_delete=None, 
+    warehouse = models.ForeignKey('inventory.Warehouse', on_delete=models.SET_NULL, null=True, 
         default=1)
     #might support multiple locations for the same item in the same warehouse
     location = models.ForeignKey('inventory.StorageMedia', blank=True, 
-        on_delete=None, null=True)
+        on_delete=models.SET_NULL, null=True)
     verified = models.BooleanField(default=False)
     #verification expires after the next inventory check date
 
@@ -195,11 +195,11 @@ class WareHouseItem(models.Model):
 
 class StorageMedia(models.Model):
     name = models.CharField(max_length = 255)
-    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=None, )
-    location = models.ForeignKey('inventory.StorageMedia', on_delete=None,  
+    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True, )
+    location = models.ForeignKey('inventory.StorageMedia', on_delete=models.SET_NULL,
         null=True, blank=True)
     description = models.TextField(blank=True)
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,  
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL,  
         null=True, blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)

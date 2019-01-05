@@ -17,8 +17,8 @@ from .accounts import *
 class AccountingSettings(SingletonModel):
     start_of_financial_year = models.DateField()
     use_default_chart_of_accounts = models.BooleanField(default=True)
-    currency_exchange_table = models.ForeignKey('accounting.CurrencyConversionTable', default=1, on_delete=None)
-    default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True, blank=True, on_delete=None)
+    currency_exchange_table = models.ForeignKey('accounting.CurrencyConversionTable', default=1, on_delete=models.SET_NULL, null=True)
+    default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True, blank=True, on_delete=models.SET_NULL)
 
 class Bookkeeper(SoftDeletionModel):
     '''
@@ -26,7 +26,7 @@ class Bookkeeper(SoftDeletionModel):
     Model that gives employees access to the bookkeeping function of the 
     software such as order creation and the like.'''
     employee = models.OneToOneField('employees.Employee', 
-        on_delete=None, default=1, limit_choices_to=Q(user__isnull=False))
+        on_delete=models.SET_NULL, null=True, default=1, limit_choices_to=Q(user__isnull=False))
     can_create_journals = models.BooleanField(default=False, blank=True)
     can_create_orders_and_invoices = models.BooleanField(default=False, blank=True)
     can_record_expenses = models.BooleanField(default=False, blank=True)

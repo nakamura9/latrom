@@ -20,17 +20,17 @@ class BaseItem(SoftDeletionModel):
         abstract = True
 
     name = models.CharField(max_length = 64)
-    category = models.ForeignKey('inventory.Category', on_delete=None,default=1)
+    category = models.ForeignKey('inventory.Category', on_delete=models.SET_NULL, null=True,default=1)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
     image = models.FileField(blank=True, null=True, 
         upload_to=settings.MEDIA_ROOT)
     description = models.TextField(blank=True, default="")
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True,
         blank=True, default=1)
     unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
-    supplier = models.ForeignKey("inventory.Supplier", on_delete=None,
+    supplier = models.ForeignKey("inventory.Supplier", on_delete=models.SET_NULL,
         blank=True, null=True)
     
     def __str__(self):
@@ -178,7 +178,7 @@ class Equipment(BaseItem):
     ]
     condition = models.CharField(max_length=16, 
         choices=CONDITION_CHOICES, default='excellent')
-    asset_data = models.ForeignKey('accounting.Asset', on_delete=None, 
+    asset_data = models.ForeignKey('accounting.Asset', on_delete=models.SET_NULL,
         null=True, blank=True)
 
     @property
@@ -215,7 +215,7 @@ class WorkInProgress(models.Model):
     image = models.FileField(blank=True, null=True, 
         upload_to=settings.MEDIA_ROOT)
     description = models.TextField(blank=True, default="")
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None,
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True,
         blank=True, default=1)
     
 """

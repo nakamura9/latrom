@@ -30,14 +30,13 @@ class Leave(models.Model):
     ]
     start_date = models.DateField()
     end_date = models.DateField()
-    employee = models.ForeignKey('employees.Employee', on_delete=None, 
+    employee = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True, 
         related_name='employee')
     category = models.PositiveSmallIntegerField(choices=LEAVE_CATEGORIES)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=0)
     authorized_by = models.ForeignKey('employees.Employee', 
-            on_delete=None, 
+            on_delete=models.SET_NULL, null=True, 
             related_name='authority', 
-            null=True,
             limit_choices_to={'payroll_officer__isnull': False}
             )
     notes = models.TextField(blank=True)

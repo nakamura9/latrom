@@ -13,7 +13,7 @@ class Service(models.Model):
     description = models.TextField()
     flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
     hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
-    category = models.ForeignKey('services.ServiceCategory', on_delete=None,)
+    category = models.ForeignKey('services.ServiceCategory', on_delete=models.SET_NULL, null=True,)
     procedure = models.ForeignKey('services.ServiceProcedure', 
         on_delete=models.CASCADE, null=True, blank=True)
     frequency = models.CharField(max_length = 16, 
@@ -44,7 +44,8 @@ class ServiceCategory(models.Model):
 
 #might rename 
 class ServicePerson(models.Model):
-    employee = models.OneToOneField('employees.Employee', on_delete=None,)
+    employee = models.OneToOneField('employees.Employee', null=True,
+        on_delete=models.SET_NULL,)
     is_manager = models.BooleanField(default=False)
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
@@ -59,8 +60,11 @@ class ServicePerson(models.Model):
 class ServiceTeam(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    manager = models.ForeignKey('services.ServicePerson', on_delete=None, 
-        null=True, blank=True, related_name="service_team_manager")
+    manager = models.ForeignKey('services.ServicePerson', 
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True, 
+        related_name="service_team_manager")
     members = models.ManyToManyField('services.ServicePerson', 
         related_name="service_team_members")
 
@@ -89,7 +93,7 @@ class ServiceWorkOrder(models.Model):
         ), null=True, blank=True)
     service_people = models.ManyToManyField('services.ServicePerson', 
         blank=True)
-    team = models.ForeignKey('services.ServiceTeam', on_delete=None, null=True, 
+    team = models.ForeignKey('services.ServiceTeam', on_delete=models.SET_NULL, null=True, 
         blank=True)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, blank=True)
     authorized_by = models.ForeignKey('employees.Employee', 
@@ -131,7 +135,7 @@ class EquipmentRequisitionLine(models.Model):
         ('poor', 'Poor'),
         ('broken', 'Not Functioning')
     ]
-    equipment = models.ForeignKey('inventory.Equipment', on_delete=None,) 
+    equipment = models.ForeignKey('inventory.Equipment', on_delete=models.SET_NULL, null=True,) 
     quantity = models.FloatField()
     quantity_returned = models.FloatField(default=0)
     requesting_condition = models.CharField(max_length=16, 
@@ -146,15 +150,15 @@ class EquipmentRequisitionLine(models.Model):
 
 class ConsumablesRequisition(BaseRequisition):
     requested_by = models.ForeignKey('employees.Employee', 
-        related_name='consumable_requested_by', on_delete=None)
+        related_name='consumable_requested_by', on_delete=models.SET_NULL, null=True)
     authorized_by = models.ForeignKey('employees.Employee', 
-        related_name='consumable_authorized_by', on_delete=None, null=True)#filter queryset
+        related_name='consumable_authorized_by', on_delete=models.SET_NULL,  null=True)#filter queryset
     released_by = models.ForeignKey('employees.Employee', 
-        related_name='consumable_released_by',on_delete=None, null=True)
+        related_name='consumable_released_by',on_delete=models.SET_NULL, null=True)
 
 class ConsumablesRequisitionLine(models.Model):
-    consumable = models.ForeignKey('inventory.Consumable', on_delete=None,)
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=None)
+    consumable = models.ForeignKey('inventory.Consumable', on_delete=models.SET_NULL, null=True)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
     returned = models.FloatField(default=0.0)
     requisition = models.ForeignKey('services.ConsumablesRequisition', 

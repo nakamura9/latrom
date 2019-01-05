@@ -32,9 +32,9 @@ class Message(models.Model):
     '''Communication between users of the system'''
     copy = models.ManyToManyField('auth.user', 
         related_name='copy', blank=True)
-    recipient = models.ForeignKey('auth.user', on_delete=None,
+    recipient = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True,
         related_name='to')
-    sender = models.ForeignKey('auth.user', on_delete=None,
+    sender = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True,
         related_name='sender')
     subject = models.CharField(max_length=255, blank=True)
     body = models.TextField()
@@ -73,10 +73,10 @@ class MessageThread(models.Model):
     # if sender and recipeint are the same, append message to thread unless its 
     # closed manually.
     closed = models.BooleanField(default=False)
-    _from = models.ForeignKey('auth.user', on_delete=None, \
+    _from = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True, \
         related_name='_from', default=1)
     _to = models.ForeignKey('auth.user', related_name='_to',
-        on_delete=None, default=1)
+        on_delete=models.SET_NULL, null=True, default=1)
     participants = models.ManyToManyField('auth.user',
         related_name='participants',)
     messages = models.ManyToManyField('messaging.message')
@@ -98,7 +98,7 @@ class MessageThread(models.Model):
         return self.messages.latest('created_timestamp')
 
 class Notification(models.Model):
-    user = models.ForeignKey('auth.user', default = 1, on_delete=None)
+    user = models.ForeignKey('auth.user', default = 1, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
     read = models.BooleanField(default=False)
     message = models.TextField()
@@ -112,7 +112,7 @@ class Notification(models.Model):
 
 
 class Inbox(models.Model):
-    user = models.OneToOneField('auth.user', on_delete=None)
+    user = models.OneToOneField('auth.user', on_delete=models.SET_NULL, null=True)
     threads = models.ManyToManyField('messaging.messagethread')
 
     def receive_message(self, message):

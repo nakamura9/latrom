@@ -35,11 +35,11 @@ class AbstractExpense(models.Model):
     description = models.TextField()
     category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account', on_delete=None)
-    recorded_by = models.ForeignKey('auth.user', default=1, on_delete=None)
+    debit_account = models.ForeignKey('accounting.Account', on_delete=models.SET_NULL, null=True)
+    recorded_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
     reference = models.CharField(max_length=32, blank=True, default="")
     entry= models.ForeignKey('accounting.journalentry', 
-        on_delete=None, 
+        on_delete=models.SET_NULL,
         blank=True, 
         null=True)
     
@@ -74,7 +74,7 @@ class AbstractExpense(models.Model):
 class Expense(AbstractExpense):
     date = models.DateField()
     billable = models.BooleanField(default=False)
-    customer = models.ForeignKey('invoicing.Customer', on_delete=None,null=True,
+    customer = models.ForeignKey('invoicing.Customer', on_delete=models.SET_NULL, null=True,
         blank=True)
     
 
