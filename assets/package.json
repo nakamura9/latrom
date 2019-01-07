@@ -4,7 +4,8 @@
   "description": "react elements used in forms and other parts of the school management software",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "babel-loader": "^7.1.4",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "electron": "^4.0.1",
     "jquery": "^3.3.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -37,6 +39,8 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "child-process": "^1.0.2",
+    "python-shell": "^1.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1"
   }

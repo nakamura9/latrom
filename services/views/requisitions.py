@@ -164,12 +164,6 @@ class ConsumableRequisitionListView(ServiceCheckMixin, ContextMixin, PaginationM
         'title': 'List of Consumables Requisitions'
     }
 
-class ConsumableRequisitionAPIView(ServiceCheckMixin, ModelViewSet):
-    pass
-
-def authenticator(request):
-    pass
-
 def consumable_requisition_authorize(request, pk=None):
     req = get_object_or_404(models.ConsumablesRequisition, pk=pk)
     redirect_path = reverse_lazy('services:consumable-requisition-detail', 
