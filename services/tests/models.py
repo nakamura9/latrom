@@ -18,7 +18,6 @@ class ServiceModelTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        
         create_test_employees_models(cls)
         create_test_inventory_models(cls)
 

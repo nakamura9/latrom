@@ -3,10 +3,15 @@ from django.db.models import Q
 import datetime
 
 class Dispatcher(object):
+    '''An instance of this class takes a message as an argument and 
+    is used to move messages to the appropriate inboxes'''
+    
     def __init__(self, message):
         self.message = message
 
+    
     def get_inbox(self, user):
+        '''returns an inbox for a given user, creating one if necessary'''
         if not self.has_inbox(user):
             return Inbox.objects.create(user=user)
         return Inbox.objects.get(user=user)
@@ -18,9 +23,12 @@ class Dispatcher(object):
 
     
     def dispatch(self):
+        '''sends a message to the appropriate inbox'''
         #check if user has inbox
         r = self.message.recipient
+        print(r)
         inbox = self.get_inbox(r)
+        print(inbox)
         inbox.receive_message(self.message)
 
         for i in self.message.copy.all():
@@ -29,12 +37,17 @@ class Dispatcher(object):
 
 
 class Message(models.Model):
-    '''Communication between users of the system'''
+    '''Communication between users of the system
+    alternate messages 
+        sender = foreign key
+    '''
     copy = models.ManyToManyField('auth.user', 
         related_name='copy', blank=True)
-    recipient = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True,
+    recipient = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
+        null=True,
         related_name='to')
-    sender = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True,
+    sender = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
+        null=True,
         related_name='sender')
     subject = models.CharField(max_length=255, blank=True)
     body = models.TextField()
@@ -42,7 +55,7 @@ class Message(models.Model):
     sent = models.BooleanField(default=False)
     created_timestamp = models.DateTimeField(auto_now=True)
     opened_timestamp = models.DateTimeField(null=True, blank=True) 
-    
+
 
     @property
     def thread_pk(self):
@@ -116,6 +129,9 @@ class Inbox(models.Model):
     threads = models.ManyToManyField('messaging.messagethread')
 
     def receive_message(self, message):
+        print('receiving')
+        print(message.is_reply)
+        print(message.has_open_thread)
         if message.is_reply:
             thread = MessageThread.objects.get(
                 _from =message.recipient, 
@@ -140,7 +156,10 @@ class Inbox(models.Model):
             self.threads.add(thread)
             self.save()
             # so sender also can see the message as it is sent
-            sender_inbox = Inbox.objects.get(user=message.sender)
+            try:
+                sender_inbox = Inbox.objects.get(user=message.sender)
+            except:
+                sender_inbox = Inbox.objects.create(user=message.sender)
             sender_inbox.threads.add(thread)
             sender_inbox.save()
 

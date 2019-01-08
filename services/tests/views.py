@@ -443,7 +443,7 @@ class ServiceViewTests(TestCase):
         })
         self.assertEqual(resp.status_code, 302)
 
-class WorkOrderTests(TestCase):
+class WorkOrderViewTests(TestCase):
     fixtures = ['common.json','inventory.json']
 
     @classmethod 
@@ -486,17 +486,78 @@ class WorkOrderTests(TestCase):
             comments=""
         )
 
+        cls.sp = ServicePerson.objects.create(
+            employee=cls.employee,
+            is_manager = True,
+            can_authorize_equipment_requisitions = False,
+            can_authorize_consumables_requisitions = True
+        )
+
     def setUp(self):
         self.client.login(username="Testuser", password="123")
 
-        def test_get_work_order_create_page(self):
-            resp = self.client.get('/services/work-order-create')
-            self.assertEqual(resp.status_code, 200)
+    def test_get_work_order_create_page(self):
+        resp = self.client.get('/services/work-order-create')
+        self.assertEqual(resp.status_code, 200)
 
-        def test_get_work_order_detail_page(self):
-            resp = self.client.get('/services/work-order-detail/1')
-            self.assertEqual(resp.status_code, 200)
+    def test_get_work_order_update_page(self):
+        resp = self.client.get('/services/work-order-update/1')
+        self.assertEqual(resp.status_code, 200)
 
-        def test_get_work_order_detail_page(self):
-            resp = self.client.get('/services/work-order-list')
-            self.assertEqual(resp.status_code, 200)
+    def test_post_work_order_create_page(self):
+        resp = self.client.post('/services/work-order-create', 
+            data={
+                'service_people': urllib.parse.quote(json.dumps([{
+                    'value': '1 - person'
+                    }])),
+                'date': TODAY,
+                'time': '08:00:00',
+                'expected_duration': '',
+                'status': 'requested',
+                'description': 'some description',
+
+            })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_post_work_order_update_page(self):
+        resp = self.client.post('/services/work-order-update/1', data={
+            'service_people': urllib.parse.quote(json.dumps([{
+                    'value': '1 - person'
+                    }])),
+                'date': TODAY,
+                'time': '08:00:00',
+                'expected_duration': '',
+                'status': 'requested',
+                'description': 'some description',
+
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_work_order_detail_page(self):
+        resp = self.client.get('/services/work-order-detail/1')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_work_order_detail_page(self):
+        resp = self.client.get('/services/work-order-list')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_work_order_complete_page(self):
+        resp = self.client.get('/services/work-order-complete/1')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_work_order_complete_page(self):
+        resp = self.client.post('/services/work-order-complete/1', data={
+            'status': 'completed',
+            'actual_duration': '0:30:00',
+            'comments': 'some comment'
+        })
+
+        self.assertEqual(resp.status_code, 302)
+
+    def test_work_order_authorize(self):
+        resp = self.client.get('/services/work-order-authorize/1',
+            data={
+                'status': 'completed',
+                'authorized_by': 1
+            })
+        self.assertEqual(resp.status_code, 302)
