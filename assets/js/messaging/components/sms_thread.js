@@ -36,12 +36,13 @@ class SMSMessageThreadView extends Component{
     render(){
         return(
             <div style={{
-                "maxHeight": "400px",
+                
                 "maxWidth" : "600px",
                 "margin" : "0px auto",
             }}>
                 <div style={{
-                    "overflowY": "auto"
+                    "overflowY": "auto",
+                    "minHeight": "400px"
                 }}>
                     {this.state.messages.map((message) =>(
                         <MessageBubble 
@@ -59,7 +60,7 @@ class SMSMessageThreadView extends Component{
                             style={{
                                 borderRadius: "10px",
                                 border: "1px solid #09f",
-                                width: "85%"
+                                width: "80%"
                             }} 
                             value={this.state.inputText}
                             onChange={this.inputHandler}/>
@@ -70,9 +71,11 @@ class SMSMessageThreadView extends Component{
                                 backgroundColor: "#07f",
                                 border:"0px",
                                 height: '64px',
-                                borderRadius: "5px"
+                                borderRadius: "20px"
                             }}
-                            onClick={this.sendMessage}>Send</button>
+                            onClick={this.sendMessage}> <b style={{
+                                fontSize: "16pt"
+                            }}>Send</b> <i className="fas fa-angle-double-right"></i></button>
                     </div>
                     </div>
                 </div>

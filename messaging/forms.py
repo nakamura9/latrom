@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 class MessageForm(BootstrapMixin, forms.ModelForm):
     sender = forms.ModelChoiceField(User.objects.all(),     
         widget=forms.HiddenInput)
+    copy = forms.ModelMultipleChoiceField(User.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
 
     class Meta:
         fields = ['copy', 'recipient',

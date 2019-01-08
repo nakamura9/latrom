@@ -26,9 +26,7 @@ class Dispatcher(object):
         '''sends a message to the appropriate inbox'''
         #check if user has inbox
         r = self.message.recipient
-        print(r)
         inbox = self.get_inbox(r)
-        print(inbox)
         inbox.receive_message(self.message)
 
         for i in self.message.copy.all():
@@ -55,25 +53,12 @@ class Message(models.Model):
     sent = models.BooleanField(default=False)
     created_timestamp = models.DateTimeField(auto_now=True)
     opened_timestamp = models.DateTimeField(null=True, blank=True) 
-
-
-    @property
-    def thread_pk(self):
-        return self.messagethread_set.first().pk
+    thread = models.ForeignKey('messaging.messagethread', null=True, 
+        on_delete=models.SET_NULL)
 
     @property
     def is_reply(self):
-        return MessageThread.objects.filter(
-            Q(_from=self.recipient) &
-            Q(_to=self.sender) &
-            Q(closed=False)).exists()
-
-    @property
-    def has_open_thread(self):
-        return self.is_reply or MessageThread.objects.filter(
-            Q(_from=self.sender) &
-            Q(_to=self.recipient) &
-            Q(closed=False)).exists()            
+        return self.thread is not None
 
 
     def open_message(self):
@@ -86,10 +71,9 @@ class MessageThread(models.Model):
     # if sender and recipeint are the same, append message to thread unless its 
     # closed manually.
     closed = models.BooleanField(default=False)
-    _from = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True, \
+    initiator = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
+        null=True, \
         related_name='_from', default=1)
-    _to = models.ForeignKey('auth.user', related_name='_to',
-        on_delete=models.SET_NULL, null=True, default=1)
     participants = models.ManyToManyField('auth.user',
         related_name='participants',)
     messages = models.ManyToManyField('messaging.message')
@@ -111,7 +95,8 @@ class MessageThread(models.Model):
         return self.messages.latest('created_timestamp')
 
 class Notification(models.Model):
-    user = models.ForeignKey('auth.user', default = 1, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey('auth.user', default = 1, 
+        on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
     read = models.BooleanField(default=False)
     message = models.TextField()
@@ -125,34 +110,22 @@ class Notification(models.Model):
 
 
 class Inbox(models.Model):
-    user = models.OneToOneField('auth.user', on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField('auth.user', on_delete=models.SET_NULL, 
+        null=True)
     threads = models.ManyToManyField('messaging.messagethread')
 
     def receive_message(self, message):
-        print('receiving')
-        print(message.is_reply)
-        print(message.has_open_thread)
         if message.is_reply:
-            thread = MessageThread.objects.get(
-                _from =message.recipient, 
-                _to= message.sender,
-                closed=False)
-
-            initiator = thread._from.inbox
-            if not thread in initiator.threads.all():
-                initiator.threads.add(thread)
-
-
-        elif message.has_open_thread:
-            thread = MessageThread.objects.get(
-                _from =message.sender, 
-                _to= message.recipient)
+            thread = message.thread
+            
         else:
             thread = MessageThread.objects.create(
-                _from = message.sender,
-                _to = message.recipient,
+                initiator = message.sender,
             )
+
+            thread.participants.add(message.recipient)
             thread.participants.set(message.copy.all())
+
             self.threads.add(thread)
             self.save()
             # so sender also can see the message as it is sent
@@ -162,9 +135,12 @@ class Inbox(models.Model):
                 sender_inbox = Inbox.objects.create(user=message.sender)
             sender_inbox.threads.add(thread)
             sender_inbox.save()
+            message.thread = thread
+            message.save()
 
         thread.add_message(message)
             
+
     @property
     def notifications(self):
         return Notification.objects.filter(user=self.user)
