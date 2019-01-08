@@ -56,10 +56,10 @@ export default class MessageDetailView extends Component{
         });
     }
 
-    getMessages =(thread_pk) =>{
+    getMessages =(thread) =>{
         axios({
             'method': 'GET',
-            'url': '/messaging/api/message-thread/' + thread_pk
+            'url': '/messaging/api/message-thread/' + thread
         }).then( res => {
             this.setState({
                 messages: res.data.messages,
@@ -75,8 +75,8 @@ export default class MessageDetailView extends Component{
                 'method': 'GET',
                 'url': '/messaging/api/message/'+ pk,
             }).then(res =>{
-                this.setState({threadPK: res.data.thread_pk}, 
-                    () => this.getMessages(res.data.thread_pk));
+                this.setState({threadPK: res.data.thread}, 
+                    () => this.getMessages(res.data.thread));
             })    
         }else{
             this.getMessages(this.state.threadPK);
@@ -99,14 +99,18 @@ export default class MessageDetailView extends Component{
                                 : 'info'}`}
                             onClick={this.toggleView}>
                                 {this.state.isTextMessageView 
-                                    ? 'Email View' 
-                                    : 'Text Messaging View'}</button>
+                                    ? <span>Email View <i className="fas fa-envelope-open"></i></span> 
+                                    : <span>Text Messaging View <i className="fas fa-comment-alt"></i></span>}</button>
                         <button 
                         className='btn btn-danger'
+                        style={{
+                            'float': 'right'
+                        }}
                         onClick={this.closeThread}>
-                            Close Thread</button>
+                            Close Thread <i className="fas fa-times"></i></button>
                     </div>
                 </div>
+                <hr className="my-4" />
                 <div className="row">
                 <Aux>
                     <div
@@ -128,7 +132,7 @@ export default class MessageDetailView extends Component{
                         }}
                         className="col-sm-8">
                         <MessageDetail
-                            {...this.state.currentMessage} />
+                            {...this.state.currentMessage}/>
                     </div>
                     <div 
                         style={{

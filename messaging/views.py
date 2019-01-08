@@ -52,11 +52,7 @@ class ComposeMessageView(LoginRequiredMixin, CreateView):
     template_name = os.path.join('messaging', 'message_compose.html')
     form_class = forms.MessageForm
     model = models.Message
-    
-    def get_success_url(self):
-        return '/messaging/inbox/{}'.format(
-            models.Inbox.objects.get(user=self.request.user).pk
-        )
+    success_url = "/messaging/inbox/"
 
     def get_initial(self):
         return {
@@ -65,6 +61,8 @@ class ComposeMessageView(LoginRequiredMixin, CreateView):
 
     def post(self, request):
         resp = super().post(request)
+        if not self.object:
+            return resp
         sender = models.Dispatcher(self.object)
         sender.dispatch()
         return resp
@@ -80,7 +78,8 @@ def reply_message(request, pk=None):
         recipient=msg.sender,
         sender=request.user,
         subject=msg.subject,
-        body=request.POST['reply']
+        body=request.POST['reply'],
+        thread=msg.thread
     )
     sender = models.Dispatcher(reply)
     sender.dispatch()
