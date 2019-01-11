@@ -14,7 +14,8 @@ api_urls = [
         r'^api/calendar/day/(?P<year>[\d]+)/(?P<month>[\d]+)/(?P<day>[\d]+)/?$',
         get_day),
     re_path(
-        r'^api/calendar/week/(?P<year>[\d]+)/(?P<month>[\d]+)/(?P<day>[\d]+)/?$', get_week),
+        r'^api/calendar/week/(?P<year>[\d]+)/(?P<month>[\d]+)' \
+        '/(?P<day>[\d]+)/?$', get_week),
 ]
 
 urlpatterns = [
@@ -22,7 +23,7 @@ urlpatterns = [
         name='calendar'),
     re_path(r'^dashboard/?$', views.PlannerDashboard.as_view(), 
         name='dashboard'),
-    re_path(r'^config/(?P<pk>\d+)?$', views.PlannerConfigUpdateView.as_view(), 
+    re_path(r'^config/(?P<pk>\d+)/?$', views.PlannerConfigUpdateView.as_view(), 
         name='config'),
     re_path(r'^event-detail/(?P<pk>\d+)/?$', views.EventDetailView.as_view(), 
         name='event-detail'),
@@ -32,7 +33,8 @@ urlpatterns = [
         name='event-delete'),
     re_path(r'^event-complete/(?P<pk>\d+)/?$', 
         views.complete_event, name='event-complete'),
-    re_path(r'^event-create/?$', views.EventCreateView.as_view(), name='event-create'),
+    re_path(r'^event-create/?$', views.EventCreateView.as_view(), 
+        name='event-create'),
     re_path(r'event-list', views.EventListView.as_view(), name='event-list'),
     re_path(r'agenda', views.AgendaView.as_view(), name='agenda'),
 ] + event_router.urls + api_urls

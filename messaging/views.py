@@ -44,7 +44,7 @@ class NotificationDetailView(LoginRequiredMixin, DetailView):
 
     def get(self, *args, **kwargs):
         resp = super().get(*args, **kwargs)
-        self.object.open_notification()
+        self.object.open()
 
         return resp
 
@@ -67,9 +67,14 @@ class ComposeMessageView(LoginRequiredMixin, CreateView):
         sender.dispatch()
         return resp
 
-class MessageThreadView(LoginRequiredMixin, DetailView):
-    template_name = os.path.join('messaging', 'message_thread.html')
-    model = models.MessageThread
+class MessageThreadAPIView(RetrieveAPIView):
+    serializer_class = serializers.MessageThreadSerializer
+    queryset = models.MessageThread.objects.all()
+    
+
+class MessageAPIView(RetrieveAPIView):
+    serializer_class = serializers.MessageSerializer
+    queryset = models.Message.objects.all()
 
     
 def reply_message(request, pk=None):
@@ -88,16 +93,6 @@ def reply_message(request, pk=None):
 
 def inbox_counter(request):
     return JsonResponse({'count': request.user.inbox.total_in})
-
-
-class MessageThreadAPIView(RetrieveAPIView):
-    serializer_class = serializers.MessageThreadSerializer
-    queryset = models.MessageThread.objects.all()
-    
-
-class MessageAPIView(RetrieveAPIView):
-    serializer_class = serializers.MessageSerializer
-    queryset = models.Message.objects.all()
     
 
 def mark_as_read(request, pk=None):
@@ -112,5 +107,4 @@ def close_thread(request, pk=None):
     thread = models.MessageThread.objects.get(pk=pk)
     thread.closed = True
     thread.save()
-    return HttpResponseRedirect(
-        '/messaging/inbox/{}'.format(thread.inbox_set.first().pk))
+    return HttpResponseRedirect('/messaging/inbox')

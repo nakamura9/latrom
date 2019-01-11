@@ -407,7 +407,7 @@ class TransferOrder(models.Model):
         self.save()
 
 class TransferOrderLine(models.Model):
-    #fix
+    # TODO
     # add support later for consumables and equipment
     product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()

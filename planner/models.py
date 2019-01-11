@@ -47,12 +47,14 @@ class Event(models.Model):
     ]
 
     date = models.DateField()
-    reminder = models.DurationField(choices=REMINDER_CHOICES, default=datetime.timedelta(seconds=0))
+    reminder = models.DurationField(choices=REMINDER_CHOICES, 
+        default=datetime.timedelta(seconds=0))
     completed = models.BooleanField(default=False, blank=True)
     completion_time = models.DateTimeField(null=True, blank=True)
-    start_time = models.TimeField(choices=TIME_CHOICES, null=True, blank=True)
-    end_time = models.TimeField(choices=TIME_CHOICES, null=True, blank=True)
-    priority = models.CharField(max_length=8, choices=PRIORITY_CHOICES, default='normal')
+    start_time = models.TimeField(choices=TIME_CHOICES, default="06:00:00")
+    end_time = models.TimeField(choices=TIME_CHOICES, default="06:00:00")
+    priority = models.CharField(max_length=8, choices=PRIORITY_CHOICES, 
+        default='normal')
     description = models.TextField(blank=True)
     label = models.CharField(max_length=32, blank=True) 
     icon = models.CharField(max_length=32, blank=True, choices=ICON_CHOICES)
@@ -107,8 +109,10 @@ class EventParticipant(models.Model):
         )
     employee = models.ForeignKey('employees.Employee', 
         on_delete=models.SET_NULL, null=True, blank=True)
-    customer = models.ForeignKey('invoicing.Customer', on_delete=models.SET_NULL, null=True, blank=True)
-    supplier = models.ForeignKey('inventory.Supplier', on_delete=models.SET_NULL, null=True,  blank=True)
+    customer = models.ForeignKey('invoicing.Customer', 
+        on_delete=models.SET_NULL, null=True, blank=True)
+    supplier = models.ForeignKey('inventory.Supplier', 
+        on_delete=models.SET_NULL, null=True,  blank=True)
 
     def __str__(self):
         if self.participant_type == 0:

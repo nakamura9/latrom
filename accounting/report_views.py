@@ -133,7 +133,7 @@ class IncomeStatement(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
         #include non cash sales
 
         #sales tax
-        net_sales = 0 #fix
+        net_sales = 0 # TODO
 
         # modify accounts to support interest
         

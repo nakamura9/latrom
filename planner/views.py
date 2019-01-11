@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -52,6 +53,7 @@ class EventParticipantMixin(object):
         try:
             participants = json.loads(urllib.parse.unquote(request.POST['participants']))
         except json.JSONDecodeError:
+            messages.info(request, 'This event has no participants, please provide at least one')
             return resp
 
         if isinstance(self, UpdateView):
@@ -117,7 +119,5 @@ class EventAPIViewSet(viewsets.ModelViewSet):
 
 def complete_event(request, pk=None):
     evt = get_object_or_404(models.Event, pk=pk)
-    evt.completed=True
-    evt.completion_time = datetime.datetime.now()
-    evt.save()
+    evt.complete()
     return HttpResponseRedirect('/planner/dashboard')

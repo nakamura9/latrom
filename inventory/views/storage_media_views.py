@@ -11,7 +11,7 @@ from inventory import forms, models, serializers
 from .common import InventoryControllerCheckMixin
 from common_data.utilities import ContextMixin
 
-#!fix prevent updates from assigining parent media to child media.
+# TODO prevent updates from assigining parent media to child media.
 
 class StorageMediaCreateView(InventoryControllerCheckMixin, CreateView):
     template_name = os.path.join('inventory', 'storage_media', 'create.html')

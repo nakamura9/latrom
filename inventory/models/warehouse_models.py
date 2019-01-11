@@ -147,7 +147,7 @@ class WareHouseItem(models.Model):
 
     def increment(self, amt):
         amount = float(amt)
-        #fix
+        # TODO
         
         #if self.quantity + amount > self.product.maximum_stock_level:
         #    raise Exception('Stock level will exceed maximum allowed')
@@ -157,7 +157,7 @@ class WareHouseItem(models.Model):
 
     def decrement(self, amt):
         amount = float(amt)
-        #fix
+        # TODO
         #if self.quantity < amount:
         #    raise ValueError('Cannot have a quantity less than zero')
         self.quantity -= amount

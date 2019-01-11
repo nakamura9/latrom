@@ -58,7 +58,7 @@ class Message(models.Model):
 
     @property
     def is_reply(self):
-        return self.thread is not None
+        return self.thread is not None and not self.thread.closed
 
 
     def open_message(self):
@@ -104,7 +104,7 @@ class Notification(models.Model):
     #HMTL link depending on the notification
     action = models.CharField(max_length=255, blank=True)
 
-    def open_notification(self):
+    def open(self):
         self.read = True
         self.save()
 
