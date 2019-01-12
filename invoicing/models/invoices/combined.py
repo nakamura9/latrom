@@ -57,7 +57,6 @@ class CombinedInvoice(AbstractSale):
 
     def create_entry(self):
         j = JournalEntry.objects.create(
-                reference='INV' + str(self.invoice_number),
                 memo= 'Auto generated entry from sales invoice.',
                 date=self.date,
                 journal =Journal.objects.get(pk=1),#Cash receipts Journal

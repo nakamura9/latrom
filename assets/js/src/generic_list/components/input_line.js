@@ -52,7 +52,10 @@ class inputLine extends Component{
         // iterate over every
         if(this.props.hasLineTotal){
             let newData = {...this.state.data};
-            newData['lineTotal'] = this.props.calculateTotal(this.state.data);
+            
+            newData['lineTotal'] = 
+                this.props.calculateTotal(
+                    this.state.data).toFixed(2);
             this.props.insertHandler(newData);
             
         }else{
@@ -166,12 +169,9 @@ class inputLine extends Component{
                             style={{float: 'right', marginRight: '10px'}}
                             className="btn"
                             onClick={this.insertHandler}>Insert</button>
-
                         </div>
                     </td>
-                    
                 </tr>
-                    
         );
     }
 }

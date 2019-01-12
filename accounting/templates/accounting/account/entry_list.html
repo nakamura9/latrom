@@ -10,7 +10,10 @@
 {% block list_content %}
         {% for t in object_list %}
             <tr>
-                <td><a href="{% url 'accounting:entry-detail' pk=t.entry.id %}" >{{t.entry.id}}</a></td>
+                <td><a 
+                    href="{% url 'accounting:entry-detail' pk=t.entry.id %}"
+                    target="_parent" >
+                    {{t.entry.id}}</a></td>
                 <td>{{t.entry.date}}</td>
                 <td>{{t.entry.memo}}</td>
                 <td>{{t.amount}}</td>

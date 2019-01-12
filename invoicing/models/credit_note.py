@@ -38,7 +38,6 @@ class CreditNote(models.Model):
         '''Credit notes vary so, no automated entry'''
         #verified
         j = JournalEntry.objects.create(
-            reference = 'CN' + str(self.pk),
             memo="Auto generated journal entry from credit note",
             date=self.date,
             journal=Journal.objects.get(pk=3),

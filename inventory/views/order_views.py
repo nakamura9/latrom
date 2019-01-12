@@ -116,7 +116,7 @@ class OrderCreateView(InventoryControllerCheckMixin, ContextMixin,
         "related_links": [
             {
                 'name': 'Add Supplier',
-                'url': '/inventory/supplier-create/'
+                'url': '/inventory/organization-supplier-create/'
             },{
                 'name': 'Add Product',
                 'url': '/inventory/product-create/'
@@ -248,7 +248,6 @@ class ShippingAndHandlingView(InventoryControllerCheckMixin,
     def form_valid(self, form):
         resp =  super().form_valid(form)
         entry = JournalEntry.objects.create(
-            reference=form.cleaned_data['reference'], 
             date=form.cleaned_data['date'], 
             memo=form.cleaned_data['description'], 
             journal=Journal.objects.get(pk=2),#disbursements

@@ -5,6 +5,7 @@ from functools import reduce
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from accounting.models.books import Post
 
     
 class Transaction(models.Model):
@@ -16,9 +17,13 @@ class Transaction(models.Model):
     Does not create a table on the database.
     Is an aggregate component of a JournalEntry
     '''
-    account = models.ForeignKey('accounting.Account', on_delete=models.SET_NULL, null=True)
-    amount =models.DecimalField(max_digits=9, decimal_places=2)
-    entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.CASCADE)
+    account = models.ForeignKey('accounting.Account', 
+        on_delete=models.SET_NULL, 
+        null=True)
+    amount =models.DecimalField(max_digits=9, 
+        decimal_places=2)
+    entry = models.ForeignKey('accounting.JournalEntry', 
+        on_delete=models.CASCADE)
     class Meta:
         abstract =True
 
@@ -27,6 +32,9 @@ class Transaction(models.Model):
         '''for comparing transactions when listing them in an account'''
         return self.entry.date < other.entry.date
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.execute()
 
 class Debit(Transaction):
     '''
@@ -39,9 +47,10 @@ class Debit(Transaction):
     def __str__(self):
         return "Debit"
 
-    def save(self, *args, **kwargs):
-        super(Debit, self).save(*args, **kwargs)
-        self.account.decrement(self.amount)
+    def execute(self):
+        # TODO test
+        if not self.entry.draft:
+            self.account.decrement(self.amount)
 
 
 class Credit(Transaction):
@@ -57,9 +66,9 @@ class Credit(Transaction):
         return "Credit"
 
         
-    def save(self, *args, **kwargs):
-        super(Credit, self).save(*args, **kwargs)
-        self.account.increment(self.amount)
+    def execute(self):
+        if not self.entry.draft:    
+           self.account.increment(self.amount)
 
 class JournalEntry(models.Model):
     '''
@@ -83,13 +92,38 @@ class JournalEntry(models.Model):
     simple_entry() - takes 3 args, an amount, a credit account and a debit account and 
     creates the appropriate debit and credit transactions of an equal amount.
     '''
-    reference = models.CharField(max_length=128, default="")
     date = models.DateField(default=datetime.date.today)
+    draft = models.BooleanField(default=True)
     memo = models.TextField()
     journal = models.ForeignKey('accounting.Journal', on_delete=models.SET_NULL, null=True)
-    posted_to_general_ledger = models.BooleanField(default=False)
+    posted_to_ledger = models.BooleanField(default=False)
     adjusted = models.BooleanField(default=False)
     created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
+
+    def verify(self):
+        # TODO test
+        if not self.draft:
+            return #to prevent repeat execution of transactions
+
+        print('verifying')
+        self.draft = False
+        self.save()
+
+        for credit in self.credit_set.all():
+            credit.execute()
+
+        for debit in self.debit_set.all():
+            debit.execute()
+
+    @property
+    def post(self):
+        '''Returns the post to the ledger that represents this entry'''
+        # TODO test
+        if not self.posted_to_ledger:
+            return None
+
+        return Post.objects.filter(entry=self)
+
 
     @property
     def total_debits(self):
@@ -145,3 +179,4 @@ class JournalEntry(models.Model):
             account = account,
             amount = amount
         )
+

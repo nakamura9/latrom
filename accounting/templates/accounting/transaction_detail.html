@@ -1,63 +1,53 @@
 {% extends 'window.html' %} {% block content %}
 <div class="jumbotron">
     <h1 class="display-3">Journal Entry Details</h1>
-    <p class="lead">Journal Entry Date: {{object.date}}</p>
     <hr class="my-2">
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6">
+        <div class="col-sm-3">
             <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h3 class="card-title">Metadata</h3>
+                </div>
                 <div class="card-body">
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th>ID</th>
-                                <td>{{object.id}}</td>
-                            </tr>
-                            <tr>
-                                <th>Reference</th>
-                                <td>{{object.reference}}</td>
-                            </tr>
-                            <tr>
-                                <th>Total Amount</th>
-                                <td>{{object.str_total}}</td>
-                            </tr>
-                            <tr>
-                                <th>Memo</th>
-                                <td>{{object.memo}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <p><b>Status:</b> {% if object.draft %} Draft <a class="btn btn-success" href="{% url 'accounting:verify-entry' pk=object.pk %}">Verify</a> {% else %} Verified {% endif %}</p>
+                    <p><b>Entry ID:</b> {{object.pk}}</p>
+                    <p><b>Date Recorded:</b> {{object.date}}</p>
+                    <p><b>Recorded By:</b> {{object.created_by}}</p>
+                    <p><b>Entry Reference:</b> {{object.reference}}</p>
+                    <hr />
+                    <p><b>Memo:</b> {{object.memo}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
                     <table class="table">
                         <thead>
-                            <tr>
-                                
+                            <tr class="bg-primary">
                                 <td>Account</td>
-                                <td>Credit/Debit</td>
-                                <td>Amount</td>
+                                <td>Credit</td>
+                                <td>Debit</td>
                             </tr>
                         </thead>
                         <tbody>
                             {% for d in object.debit_set.all %}
                             <tr>
                                 <td>{{d.account}}</td>
-                                <td>Debit</td>
+                                <td></td>
                                 <td>{{d.amount}}</td>
                             </tr>
                             {% endfor %}
                             {% for c in object.credit_set.all %}
                             <tr>
                                 <td>{{c.account}}</td>
-                                <td>Credit</td>
                                 <td>{{c.amount}}</td>
+                                <td></td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
-            </div>
+            
         </div>
         <div class="col-sm-3"></div>
 

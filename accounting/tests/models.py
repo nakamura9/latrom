@@ -140,7 +140,7 @@ class AssetTests(TestCase):
             description='Test description',
             category = 0,
             initial_value = 100,
-            debit_account = cls.account_d,
+            credit_account = cls.account_d,
             depreciation_period = 5,
             init_date = PAST,
             depreciation_method = 0,
@@ -153,7 +153,7 @@ class AssetTests(TestCase):
             description='Test description',
             category = 0,
             initial_value = 100,
-            debit_account = self.account_d,
+            credit_account = self.account_d,
             depreciation_period = 5,
             init_date = TODAY,
             depreciation_method = 0,
@@ -167,7 +167,7 @@ class AssetTests(TestCase):
         self.asset.create_entry()
         self.assertEqual(
             self.account_d.balance,
-            pre_entry_debit_account_value - 100)
+            pre_entry_debit_account_value + 100)
 
     def test_asset_account(self):
         self.assertIsInstance(self.asset.account, Account)
@@ -263,7 +263,6 @@ class JournalEntryModelTests(TestCase):
             memo='record of test entry',
             date=TODAY,
             journal =self.journal,
-            reference = "test reference",
             created_by = self.usr
         )
 
@@ -304,7 +303,6 @@ class JournalEntryModelTests(TestCase):
             memo='record of test entry',
             date=TODAY,
             journal =self.journal,
-            reference = "test reference",
             created_by = self.usr
         )
 
@@ -314,7 +312,6 @@ class JournalEntryModelTests(TestCase):
             memo='record of test entry',
             date=TODAY + datetime.timedelta(days=1),
             journal =self.journal,
-            reference = "test reference",
             created_by = self.usr
         )
 
@@ -332,7 +329,6 @@ class JournalEntryModelTests(TestCase):
             memo='record of test entry',
             date=TODAY,
             journal =self.journal,
-            reference = "test reference",
             created_by = self.usr
         )
         self.assertTrue(j.primary_credit is None)
@@ -346,7 +342,6 @@ class JournalEntryModelTests(TestCase):
             memo='record of test entry',
             date=TODAY,
             journal =self.journal,
-            reference = "test reference",
             created_by = self.usr
         )
         self.assertTrue(j.primary_debit is None)
@@ -369,7 +364,6 @@ class JournalEntryModelTests(TestCase):
             memo='record of test entry',
             date=NEXT_WEEK,
             journal =self.journal,
-            reference = "test reference",
             created_by = self.usr
         )
         entries = self.journal.get_entries_over_period(

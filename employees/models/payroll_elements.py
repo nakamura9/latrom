@@ -53,7 +53,7 @@ class Deduction(SoftDeletionModel):
     amount = models.FloatField(default=0)
     account_paid_into = models.ForeignKey(
         'accounting.account',
-        on_delete=models.SET_NULL, null=True,
+        on_delete=models.SET_DEFAULT,
         default=5008)# salaries 
 
     def __str__(self):

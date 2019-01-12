@@ -148,11 +148,15 @@ misc_urls = [
 
 entry_urls = [
     re_path(r'^create-entry/?$', views.JournalEntryCreateView.as_view(), 
-    name='create-entry'),
+        name='create-entry'),
     re_path(r'^compound-entry/?$', views.ComplexEntryView.as_view(), 
-    name='compound-entry'),
-    re_path(r'^entry-detail/(?P<pk>[\w]+)/?$', views.JournalEntryDetailView.as_view(), 
-    name='entry-detail'),
+        name='compound-entry'),
+    re_path(r'^entry-detail/(?P<pk>[\w]+)/?$', 
+        views.JournalEntryDetailView.as_view(), 
+        name='entry-detail'),
+    re_path(r'^verify-entry/(?P<pk>[\w]+)/?$', 
+        views.verify_entry,
+        name='verify-entry'),
 ]
 
 journal_urls = [

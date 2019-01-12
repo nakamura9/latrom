@@ -59,7 +59,7 @@ class SimpleJournalEntryForm(forms.ModelForm, BootstrapMixin):
     credit = forms.ModelChoiceField(models.Account.objects.all())
     debit = forms.ModelChoiceField(models.Account.objects.all())
     class Meta:
-        fields="__all__"
+        exclude = "draft", "posted_to_ledger", "adjusted"
         model = models.JournalEntry
 
     def save(self, *args, **kwargs):

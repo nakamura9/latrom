@@ -45,6 +45,10 @@ class AbstractAccount(SoftDeletionModel):
     balance = models.DecimalField(max_digits=9, decimal_places=2)
     type = models.CharField(max_length=32, choices=TYPE_CHOICES)
     description = models.TextField()
+    bank_account = models.BooleanField(default=False)
+    control_account = models.BooleanField(default=False)
+    parent_account = models.ForeignKey('accounting.account', blank=True, 
+        null=True, on_delete=models.SET_NULL)
     balance_sheet_category = models.CharField(max_length=16, 
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
     
@@ -61,6 +65,20 @@ class AbstractAccount(SoftDeletionModel):
         self.save()
         return self.balance
   
+    @property
+    def children(self):
+        # TODO test
+        return Account.objects.filter(parent_account=self)
+
+    @property
+    def control_balance(self):
+        # TODO test
+        total = self.balance 
+        for acc in self.children:
+            total += acc.balance
+
+        return total
+        
     class Meta:
         abstract = True
 

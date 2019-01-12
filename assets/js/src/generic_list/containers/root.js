@@ -123,7 +123,7 @@ class GenericTable extends Component{
                         list={this.state.lines}
                         taxFormField={this.props.taxFormField}
                         subtotalReducer={function(x, y){
-                            return (x + y.lineTotal);
+                            return (x + parseFloat(y.lineTotal));
                         }}/>
                 :   null}
                 

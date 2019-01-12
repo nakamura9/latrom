@@ -16,6 +16,7 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
 from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 
 from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
@@ -83,7 +84,6 @@ class ComplexEntryView(BookkeeperCheckMixin, ContextMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         j = models.JournalEntry.objects.create(
-                reference = request.POST['reference'],
                 memo = request.POST['memo'],
                 date = request.POST['date'],
                 journal = models.Journal.objects.get(
@@ -250,7 +250,6 @@ class DirectPaymentFormView(BookkeeperCheckMixin, ContextMixin, FormView):
             journal = models.Journal.objects.get(
                 pk=4)#purchases journal
             j = models.JournalEntry.objects.create(
-                reference = 'DPMT:' + form.cleaned_data['reference'],
                 memo=notes_string + form.cleaned_data['notes'],
                 date=form.cleaned_data['date'],
                 journal = journal,
@@ -546,3 +545,8 @@ def create_exchange_table_conversion_line(request):
         conversion_table = table
     )
     return JsonResponse({'status': 'ok'})
+
+def verify_entry(request, pk=None):
+    entry = get_object_or_404(models.JournalEntry, pk=pk)
+    entry.verify()
+    return HttpResponseRedirect('/accounting/entry-detail/{}'.format(pk))

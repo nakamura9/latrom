@@ -21,6 +21,7 @@ const tail = decomposed[decomposed.length - 1];
 
 if(sales){
     const calculateTotalFunc = (data)=>{
+        
         return(data.quantity * data.unit_price);
     }
     const priceGetter = (comp, fieldName, pk) =>{

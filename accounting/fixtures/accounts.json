@@ -1,13 +1,79 @@
 [
     {
         "model": "accounting.account",
-        "pk": 1000,
+        "pk": 1000, 
         "fields": {
             "name": "Cash in Checking",
             "balance": 0,
             "description": "The primary account for operating activites. Used to deposit revenue and pay expenses",
             "type": "asset",
             "balance_sheet_category": "current-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1004,
+        "fields": {
+            "name": "Inventory",
+            "balance": 0,
+            "description": "All products on hand for sale to customers.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2000,
+        "fields": {
+            "name": "Accounts Payable",
+            "balance": 0,
+            "description": "Tracks the money the organization owes its vendors, suppliers consultants and the like. The payments must be made in less than a year.",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4006,
+        "fields": {
+            "name": "Purchases",
+            "balance": 0,
+            "description": "Relates to purchases the business intends to sell",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 1003,
+        "fields": {
+            "name": "Accounts Receivable",
+            "balance": 0,
+            "description": "Tracks purchases made by customers on store credit, not purchases made with credit cards.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 3001,
+        "fields": {
+            "name": "Retained Earnings",
+            "balance": 0,
+            "description": "Tracks the cumulative profits or losses made by the organization since its formation. Adjusted once every fincial year-end.",
+            "type": "equity",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 4000,
+        "fields": {
+            "name": "Sales of Goods and Services",
+            "balance": 0,
+            "description": "Tracks the all the money earned selling company goods and services",
+            "type": "income",
+            "balance_sheet_category": "not-included"
         }
     },
     {
@@ -28,28 +94,6 @@
             "name": "Cash on Hand",
             "balance": 0,
             "description": "Tracks cash stored at the location of business such as petty cash and in cash registers.",
-            "type": "asset",
-            "balance_sheet_category": "current-assets"
-        }
-    },
-    {
-        "model": "accounting.account",
-        "pk": 1003,
-        "fields": {
-            "name": "Accounts Receivable",
-            "balance": 0,
-            "description": "Tracks purchases made by customers on store credit, not purchases made with credit cards.",
-            "type": "asset",
-            "balance_sheet_category": "current-assets"
-        }
-    },
-    {
-        "model": "accounting.account",
-        "pk": 1004,
-        "fields": {
-            "name": "Inventory",
-            "balance": 0,
-            "description": "All products on hand for sale to customers.",
             "type": "asset",
             "balance_sheet_category": "current-assets"
         }
@@ -177,17 +221,6 @@
     },
     {
         "model": "accounting.account",
-        "pk": 2000,
-        "fields": {
-            "name": "Accounts Payable",
-            "balance": 0,
-            "description": "Tracks the money the organization owes its vendors, suppliers consultants and the like. The payments must be made in less than a year.",
-            "type": "liability",
-            "balance_sheet_category": "current-liabilities"
-        }
-    },
-    {
-        "model": "accounting.account",
         "pk": 2001,
         "fields": {
             "name": "VAT Control Account",
@@ -265,17 +298,6 @@
     },
     {
         "model": "accounting.account",
-        "pk": 3001,
-        "fields": {
-            "name": "Retained Earnings",
-            "balance": 0,
-            "description": "Tracks the cumulative profits or losses made by the organization since its formation. Adjusted once every fincial year-end.",
-            "type": "equity",
-            "balance_sheet_category": "not-included"
-        }
-    },
-    {
-        "model": "accounting.account",
         "pk": 3002,
         "fields": {
             "name": "Capital",
@@ -293,17 +315,6 @@
             "balance": 0,
             "description": "Tracks any money taken out of an organization by the business owner. If multiple owners are present, multiple drawing accounts are required",
             "type": "equity",
-            "balance_sheet_category": "not-included"
-        }
-    },
-    {
-        "model": "accounting.account",
-        "pk": 4000,
-        "fields": {
-            "name": "Sales of Goods and Services",
-            "balance": 0,
-            "description": "Tracks the all the money earned selling company goods and services",
-            "type": "income",
             "balance_sheet_category": "not-included"
         }
     },
@@ -360,17 +371,6 @@
             "balance": 0,
             "description": "Tracks money earned by the sale of fixed assets such as vehicles.",
             "type": "income",
-            "balance_sheet_category": "not-included"
-        }
-    },
-    {
-        "model": "accounting.account",
-        "pk": 4006,
-        "fields": {
-            "name": "Purchases",
-            "balance": 0,
-            "description": "Relates to purchases the business intends to sell",
-            "type": "cost-of-sales",
             "balance_sheet_category": "not-included"
         }
     },

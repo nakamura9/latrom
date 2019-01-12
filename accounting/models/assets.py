@@ -29,8 +29,8 @@ class Asset(models.Model):
     description = models.TextField(blank=True)
     category = models.IntegerField(choices=ASSET_CHOICES)
     initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account', 
-        on_delete=models.CASCADE,null=True)
+    credit_account = models.ForeignKey('accounting.Account', 
+        on_delete=models.SET_DEFAULT, default=1000)
     depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
@@ -42,21 +42,21 @@ class Asset(models.Model):
         #verified
     
         j = accounting.models.transactions.JournalEntry.objects.create(
-            reference = "Asset. ID: " + str(self.pk),
             date = datetime.date.today(),
             memo =  "Asset added. Name: %s. Description: %s " % (
                 self.name, self.description
             
             ),
-            created_by = self.created_by,
-            journal = accounting.models.books.Journal.objects.get(pk=5)# not ideal general journal
+            created_by = self.created_by,# not ideal general journal
+            journal = accounting.models.books.Journal.objects.get(pk=5)
         )
         j.simple_entry(self.initial_value, 
-        self.account,
-        self.debit_account)
+            self.credit_account,# defaults to cash account
+            self.account)# asset account
         
     @property
     def account(self):
+        '''maps an asset choice to an asset account from the chart of accounts'''
         mapping = {
             0: 1005,
             1: 1006,

@@ -132,8 +132,6 @@ class Order(SoftDeletionModel):
         #verified
         if not self.entry:
             j = JournalEntry.objects.create(
-                    reference = "Auto generated entry created by order " + str(
-                        self),
                     date=self.date,
                     memo = self.notes,
                     journal = Journal.objects.get(pk=4),
@@ -142,11 +140,11 @@ class Order(SoftDeletionModel):
 
             #accounts payable
             # since we owe the supplier
-            if not self.supplier:
+            if not self.supplier.account:
                 self.supplier.create_account()
             j.credit(self.total, self.supplier.account)
-            j.debit(self.subtotal, Account.objects.get(pk=1004))
-            j.debit(self.tax_amount, Account.objects.get(pk=2001))
+            j.debit(self.subtotal, Account.objects.get(pk=1004))#inventory
+            j.debit(self.tax_amount, Account.objects.get(pk=2001))#tax
         else:
             j = self.entry
 
@@ -264,8 +262,9 @@ class OrderPayment(models.Model):
         blank=True, null=True)
 
     def create_entry(self, comments=""):
+        if self.entry:
+            return
         j = JournalEntry.objects.create(
-                reference='PMT' + str(self.pk),
                 memo= 'Auto generated journal entry from order payment.' \
                     if comments == "" else comments,
                 date=self.date,
@@ -274,24 +273,12 @@ class OrderPayment(models.Model):
             )
         
         # split into sales tax and sales
-        if not self.order.tax:
-            j.simple_entry(
-                self.amount,
-                Account.objects.get(
-                    pk=1000),#cash in checking account
-                self.order.supplier.account,
-            )
-        else:
-            tax_amount = self.amount * D(self.order.tax.rate / 100.0) 
-
-            # will now work for partial payments
-            j.debit(self.amount, self.order.supplier.account)
-            # calculate tax as a proportion of the amount paid
-            
-            # purchases account
-            j.credit(self.amount - tax_amount, Account.objects.get(pk=4006))
-            # tax
-            j.debit(tax_amount, Account.objects.get(pk=2001))
+        j.simple_entry(
+            self.amount,
+            Account.objects.get(
+                pk=1000),#cash in checking account
+            self.order.supplier.account,
+        )
 
         if not self.entry:
             self.entry = j
@@ -310,9 +297,13 @@ class StockReceipt(models.Model):
     create_entry - method only called for instances where inventory 
     is paid for on receipt as per order terms.
     '''
-    order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, null=True)
-    received_by = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True,
-        default=1, limit_choices_to=Q(user__isnull=False))
+    order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, 
+        null=True)
+    received_by = models.ForeignKey('employees.Employee', 
+        on_delete=models.SET_NULL, 
+        null=True,
+        default=1, 
+        limit_choices_to=Q(user__isnull=False))
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)
@@ -326,21 +317,6 @@ class StockReceipt(models.Model):
         self.order.save()
         
 
-    def create_entry(self):
-        #verified
-        j = JournalEntry.objects.create(
-            reference = "ORD" + str(self.order.pk),
-            memo = "Auto generated Entry from Purchase Order",
-            date =self.receive_date,
-            journal = Journal.objects.get(pk=2),
-            created_by = self.received_by.user
-        )
-        new_total = self.order.received_total - D(self.order.received_to_date)
-        j.simple_entry(
-            new_total,
-            Account.objects.get(pk=1004),#inventory
-            self.order.supplier.account#checking account
-        )
 
 #might need to rename
 class InventoryCheck(models.Model):

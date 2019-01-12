@@ -73,7 +73,8 @@ def create_account_models(cls):
         memo='record of test entry',
             date=TODAY,
             journal =cls.journal,
-            created_by=cls.user
+            created_by=cls.user,
+            draft=False
     )
     cls.entry.simple_entry(
             10,
@@ -86,7 +87,7 @@ def create_account_models(cls):
         description='Test description',
         category = 0,
         initial_value = 100,
-        debit_account = cls.account_d,
+        credit_account = cls.account_d,
         depreciation_period = 5,
         init_date = TODAY,
         depreciation_method = 0,

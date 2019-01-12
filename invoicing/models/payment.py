@@ -70,7 +70,6 @@ class Payment(SoftDeletionModel):
     def create_entry(self):
         '''payment entries credit the customer account and debits the cash book'''
         j = JournalEntry.objects.create(
-                reference='PMT' + str(self.pk),
                 memo= 'Auto generated journal entry from payment.',
                 date=self.date,
                 journal =Journal.objects.get(pk=3),
@@ -78,25 +77,13 @@ class Payment(SoftDeletionModel):
             )
         
         # split into sales tax and sales
-        if not self.invoice.tax:
-            j.simple_entry(
-                self.amount,
-                self.invoice.customer.account,
-                Account.objects.get(
-                    pk=1000),#cah in ckecing account
-            )
-        else:
-            tax_amount = self.amount * D(self.invoice.tax.rate / 100.0) 
-
-            # will now work for partial payments
-            j.credit(self.amount, self.invoice.customer.account)
-            # calculate tax as a proportion of the amount paid
-            
-            # sales account
-            j.credit(self.amount - tax_amount, Account.objects.get(pk=4000))
-            # tax
-            j.credit(tax_amount, Account.objects.get(pk=2001))
         
+        j.simple_entry(
+            self.amount,
+            self.invoice.customer.account,
+            Account.objects.get(
+                pk=1000),#cash in checking account
+        )
         #change invoice status if  fully paid
         if self.invoice.total_due <= 0:
             self.invoice.status = "paid"

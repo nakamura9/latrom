@@ -49,6 +49,6 @@ class EmployeesSettings(SingletonModel):
     )
     payroll_account = models.ForeignKey(
         'accounting.account',
-        on_delete=models.SET_NULL, null=True,
-        default=1000 )
+        on_delete=models.SET_DEFAULT,
+        default=1000)
     payroll_counter = models.IntegerField(default=0)

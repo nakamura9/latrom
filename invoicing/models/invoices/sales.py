@@ -11,7 +11,12 @@ from django.db.models import Q
 from django.utils import timezone
 
 import inventory
-from accounting.models import Account, Expense, Journal, JournalEntry, Tax
+from accounting.models import (Account,
+                             Journal, 
+                             JournalEntry, 
+                             Tax,
+                             Post,
+                             Ledger)
 from common_data.models import Person, SingletonModel
 from employees.models import Employee
 from invoicing.models.payment import Payment
@@ -46,6 +51,16 @@ class SalesInvoice(AbstractSale):
         return reduce(lambda x, y: x+ y, 
             [i.subtotal for i in self.salesinvoiceline_set.all()], 0)
 
+    @property
+    def cost_of_goods_sold(self):
+        # TODO test
+        total = 0
+        for line in self.salesinvoiceline_set.all():
+            total += line.value
+
+        return total
+
+
     def update_inventory(self):
         #called in views.py
         for line in self.salesinvoiceline_set.all():
@@ -63,32 +78,42 @@ class SalesInvoice(AbstractSale):
         if self.entry:
             return
         j = JournalEntry.objects.create(
-                reference='INV' + str(self.invoice_number),
                 memo= 'Auto generated entry from sales invoice.',
                 date=self.date,
-                journal =Journal.objects.get(pk=1),#Cash receipts Journal
+                journal =Journal.objects.get(pk=3),#Sales Journal
                 created_by = self.salesperson.employee.user
             )
-        j.credit(self.subtotal, Account.objects.get(pk=1004))#inventory
+        j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
         j.debit(self.total, self.customer.account)
-        #Do this when closing the books 
-        # j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
         if self.tax_amount > D(0):
             j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+        
+        # purchases for cost of goods sold
+        j.debit(self.cost_of_goods_sold, Account.objects.get(pk=4006))
+        #inventory
+        j.credit(self.cost_of_goods_sold, Account.objects.get(pk=1004))
 
         self.entry = j
         self.save()
+
+        #posting to accounts receivable
+        
         return j
 
 class SalesInvoiceLine(models.Model):
-    invoice = models.ForeignKey('invoicing.SalesInvoice',on_delete=models.CASCADE,)
-    product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, null=True)
+    invoice = models.ForeignKey('invoicing.SalesInvoice',
+        on_delete=models.CASCADE,)
+    product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, 
+        null=True)
     quantity = models.FloatField(default=0.0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
     returned_quantity = models.FloatField(default=0.0)
     returned = models.BooleanField(default=False)
-
+    # value is calculated once when the invoice is generated to prevent 
+    # distortions as prices change
+    value = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
+    
     @property
     def subtotal(self):
         return D(self.quantity) * self.price
@@ -96,6 +121,11 @@ class SalesInvoiceLine(models.Model):
     def _return(self, quantity):
         self.returned_quantity += float(quantity)
         self.returned = True
+        self.save()
+
+    def set_value(self):
+        # TODO test
+        self.value = self.product.stock_value * D(self.quantity)
         self.save()
 
     @property
@@ -112,3 +142,6 @@ class SalesInvoiceLine(models.Model):
         if self.price == 0.0 and self.product.unit_sales_price != D(0.0):
             self.price = self.product.unit_sales_price
             self.save()
+
+        if self.value == D(0.0) and self.product.stock_value > D(0.0):
+            self.set_value()

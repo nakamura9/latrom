@@ -204,8 +204,6 @@ class StockReceiptCreateView(InventoryControllerCheckMixin,CreateView):
             else:
                 models.OrderItem.objects.get(pk=pk).receive(n)
             
-        #make transaction after receiving each item.
-        #self.object.create_entry()
         return resp 
 
 class GoodsReceivedVoucherView(InventoryControllerCheckMixin, ConfigMixin, 

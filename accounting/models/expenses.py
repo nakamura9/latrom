@@ -79,11 +79,9 @@ class Expense(AbstractExpense):
     
 
     def create_entry(self):
-        #verified
         if self.entry:
             return
         j = accounting.models.transactions.JournalEntry.objects.create(
-            reference = "Expense. ID: " + str(self.pk),
             date = self.date,
             memo =  "Expense recorded. Category: %s." % self.category,
             journal = accounting.models.books.Journal.objects.get(pk=2),# cash disbursements
@@ -91,11 +89,10 @@ class Expense(AbstractExpense):
         )
         #debits increase expenses credits decrease assets so...
         j.simple_entry(self.amount, 
-            self.customer.account \
-            if self.billable \
-            else accounting.models.accounts.Account.objects.get(pk=1000),#cash account
+            accounting.models.accounts.Account.objects.get(pk=1000),#cash account
             self.expense_account)
         
+        #only create accounts payable after billing the customer
         self.entry = j
         self.save()
        

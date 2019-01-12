@@ -38,13 +38,25 @@ class Journal(SoftDeletionModel):
 
 class Ledger(models.Model):
     '''
-    Summarizes the accounts and journal entries
-    Not yet implemented -might make a singleton model
+    Summarizes the accounts and contains the control accounts
+    all posts to the ledger must balance 
     '''
     name = models.CharField(max_length=64)
 
     def __str__(self):
-        return self.name 
+        return self.name
+
+class Post(models.Model):
+    '''Moving transactions from journals to the ledger, from books of primary 
+    entry to books of final entry.'''
+    entry = models.ForeignKey('accounting.JournalEntry', 
+        on_delete=models.SET_NULL, null=True)
+    debit = models.ForeignKey('accounting.Debit', 
+        on_delete=models.SET_NULL, null=True)
+    credit =  models.ForeignKey('accounting.Credit',
+        on_delete=models.SET_NULL, null=True)
+    ledger = models.ForeignKey('accounting.Ledger',
+        on_delete=models.SET_NULL, null=True)
 
 
 class WorkBook(models.Model):

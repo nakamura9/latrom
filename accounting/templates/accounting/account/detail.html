@@ -38,8 +38,30 @@
                                 <td>{{object.type}}</td>
                             </tr>
                             <tr>
+                                <th>Bank Account?</th>
+                                <td>{{object.bank_account}}</td>
+                            </tr>
+                            <tr>
+                                <th>Control Account?</th>
+                                <td>{{object.control_account}}</td>
+                            </tr>
+                            <tr>
+                                <th>Parent:</th>
+                                <td>{{object.parent_account}}</td>
+                            </tr>
+                            <tr>
                                 <th>Description:</th>
                                 <td>{{object.description}}</td>
+                            </tr>
+                            <tr>
+                                <th>Children:</th>
+                                <td>
+                                    <ul>
+                                    {% for c in object.children %}
+                                        <li>{{c}}</li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

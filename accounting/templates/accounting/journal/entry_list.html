@@ -17,7 +17,7 @@
             <td>{{t.debit_set.all.count}}</td>
             <td>{{t.credit_set.all.count}}</td>
             <td>
-                <a class="btn btn-success" href="{% url 'accounting:entry-detail' pk=t.pk %}">View</a>  
+                <a class="btn btn-success" target="_parent" href="{% url 'accounting:entry-detail' pk=t.pk %}">View</a>  
                 <!--
                 <a class="btn btn-danger" href="#">Delete</a> -->
             </td>
