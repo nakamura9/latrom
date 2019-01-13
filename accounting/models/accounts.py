@@ -67,12 +67,11 @@ class AbstractAccount(SoftDeletionModel):
   
     @property
     def children(self):
-        # TODO test
         return Account.objects.filter(parent_account=self)
 
     @property
     def control_balance(self):
-        # TODO test
+        
         total = self.balance 
         for acc in self.children:
             total += acc.balance

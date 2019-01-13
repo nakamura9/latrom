@@ -45,14 +45,15 @@ class Asset(models.Model):
             date = datetime.date.today(),
             memo =  "Asset added. Name: %s. Description: %s " % (
                 self.name, self.description
-            
             ),
             created_by = self.created_by,# not ideal general journal
-            journal = accounting.models.books.Journal.objects.get(pk=5)
+            journal = accounting.models.books.Journal.objects.get(pk=5),
+            draft=False
         )
         j.simple_entry(self.initial_value, 
             self.credit_account,# defaults to cash account
             self.account)# asset account
+
         
     @property
     def account(self):

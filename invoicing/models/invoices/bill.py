@@ -55,7 +55,8 @@ class Bill(AbstractSale):
             memo= 'Auto generated Entry from unpaid bill from customer.',
             date=self.date,
             journal =Journal.objects.get(pk=3),#Sales Journal
-            created_by = self.salesperson.employee.user
+            created_by = self.salesperson.employee.user,
+            draft=False
         )
         #check these accounts
         # the corresponding account for the expense incurred

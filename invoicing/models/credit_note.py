@@ -35,12 +35,13 @@ class CreditNote(models.Model):
         return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_products], 0)
 
     def create_entry(self):
-        '''Credit notes vary so, no automated entry'''
-        #verified
+        '''Credit notes vary '''
+        
         j = JournalEntry.objects.create(
             memo="Auto generated journal entry from credit note",
             date=self.date,
             journal=Journal.objects.get(pk=3),
+            draft=False,
             created_by = self.invoice.salesperson.employee.user
         )
         j.simple_entry(

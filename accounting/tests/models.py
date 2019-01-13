@@ -103,6 +103,28 @@ class SimpleModelTests(TestCase):
         self.assertEqual(str(obj), 'Credit')
         self.assertEqual(self.account_c.balance, pre_bal + 10)
 
+    def test_transaction_execute(self):
+        self.entry.draft = True
+        self.entry.save()
+        pre_bal = self.account_c.balance
+
+        obj = Credit.objects.create(
+            account= self.account_c,
+            amount = 10,
+            entry= self.entry
+        )
+
+        obj.execute()
+        self.assertEqual(self.account_c.balance, pre_bal)
+        
+        self.entry.draft = False
+        self.entry.save()
+
+        obj.execute()
+        self.assertEqual(self.account_c.balance, pre_bal + 10)
+
+
+
     def test_create_ledger(self):
         obj = Ledger.objects.create(
             name="Test Ledger"
@@ -372,6 +394,28 @@ class JournalEntryModelTests(TestCase):
 
         self.assertEqual(entries.count(), 1)
 
+    def test_verify_entry(self):
+        obj = JournalEntry.objects.create(
+            memo='record of test entry',
+            date=TODAY,
+            journal =self.journal,
+            created_by = self.usr
+        )
+        pre_c_bal = Account.objects.get(pk=self.account_c.pk).balance
+
+        obj.credit(10, Account.objects.get(pk=self.account_c.pk))
+
+        obj.verify()
+        self.assertFalse(obj.draft)
+        self.assertEqual(
+            Account.objects.get(pk=self.account_c.pk).balance, pre_c_bal + 10)
+
+        self.assertIsInstance(obj, JournalEntry)
+
+    def test_entry_post(self):
+        self.assertIsNone(self.entry.post)
+        # TODO add post for alternative execution
+
 class AccountModelTests(TestCase):
     # use fixtures later
     fixtures = ['accounts.json', 'journals.json']
@@ -436,6 +480,35 @@ class AccountModelTests(TestCase):
         )
         obj.delete()
         self.assertEqual(obj.active, False)
+
+
+    def test_account_children(self):
+        obj = Account.objects.create(
+            name= 'Test Account',
+            balance=100,
+            type='asset',
+            description='Some description',
+            parent_account=self.account_d
+        )
+
+        self.assertEqual(self.account_d.children.count(), 1)
+        obj.delete()
+
+
+    def test_account_control_balance(self):
+        balance = Account.objects.get(pk=self.account_d.pk).balance
+        obj = Account.objects.create(
+            name= 'Test Account',
+            balance=100,
+            type='asset',
+            description='Some description',
+            parent_account=self.account_d
+        )
+
+        self.assertTrue(
+            Account.objects.get(pk=self.account_d.pk).control_balance > balance)
+        obj.delete()
+
 
 
     def test_account_increment_decrement_account(self):

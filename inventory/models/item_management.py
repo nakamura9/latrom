@@ -163,7 +163,6 @@ class Order(SoftDeletionModel):
                 )
             for item in self.orderitem_set.all():
                 item.receive(item.quantity)
-            sr.create_entry()
             self.status = 'received'
             self.save()
 

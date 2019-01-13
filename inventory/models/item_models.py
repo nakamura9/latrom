@@ -115,14 +115,14 @@ class Product(BaseItem):
         ordered_items = inventory.models.OrderItem.objects.filter(
             Q(order__date__gte=cut_off_date) & 
             Q(product=self))
-        total_value = 0
+        total_value = D(0)
         item_quantity = 0
         for item in ordered_items:
             total_value += D(item.quantity) * item.order_price
             item_quantity += D(item.quantity)
 
         if item_quantity == 0:
-            return 0
+            return D(0)
 
         return total_value / item_quantity
         

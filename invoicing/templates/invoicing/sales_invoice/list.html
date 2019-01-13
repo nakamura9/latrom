@@ -27,8 +27,12 @@
                     <i class="fas fa-edit"></i> Update
                 </a>
                 <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-detail' pk=inv.pk %}">
-                        <i class="fas fa-eye"></i> View
+                        <i class="fas fa-eye"></i> View {% if inv.status == "draft" %} / Validate {% endif %}
                     </a>
+
+                {% if inv.status == "quotation" %}
+                    <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-verify' pk=inv.pk status='invoice' %}">Make Invoice from Quotation</a>
+                {% endif %}
                 {% if inv.status == 'invoice' or inv.status == 'paid' %}
                 
                 <h6 class="dropdown-header">Payments</h6>

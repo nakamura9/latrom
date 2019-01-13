@@ -46,28 +46,35 @@ class WareHouse(models.Model):
     def decrement_item(self, item, quantity):
         '''Takes an item and decrements it from the appropriate warehouse item'''
         #safety checks handled elsewhere
-        #created to avoid circular imports in invoices
-        self.get_item(item).decrement(quantity)
+        retrieved_item = self.get_item(item)
+        if retrieved_item:
+            retrieved_item.decrement(quantity)
 
 
     def get_item(self, item):
         '''can accept product consumable or equipment as an arg'''
-        try:
-            if isinstance(item, Product):
-                return WareHouseItem.objects.get(product=item, warehouse=self)
-            elif isinstance(item, Consumable):
-                return WareHouseItem.objects.get(consumable=item, 
-                    warehouse=self)
-            elif isinstance(item, Equipment):
-                return WareHouseItem.objects.get(equipment=item, warehouse=self)
-            else:
-                return None # next code is dead for now
-        except:
-            return None
-            raise ValueError('the selected inventory item does not exist')
-    
+        if isinstance(item, Product) and \
+                WareHouseItem.objects.filter(
+                    product=item, warehouse=self).exists():
+                    
+            return WareHouseItem.objects.get(product=item, warehouse=self)
+        elif isinstance(item, Consumable) and \
+                WareHouseItem.objects.filter(
+                    consumable=item, warehouse=self).exists():
+
+            return WareHouseItem.objects.get(consumable=item, 
+                warehouse=self)
+        elif isinstance(item, Equipment) and \
+                WareHouseItem.objects.filter(
+                    equipment=item, warehouse=self).exists():
+
+            return WareHouseItem.objects.get(equipment=item, warehouse=self)
+        else:
+            return None # next code is dead for now
+        
     def has_item(self, item):
         found_item = self.get_item(item)
+        print('item, ', found_item)
         if found_item:
             return(
                 found_item.quantity > 0
@@ -129,7 +136,9 @@ class WareHouseItem(models.Model):
     raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=models.SET_NULL,
         null=True)
     quantity = models.FloatField()
-    warehouse = models.ForeignKey('inventory.Warehouse', on_delete=models.SET_NULL, null=True, 
+    warehouse = models.ForeignKey('inventory.Warehouse', 
+        on_delete=models.SET_NULL, 
+        null=True, 
         default=1)
     #might support multiple locations for the same item in the same warehouse
     location = models.ForeignKey('inventory.StorageMedia', blank=True, 
@@ -147,19 +156,13 @@ class WareHouseItem(models.Model):
 
     def increment(self, amt):
         amount = float(amt)
-        # TODO
         
-        #if self.quantity + amount > self.product.maximum_stock_level:
-        #    raise Exception('Stock level will exceed maximum allowed')
         self.quantity += amount
         self.save()
         return self.quantity
 
     def decrement(self, amt):
         amount = float(amt)
-        # TODO
-        #if self.quantity < amount:
-        #    raise ValueError('Cannot have a quantity less than zero')
         self.quantity -= amount
 
         self.save()

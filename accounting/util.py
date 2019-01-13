@@ -40,36 +40,3 @@ class AccountingTaskService(object):
                 acc.last_interest_earned_date = self.today
                 acc.save()
 
-
-def entry_creator(data):
-    # TODO test
-    '''Data is a dictionary in human readable format
-    the keys are 
-    journal - pk
-    reference - string
-    date - date
-    memo - note
-    author - auth.User
-    transactions - dictionary
-    
-    the transaction dict has the fields
-        account - pk
-        amount - number
-        dr_cr - string of dr or cr'''
-
-    entry = models.JournalEntry.objects.create(
-        journal=models.Journal.objects.get(pk=data['journal']),
-        date=data['date'],
-        memo=data['memo'],
-        created_by = data['author']
-    )
-
-    for trans in data['transactions']:
-        if trans['dr_cr'] == 'dr':
-            entry.debit(trans['amount'], 
-                models.Account.objects.get(pk=trans['account']))
-
-        else:
-            entry.credit(trans['amount'], 
-                models.Account.objects.get(pk=trans['account']))
-

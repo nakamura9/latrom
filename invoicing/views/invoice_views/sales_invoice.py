@@ -8,8 +8,14 @@ import urllib
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
+from django.views.generic.edit import (CreateView, 
+                                        FormView, 
+                                        UpdateView, 
+                                        DeleteView)
+
+from django.http import HttpResponseRedirect
 from django_filters.views import FilterView
 from rest_framework import viewsets
 from wkhtmltopdf import utils as pdf_tools
@@ -90,8 +96,45 @@ class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
     template_name = os.path.join("invoicing", "sales_invoice",
         'detail.html')
     def get_context_data(self, *args, **kwargs):
-        context = super(SalesInvoiceDetailView, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         context['title'] = context.get('invoice_title', "Invoice")
+        
+        if self.object.status == "draft":
+            shortages = self.object.verify_inventory()
+            
+            context['notes'] = [
+                'There is insufficient quantity of product <u>{}</u> from warehouse <u>{}</u>. The additional inventory required is <b>{}</b> units.'.format(
+                    shortage['product'], 
+                    self.object.ship_from, 
+                    shortage['quantity']
+                    ) for shortage in shortages
+                ]
+
+            actions = [
+                {
+                    'name': 'Verify as quotation',
+                    'url': '/invoicing/sales-invoice/{}/verify/quotation'.format(
+                        self.object.pk)
+                },
+                {
+                    'name': 'Verify as invoice',
+                    'url': '/invoicing/sales-invoice/{}/verify/invoice'.format(
+                        self.object.pk)
+                },
+            ] 
+            if len(shortages) > 0:
+                actions += [
+                    {
+                        'name': 'Order Additional Inventory',
+                        'url': '/inventory/order-create'
+                    },
+                    {
+                        'name': 'Manage Warehouses',
+                        'url': '/inventory/warehouse-list/'
+                    }
+                ]
+            context['actions'] = actions
+
         return context
 
         
@@ -223,3 +266,10 @@ class SalesInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')
     model = SalesInvoice
+
+def verify_invoice(request, pk=None, status=None):
+    inv = get_object_or_404(SalesInvoice, pk=pk)
+    inv.status = status
+    inv.save()
+
+    return HttpResponseRedirect('/invoicing/sales-invoice-detail/{}'.format(pk))

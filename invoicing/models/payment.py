@@ -73,7 +73,8 @@ class Payment(SoftDeletionModel):
                 memo= 'Auto generated journal entry from payment.',
                 date=self.date,
                 journal =Journal.objects.get(pk=3),
-                created_by = self.sales_rep.employee.user
+                created_by = self.sales_rep.employee.user,
+                draft=False
             )
         
         # split into sales tax and sales

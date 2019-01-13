@@ -566,7 +566,7 @@ class CombinedInvoiceViewTests(TestCase):
 
 class SalesViewTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 
-        'journals.json', 'invoicing.json']
+        'journals.json', 'invoicing.json', 'inventory.json']
     
     @classmethod
     def setUpClass(cls):
@@ -743,6 +743,11 @@ class SalesViewTests(TestCase):
     def test_get_credit_note_list_page(self):
         resp = self.client.get(reverse('invoicing:credit-note-list'))
         self.assertEqual(resp.status_code, 200)
+
+    def test_verify_sales_invoice(self):
+        resp = self.client.get('/invoicing/sales-invoice/1/verify/quotation')
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(SalesInvoice.objects.get(pk=1).status, "quotation")
 
 
 class ServiceInvoiceViewTests(TestCase):

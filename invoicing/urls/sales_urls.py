@@ -34,5 +34,9 @@ sales_urls = [
     re_path(r'^sales-invoice-email/(?P<pk>[\d]+)/?$', 
         views.SalesInvoiceEmailSendView.as_view(), 
         name='sales-invoice-email'),
-    re_path(r'^sales-invoice-list/?$', views.SalesInvoiceListView.as_view(), name='sales-invoice-list'),
+    re_path(r'^sales-invoice-list/?$', views.SalesInvoiceListView.as_view(), 
+        name='sales-invoice-list'),
+    re_path(r'^sales-invoice/(?P<pk>[\d]+)/verify/(?P<status>[a-z]+)/?$', 
+        views.verify_invoice, 
+        name='sales-invoice-verify'),
 ] + sales_router.urls + credit_note_urls

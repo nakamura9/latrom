@@ -384,10 +384,6 @@ class ItemManagementModelTests(TestCase):
         self.assertIsInstance(obj, models.StockReceipt)
         obj.delete()
 
-    def test_stock_receipt_entry(self):
-        count = JournalEntry.objects.all().count()
-        self.stock_receipt.create_entry()
-        self.assertEqual(JournalEntry.objects.all().count(), count + 1)
     
     def test_create_inventory_check(self):
         obj = models.InventoryCheck.objects.create(

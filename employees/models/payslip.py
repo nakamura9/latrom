@@ -233,7 +233,8 @@ class Payslip(models.Model):
                 date=datetime.date.today(),
                 journal =accounting.models.Journal.objects.get(
                     pk=2),#Cash disbursements Journal
-                created_by = settings.payroll_officer.user
+                created_by = settings.payroll_officer.user,
+                draft=False
         )
         j.credit(self.gross_pay, settings.payroll_account)#default cash account
         
@@ -246,7 +247,7 @@ class Payslip(models.Model):
             j.debit(amount, deduction.account_paid_into)
 
         
-        j.debit(self.gross_pay - self.total_payroll_taxes, 
+        j.debit(D(self.gross_pay) - self.total_payroll_taxes, 
             accounting.models.Account.objects.get(pk=5008))#salaries
         j.debit(self.total_payroll_taxes, 
             accounting.models.Account.objects.get(pk=5010))#payroll taxes

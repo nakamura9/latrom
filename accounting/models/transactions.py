@@ -48,7 +48,6 @@ class Debit(Transaction):
         return "Debit"
 
     def execute(self):
-        # TODO test
         if not self.entry.draft:
             self.account.decrement(self.amount)
 
@@ -67,8 +66,8 @@ class Credit(Transaction):
 
         
     def execute(self):
-        if not self.entry.draft:    
-           self.account.increment(self.amount)
+        if not self.entry.draft:
+            self.account.increment(self.amount)
 
 class JournalEntry(models.Model):
     '''
@@ -95,17 +94,19 @@ class JournalEntry(models.Model):
     date = models.DateField(default=datetime.date.today)
     draft = models.BooleanField(default=True)
     memo = models.TextField()
-    journal = models.ForeignKey('accounting.Journal', on_delete=models.SET_NULL, null=True)
+    journal = models.ForeignKey('accounting.Journal', 
+        on_delete=models.SET_NULL, 
+        null=True)
     posted_to_ledger = models.BooleanField(default=False)
     adjusted = models.BooleanField(default=False)
-    created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey('auth.user', 
+        default=1, 
+        on_delete=models.SET_NULL, null=True)
 
     def verify(self):
-        # TODO test
         if not self.draft:
             return #to prevent repeat execution of transactions
 
-        print('verifying')
         self.draft = False
         self.save()
 
@@ -118,7 +119,6 @@ class JournalEntry(models.Model):
     @property
     def post(self):
         '''Returns the post to the ledger that represents this entry'''
-        # TODO test
         if not self.posted_to_ledger:
             return None
 

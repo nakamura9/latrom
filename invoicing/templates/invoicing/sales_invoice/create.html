@@ -83,26 +83,8 @@
                             {{form.comments}}
                         </div>
                     </div>
-                    <div class="dropdown open">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" >
-                                    Submit as...
-                                </button>
-                        <div class="dropdown-menu" aria-labelledby="triggerId">
-                            <input class="dropdown-item" 
-                                type="submit"
-                                name="status"
-                                value="draft">
-                            <input class="dropdown-item" 
-                                type="submit"
-                                name="status"
-                                value="quotation">
-                            <input class="dropdown-item" 
-                                type="submit"
-                                name="status"
-                                value="invoice">
-                            
-                        </div>
-                    </div>
+                    <input  type="hidden" name="status" value="draft">
+                    <button class="btn btn-primary" type="submit">Submit</button>
                 </td>
             </tr>
         </tbody>

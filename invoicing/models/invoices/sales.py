@@ -30,8 +30,10 @@ class SalesInvoice(AbstractSale):
     DEFAULT_WAREHOUSE = 1 #make fixture
     purchase_order_number = models.CharField(blank=True, max_length=32)
     #add has returns field
-    ship_from = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True,
-         default=DEFAULT_WAREHOUSE)
+    ship_from = models.ForeignKey('inventory.WareHouse', 
+        on_delete=models.SET_NULL, 
+        null=True,
+        default=DEFAULT_WAREHOUSE)
 
     def add_product(self, product, quantity):
         self.salesinvoiceline_set.create(
@@ -53,7 +55,6 @@ class SalesInvoice(AbstractSale):
 
     @property
     def cost_of_goods_sold(self):
-        # TODO test
         total = 0
         for line in self.salesinvoiceline_set.all():
             total += line.value
@@ -65,10 +66,20 @@ class SalesInvoice(AbstractSale):
         #called in views.py
         for line in self.salesinvoiceline_set.all():
             #check if ship_from has the product in sufficient quantity
-             self.ship_from.decrement_item(line.product, line.quantity)
+            self.ship_from.decrement_item(line.product, line.quantity)
+
+    def verify_inventory(self):
+        '''Iterates over all the invoice lines and appends checks that indicate 
+            shortages. returns a list of these checks'''
+        shortages = []
+        for line in self.salesinvoiceline_set.all():
+            shortage = line.check_inventory()
+            if shortage['quantity'] > 0:
+                shortages.append(shortage)
+
+        return shortages
 
     def create_entry(self):
-        #verified
         '''sales entries debits the inventory and in the case of credit 
         sales credits the customer account or the cash book otherwise.
         First a journal entry is made to debit the inventory and credit the 
@@ -106,13 +117,13 @@ class SalesInvoiceLine(models.Model):
     product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, 
         null=True)
     quantity = models.FloatField(default=0.0)
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
     returned_quantity = models.FloatField(default=0.0)
     returned = models.BooleanField(default=False)
     # value is calculated once when the invoice is generated to prevent 
     # distortions as prices change
-    value = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
+    value = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     
     @property
     def subtotal(self):
@@ -124,7 +135,6 @@ class SalesInvoiceLine(models.Model):
         self.save()
 
     def set_value(self):
-        # TODO test
         self.value = self.product.stock_value * D(self.quantity)
         self.save()
 
@@ -134,8 +144,33 @@ class SalesInvoiceLine(models.Model):
             return self.product.unit_sales_price * D(self.returned_quantity)
         return self.price * D(self.returned_quantity)
 
+    def check_inventory(self):
+        '''Checks the shipping warehouse for the required quantity of inventory
+        if a shortage is present return a dict with the product name and the 
+        shortage.
+        checks also if pending orders will meet demand in time for the invoices 
+        '''
+        if self.invoice.ship_from.has_item(self.product):
+            wh_item = self.invoice.ship_from.get_item(self.product)
+            if wh_item.quantity >= self.quantity:
+                return {
+                    'product': self.product,
+                    'quantity': 0
+                }
+            else:
+                return {
+                    'product': self.product,
+                    'quantity': self.quantity - wh_item.quantity
+                }
+        else:
+            return {
+                'product': self.product,
+                'quantity': self.quantity
+            }
+        pass
+
     def save(self, *args, **kwargs):
-        super(SalesInvoiceLine, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.returned_quantity > 0:
             self.returned = True
             

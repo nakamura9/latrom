@@ -23,6 +23,21 @@
                     <p class="card-text"># of Items: {{object.all_items.count}} </p>
                 </div>
             </div>
+            <hr  class="my-4"/>
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Actions</h4>
+                    <p class="card-text">
+                        <a class="btn btn-info" href="/inventory/create-inventory-check/{{object.pk}}">Check Inventory</a></p>
+                    <p class="card-text">
+                        <a class="btn btn-info" href="/inventory/scrap-inventory/{{object.pk}}">Scrap Inventory</a></p>
+                    <p class="card-text">
+                        <a class="btn btn-info" href="/inventory/create-transfer-order/{{object.pk}}">Transfer Inventory</a></p>
+                    <p class="card-text">
+                        <a class="btn btn-info" href="/inventory/storage-media-create/{{object.pk}}">Add Storage Medium</a></p>
+                </div>
+            </div>
+
         </div>
         <div class="col-sm-8">
             <h3>Items</h3>

@@ -118,7 +118,7 @@ class CustomerModelTests(TestCase):
         self.assertEqual(self.customer_org.age_list, [0, 1, 0, 0, 0, 0])
 
 class PaymentModelTests(TestCase):
-    fixtures = ['common.json','accounts.json','employees.json','invoicing.json']
+    fixtures = ['common.json','accounts.json','employees.json','invoicing.json', 'inventory']
         
     @classmethod
     def setUpTestData(cls):
@@ -175,7 +175,7 @@ class PaymentModelTests(TestCase):
 
 
 class SalesRepModelTests(TestCase):
-    fixtures = ['common.json','accounts.json','employees.json','invoicing.json']
+    fixtures = ['common.json','accounts.json','employees.json','invoicing.json', 'inventory.json']
         
     @classmethod
     def setUpTestData(cls):
@@ -215,7 +215,7 @@ class SalesRepModelTests(TestCase):
         self.assertEqual(rep.sales(TODAY, TODAY), 10)
 
 class CreditNoteModelTests(TestCase):
-    fixtures = ['common.json','accounts.json','employees.json','invoicing.json']
+    fixtures = ['common.json','accounts.json','employees.json','invoicing.json', 'inventory.json']
 
     @classmethod
     def setUpTestData(cls):
@@ -270,7 +270,7 @@ class CreditNoteModelTests(TestCase):
 # object.
 
 class SalesInvoiceTests(TestCase):
-    fixtures = ['common.json','accounts.json','employees.json','invoicing.json', 'settings.json']
+    fixtures = ['common.json','accounts.json','employees.json','invoicing.json', 'settings.json', 'inventory.json']
     
     @classmethod
     def setUpTestData(cls):
@@ -279,12 +279,14 @@ class SalesInvoiceTests(TestCase):
         cls.inv = SalesInvoice.objects.create(
             status='invoice',
             customer=cls.customer_org,
+            ship_from=cls.warehouse,
             )
         cls.line = SalesInvoiceLine.objects.create(
             product=cls.product,
             quantity=1,
             invoice=cls.inv,
         )
+
     
 
     def test_create_sales_invoice(self):
@@ -329,6 +331,11 @@ class SalesInvoiceTests(TestCase):
 
     def test_subtotal(self): 
         self.assertEqual(self.inv.subtotal, 10)
+
+    def test_sales_invoice_cost_of_goods_sold(self):
+        self.assertEqual(self.inv.cost_of_goods_sold, 10)
+
+
 
     def test_total(self):
         self.inv.tax = Tax.objects.latest('pk')#10 % tax 
@@ -408,6 +415,16 @@ class SalesInvoiceTests(TestCase):
         self.assertIsInstance(obj, SalesInvoiceLine)
         obj.delete()
 
+    def test_set_value_of_goods(self):
+        obj = SalesInvoiceLine.objects.create(
+            invoice=self.inv,
+            product=self.product,
+            quantity=2,
+        )
+        self.assertEqual(obj.value, 20)
+        
+        obj.delete()
+
     def test_return_invoice_line_line(self):
         self.line._return(1)
         self.assertEqual(self.line.returned_quantity, 1)
@@ -418,6 +435,17 @@ class SalesInvoiceTests(TestCase):
     def test_returned_value(self):
         self.line._return(1)
         self.assertEqual(self.line.returned_value, D('10'))
+
+    def test_line_check_inventory(self):
+        # TODO expand tests
+        data = self.line.check_inventory()
+        self.assertIsInstance(data, dict)
+
+
+    def test_invoice_verify_inventory(self):
+        # TODO expand test
+        shortages = self.inv.verify_inventory()
+        self.assertEqual(len(shortages), 0)
 
 class BillTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json',
