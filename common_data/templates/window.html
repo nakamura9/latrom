@@ -11,15 +11,29 @@
             {% if request.user %}
                 
                 <li>
-                    <a href="{% url 'planner:dashboard' %}" class="nav-link">Planner<span class="badge badge-primary">
-                        {% if request.user.employee %}
-                        {{request.user.employee.agenda_items}}
-                        {% else %}
-                        0 {% endif %}
-                    </span><sub><span class="badge badge-danger" >beta!</span></sub></a>
+                    <a href="{% url 'planner:dashboard' %}" class="nav-link">
+                        <i class="fas fa-calendar-alt" style="font-size:24;">
+                        </i> Planner
+                        <span class="badge badge-primary">
+                            {% if request.user.employee %}
+                                {{request.user.employee.agenda_items}}
+                            {% else %}
+                            0 
+                            {% endif %}
+                        </span>
+                    </a>
                 </li>
                 <li>
-                    <a href="{% url 'messaging:inbox' %}" class="nav-link">Inbox <span class="badge badge-primary" id='id_message_count'>{{request.user.inbox.total_in}}</span><sub><span class="badge badge-danger" >beta!</span></sub></a>
+                    <a href="{% url 'messaging:inbox' %}" class="nav-link">
+                        <i class="fas fa-envelope" style="font-size:24;"></i> 
+                        Inbox 
+                        <span class="badge badge-primary" id='id_message_count'>
+                            {{request.user.inbox.total_in}}
+                        </span>
+                        <sub>
+                            <span class="badge badge-danger" >beta!</span>
+                        </sub>
+                    </a>
                     <script>
                         // need to find a better way that does not violate the session check
                         function inboxCounter(){
@@ -34,23 +48,41 @@
                     </script>
                 </li>
             {% endif %}
+            
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
-            <li class="nav-item active"><a class="nav-link" href="{% url 'invoicing:home' %}">Sales</a></li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'invoicing:home' %}">
+                    <i class="fas fa-cash-register" style="font-size:24;"></i> Sales
+                </a>
+            </li>
             {% endif %}
+            
             {% if request.user.is_superuser or request.user.employee.is_inventory_controller %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'inventory:home' %}">Inventory</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:home' %}">
+                    <i class="fas fa-warehouse" style="font-size:24;"></i> 
+                    Inventory
+                </a>
+            </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
-            <li><a class="nav-link" href="{% url 'accounting:dashboard' %}">Accounting</a></li>
+            <li>
+                <a class="nav-link" href="{% url 'accounting:dashboard' %}">
+                    <i class="fas fa-coins" style="font-size:24;"></i> 
+                        Accounting
+                </a>
+            </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_serviceperson %}
             <li>
-                <a href="{% url 'services:dashboard' %}" class="nav-link">Services</a>
+                <a href="{% url 'services:dashboard' %}" class="nav-link"><i class="fas fa-toolbox" style="font-size:24;"></i> Services</a>
             </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_payroll_officer %}
             <li>
-                <a class="nav-link" href="{% url 'employees:dashboard' %}">Employees</a>
+                <a class="nav-link" href="{% url 'employees:dashboard' %}">
+                    <i class="fas fa-users" style="font-size:24;"></i> Employees
+                </a>
             </li>
             {% endif %}
             <!--

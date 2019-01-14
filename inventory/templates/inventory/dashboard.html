@@ -151,6 +151,26 @@
                         </ul>
                     </div>
                 </div>
+                {% else %}
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Inventory Management</h4>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:warehouse-detail' pk=1 %}">View Inventory</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:create-inventory-check' pk=1 %}"> Check Inventory</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'inventory:scrap-inventory' pk=1 %}"> Scrap Inventory</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 {% endif %}
             {% if use_equipment_inventory or use_consumables_inventory %}
                 <div class="card bg-primary text-white">

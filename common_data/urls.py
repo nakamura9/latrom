@@ -28,6 +28,8 @@ urlpatterns = [
         name='config'),
     re_path(r'^email/?$', views.SendEmail.as_view(), 
         name='email'),
+    re_path(r'^authenticate/?$', views.AuthenticationView.as_view(), 
+        name='authenticate'),
     re_path(r'^api/current-user/?$', views.get_current_user,
         name='api-current-user'),
 ]

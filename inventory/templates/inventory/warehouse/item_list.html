@@ -1,0 +1,20 @@
+{% extends "common_data/iframe_list_template.html" %}
+{% block list_headings %}
+        <tr class="bg-primary">
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Min Order Level</th>
+            <th>Max Inventory Quantity </th>
+        </tr>
+{% endblock %}
+{% block list_content %}
+        {% for i in object_list %}
+        <tr>
+            <td scope="row">{{i}}</td>
+            <td>{{i.quantity}}</td>
+            <td>{{i.item.minimum_order_level}}</td>
+            <td>{{i.item.maximum_stock_level}}</td>
+        </tr>
+        {% endfor %}
+    
+{% endblock %}

@@ -169,6 +169,12 @@ class GlobalConfigView(ContextMixin,  LoginRequiredMixin, UpdateView):
         'title': 'Configure global application features'
     }
 
+class AuthenticationView(FormView):
+    # TODO test, add features to use as a plugin for views that require
+    # authentication
+    form_class = forms.AuthenticateForm
+    template_name = os.path.join('common_data', 'authenticate.html')
+    success_url = "/base/workflow"
 
 
 def get_logo_url(request):
@@ -272,3 +278,4 @@ def get_current_user(request):
             })
 
     return JsonResponse({'pk': None})
+

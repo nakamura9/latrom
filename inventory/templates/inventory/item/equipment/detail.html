@@ -17,7 +17,11 @@
                         <h4 class="card-title">Item Image</h4>
                     </div>
                     <div class="card-body">
-                        <img width="300" height "300" {% if object.image %} src="{{object.image.url}}" {% else %} src="" {% endif %}alt="Item Image" />
+                        {% if object.image %}
+                            <img width="300" height="300"  src="{{object.image.url}}" alt="Item Image" />
+                        {% else %}  
+                            <i class="fas fa-image" style="font-size:256;"></i>
+                        {% endif %}
                     </div>
                 </div>
 

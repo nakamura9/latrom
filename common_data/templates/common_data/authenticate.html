@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block window %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Authenticate User</h1>
+    <p class="lead">Provide Credentials to proceed</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <form method="POST" action="">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+
+{% endblock window %}

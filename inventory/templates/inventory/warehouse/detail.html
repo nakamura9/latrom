@@ -31,10 +31,15 @@
                         <a class="btn btn-info" href="/inventory/create-inventory-check/{{object.pk}}">Check Inventory</a></p>
                     <p class="card-text">
                         <a class="btn btn-info" href="/inventory/scrap-inventory/{{object.pk}}">Scrap Inventory</a></p>
+                {% if use_warehousing_model %}
+                    
                     <p class="card-text">
                         <a class="btn btn-info" href="/inventory/create-transfer-order/{{object.pk}}">Transfer Inventory</a></p>
+                {% endif %}
+                {% if use_storage_media_model %}
                     <p class="card-text">
                         <a class="btn btn-info" href="/inventory/storage-media-create/{{object.pk}}">Add Storage Medium</a></p>
+                {% endif %}
                 </div>
             </div>
 
@@ -42,26 +47,9 @@
         <div class="col-sm-8">
             <h3>Items</h3>
             <hr class="my-2">
-            <table class="table table-striped">
-                <thead>
-                    <tr class="bg-primary text-white">
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Min Order level</th>
-                        <th>Max Inventory quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in object.all_items %}
-                        <tr>
-                            <td>{{i.item}}</td>
-                            <td>{{i.quantity}}</td>
-                            <td>{{i.item.minimum_order_level}}</td>
-                            <td>{{i.item.maximum_stock_level}}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <iframe width="700" height="500"  id="journal-frame" src="/inventory/warehouse/{{object.pk}}/item-list">
+
+            </iframe>
         </div>
     </div>
 </div>

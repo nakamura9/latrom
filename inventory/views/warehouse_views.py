@@ -6,6 +6,7 @@ import os
 import urllib
 
 from django.contrib.auth.decorators import login_required
+from inventory.views.util import InventoryConfigMixin 
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -45,8 +46,15 @@ class WareHouseUpdateView(ContextMixin, UpdateView):
         'title': 'Update Warehouse Location Details'
     }
 
+class WareHouseItemListView(ListView):
+    template_name = os.path.join('inventory', 'warehouse', 'item_list.html')
+    paginate_by=10
+    def get_queryset(self):
+        return models.WareHouseItem.objects.filter(
+            warehouse=models.WareHouse.objects.get(pk=self.kwargs['pk']))
 
-class WareHouseDetailView( DetailView):
+
+class WareHouseDetailView(InventoryConfigMixin, DetailView):
     template_name = os.path.join('inventory', 'warehouse', 'detail.html')
     model = models.WareHouse
 

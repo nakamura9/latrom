@@ -58,11 +58,11 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     label = models.CharField(max_length=32, blank=True) 
     icon = models.CharField(max_length=32, blank=True, choices=ICON_CHOICES)
-    participants = models.ManyToManyField(
-        'planner.EventParticipant', 
-        blank=True,
-        related_name='participants')
     owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
+
+    @property
+    def participants(self):
+        return EventParticipant.objects.filter(event=self)
 
     def add_participant(self, evt_type, pk):
         evt_mapping = {
@@ -72,17 +72,20 @@ class Event(models.Model):
         }
         evt_type = evt_mapping[evt_type]
         if evt_type == 0:
-            self.participants.create(
+            EventParticipant.objects.create(
+                event=self,
                 participant_type = evt_type,
                 employee=Employee.objects.get(pk=pk)
             )
         elif evt_type == 1:
-            self.participants.create(
+            EventParticipant.objects.create(
+                event=self,
                 participant_type = evt_type,
                 customer=Customer.objects.get(pk=pk)
             )
         elif evt_type == 2:
-            self.participants.create(
+            EventParticipant.objects.create(
+                event=self,
                 participant_type = evt_type,
                 supplier=Supplier.objects.get(pk=pk)
             )
@@ -113,6 +116,9 @@ class EventParticipant(models.Model):
         on_delete=models.SET_NULL, null=True, blank=True)
     supplier = models.ForeignKey('inventory.Supplier', 
         on_delete=models.SET_NULL, null=True,  blank=True)
+    event = models.ForeignKey('planner.event', on_delete=models.SET_NULL, 
+        null=True)
+
 
     def __str__(self):
         if self.participant_type == 0:

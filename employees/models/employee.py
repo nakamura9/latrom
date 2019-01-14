@@ -102,6 +102,24 @@ class Employee(Person, SoftDeletionModel):
     @property
     def agenda_items(self):
         #check participants as well
+        filter = None
+        if self.user:
+            filter = Q(Q(owner=self.user) | Q(eventparticipant__employee=self))
+        else:
+            filter = Q(eventparticipant__employee=self)
         return planner.models.Event.objects.filter(
-            Q(Q(completed=False) & Q(date__gte=datetime.date.today())) &
-            Q(owner=self.user)).count()
+            Q(Q(completed=False) & Q(date__gte=datetime.date.today())) & 
+            filter).count()
+
+
+    @property
+    def missed_events(self):
+        #check participants as well
+        filter = None
+        if self.user:
+            filter = Q(Q(owner=self.user) | Q(eventparticipant__employee=self))
+        else:
+            filter = Q(eventparticipant__employee=self)
+        return planner.models.Event.objects.filter(
+            Q(Q(completed=False) & Q(date__lt=datetime.date.today())) & 
+            filter).count()

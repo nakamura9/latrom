@@ -32,11 +32,14 @@ class PlannerDashboard(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-
+        today = datetime.date.today()
+        context['day'] = today.day
+        context['day_detail'] = "{}, {}".format(today.strftime('%B'), today.year) 
         context['calendar_url'] = '/calendar/month/{}'.format(
             datetime.date.today().strftime('%Y/%m'))
 
         return context
+
 class PlannerConfigUpdateView(LoginRequiredMixin, UpdateView):
     template_name = os.path.join('planner', 'config.html')
     form_class = forms.ConfigForm
@@ -108,10 +111,15 @@ class AgendaView(LoginRequiredMixin, ListView):
     template_name = os.path.join('planner', 'agenda.html')
     
     def get_queryset(self):
+        filter = None
+        if self.request.user.employee:
+            filter = Q(Q(owner=self.request.user) | Q(eventparticipant__employee=self.request.user.employee))
+        else:
+            filter = Q(owner=self.request.user)
+        
         return models.Event.objects.filter(
             Q(date__gte=datetime.date.today()) & 
-            Q(owner=self.request.user) &
-            Q(completed=False))
+            Q(completed=False) & filter)
 
 class EventAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.EventSerializer
