@@ -49,7 +49,10 @@ class Debit(Transaction):
 
     def execute(self):
         if not self.entry.draft:
-            self.account.decrement(self.amount)
+            if self.account.type in ['asset', 'expense', 'cost-of-sales']:
+                self.account.increment(self.amount)
+            else: #income, liability, equity
+                self.account.decrement(self.amount)
 
 
 class Credit(Transaction):
@@ -66,8 +69,12 @@ class Credit(Transaction):
 
         
     def execute(self):
+        '''credits reduce balances of asset accounts as '''
         if not self.entry.draft:
-            self.account.increment(self.amount)
+            if self.account.type in ['asset', 'expense', 'cost-of-sales']:
+                self.account.decrement(self.amount)
+            else: #income, liability, equity
+                self.account.increment(self.amount)
 
 class JournalEntry(models.Model):
     '''

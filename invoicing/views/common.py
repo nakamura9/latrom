@@ -35,7 +35,7 @@ class SalesRepCheckMixin(UserPassesTestMixin):
             return False
 
 class Home(SalesRepCheckMixin, ConfigMixin, TemplateView):
-    template_name = os.path.join("invoicing", "home.html")
+    template_name = os.path.join("invoicing", "dashboard.html")
 
         
 

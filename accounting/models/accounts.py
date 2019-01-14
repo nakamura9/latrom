@@ -66,6 +66,13 @@ class AbstractAccount(SoftDeletionModel):
         return self.balance
   
     @property
+    def balance_type(self):
+        # TODO test
+        if self.type in ['asset', 'expense', 'cost-of-sales']:
+            return 'debit'
+        else: #income, liability, equity
+            return 'credit'
+    @property
     def children(self):
         return Account.objects.filter(parent_account=self)
 
@@ -105,18 +112,19 @@ class Account(AbstractAccount):
     @property
     def credit(self):
         '''status of the account'''
-        if self.balance >= D(0.0):
+        if self.balance_type == "credit":
             return self.balance
-
+        
         return D('0.00')
+        
 
 
     @property
     def debit(self):
         '''status of account'''
-        if self.balance <= 0:
-            return abs(self.balance)
-        
+        if self.balance_type == "debit":
+            return self.balance
+
         return D('0.00')
     
     def convert_to_interest_bearing_account(self):

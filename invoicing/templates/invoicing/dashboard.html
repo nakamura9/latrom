@@ -1,0 +1,118 @@
+{% extends "window.html" %} {% block content %}
+{% load static %}
+<div class="jumbotron">
+    <h1 class="display-3"><i class=" fas fa-cash-register" style="color:#07f; font-size:128;"></i> Sales Dashboard</h1>
+    <p class="lead">Create invoices, apply customer payments, generate reports</p>
+    
+</div>
+<div class="container-fluid">
+<div class="row">
+<div class="col-sm-12">
+    <div class="card-deck">
+            {% if use_sales_invoice %}
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-cash-register"></i> Sales Invoices</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                            <li class="list-group-item">
+                                <a class="card-link" href="{% url 'invoicing:create-sales-invoice' %}">
+                                    Create Sales Invoice
+                                </a>
+                            </li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-invoice-list' %}">Manage Sales Invoices</a></li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+            {% if use_service_invoice %}
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-toolbox"></i> Service Invoices</h4>
+                </div>
+                <div class="card-body">
+                    <li class="list-group-item">
+                        <a class="card-link" href="{% url 'invoicing:create-service-invoice' %}">
+                            Create Service Invoice
+                        </a>
+                    </li>
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:service-invoice-list' %}">Manage Service Invoices</a></li>
+                </div>
+            </div>
+            {% endif %}
+            {% if use_bill_invoice %}
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                      <h4 class="card-title"><i class="fas fa-file-invoice-dollar"></i> Bill Customers</h4>
+                </div>
+                <div class="card-body">
+                      <ul class="list-group">
+                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bill-create' %}">Create Bill</a></li>
+                          <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bills-list' %}">Managed Bills to customers</a></li>
+                          
+                      </ul>
+                </div>
+            </div>
+            {% endif %}
+    </div>
+    <hr class="my-4"/>
+    <div class="card-deck">
+            {% if use_combined_invoice %}
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-file-alt"></i> Combined Invoices</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-combined-invoice' %}">Create Combined Invoice</a></li>
+                            <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:combined-invoice-list' %}">Manage Combined Invoices </a></li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-shopping-cart"></i> Customers</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a></li>
+                        <li class="list-group-item"><a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a></li>
+                        <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:individual-customers-list' %}">Manage Individual Customers</a></li>
+                        <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:organization-customers-list' %}">Manage Organizational Customers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card bg-primary text-white">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
+                </div>
+                <div class="card-body">
+                    
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:customer-statement-form' %}">Customer Statement</a></li><!--
+                    <li class="list-group-item"><a class="card-link" href="#">Unpaid Accounts Report</a></li>
+                    <li class="list-group-item"><a class="card-link" href="#">Sales Rep reports</a></li>
+                    <li class="list-group-item"><a class="card-link" href="#">Statement</a></li>
+                    <li class="list-group-item"><a class="card-link" href="#">Inventory Reports</a></li>-->
+                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoice-aging' %}">Invoice Aging Report</a></li>
+                </div>
+    </div>
+    </div>
+    <hr class="my-4" />
+    <div class="card-deck">
+            <div class="card bg-primary text-white">
+                        <div class="card-header">
+                            <h4 class="card-title"><i class="fas fa-sliders-h"></i> Configuration</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:config' pk=1 %}">Settings</a></li>
+                            </ul>
+                        </div>
+            </div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

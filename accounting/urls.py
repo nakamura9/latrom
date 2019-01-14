@@ -1,7 +1,7 @@
 from django.urls import re_path
 from rest_framework import routers
 
-from . import report_views, views
+from accounting import views
 
 tax_router = routers.DefaultRouter()
 tax_router.register(r'^api/tax', views.TaxViewset)
@@ -63,10 +63,10 @@ recurring_expense_urls = [
 ]
 
 report_urls = [
-    re_path(r'^balance-sheet/?$', report_views.BalanceSheet.as_view(), name='balance-sheet'),
-    re_path(r'^trial-balance/?$', report_views.TrialBalance.as_view(), name='trial-balance'),
-    re_path(r'^income-statement/?$', report_views.IncomeStatement.as_view(), name='income-statement'),
-    re_path(r'^income-statement-form/?$', report_views.IncomeStatementFormView.as_view(), name='income-statement-form')
+    re_path(r'^balance-sheet/?$', views.BalanceSheet.as_view(), name='balance-sheet'),
+    re_path(r'^trial-balance/?$', views.TrialBalance.as_view(), name='trial-balance'),
+    re_path(r'^income-statement/?$', views.IncomeStatement.as_view(), name='income-statement'),
+    re_path(r'^income-statement-form/?$', views.IncomeStatementFormView.as_view(), name='income-statement-form')
 ]
 
 account_urls = [

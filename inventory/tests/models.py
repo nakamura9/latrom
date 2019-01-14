@@ -298,7 +298,7 @@ class ItemManagementModelTests(TestCase):
             ship_to = self.warehouse,
             tracking_number = '34234',
             notes = 'Test Note',
-            status = 'submitted'    
+            status = 'order'    
         )
 
         self.assertIsInstance(obj, models.Order)

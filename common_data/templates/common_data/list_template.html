@@ -7,12 +7,12 @@
 
 
 <div class="jumbotron">
-    <div class="container">
+    <div class="container-fluid">
         <h1 class="display-3">{{title}}</h1>
         <p class="lead">{{description}}</p>
         <p>Actions</p>
             {% if new_link %}
-            <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New</a>
+            <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New <i class="fas fa-pen"></i></a>
             {% endif %}    
         <p class="lead">
         </p>
@@ -20,7 +20,7 @@
 </div>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
             {% block other%}{% endblock %}
@@ -34,7 +34,7 @@
 
             <div class="card bg-primary text-white">
                 <div class="card-header">
-                    <h3 class="cart-title">Filters</h3>
+                    <h3 class="cart-title"><i class="fas fa-filter"></i> Filters</h3>
                 </div>
                 <div class="card-body">
                     <form action="" method="get">

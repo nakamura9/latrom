@@ -45,7 +45,7 @@ class Order(SoftDeletionModel):
         ('received-partially', 'Partially Received'),
         ('received', 'Received in Total'),
         ('draft', 'Internal Draft'),
-        ('submitted', 'Submitted to Supplier')
+        ('order', 'Order')
     ]
     
     expected_receipt_date = models.DateField()
@@ -135,7 +135,8 @@ class Order(SoftDeletionModel):
                     date=self.date,
                     memo = self.notes,
                     journal = Journal.objects.get(pk=4),
-                    created_by = self.issuing_inventory_controller
+                    created_by = self.issuing_inventory_controller,
+                    draft=False
                 )
 
             #accounts payable
@@ -255,9 +256,11 @@ class OrderItem(models.Model):
 class OrderPayment(models.Model):
     date = models.DateField()
     amount = models.DecimalField(max_digits=6,decimal_places=2)
-    order = models.ForeignKey('inventory.order', on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey('inventory.order', on_delete=models.SET_NULL, 
+        null=True)
     comments = models.TextField()
-    entry = models.ForeignKey('accounting.JournalEntry', on_delete=models.SET_NULL,
+    entry = models.ForeignKey('accounting.JournalEntry', 
+        on_delete=models.SET_NULL,
         blank=True, null=True)
 
     def create_entry(self, comments=""):
@@ -268,14 +271,13 @@ class OrderPayment(models.Model):
                     if comments == "" else comments,
                 date=self.date,
                 journal =Journal.objects.get(pk=4),
-                created_by = self.order.issuing_inventory_controller
+                created_by = self.order.issuing_inventory_controller,
+                draft=False
             )
         
-        # split into sales tax and sales
         j.simple_entry(
             self.amount,
-            Account.objects.get(
-                pk=1000),#cash in checking account
+            Account.objects.get(pk=1000),#cash in checking account
             self.order.supplier.account,
         )
 

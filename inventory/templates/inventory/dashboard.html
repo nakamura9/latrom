@@ -5,19 +5,19 @@
     }
 </style>
 <div class="jumbotron">
-    <h1 class="display-3">Inventory Dashboard</h1>
+    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128;"></i> Inventory Dashboard</h1>
     <p class="lead">Manage inventory items and warehouses</p>
     <hr class="my-2">
 
 </div>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
             <div class="card-deck">
                 {% if use_product_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Products</h4>
+                        <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Products</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -34,7 +34,7 @@
                 {% if use_equipment_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Equipment</h4>
+                        <h4 class="card-title"><i class="fas fa-tools"></i> Equipment</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -52,7 +52,7 @@
                 {% if use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Consumables</h4>
+                        <h4 class="card-title"><i class="fas fa-hand-holding"></i> Consumables</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -75,7 +75,7 @@
                 {% if use_raw_materials_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Raw Materials</h4>
+                        <h4 class="card-title"><i class="fas fa-tree"></i> Raw Materials</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -92,7 +92,7 @@
                 
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Orders</h4>
+                        <h4 class="card-title"><i class="fas fa-file-invoice"></i> Orders</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -107,7 +107,7 @@
                 </div>
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Suppliers</h4>
+                        <h4 class="card-title"><i class="fas fa-shipping-fast"></i> Suppliers</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -138,7 +138,7 @@
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
-                            <h4 class="card-title">Warehouse Management</h4>
+                            <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouse Management</h4>
                         </div>
                         <ul class="list-group">
                             <li class="list-group-item">
@@ -155,7 +155,7 @@
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
-                            <h4 class="card-title">Inventory Management</h4>
+                            <h4 class="card-title"><i class="fas fa-puzzle-piece"></i> Inventory Management</h4>
                         </div>
                         <ul class="list-group">
                             <li class="list-group-item">
@@ -175,7 +175,7 @@
             {% if use_equipment_inventory or use_consumables_inventory %}
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Requisitions</h4>
+                        <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -193,7 +193,7 @@
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <div class="card-header">
-                            <h4 class="card-title">Reports</h4>
+                            <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
                         </div>
                         <ul class="list-group">
 
@@ -212,7 +212,7 @@
             <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
-                        <h4 class="card-title">Configuration</h4>
+                        <h4 class="card-title"><i class="fas fa-sliders-h"></i> Configuration</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">

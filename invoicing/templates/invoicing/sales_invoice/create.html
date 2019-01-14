@@ -45,7 +45,7 @@
                     
                     -->
                     
-                    <p>Apply Payment?</p>
+                    <p>Create Invoice and Apply Payment?</p>
                     <p>{{form.apply_payment}}</p>
                     
                 </td>
@@ -83,8 +83,26 @@
                             {{form.comments}}
                         </div>
                     </div>
-                    <input  type="hidden" name="status" value="draft">
-                    <button class="btn btn-primary" type="submit">Submit</button>
+                    <div class="dropdown open">
+                        <button class="btn btn-info dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" >
+                                    Submit as...
+                                </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="draft">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="quotation">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="invoice">
+                            
+                        </div>
+                    </div>
                 </td>
             </tr>
         </tbody>

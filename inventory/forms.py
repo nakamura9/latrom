@@ -1,7 +1,7 @@
 
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit
+from crispy_forms.layout import Fieldset, Layout, Submit, HTML
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -237,7 +237,8 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         widget=forms.HiddenInput
     )
     make_payment= forms.BooleanField(initial=False, required=False)
-    
+    status = forms.CharField(widget=forms.HiddenInput)
+
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -247,24 +248,39 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     'date',
                     'expected_receipt_date',
                     'supplier',
-                    'status', # would prefer hidden input
+                    'ship_to',
                     'issuing_inventory_controller'
                     ),
                 Tab('Payment',
-                'tax',
-                'make_payment',
-                'due'),
+                        'tax',
+                        'make_payment',
+                        'due'
+                    ),
                 Tab('Shipping and Notes', 
                     'bill_to', 
-                    'ship_to',
                     'tracking_number',
                     'supplier_invoice_number',
                     'notes'),
+            ),
+            HTML("""
+                <div class="dropdown open">
+                        <button class="btn btn-info dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" >
+                                    Submit as...
+                                </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="draft">
+                            <input class="dropdown-item" 
+                                type="submit"
+                                name="status"
+                                value="order">                           
+                        </div>
+            """)
             )
-            )
-        self.helper.add_input(Submit('submit', 'Submit'))
     class Meta:
-        exclude = ["entry", "received_to_date", 'status']
+        exclude = ["entry", "received_to_date",]
         model = models.Order
         
 
