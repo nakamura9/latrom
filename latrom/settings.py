@@ -74,6 +74,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'common_data.middleware.license.LicenseMiddleware',
+    'common_data.middleware.users.UserTestMiddleware'
 ]
 
 ROOT_URLCONF = 'latrom.urls'

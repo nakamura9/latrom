@@ -92,7 +92,8 @@ class SalesInvoice(AbstractSale):
                 memo= 'Auto generated entry from sales invoice.',
                 date=self.date,
                 journal =Journal.objects.get(pk=3),#Sales Journal
-                created_by = self.salesperson.employee.user
+                created_by = self.salesperson.employee.user,
+                draft=False
             )
         j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
         j.debit(self.total, self.customer.account)
@@ -100,6 +101,7 @@ class SalesInvoice(AbstractSale):
             j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
         
         # purchases for cost of goods sold
+        # TODO fix
         j.debit(self.cost_of_goods_sold, Account.objects.get(pk=4006))
         #inventory
         j.credit(self.cost_of_goods_sold, Account.objects.get(pk=1004))

@@ -23,10 +23,10 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
-from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+from .common import CREATE_TEMPLATE
 
 
-class IndividualSupplierCreateView(InventoryControllerCheckMixin, ContextMixin, 
+class IndividualSupplierCreateView( ContextMixin, 
         CreateView):
     form_class = forms.IndividualSupplierForm
     model = models.Supplier
@@ -35,7 +35,7 @@ class IndividualSupplierCreateView(InventoryControllerCheckMixin, ContextMixin,
     extra_context = {"title": "Create New Supplier"}
 
 
-class OrganizationSupplierCreateView(InventoryControllerCheckMixin, 
+class OrganizationSupplierCreateView( 
         ContextMixin, CreateView):
     form_class = forms.OrganizationSupplierForm
     model = models.Supplier
@@ -44,7 +44,7 @@ class OrganizationSupplierCreateView(InventoryControllerCheckMixin,
     extra_context = {"title": "Create New Supplier"}
 
 
-class SupplierUpdateView(InventoryControllerCheckMixin, 
+class SupplierUpdateView( 
     ContextMixin, UpdateView):
     form_class = forms.SupplierUpdateForm
     model = models.Supplier
@@ -53,7 +53,7 @@ class SupplierUpdateView(InventoryControllerCheckMixin,
     extra_context = {"title": "Update Existing Supplier"}
 
 
-class IndividualSupplierListView(InventoryControllerCheckMixin, ContextMixin, 
+class IndividualSupplierListView( ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
@@ -66,7 +66,7 @@ class IndividualSupplierListView(InventoryControllerCheckMixin, ContextMixin,
         return models.Supplier.objects.filter(
             individual__isnull=False).order_by('pk')
 
-class OrganizationSupplierListView(InventoryControllerCheckMixin, ContextMixin, 
+class OrganizationSupplierListView( ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.SupplierFilter
@@ -81,7 +81,7 @@ class OrganizationSupplierListView(InventoryControllerCheckMixin, ContextMixin,
 
 
 
-class SupplierDeleteView(InventoryControllerCheckMixin, 
+class SupplierDeleteView( 
         DeleteView):
     template_name = os.path.join('common_data', 
         'delete_template.html')
@@ -92,7 +92,7 @@ class SupplierListAPIView(ListAPIView):
     serializer_class = serializers.SupplierSerializer
     queryset = models.Supplier.objects.all()
 
-class SupplierDetailView(InventoryControllerCheckMixin, 
+class SupplierDetailView( 
         DetailView):
     template_name=os.path.join('inventory', 'supplier', 'detail.html')
     model = models.Supplier

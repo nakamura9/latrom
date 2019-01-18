@@ -3,6 +3,7 @@ from django import forms
 from common_data.forms import BootstrapMixin
 
 from . import models
+from employees.models import Employee
 
 
 class ServiceForm(forms.ModelForm,BootstrapMixin):
@@ -54,7 +55,7 @@ class ServiceWorkOrderAuthorizationForm(forms.ModelForm, BootstrapMixin):
 
 class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "authorized_by", "released_by",
+        exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
         model = models.EquipmentRequisition
 
 
@@ -67,3 +68,9 @@ class ServiceProcedureForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "required_equipment", "required_consumables"
         model = models.ServiceProcedure
+
+
+class EquipmentReturnForm(BootstrapMixin, forms.Form):
+    received_by = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    return_date = forms.DateField()

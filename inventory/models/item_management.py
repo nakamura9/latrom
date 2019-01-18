@@ -384,11 +384,12 @@ class TransferOrder(models.Model):
         self.save()
 
 class TransferOrderLine(models.Model):
-    # TODO
-    # add support later for consumables and equipment
-    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
+    # TODO add support later for consumables and equipment
+    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, 
+        null=True)
     quantity = models.FloatField()
-    transfer_order = models.ForeignKey('inventory.TransferOrder', on_delete=models.SET_NULL, null=True)
+    transfer_order = models.ForeignKey('inventory.TransferOrder', 
+        on_delete=models.SET_NULL, null=True)
     moved = models.BooleanField(default=False)
 
     def move(self):

@@ -20,7 +20,6 @@ from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
-from employees.views.util import AdministratorCheckMixin
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
@@ -29,7 +28,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = models.Employee.objects.all()
     serializer_class = serializers.EmployeeSerializer
 
-class EmployeeCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
+class EmployeeCreateView( ContextMixin, CreateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
@@ -37,9 +36,20 @@ class EmployeeCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
         'title': 'Create Employee',
         'description': 'Use this form to record employee data. Employee objects can be added to payroll, and have their vacation time managed. They can also be linked to users.'
     }
+
+    def get(self, request, *args, **kwargs):
+        num_employees = models.Employee.objects.filter(active=True).count()
+
+        with open('license.json') as f:
+            license = json.load(f)
+            if license['license']['number_employees'] >= num_employees:
+                return HttpResponseRedirect('/base/license-error/features')
+
+            
+        return super().get(request, *args, **kwargs)
     
 
-class EmployeeUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
+class EmployeeUpdateView( ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
@@ -48,7 +58,7 @@ class EmployeeUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
         'title': 'Edit Employee data on payroll system'
     }
 
-class EmployeeListView(AdministratorCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class EmployeeListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'employee_list.html')
     filterset_class = filters.EmployeeFilter
     paginate_by = 10
@@ -58,17 +68,17 @@ class EmployeeListView(AdministratorCheckMixin, ContextMixin, PaginationMixin, F
     }
     queryset = models.Employee.objects.filter(active=True).order_by('first_name')
 
-class EmployeeDetailView(AdministratorCheckMixin, DetailView):
+class EmployeeDetailView( DetailView):
     template_name = os.path.join('employees', 'employee_detail.html')
     model = models.Employee
 
-class EmployeeDeleteView(AdministratorCheckMixin, DeleteView):
+class EmployeeDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('employees:list-employees')
     model = models.Employee
 
 
-class PayrollOfficerCreateView(AdministratorCheckMixin, ContextMixin, CreateView):
+class PayrollOfficerCreateView( ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.PayrollOfficerForm
     success_url = reverse_lazy('employees:dashboard')
@@ -77,7 +87,7 @@ class PayrollOfficerCreateView(AdministratorCheckMixin, ContextMixin, CreateView
         'description': 'Payroll officers are employees assigned to manage employee data such as income and vacation time as well as the roles of users within the system.'
     }
 
-class PayrollOfficerUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView):
+class PayrollOfficerUpdateView( ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.PayrollOfficerUpdateForm
     queryset = models.PayrollOfficer.objects.all()
@@ -86,7 +96,7 @@ class PayrollOfficerUpdateView(AdministratorCheckMixin, ContextMixin, UpdateView
         'title': 'Update Payroll Officer'
     }
 
-class PayrollOfficerListView(AdministratorCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class PayrollOfficerListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'payroll_officer_list.html')
     paginate_by=10
     queryset = models.PayrollOfficer.objects.all()
@@ -97,11 +107,11 @@ class PayrollOfficerListView(AdministratorCheckMixin, ContextMixin, PaginationMi
     }
 
 
-class PayrollOfficerDetailView(AdministratorCheckMixin, DetailView):
+class PayrollOfficerDetailView( DetailView):
     model = models.PayrollOfficer
     template_name = os.path.join('employees', 'payroll_officer_detail.html')
 
-class EmployeeUserCreateView(AdministratorCheckMixin, FormView):
+class EmployeeUserCreateView( FormView):
     success_url = reverse_lazy('employees:dashboard')
     template_name = CREATE_TEMPLATE
     extra_context = {
@@ -114,7 +124,16 @@ class EmployeeUserCreateView(AdministratorCheckMixin, FormView):
             'employee': self.kwargs['pk']
         }
 
-class EmployeeUserPasswordResetView(AdministratorCheckMixin, FormView):
+    def get(self, request, *args, **kwargs):
+        num_users = User.objects.filter(is_superuser=False).count()
+        with open('license.json') as f:
+            license = json.load(f)
+            if license['license']['number_users'] >= num_users:
+                return HttpResponseRedirect('/base/license-error/features')
+        
+        return super().get(request, *args, **kwargs)
+
+class EmployeeUserPasswordResetView( FormView):
     success_url = reverse_lazy('employees:dashboard')
     template_name = CREATE_TEMPLATE
     extra_context = {

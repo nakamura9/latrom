@@ -67,7 +67,6 @@ class AbstractAccount(SoftDeletionModel):
   
     @property
     def balance_type(self):
-        # TODO test
         if self.type in ['asset', 'expense', 'cost-of-sales']:
             return 'debit'
         else: #income, liability, equity

@@ -13,10 +13,9 @@ from rest_framework import viewsets
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
-from services.views.util import ServiceCheckMixin
 
 
-class Dashboard(ServiceCheckMixin, TemplateView):
+class Dashboard( TemplateView):
     template_name = os.path.join('services', 'dashboard.html')
 
 
@@ -25,7 +24,7 @@ CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 #                   Service Views                   #
 #####################################################
 
-class ServiceCreateView(ServiceCheckMixin, ContextMixin, CreateView):
+class ServiceCreateView( ContextMixin, CreateView):
     form_class = forms.ServiceForm
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy('services:dashboard')
@@ -41,7 +40,7 @@ class ServiceCreateView(ServiceCheckMixin, ContextMixin, CreateView):
         }]
     }
 
-class ServiceUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
+class ServiceUpdateView( ContextMixin, UpdateView):
     form_class = forms.ServiceForm
     model = models.Service
     template_name = CREATE_TEMPLATE
@@ -58,7 +57,7 @@ class ServiceUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
         }]
     }
 
-class ServiceListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class ServiceListView( ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.ServiceFilter
     model = models.Service
     template_name = os.path.join('services', 'service', 'list.html')
@@ -67,7 +66,7 @@ class ServiceListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterVi
         'new_link': reverse_lazy('services:create-service')
     }
     
-class ServiceDetailView(ServiceCheckMixin, DetailView):
+class ServiceDetailView( DetailView):
     template_name = os.path.join('services', 'service', 'detail.html')
     model = models.Service 
 

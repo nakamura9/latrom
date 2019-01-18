@@ -10,6 +10,9 @@ requisition_urls = [
     re_path(r'^equipment-requisition-list/?$', 
         views.EquipmentRequisitionListView.as_view(), 
         name='equipment-requisition-list'),
+    re_path(r'^equipment-requisition-auth-view/(?P<pk>\d+)/?$', 
+        views.EquipmentRequisitionAuthorizeView.as_view(), 
+        name='equipment-requisition-auth-view'),
     re_path(r'^equipment-requisition-detail/(?P<pk>\d+)/?$', 
         views.EquipmentRequisitionDetailView.as_view(), 
         name='equipment-requisition-detail'),
@@ -34,4 +37,7 @@ requisition_urls = [
     re_path(r'^consumable-requisition-authorize/(?P<pk>\d+)/?$', 
         views.consumable_requisition_authorize, 
         name='consumable-requisition-authorize'),
+    re_path(r'^equipment-return/(?P<pk>[\w]+)/?$', 
+        views.EquipmentReturnView.as_view(), 
+            name='equipment-return'),
 ]

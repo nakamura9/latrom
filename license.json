@@ -1,0 +1,11 @@
+{
+    "signature": "fd4fc4a9621541a53809e327f3689c7af4e05c0bcbd24d5c26355c433a5f8c3dcf52aeb0823ac6093ceb1469bbd4393d137b58023a637cd8036ab49245578483",
+    "license": {
+        "customer_id": 1,
+        "customer_name": "customer",
+        "date_issued": "21/01/19",
+        "expiry_date": "21/09/20",
+        "number_users": 5,
+        "number_employees": 4
+    }
+}

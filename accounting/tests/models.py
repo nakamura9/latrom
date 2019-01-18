@@ -550,6 +550,12 @@ class AccountModelTests(TestCase):
         self.assertTrue(self.interest_account.should_receive_interest(
             NEXT_YEAR))
 
+    def test_account_balance_type(self):
+        asset = Account.objects.get(pk=1000)#cash
+        self.assertEqual(asset.account_type, "debit")
+        
+        liability = Account.objects.get(pk=2004)#loans payable
+        self.assertEqual(liability.account_type, "credit")
     
 class CurrencyTests(TestCase):
     @classmethod

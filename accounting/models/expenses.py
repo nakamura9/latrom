@@ -85,7 +85,8 @@ class Expense(AbstractExpense):
             date = self.date,
             memo =  "Expense recorded. Category: %s." % self.category,
             journal = accounting.models.books.Journal.objects.get(pk=2),# cash disbursements
-            created_by=self.recorded_by
+            created_by=self.recorded_by,
+            draft= False
         )
         #debits increase expenses credits decrease assets so...
         j.simple_entry(self.amount, 

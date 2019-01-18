@@ -8,12 +8,11 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from inventory import forms, models, serializers
 
-from .common import InventoryControllerCheckMixin
 from common_data.utilities import ContextMixin
 
 # TODO prevent updates from assigining parent media to child media.
 
-class StorageMediaCreateView(InventoryControllerCheckMixin, CreateView):
+class StorageMediaCreateView( CreateView):
     template_name = os.path.join('inventory', 'storage_media', 'create.html')
     form_class = forms.StorageMediaForm
     success_url = reverse_lazy('inventory:warehouse-list')
@@ -26,11 +25,11 @@ class StorageMediaCreateView(InventoryControllerCheckMixin, CreateView):
     def post(self, request, *args, **kwargs):
         return super(StorageMediaCreateView, self).post(request, *args, **kwargs)
 
-class StorageMediaDetailView(InventoryControllerCheckMixin, DetailView):
+class StorageMediaDetailView( DetailView):
     template_name = os.path.join('inventory', 'storage_media', 'detail.html')
     model = models.StorageMedia
 
-class StorageMediaUpdateView(InventoryControllerCheckMixin, UpdateView):
+class StorageMediaUpdateView( UpdateView):
     form_class = forms.StorageMediaForm
     model = models.StorageMedia
     template_name = os.path.join('inventory', 'storage_media','update.html')
@@ -39,7 +38,7 @@ class StorageMediaUpdateView(InventoryControllerCheckMixin, UpdateView):
         return reverse_lazy('inventory:storage-media-list', kwargs={
             'pk': self.object.warehouse.pk
         })
-class StorageMediaListView(InventoryControllerCheckMixin, TemplateView):
+class StorageMediaListView( TemplateView):
     template_name = os.path.join('inventory', 'storage_media', 'list.html')
 
 
@@ -75,7 +74,7 @@ class StorageMediaNestedListAPIView(ListAPIView):
             )
         return models.StorageMedia.objects.filter(location=None) 
 
-class AutogenerateStorageMediaView(InventoryControllerCheckMixin, ContextMixin, FormView):
+class AutogenerateStorageMediaView( ContextMixin, FormView):
     form_class = forms.AutoStorageMedia
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = reverse_lazy('inventory:home')

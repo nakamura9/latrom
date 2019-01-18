@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block window %}
+
+<div class="jumbotron">
+    <h1 class="display-3" style="color:red;"><i class="fas fa-times"></i> Sorry!</h1>
+    <p class="lead">This software package's licensed features do not allow you to continue</p>
+    <hr class="my-2">
+    <p>More info</p>
+    <p class="lead">
+        In order for you to continue please upgrade the software's features from <a href="http://nakamura9.pythonanywhere.com">here.</a>
+    </p>
+    <p class="lead">
+        <a class="btn btn-success btn-lg" href="{{url}}" role="button">Go Back</a>
+    </p>
+</div>
+
+{% endblock window %}

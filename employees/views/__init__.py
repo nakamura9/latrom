@@ -15,11 +15,10 @@ from .leave import *
 from .payroll import *
 from .timesheets import *
 
-from employees.views.util import AdministratorCheckMixin 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
-class DashBoard(AdministratorCheckMixin, ContextMixin, TemplateView):
+class DashBoard( ContextMixin, TemplateView):
     template_name = os.path.join('employees', 'dashboard.html')
     extra_context = {
         'employees': models.Employee.objects.all()
@@ -39,7 +38,7 @@ class DashBoard(AdministratorCheckMixin, ContextMixin, TemplateView):
         service.run()
         return super().get(request)
 
-class PayrollConfig(AdministratorCheckMixin, ContextMixin, UpdateView):
+class PayrollConfig( ContextMixin, UpdateView):
     model = models.EmployeesSettings
     template_name = CREATE_TEMPLATE
     success_url = reverse_lazy("employees:dashboard")

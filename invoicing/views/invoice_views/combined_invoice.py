@@ -21,7 +21,6 @@ from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
@@ -44,7 +43,7 @@ def process_data(items, inv):
     else:#includes drafts and quotations
         pass
 
-class CombinedInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class CombinedInvoiceListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "Combined Invoice List",
                     "new_link": reverse_lazy("invoicing:create-combined-invoice")}
     template_name = os.path.join("invoicing", "combined_invoice","list.html")
@@ -52,20 +51,20 @@ class CombinedInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin,
     paginate_by = 10
 
     def get_queryset(self):
-        return CombinedInvoice.objects.filter(active=True).order_by('date')
+        return CombinedInvoice.objects.filter(active=True).order_by('date').reverse()
     
 
 class CombinedInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CombinedInvoiceSerializer
     queryset = CombinedInvoice.objects.all()
 
-class CombinedInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
+class CombinedInvoiceDetailView( ConfigMixin, DetailView):
     model = CombinedInvoice
     template_name = os.path.join("invoicing", "combined_invoice",
         'detail.html')
 
         
-class CombinedInvoiceCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
+class CombinedInvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -98,7 +97,7 @@ class CombinedInvoiceUpdateView(ContextMixin, UpdateView):
         'title': 'Update Combined Invoice'
     }
 
-class CombinedInvoiceDraftUpdateView(SalesRepCheckMixin, ConfigMixin, UpdateView):
+class CombinedInvoiceDraftUpdateView( ConfigMixin, UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -185,7 +184,7 @@ class CombinedInvoiceEmailSendView(EmailPlusPDFView):
     pdf_template_name = os.path.join("invoicing", "combined_invoice",
             'pdf.html')
 
-class CombinedInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+class CombinedInvoiceDraftDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')
     model = CombinedInvoice

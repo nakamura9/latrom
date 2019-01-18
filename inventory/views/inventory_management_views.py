@@ -25,12 +25,12 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
-from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
 
 #######################################################
 #               Inventory Check Views                 #
 #######################################################
 
+CREATE_TEMPLATE = os.path.join("common_data", "create_template.html")
 
 class InventoryCheckCreateView(CreateView):
     '''
@@ -78,7 +78,8 @@ class InventoryCheckListView(ContextMixin ,PaginationMixin, FilterView):
 
     def get_queryset(self):
         w = models.WareHouse.objects.get(pk=self.kwargs['pk'])
-        return models.InventoryCheck.objects.filter(warehouse=w).order_by('date')
+        return models.InventoryCheck.objects.filter(
+            warehouse=w).order_by('date').reverse()
 
 
 class StockAdjustmentAPIView(ModelViewSet):
@@ -143,7 +144,7 @@ class TransferOrderListView(ContextMixin, PaginationMixin, FilterView):
 
     def get_queryset(self):
         warehouse = models.WareHouse.objects.get(pk=self.kwargs['pk'])
-        return models.TransferOrder.objects.filter(Q(source_warehouse=warehouse) | Q(receiving_warehouse=warehouse))
+        return models.TransferOrder.objects.filter(Q(source_warehouse=warehouse) | Q(receiving_warehouse=warehouse)).order_by('date').reverse()
 
     
 
@@ -177,7 +178,7 @@ class TransferOrderReceiveView(ContextMixin, UpdateView):
 #               Goods Received Views                  #
 #######################################################
 
-class StockReceiptCreateView(InventoryControllerCheckMixin,CreateView):
+class StockReceiptCreateView(CreateView):
     form_class = forms.StockReceiptForm
     model = models.StockReceipt
     success_url = reverse_lazy('inventory:home')
@@ -206,7 +207,7 @@ class StockReceiptCreateView(InventoryControllerCheckMixin,CreateView):
             
         return resp 
 
-class GoodsReceivedVoucherView(InventoryControllerCheckMixin, ConfigMixin, 
+class GoodsReceivedVoucherView( ConfigMixin, 
         DetailView):
     model = models.StockReceipt
     template_name = os.path.join("inventory", "goods_received", "voucher.html")

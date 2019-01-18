@@ -13,7 +13,6 @@ from rest_framework.viewsets import ModelViewSet
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
-from services.views.util import ServiceCheckMixin
 
 
 class WorkOrderCRUDMixin(object):
@@ -37,7 +36,7 @@ class WorkOrderCRUDMixin(object):
 
 
 
-class WorkOrderCreateView(ServiceCheckMixin, WorkOrderCRUDMixin, ContextMixin,
+class WorkOrderCreateView( WorkOrderCRUDMixin, ContextMixin,
         CreateView):
     template_name = os.path.join('services', 'work_order', 'create.html')
     form_class = forms.ServiceWorkOrderForm
@@ -56,14 +55,14 @@ class WorkOrderCreateView(ServiceCheckMixin, WorkOrderCRUDMixin, ContextMixin,
         }
 
     
-class WorkOrderUpdateView(ServiceCheckMixin, WorkOrderCRUDMixin, UpdateView):
+class WorkOrderUpdateView( WorkOrderCRUDMixin, UpdateView):
     template_name = os.path.join('services', 'work_order', 'update.html')
     form_class = forms.ServiceWorkOrderForm
     success_url = reverse_lazy('services:work-order-list')
     model = models.ServiceWorkOrder
 
 
-class WorkOrderCompleteView(ServiceCheckMixin, UpdateView):
+class WorkOrderCompleteView( UpdateView):
     template_name = os.path.join('services', 'work_order', 'complete.html')
     form_class = forms.ServiceWorkOrderCompleteForm
     success_url = reverse_lazy('services:work-order-list')
@@ -75,7 +74,7 @@ class WorkOrderCompleteView(ServiceCheckMixin, UpdateView):
         }
 
 
-class WorkOrderDetailView(ServiceCheckMixin, DetailView):
+class WorkOrderDetailView( DetailView):
     template_name = os.path.join('services', 'work_order', 'detail.html')
     model = models.ServiceWorkOrder
 
@@ -88,10 +87,10 @@ class WorkOrderDetailView(ServiceCheckMixin, DetailView):
         )
         return context
 
-class WorkOrderListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class WorkOrderListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'work_order', 'list.html')
     filterset_class = filters.WorkOrderFilter
-    queryset = models.ServiceWorkOrder.objects.all()
+    queryset = models.ServiceWorkOrder.objects.all().order_by('date').reverse()
     extra_context = {
         'title': 'List of Work Orders',
         'new_link': reverse_lazy('services:work-order-create')

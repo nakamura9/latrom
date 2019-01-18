@@ -431,3 +431,4 @@ class RawMaterialForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude =  'active',
         model = models.RawMaterial
+

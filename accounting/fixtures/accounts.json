@@ -60,7 +60,7 @@
         "fields": {
             "name": "Retained Earnings",
             "balance": 0,
-            "description": "Tracks the cumulative profits or losses made by the organization since its formation. Adjusted once every fincial year-end.",
+            "description": "Tracks the cumulative profits or losses made by the organization since its formation. Adjusted once every financial year-end.",
             "type": "equity",
             "balance_sheet_category": "not-included"
         }

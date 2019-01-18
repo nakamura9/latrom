@@ -295,7 +295,7 @@ class RequisitionViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_get_equipment_requisition_detail(self):
-        resp = self.client.get('/services/equipment-requisition-detail/1')
+        resp = self.client.get('/services/equipment-requisition-auth-view/1')
         self.assertEqual(resp.status_code, 200)
 
     def test_equipment_requisition_release(self):
@@ -363,7 +363,21 @@ class RequisitionViewTests(TestCase):
                 'password': '123'
             })
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(ConsumablesRequisition.objects.first().authorized_by, self.employee)    
+        self.assertEqual(ConsumablesRequisition.objects.first().authorized_by, self.employee) 
+
+    def test_get_equipment_return_page(self):
+        resp = self.client.get('/services/equipment-return/1')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_equipment_return_page(self):
+        resp = self.client.post('/services/equipment-return/1', data={
+            
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_equipment_detail_page(self):
+        resp = self.client.get('/services/equipment-requisition-detail/1')
+        self.assertEqual(resp.status_code, 200)
 
 class ServiceViewTests(TestCase):
     fixtures = ['common.json','inventory.json']

@@ -1,0 +1,66 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Equipment return Form</h1>
+    <p class="lead">Return previously requested equipment</p>
+    
+</div>
+<form action="" method="POST" class="form">
+{% csrf_token %}
+<div class="container">
+    <div class="row">
+
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Form</h4>
+                        {{form.as_p}}
+                        <button class="btn btn-secondary">Submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Returns:</h3>
+            <hr class="my-4" />
+            <table class="table">
+            <thead>
+                <tr class="bg-primary">
+                    <th>Equipment</th>
+                    <th>Requested Quantity</th>
+                    <th>Returned Quantity</th>
+                    <th>Returned Condition</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in requisition.equipmentrequisitionline_set.all %}
+                    <tr>
+                        <td>{{line.equipment}}</td>
+                        <td>{{line.quantity}}</td>
+                        <td>
+                            <input name="equipment_returned_{{line.pk}}" 
+                                    type="number"
+                                    class="form-control" /></td>
+                        <td>
+                            <select 
+                                name="equipment_condition_{{line.pk}}"
+                                class="form-control">
+                                <option selected value="excellent">
+                                    Excellent
+                                </option>    
+                                <option value="good">Good</option>    
+                                <option value="poor">Poor</option>    
+                                <option value="broken">Broken</option>    
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}

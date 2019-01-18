@@ -12,6 +12,8 @@ import planner
 import accounting
 import invoicing
 from employees.models.payslip import Payslip
+from employees.models.misc import PayrollOfficer
+
 
 
 class Employee(Person, SoftDeletionModel):

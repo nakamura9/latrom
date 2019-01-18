@@ -14,7 +14,6 @@ from common_data.views import PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import Customer
 
-from .common import SalesRepCheckMixin
 
 #########################################
 #           Customer Views              #
@@ -26,7 +25,7 @@ class CustomerAPIViewSet(viewsets.ModelViewSet):
 
 #No customer list, overlooked!
 
-class OrganizationCustomerCreateView(SalesRepCheckMixin, ContextMixin, 
+class OrganizationCustomerCreateView( ContextMixin, 
         CreateView):
     extra_context = {
         "title": "New Organizational Customer",
@@ -41,7 +40,7 @@ class OrganizationCustomerCreateView(SalesRepCheckMixin, ContextMixin,
     form_class = forms.OrganizationCustomerForm
 
 
-class IndividualCustomerCreateView(SalesRepCheckMixin, ContextMixin, 
+class IndividualCustomerCreateView( ContextMixin, 
         CreateView):
     extra_context = {
         "title": "New Individual Customer",
@@ -56,7 +55,7 @@ class IndividualCustomerCreateView(SalesRepCheckMixin, ContextMixin,
     form_class = forms.IndividualCustomerForm
 
 
-class CustomerUpdateView(SalesRepCheckMixin, ContextMixin, UpdateView):
+class CustomerUpdateView( ContextMixin, UpdateView):
     extra_context = {"title": "Update Existing Customer"}
     template_name = os.path.join("common_data", "create_template.html")
     model = Customer
@@ -64,7 +63,7 @@ class CustomerUpdateView(SalesRepCheckMixin, ContextMixin, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class IndividualCustomerListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class IndividualCustomerListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Individual Customers",
                     "new_link": reverse_lazy(
                         "invoicing:create-individual-customer")}
@@ -76,7 +75,7 @@ class IndividualCustomerListView(SalesRepCheckMixin, ContextMixin, PaginationMix
         return Customer.objects.filter(individual__isnull=False).order_by('pk')
 
 
-class OrganizationCustomerListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class OrganizationCustomerListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Organizational Customers",
                     "new_link": reverse_lazy(
                         "invoicing:create-organization-customer")}
@@ -88,7 +87,7 @@ class OrganizationCustomerListView(SalesRepCheckMixin, ContextMixin, PaginationM
         return Customer.objects.filter(organization__isnull=False).order_by('pk')
 
 
-class CustomerDeleteView(SalesRepCheckMixin, DeleteView):
+class CustomerDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = Customer
     success_url = reverse_lazy('invoicing:organization-customers-list')

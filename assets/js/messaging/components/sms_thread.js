@@ -42,10 +42,12 @@ class SMSMessageThreadView extends Component{
             }}>
                 <div style={{
                     "overflowY": "auto",
-                    "minHeight": "400px"
+                    "minHeight": "400px",
+                    "height": "400px"
                 }}>
-                    {this.state.messages.map((message) =>(
-                        <MessageBubble 
+                    {this.state.messages.map((message, i) =>(
+                        <MessageBubble
+                            MessageID={i} 
                             isSender={message.sender === this.props.owner}
                             body={message.body}
                             created={message.created_timestamp}
@@ -84,22 +86,21 @@ class SMSMessageThreadView extends Component{
     }
 }
 
-class MessageBubble extends Component{
-    render(){
+const {
         return(
             <div style={{
-                backgroundColor: this.props.isSender ? "#05f" : "#0cf",
+                backgroundColor: props.isSender ? "#05f" : "#0cf",
                 color: "white",
                 borderRadius: "10px",
                 padding: "10px",
                 margin: "10px",
                 width: '85%',
-                float: this.props.isSender ? 'left' : 'right'
-            }}>
-                <p>{this.props.body}<br /><span style={{
+                float: props.isSender ? 'left' : 'right'
+            }} id={`${props.MessageID}`}>
+                <p>{props.body}<br /><span style={{
                     float: "right",
                     color: "#ddd"
-                }}>{this.props.created}</span></p>
+                }}>{props.created}</span></p>
                 
             </div>
         )

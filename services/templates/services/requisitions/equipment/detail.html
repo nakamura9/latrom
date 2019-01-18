@@ -1,0 +1,66 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Equipment Requisition Details</h1>
+    <p class="lead">View requested equipment and requisition status</p>
+    
+</div>
+<div class="container">
+    <div class="row">
+
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <p>Date Requested:{{object.date}}</p>
+                    <p>Date Returned:{% if object.returned_date %} 
+                        {{object.returned_date}} 
+                        {% else %} 
+                            Pending 
+                        {% endif %}</p>
+                    <p>Warehouse: {{object.warehouse}}</p>
+                    <p>Department: {{object.department}}</p>
+                    <p>Reference: {{object.reference}}</p>
+                    <hr>
+                    <h5>Personnel chain</h5>
+                    <p>Requested By: {{object.requested_by}}</p>
+                    <p>Authorized By: {{object.authorized_by}}</p>
+                    <p>Released By: {{object.released_by}}</p>
+                    <p>Received By: {{object.received_by}}</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3>Returns:</h3>
+            <hr class="my-4" />
+            <table class="table">
+            <thead>
+                <tr class="bg-primary">
+                    <th>Equipment</th>
+                    <th>Requested Quantity</th>
+                    <th>Returned Quantity</th>
+                    <th>Requested Condition</th>
+                    <th>Returned Condition</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in object.equipmentrequisitionline_set.all %}
+                    <tr>
+                        <td>{{line.equipment}}</td>
+                        <td>{{line.quantity}}</td>
+                        <td>{{line.quantity_returned}}</td>
+                        <td>{{line.requesting_condition}}</td>
+                        <td>{{line.returned_condition}}</td>    
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}

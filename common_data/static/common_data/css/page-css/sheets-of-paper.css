@@ -62,7 +62,7 @@ p + p {
 	margin-top: 0.5cm;
 }
 /* For links in the document */
-a {
+article a {
 	/* Prevent colorization or decoration */
 	text-decoration: none;
 	color: black;

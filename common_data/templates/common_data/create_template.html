@@ -7,7 +7,7 @@ form li {
 </style>
 <div class="jumbotron">
     <div class="container-fluid">
-        <h1 class="display-3">{{title}}</h1>
+        <h1 class="display-3">{% if icon %} <i class="fas fa-{{icon}}"></i> {% else %} <i class="fas fa-edit"></i> {% endif %} {{title}}</h1>
         <p class="lead">{{description}}</p>
         {% if related_links %}
         <p>Actions</p>

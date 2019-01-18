@@ -1,13 +1,17 @@
 import json
 import os
 import urllib
+import datetime
 
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import (CreateView, 
+                                        UpdateView,
+                                        FormView)
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
@@ -16,9 +20,8 @@ from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from inventory.models import Consumable, Equipment, UnitOfMeasure
 from services import filters, forms, models, serializers
-from services.views.util import ServiceCheckMixin
 
-class EquipmentRequisitionCreateView(ServiceCheckMixin, CreateView):
+class EquipmentRequisitionCreateView( CreateView):
     template_name = os.path.join('services', 'requisitions', 'equipment', 
         'create.html')
     form_class = forms.EquipmentRequisitionForm
@@ -43,7 +46,7 @@ class EquipmentRequisitionCreateView(ServiceCheckMixin, CreateView):
         return resp
 
 
-class EquipmentRequisitionDetailView(ServiceCheckMixin, DetailView):
+class EquipmentRequisitionAuthorizeView( DetailView):
     template_name = os.path.join('services', 'requisitions', 'equipment',
         'authorize_release.html')
     model = models.EquipmentRequisition
@@ -53,9 +56,10 @@ class EquipmentRequisitionDetailView(ServiceCheckMixin, DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class EquipmentRequisitionListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class EquipmentRequisitionListView( ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
-    queryset = models.EquipmentRequisition.objects.all()
+    queryset = models.EquipmentRequisition.objects.all().order_by(
+        'date').reverse()
     paginate_by = 10
     template_name = os.path.join('services', 'requisitions', 'equipment', 'list.html')
 
@@ -117,7 +121,7 @@ def equipment_requisition_release(request, pk=None):
 #            Consumable Requisitions            #
 #################################################
 
-class ConsumableRequisitionCreateView(ServiceCheckMixin, CreateView):
+class ConsumableRequisitionCreateView( CreateView):
     template_name = os.path.join('services', 'requisitions', 'consumables', 
         'create.html')
     form_class = forms.ConsumablesRequisitionForm
@@ -144,7 +148,7 @@ class ConsumableRequisitionCreateView(ServiceCheckMixin, CreateView):
         return resp
 
 
-class ConsumableRequisitionDetailView(ServiceCheckMixin, DetailView):
+class ConsumableRequisitionDetailView( DetailView):
     template_name = os.path.join('services', 'requisitions', 'consumables',
         'authorize_release.html')
     model = models.ConsumablesRequisition
@@ -154,9 +158,10 @@ class ConsumableRequisitionDetailView(ServiceCheckMixin, DetailView):
         context['authorize_form'] = AuthenticateForm()
         return context
 
-class ConsumableRequisitionListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class ConsumableRequisitionListView( ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.ConsumableRequisitionFilter
-    queryset = models.ConsumablesRequisition.objects.all()
+    queryset = models.ConsumablesRequisition.objects.all().order_by(
+        'date').reverse()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')
     paginate_by = 10
 
@@ -209,3 +214,70 @@ def consumable_requisition_release(request, pk=None):
                     'services:consumable-requisition-list'))
 
     return HttpResponseRedirect(redirect_path)
+
+
+class EquipmentReturnView( FormView):
+    #TODO test
+    template_name = os.path.join('services', 'requisitions', 'equipment', 
+        'return.html')
+    form_class = forms.EquipmentReturnForm
+    success_url = "/inventory/"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['requisition'] = get_object_or_404(models.EquipmentRequisition, 
+            pk=self.kwargs['pk'])
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args, **kwargs)
+        #checks for the login
+        usr = authenticate(
+            username=request.POST['received_by'],
+            password=request.POST['password'])
+        if not usr or not hasattr(usr, 'employee'):
+            messages.info(request, 
+                '''The username or password provided were incorrect.''')
+            return HttpResponse('/services/equipment/{}'.format(
+                self.kwargs['pk']))
+
+        requisition = get_object_or_404(models.EquipmentRequisition, 
+            pk=self.kwargs['pk'])
+
+        requisition.received_by = usr.employee
+        requisition.returned_date = datetime.datetime.strptime(request.POST['return_date'], "%m/%d/%Y")
+        requisition.save()
+
+
+        #setting line values
+        fields = dict(request.POST).keys()
+
+        for field in fields:
+            if field.startswith('equipment_returned'):
+                line = models.EquipmentRequisitionLine.objects.get(
+                    pk=field.split('_')[2]
+                )
+                line.quantity_returned = request.POST[field]
+                line.save()
+
+            elif field.startswith('equipment_condition'):
+                line = models.EquipmentRequisitionLine.objects.get(
+                    pk=field.split('_')[2]
+                )
+                line.returned_condition = request.POST[field]
+                line.save()
+            
+
+
+        print(dict(request.POST).keys())
+        print(dict(request.POST))
+
+        return resp
+
+
+class EquipmentRequisitionDetailView( DetailView):
+    # TODO test
+    model = models.EquipmentRequisition
+    template_name = os.path.join('services', 'requisitions', 'equipment', 'detail.html') 

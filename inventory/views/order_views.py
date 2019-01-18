@@ -30,7 +30,7 @@ from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from accounting.models import Expense, JournalEntry, Account, Journal
 
-from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+from .common import CREATE_TEMPLATE
 
 
 class OrderAPIView(ModelViewSet):
@@ -111,7 +111,7 @@ class OrderPOSTMixin(object):
                 pmt.create_entry()
         return resp        
 
-class OrderCreateView(InventoryControllerCheckMixin, ContextMixin, 
+class OrderCreateView( ContextMixin, 
         OrderPOSTMixin, CreateView):
     '''The front end page combines with react to create a dynamic
     table for entering items in the form.
@@ -151,7 +151,7 @@ class OrderCreateView(InventoryControllerCheckMixin, ContextMixin,
     
 
 
-class OrderUpdateView(InventoryControllerCheckMixin, ContextMixin, 
+class OrderUpdateView( ContextMixin, 
         OrderPOSTMixin,UpdateView):
     form_class = forms.OrderUpdateForm
     model = models.Order
@@ -160,7 +160,7 @@ class OrderUpdateView(InventoryControllerCheckMixin, ContextMixin,
     extra_context = {"title": "Update Existing Purchase Order"}
 
 
-class OrderListView(InventoryControllerCheckMixin, ContextMixin, 
+class OrderListView( ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
     filterset_class = filters.OrderFilter
@@ -172,18 +172,18 @@ class OrderListView(InventoryControllerCheckMixin, ContextMixin,
         return models.Order.objects.all().order_by('pk').reverse()
 
 
-class OrderStatusView(InventoryControllerCheckMixin, ContextMixin, DetailView):
+class OrderStatusView( ContextMixin, DetailView):
     template_name = os.path.join('inventory', 'order', 'status.html')
     model = models.Order
 
 
-class OrderDeleteView(InventoryControllerCheckMixin, DeleteView):
+class OrderDeleteView( DeleteView):
     model = models.Order
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('inventory:order-list')
 
 
-class OrderDetailView(InventoryControllerCheckMixin, ContextMixin, 
+class OrderDetailView( ContextMixin, 
         ConfigMixin, DetailView):
     model = models.Order
     template_name = os.path.join('inventory', 'order', 'detail.html')
@@ -205,14 +205,14 @@ class OrderDetailView(InventoryControllerCheckMixin, ContextMixin,
         return context
 
 
-class OrderPaymentDetailView(InventoryControllerCheckMixin,  
+class OrderPaymentDetailView(  
         ConfigMixin, DetailView):
     model = models.Order
     template_name = os.path.join('inventory', 'order', 'payment_list.html')
    
 
 
-class OrderPaymentCreateView(InventoryControllerCheckMixin, ContextMixin,
+class OrderPaymentCreateView( ContextMixin,
         ConfigMixin, CreateView):
     model = models.OrderPayment
     template_name= CREATE_TEMPLATE
@@ -265,7 +265,7 @@ class OrderEmailSendView(EmailPlusPDFView):
             'recipient': ord.supplier.email
         }
 
-class ShippingAndHandlingView(InventoryControllerCheckMixin, 
+class ShippingAndHandlingView( 
         ContextMixin, FormView):
     template_name = CREATE_TEMPLATE
     form_class = forms.ShippingAndHandlingForm

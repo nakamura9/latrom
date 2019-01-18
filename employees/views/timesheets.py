@@ -21,7 +21,6 @@ from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
 
 from employees import filters, forms, models, serializers
-from employees.views.util import AdministratorCheckMixin
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
@@ -74,12 +73,12 @@ class TimeSheetMixin(object):
         
         return resp
 
-class CreateTimeSheetView(AdministratorCheckMixin, TimeSheetMixin, CreateView):
+class CreateTimeSheetView( TimeSheetMixin, CreateView):
     template_name = os.path.join('employees', 'timesheet_create_update.html')
     form_class = forms.TimesheetForm
     success_url = reverse_lazy('employees:dashboard')
 
-class ListTimeSheetView(ContextMixin, AdministratorCheckMixin, PaginationMixin, FilterView):
+class ListTimeSheetView(ContextMixin,  PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'time_sheet_list.html')
     filterset_class = filters.TimeSheetFilter
     paginate_by = 10
@@ -89,14 +88,14 @@ class ListTimeSheetView(ContextMixin, AdministratorCheckMixin, PaginationMixin, 
     }
     def get_queryset(self):
         
-        return models.EmployeeTimeSheet.objects.all()
+        return models.EmployeeTimeSheet.objects.all().order_by('pk').reverse()
     
 
-class TimeSheetDetailView(AdministratorCheckMixin, DetailView):
+class TimeSheetDetailView( DetailView):
     model = models.EmployeeTimeSheet
     template_name = os.path.join('employees', 'timesheet_detail.html')
 
-class TimeSheetUpdateView(TimeSheetMixin, AdministratorCheckMixin, UpdateView):
+class TimeSheetUpdateView(TimeSheetMixin,  UpdateView):
     template_name = os.path.join('employees', 'timesheet_create_update.html')
     form_class = forms.TimesheetForm
     queryset = models.EmployeeTimeSheet.objects.all()
@@ -109,7 +108,8 @@ class TimeSheetViewset(viewsets.ModelViewSet):
 class TimeLoggerView(ContextMixin, FormView):
     template_name = CREATE_TEMPLATE
     extra_context = {
-        'title': 'Log Time In/Out'
+        'title': 'Log Time In/Out',
+        'icon': 'hourglass-half'
     }
     form_class = forms.TimeLoggerForm
     success_url = reverse_lazy('employees:time-logger')

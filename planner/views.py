@@ -96,7 +96,7 @@ class EventListView(ContextMixin, LoginRequiredMixin, PaginationMixin, FilterVie
     def get_queryset(self):
         return models.Event.objects.filter( 
             Q(owner=self.request.user)
-        )
+        ).order_by('date').reverse()
 
 class EventDetailView(LoginRequiredMixin, DetailView):
     model = models.Event 

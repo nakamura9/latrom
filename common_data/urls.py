@@ -32,4 +32,10 @@ urlpatterns = [
         name='authenticate'),
     re_path(r'^api/current-user/?$', views.get_current_user,
         name='api-current-user'),
+    re_path(r'^license-error-page/?$', views.LicenseErrorPage.as_view(),
+        name='license-error-page'),
+    re_path(r'^license-error/features/?$', views.LicenseFeaturesErrorPage.as_view(),
+        name='license-error-features'),
+    re_path(r'^license-error/users/?$', views.UsersErrorPage.as_view(),
+        name='license-error-users'),
 ]

@@ -11,13 +11,12 @@ from rest_framework.viewsets import ModelViewSet
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
-from services.views.util import ServiceCheckMixin
 
 
 ####################################################
 #                Service Employees                 #
 ####################################################
-class ServicePersonCreateView(ServiceCheckMixin, ContextMixin, CreateView):
+class ServicePersonCreateView( ContextMixin, CreateView):
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.ServicePersonForm
     success_url = reverse_lazy('services:service-person-list')
@@ -25,7 +24,7 @@ class ServicePersonCreateView(ServiceCheckMixin, ContextMixin, CreateView):
         'title': 'Add Employee to Service Personnel'
     }
 
-class ServicePersonUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
+class ServicePersonUpdateView( ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.ServicePersonUpdateForm
     success_url = reverse_lazy('services:service-person-list')
@@ -34,7 +33,7 @@ class ServicePersonUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
         'title': 'Update Service Person Details'
     }
 
-class ServicePersonListView(ServiceCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class ServicePersonListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'personnel', 'list.html')
     queryset = models.ServicePerson.objects.all()
     paginate_by = 10
@@ -44,7 +43,7 @@ class ServicePersonListView(ServiceCheckMixin, ContextMixin, PaginationMixin, Fi
     }
     filterset_class = filters.ServicePersonFilter
 
-class ServicePersonDashboardView(ServiceCheckMixin, DetailView):
+class ServicePersonDashboardView( DetailView):
     template_name = os.path.join('services', 'personnel', 'dashboard.html')
     model = models.ServicePerson
 
@@ -69,7 +68,7 @@ class ServiceTeamCRUDMixin(object):
 
         return resp
 
-class ServiceTeamCreateView(ServiceCheckMixin, ServiceTeamCRUDMixin, CreateView):
+class ServiceTeamCreateView( ServiceTeamCRUDMixin, CreateView):
     template_name = os.path.join('services', 'personnel', 'teams', 
         'create.html')
     form_class = forms.ServiceTeamForm
@@ -77,19 +76,19 @@ class ServiceTeamCreateView(ServiceCheckMixin, ServiceTeamCRUDMixin, CreateView)
 
     
 
-class ServiceTeamUpdateView(ServiceCheckMixin, ServiceTeamCRUDMixin, UpdateView):
+class ServiceTeamUpdateView( ServiceTeamCRUDMixin, UpdateView):
     template_name = os.path.join('services', 'personnel', 'teams', 
         'update.html')
     form_class = forms.ServiceTeamForm
     success_url = reverse_lazy('services:team-list')
     model = models.ServiceTeam
 
-class ServiceTeamDetailView(ServiceCheckMixin, DetailView):
+class ServiceTeamDetailView( DetailView):
     template_name = os.path.join('services', 'personnel', 'teams', 
         'detail.html')
     model = models.ServiceTeam
 
-class ServiceTeamListView(ServiceCheckMixin, ContextMixin, ListView):
+class ServiceTeamListView( ContextMixin, ListView):
     template_name = os.path.join('services', 'personnel', 'teams', 
         'list.html')
     queryset = models.ServiceTeam.objects.all()

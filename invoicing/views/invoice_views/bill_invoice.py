@@ -20,7 +20,6 @@ from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
@@ -30,23 +29,23 @@ def process_data(items, inv):
             inv.add_line(item['pk'])
     
     
-class BillListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, FilterView):
+class BillListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "Customer Bill List",
                     "new_link": reverse_lazy("invoicing:bill-create")}
     template_name = os.path.join("invoicing", "bill","list.html")
     filterset_class = filters.BillInvoiceFilter
     paginate_by = 10
 
-    queryset = Bill.objects.filter(active=True).order_by('date')
+    queryset = Bill.objects.filter(active=True).order_by('date').reverse()
     
 
-class BillDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
+class BillDetailView( ConfigMixin, DetailView):
     model = Bill
     template_name = os.path.join("invoicing", "bill",
         'detail.html')
 
         
-class BillCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
+class BillCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -87,7 +86,7 @@ class BillCreateView(SalesRepCheckMixin, InvoiceCreateMixin, ConfigMixin, Create
         self.set_payment_amount()
         return resp
 
-class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
+class BillDraftUpdateView(ConfigMixin, UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -121,7 +120,7 @@ class BillDraftUpdateView(SalesRepCheckMixin,ConfigMixin, UpdateView):
         return resp
 
 
-class BillUpdateView(ContextMixin, SalesRepCheckMixin, UpdateView):
+class BillUpdateView(ContextMixin,  UpdateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -196,7 +195,7 @@ class BillEmailSendView(EmailPlusPDFView):
     pdf_template_name = os.path.join('invoicing', 'bill', 'pdf.html')
 
 
-class BillDraftDeleteView(SalesRepCheckMixin, DeleteView):
+class BillDraftDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')
     model = Bill

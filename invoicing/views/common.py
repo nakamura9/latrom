@@ -24,17 +24,8 @@ from invoicing.models import *
 
 
 
-class SalesRepCheckMixin(UserPassesTestMixin):
-    def test_func(self):
-        if self.request.user.is_superuser:
-            return True
-        elif hasattr(self.request.user, 'employee') and \
-                self.request.user.employee.is_sales_rep:
-            return True
-        else:
-            return False
 
-class Home(SalesRepCheckMixin, ConfigMixin, TemplateView):
+class Home( ConfigMixin, TemplateView):
     template_name = os.path.join("invoicing", "dashboard.html")
 
         
@@ -44,7 +35,7 @@ class Home(SalesRepCheckMixin, ConfigMixin, TemplateView):
 #########################################################
 
 
-class ConfigView(SalesRepCheckMixin, UpdateView):
+class ConfigView( UpdateView):
     template_name = os.path.join("invoicing", "config.html")
     form_class = forms.SalesConfigForm
     model = SalesConfig

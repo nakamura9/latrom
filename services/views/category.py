@@ -1,7 +1,6 @@
 from services.models import ServiceCategory
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
-from services.views.util import ServiceCheckMixin
 from common_data.utilities import ContextMixin
 import os
 from django.urls import reverse_lazy
@@ -9,7 +8,7 @@ from services import forms
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
-class ServiceCategoryCreateView(ServiceCheckMixin, ContextMixin, CreateView):
+class ServiceCategoryCreateView( ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.ServiceCategoryForm
     success_url = reverse_lazy('services:category-list')
@@ -17,7 +16,7 @@ class ServiceCategoryCreateView(ServiceCheckMixin, ContextMixin, CreateView):
         'title': 'Create New Service Category'
     }
 
-class ServiceCategoryUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
+class ServiceCategoryUpdateView( ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.ServiceCategoryForm
     model = ServiceCategory
@@ -26,11 +25,11 @@ class ServiceCategoryUpdateView(ServiceCheckMixin, ContextMixin, UpdateView):
         'title': 'Update Service Category'
     }
 
-class ServiceCategoryDetailView(ServiceCheckMixin, DetailView):
+class ServiceCategoryDetailView( DetailView):
     template_name = os.path.join('services', 'category', 'detail.html')
     model = ServiceCategory
 
-class ServiceCategoryListView(ServiceCheckMixin, ContextMixin, ListView):
+class ServiceCategoryListView( ContextMixin, ListView):
     template_name = os.path.join('services', 'category', 'list.html')
     model = ServiceCategory
     extra_context = {

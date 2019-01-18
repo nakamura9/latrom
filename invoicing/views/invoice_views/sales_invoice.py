@@ -28,7 +28,6 @@ from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 class SalesInvoiceMixin(object):
@@ -79,7 +78,7 @@ class SalesInvoiceMixin(object):
                     item['quantity'])
     
 
-class SalesInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin, 
+class SalesInvoiceListView( ContextMixin, PaginationMixin, 
         FilterView):
     extra_context = {"title": "Sales Invoice List",
                     "new_link": reverse_lazy("invoicing:create-sales-invoice")}
@@ -88,10 +87,11 @@ class SalesInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin,
     paginate_by = 10
 
     def get_queryset(self):
-        return SalesInvoice.objects.filter(active=True).order_by('date')
+        return SalesInvoice.objects.filter(
+            active=True).order_by('date').reverse()
     
 
-class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
+class SalesInvoiceDetailView( ConfigMixin, DetailView):
     model = SalesInvoice
     template_name = os.path.join("invoicing", "sales_invoice",
         'detail.html')
@@ -138,7 +138,7 @@ class SalesInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
         return context
 
         
-class SalesInvoiceCreateView(SalesRepCheckMixin, 
+class SalesInvoiceCreateView( 
         SalesInvoiceMixin, 
         InvoiceCreateMixin, 
         ContextMixin, 
@@ -159,7 +159,7 @@ class SalesInvoiceCreateView(SalesRepCheckMixin,
     payment_for = 0
 
 
-class SalesDraftUpdateView(SalesRepCheckMixin, 
+class SalesDraftUpdateView( 
                             InvoiceCreateMixin,
                             SalesInvoiceMixin, 
                             ConfigMixin, 
@@ -170,7 +170,7 @@ class SalesDraftUpdateView(SalesRepCheckMixin,
     success_url = reverse_lazy('invoicing:sales-invoice-list')
 
 
-class SalesInvoiceUpdateView(SalesRepCheckMixin, 
+class SalesInvoiceUpdateView( 
                             ContextMixin, 
                             InvoiceCreateMixin,
                             UpdateView):
@@ -189,7 +189,7 @@ class SalesInvoiceAPIViewSet(viewsets.ModelViewSet):
     queryset = SalesInvoice.objects.all()
 
 
-class SalesInvoicePaymentView(SalesRepCheckMixin,ContextMixin, CreateView):
+class SalesInvoicePaymentView(ContextMixin, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.SalesInvoicePaymentForm
@@ -212,7 +212,7 @@ class SalesInvoicePaymentView(SalesRepCheckMixin,ContextMixin, CreateView):
         return resp
 
 
-class SalesInvoicePaymentDetailView(SalesRepCheckMixin, ListView):
+class SalesInvoicePaymentDetailView( ListView):
     template_name = os.path.join('invoicing', 'sales_invoice', 
         'payment', 'detail.html')
 
@@ -229,7 +229,7 @@ class SalesInvoicePaymentDetailView(SalesRepCheckMixin, ListView):
         return context
 
 
-class SalesInvoiceReturnsDetailView(SalesRepCheckMixin, ListView):
+class SalesInvoiceReturnsDetailView( ListView):
     template_name = os.path.join('invoicing', 'sales_invoice', 
         'credit_note', 'detail_list.html')
 
@@ -255,14 +255,14 @@ class SalesInvoicePDFView(ConfigMixin, PDFTemplateView):
         context['object'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class SalesInvoiceEmailSendView(SalesRepCheckMixin, EmailPlusPDFView):
+class SalesInvoiceEmailSendView( EmailPlusPDFView):
     inv_class = SalesInvoice
     pdf_template_name = os.path.join("invoicing", "sales_invoice",
             'pdf.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
 
 
-class SalesInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+class SalesInvoiceDraftDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')
     model = SalesInvoice
@@ -271,5 +271,8 @@ def verify_invoice(request, pk=None, status=None):
     inv = get_object_or_404(SalesInvoice, pk=pk)
     inv.status = status
     inv.save()
+
+    if inv.status == "invoice":
+        inv.create_entry()
 
     return HttpResponseRedirect('/invoicing/sales-invoice-detail/{}'.format(pk))

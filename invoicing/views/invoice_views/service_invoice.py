@@ -22,7 +22,6 @@ from common_data.utilities import ConfigMixin, ContextMixin, apply_style
 from common_data.views import EmailPlusPDFView, PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
-from invoicing.views.common import SalesRepCheckMixin
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 class ServiceInvoiceMixin(object):
@@ -80,7 +79,7 @@ class ServiceInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ServiceInvoiceSerializer
     queryset = ServiceInvoice.objects.all()
 
-class ServiceInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin,
+class ServiceInvoiceListView( ContextMixin, PaginationMixin,
         FilterView):
     extra_context = {"title": "Service Invoice List",
                     "new_link": reverse_lazy("invoicing:create-service-invoice")}
@@ -89,15 +88,15 @@ class ServiceInvoiceListView(SalesRepCheckMixin, ContextMixin, PaginationMixin,
     paginate_by = 10
 
     def get_queryset(self):
-        return ServiceInvoice.objects.all()
+        return ServiceInvoice.objects.all().order_by('date').reverse()
     
 
-class ServiceInvoiceDetailView(SalesRepCheckMixin, ConfigMixin, DetailView):
+class ServiceInvoiceDetailView( ConfigMixin, DetailView):
     model = ServiceInvoice
     template_name = os.path.join("invoicing", "service_invoice",
         'detail.html')
 
-class ServiceInvoiceUpdateView(SalesRepCheckMixin, 
+class ServiceInvoiceUpdateView( 
                                 InvoiceCreateMixin, 
                                 ContextMixin, 
                                 ServiceInvoiceMixin, 
@@ -109,7 +108,7 @@ class ServiceInvoiceUpdateView(SalesRepCheckMixin,
     extra_context = {
         'title': 'Update Service Invoice'
     }
-class ServiceInvoiceCreateView(SalesRepCheckMixin, 
+class ServiceInvoiceCreateView( 
                                 ServiceInvoiceMixin, 
                                 InvoiceCreateMixin, 
                                 ConfigMixin, 
@@ -126,7 +125,7 @@ class ServiceInvoiceCreateView(SalesRepCheckMixin,
     payment_for = 1
 
 
-class ServiceDraftUpdateView(SalesRepCheckMixin,
+class ServiceDraftUpdateView(
                             InvoiceCreateMixin,         
                             ServiceInvoiceMixin, 
                             ConfigMixin, 
@@ -197,7 +196,7 @@ class ServiceInvoiceEmailSendView(EmailPlusPDFView):
             'pdf.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
 
-class ServiceInvoiceDraftDeleteView(SalesRepCheckMixin, DeleteView):
+class ServiceInvoiceDraftDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')
     model = ServiceInvoice

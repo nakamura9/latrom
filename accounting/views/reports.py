@@ -10,25 +10,25 @@ from django.views.generic.edit import FormView
 
 from common_data.forms import PeriodReportForm
 from common_data.utilities import ContextMixin, extract_period, ConfigMixin
-from accounting.views.common import BookkeeperCheckMixin
 
 
 from accounting import forms, models
 
 
-class BalanceSheet(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
+class BalanceSheet(ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')
 
     def get_context_data(self, *args, **kwargs):
         context = super(BalanceSheet, self).get_context_data(*args, **kwargs)
         
         #CURRENT ASSETS 
+        #excludes customer accounts
         current_assets = models.Account.objects.filter(
             Q(balance_sheet_category='current-assets')).exclude(
-                Q(balance=0) | Q(name__startswith="Customer"))
+                Q(balance=0) | Q(Q(pk__gte=1101) & Q(pk__lt=2000)))
 
         customer_accounts = models.Account.objects.filter(
-            name__startswith="Customer")
+            Q(pk__gte=1101) & Q(pk__lt=2000))
 
         customer_total = reduce(lambda x, y: x + y,
             [i.balance for i in  customer_accounts], 0 
@@ -57,12 +57,14 @@ class BalanceSheet(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
         )
 
         #CURRENT LIABILITIES
+        #exclude supplier accounts 
         current_liabilities = models.Account.objects.filter(
             Q(balance_sheet_category='current-liabilities')).exclude(
-                Q(balance=0))
+                Q(balance=0) | 
+                Q(Q(pk__gte=2101) & Q(pk__lt=3000)))
 
         supplier_accounts = models.Account.objects.filter(
-            name__startswith="Supplier")
+            Q(pk__gte=2101) & Q(pk__lt=3000))
 
         accounts_payable = reduce(lambda x, y: x + y,
             [i.balance for i in  supplier_accounts], 0 
@@ -77,8 +79,11 @@ class BalanceSheet(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
                 Q(balance=0)
             )
 
+        retained_earnings = models.Account.objects.get(pk=4000).balance - \
+            models.Account.objects.get(pk=4006).balance
+
         equity_total = reduce(lambda x, y: x + y,
-            [i.balance for i in equity], 0 
+            [i.balance for i in equity], retained_earnings 
         )
 
         context.update({
@@ -103,7 +108,7 @@ class BalanceSheet(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
         return context
 
 
-class IncomeStatementFormView(BookkeeperCheckMixin ,ContextMixin, FormView):
+class IncomeStatementFormView(ContextMixin, FormView):
     form_class = PeriodReportForm
     template_name = os.path.join('common_data', 'reports', 'report_form.html')
     extra_context = {
@@ -111,7 +116,7 @@ class IncomeStatementFormView(BookkeeperCheckMixin ,ContextMixin, FormView):
         'title': 'Income Statement Report Form'
     }
 
-class IncomeStatement(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
+class IncomeStatement(ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 'income_statement.html')
 
     def get_context_data(self, *args, **kwargs):
@@ -159,7 +164,7 @@ class IncomeStatement(BookkeeperCheckMixin ,ConfigMixin,TemplateView):
         return context
 
 
-class TrialBalance(BookkeeperCheckMixin ,ConfigMixin, TemplateView):
+class TrialBalance(ConfigMixin, TemplateView):
     template_name = os.path.join('accounting', 'reports', 'trial_balance.html')
 
     def get_context_data(self, *args, **kwargs):

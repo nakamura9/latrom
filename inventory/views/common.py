@@ -30,15 +30,6 @@ CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 #####################################################
 #               Inventory Controller                #
 #####################################################
-class InventoryControllerCheckMixin(UserPassesTestMixin):
-    def test_func(self):
-        if self.request.user.is_superuser:
-            return True
-        elif hasattr(self.request.user, 'employee') and \
-                self.request.user.employee.is_inventory_controller:
-            return True
-        else:
-            return False
 
 
 class InventoryControllerCreateView(ContextMixin, CreateView):
@@ -64,7 +55,7 @@ class InventoryControllerUpdateView(ContextMixin, UpdateView):
         
     }
 
-class InventoryControllerListView(ContextMixin, InventoryControllerCheckMixin,  PaginationMixin, FilterView):
+class InventoryControllerListView(ContextMixin,   PaginationMixin, FilterView):
     queryset = models.InventoryController.objects.all()
     template_name = os.path.join('inventory', 'inventory_controller_list.html')
     filterset_class = filters.ControllerFilter
@@ -75,7 +66,7 @@ class InventoryControllerListView(ContextMixin, InventoryControllerCheckMixin,  
     }
 
 
-class InventoryDashboard(InventoryControllerCheckMixin, 
+class InventoryDashboard( 
     InventoryConfigMixin, 
     TemplateView):
     template_name = os.path.join("inventory", "dashboard.html")
@@ -86,7 +77,7 @@ class InventoryDashboard(InventoryControllerCheckMixin,
 #######################################################
 
 
-class UnitCreateView(ContextMixin, InventoryControllerCheckMixin, CreateView):
+class UnitCreateView(ContextMixin,  CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
@@ -95,7 +86,7 @@ class UnitCreateView(ContextMixin, InventoryControllerCheckMixin, CreateView):
         'title':'Create New Unit of measure'
     }
 
-class UnitUpdateView(ContextMixin, InventoryControllerCheckMixin, UpdateView):
+class UnitUpdateView(ContextMixin,  UpdateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
     success_url = reverse_lazy('inventory:unit-list')
@@ -104,12 +95,12 @@ class UnitUpdateView(ContextMixin, InventoryControllerCheckMixin, UpdateView):
         'title':'Update Unit of measure'
     }
 
-class UnitDetailView(InventoryControllerCheckMixin, DetailView):
+class UnitDetailView( DetailView):
     model = models.UnitOfMeasure
     template_name = os.path.join('inventory', 'unit', 'detail.html')
 
 
-class UnitListView(ContextMixin, InventoryControllerCheckMixin, PaginationMixin, FilterView):
+class UnitListView(ContextMixin,  PaginationMixin, FilterView):
     filterset_class = filters.UnitFilter
     model = models.UnitOfMeasure
     paginate_by = 10
@@ -120,7 +111,7 @@ class UnitListView(ContextMixin, InventoryControllerCheckMixin, PaginationMixin,
     }
 
 
-class UnitDeleteView(InventoryControllerCheckMixin, DeleteView):
+class UnitDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = models.UnitOfMeasure
     success_url = reverse_lazy('invoicing.product-list')
@@ -129,29 +120,29 @@ class UnitAPIView(ModelViewSet):
     serializer_class = serializers.UnitSerializer
     queryset = models.UnitOfMeasure.objects.all()
 
-class ConfigView(InventoryControllerCheckMixin, UpdateView):
+class ConfigView( UpdateView):
     template_name = os.path.join('inventory', 'config.html')
     form_class = forms.ConfigForm
     model = models.InventorySettings
     success_url = reverse_lazy('inventory:home')
     #change this page
 
-class CategoryCreateView(InventoryControllerCheckMixin, CreateView):
+class CategoryCreateView( CreateView):
     form_class = forms.CategoryForm
     model = models.Category
     success_url = reverse_lazy('inventory:category-list')
     template_name = os.path.join('inventory', 'category', 'create.html')
 
-class CategoryUpdateView(InventoryControllerCheckMixin, UpdateView):
+class CategoryUpdateView( UpdateView):
     form_class = forms.CategoryForm
     model = models.Category
     success_url = reverse_lazy('inventory:category-list')
     template_name = os.path.join('inventory', 'category','update.html')
 
-class CategoryListView(InventoryControllerCheckMixin, TemplateView):
+class CategoryListView( TemplateView):
     template_name = os.path.join('inventory', 'category', 'list.html')
 
-class CategoryDetailView(InventoryControllerCheckMixin, DetailView):
+class CategoryDetailView( DetailView):
     template_name = os.path.join('inventory', 'category', 'detail.html')
     model = models.Category
 

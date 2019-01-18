@@ -24,7 +24,7 @@ from common_data.utilities import *
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
-from .common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+from .common import CREATE_TEMPLATE
 
 
 class WareHouseCreateView(ContextMixin, CreateView):

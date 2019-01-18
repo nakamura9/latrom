@@ -1,6 +1,6 @@
 import os
 
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -170,7 +170,7 @@ class GlobalConfigView(ContextMixin,  LoginRequiredMixin, UpdateView):
     }
 
 class AuthenticationView(FormView):
-    # TODO test, add features to use as a plugin for views that require
+    # TODO add features to use as a plugin for views that require
     # authentication
     form_class = forms.AuthenticateForm
     template_name = os.path.join('common_data', 'authenticate.html')
@@ -279,3 +279,11 @@ def get_current_user(request):
 
     return JsonResponse({'pk': None})
 
+class LicenseErrorPage(TemplateView):
+    template_name = os.path.join('common_data', 'licenses_error.html')
+
+class LicenseFeaturesErrorPage(TemplateView):
+    template_name = os.path.join('common_data', 'license_error_features.html')
+
+class UsersErrorPage(TemplateView):
+    template_name = os.path.join('common_data', 'users_error.html')

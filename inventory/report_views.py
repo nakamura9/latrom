@@ -5,10 +5,10 @@ from django.views.generic import TemplateView
 
 from . import models
 from common_data.utilities import ConfigMixin
-from inventory.views.common import CREATE_TEMPLATE, InventoryControllerCheckMixin
+from inventory.views.common import CREATE_TEMPLATE
 
 
-class InventoryReport(InventoryControllerCheckMixin, ConfigMixin, TemplateView):
+class InventoryReport( ConfigMixin, TemplateView):
     template_name = os.path.join('inventory', 'reports', 'inventory_report.html')
 
     def get_context_data(self, *args, **kwargs):
@@ -19,7 +19,7 @@ class InventoryReport(InventoryControllerCheckMixin, ConfigMixin, TemplateView):
         return context
 
 
-class OutstandingOrderReport(InventoryControllerCheckMixin, ConfigMixin, TemplateView):
+class OutstandingOrderReport( ConfigMixin, TemplateView):
     template_name = os.path.join('inventory', 'reports', 'outstanding_orders.html')
 
     def get_context_data(self, *args, **kwargs):

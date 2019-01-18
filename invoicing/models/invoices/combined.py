@@ -60,20 +60,11 @@ class CombinedInvoice(AbstractSale):
                 memo= 'Auto generated entry from sales invoice.',
                 date=self.date,
                 journal =Journal.objects.get(pk=1),#Cash receipts Journal
-                created_by = self.salesperson.employee.user
+                created_by = self.salesperson.employee.user,
+                draft=False
             )
-        if self.sales_total > D(0):
-            j.credit(self.sales_total, Account.objects.get(pk=1004))#inventory
-        
-        if self.service_total > D(0):
-            pass
-            #what accounts are affected by a service?
-            #j.credit(self.service_total, Account.objects.get(pk=1004))
 
-        if self.expense_total > D(0):
-            for line in self.expense_lines:
-                j.credit(line.expense.amount, line.expense.expense_account)
-        
+        j.credit(self.subtotal, Account.objects.get(pk=4000))
 
         j.debit(self.total, self.customer.account)
 

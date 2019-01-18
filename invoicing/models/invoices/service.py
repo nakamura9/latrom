@@ -34,9 +34,22 @@ class ServiceInvoice(AbstractSale):
             [i.total for i in self.serviceinvoiceline_set.all() ], 0)
 
     def create_entry(self):
-        print('[warning] A n entry method needs to be implemented that factors '
-        'in all the types of lines in a combined invoice')
-        # not verified #?
+        if self.entry:
+            return
+        j = JournalEntry.objects.create(
+                memo= 'Auto generated entry from service invoice.',
+                date=self.date,
+                journal =Journal.objects.get(pk=3),#Sales Journal
+                created_by = self.salesperson.employee.user,
+                draft=False
+            )
+        j.credit(self.subtotal, Account.objects.get(pk=4000))#sales
+        j.debit(self.total, self.customer.account)
+        if self.tax_amount > D(0):
+            j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
+        
+        self.entry = j
+        self.save()
 
 class ServiceInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.ServiceInvoice', on_delete=models.CASCADE,)

@@ -127,6 +127,9 @@ class EquipmentRequisition(BaseRequisition):
         related_name='authorized_by', on_delete=models.CASCADE, null=True)#filter queryset
     released_by = models.ForeignKey('employees.Employee', 
         related_name='released_by', on_delete=models.CASCADE, null=True)
+    returned_date = models.DateField(null=True)
+    received_by = models.ForeignKey('employees.Employee', 
+        related_name='received_by', on_delete=models.CASCADE, null=True)
 
     
 class EquipmentRequisitionLine(models.Model):
@@ -136,7 +139,8 @@ class EquipmentRequisitionLine(models.Model):
         ('poor', 'Poor'),
         ('broken', 'Not Functioning')
     ]
-    equipment = models.ForeignKey('inventory.Equipment', on_delete=models.SET_NULL, null=True,) 
+    equipment = models.ForeignKey('inventory.Equipment', 
+        on_delete=models.SET_NULL, null=True,) 
     quantity = models.FloatField()
     quantity_returned = models.FloatField(default=0)
     requesting_condition = models.CharField(max_length=16, 

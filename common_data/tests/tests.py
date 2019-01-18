@@ -206,6 +206,10 @@ class ViewTests(TestCase):
         resp = self.client.get('/base/logo-url')
         self.assertEqual(json.loads(resp.content)['url'], '')
 
+    def test_get_authentication_view(self):
+        resp = self.client.get('/base/authenticate')
+        self.assertEqual(resp.status_code, 200)
+
 class UtilityTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 'invoicing.json']
 
