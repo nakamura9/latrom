@@ -107,22 +107,18 @@ class MultipleSelectWidget extends Component{
         const optionContainer = {
             width: '150px',
             height: '200px',
-            border: '1px solid black',
+            border: '1px solid grey',
             overflowY: 'scroll',
             float: 'left',
             display: 'inline',
             
         }
         return(
-            <div style={{
-                display: "block",
-                clear: 'both',
-                minWidth: "350px"
-            }}>                    
+            <div>                    
                 <h5>{this.props.title}</h5>
                 <div style={{
                     display: "block",
-                    clear: 'both'
+                    clear: 'both',
                 }}>
                     <div style={optionContainer}>
                         {this.state.sourceList.map((element, i) =>{
@@ -133,24 +129,21 @@ class MultipleSelectWidget extends Component{
                                 clickHandler={this.sourceClickHandler}/>)
                         })}
                     </div>
-                    <div style={{
-                        float: 'left',
-                        width: '50px'
-                    }}>
-                    <div style={{padding: '7px'}}>
-                    <button 
-                        type="button"
-                        className="btn"
-                        onClick={this.selectHandler}>
-                        <i className="fas fa-angle-right"></i>
-                    </button>
-                    <button 
-                        type="button"
-                        className="btn"
-                        onClick={this.removeHandler}>
-                        <i className="fas fa-angle-left"></i>
-                    </button>
-                </div>              
+                    <div style={{float: 'left', width: '50px'}}>
+                        <div style={{margin: "50px 5px"}}>
+                            <button 
+                                type="button"
+                                style={{width: '100%'}}
+                                onClick={this.selectHandler}>
+                                <i className="fas fa-angle-right"></i>
+                            </button>
+                            <button 
+                                type="button"
+                                style={{width: '100%', marginTop: "10px"}}
+                                onClick={this.removeHandler}>
+                                <i className="fas fa-angle-left"></i>
+                            </button>
+                        </div>              
                     </div>
                     <div style={optionContainer}>
                         {this.state.selectedList.map((element, i) =>{
@@ -176,7 +169,7 @@ const ListItem = (props) =>{
     let selectedStyle = {
         ...commonStyle,
         color: 'white',
-        backgroundColor: 'blue'
+        backgroundColor: '#07f'
     };
     let unselectedStyle = {...commonStyle};
     return(

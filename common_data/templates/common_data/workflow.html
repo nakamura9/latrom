@@ -1,76 +1,212 @@
 {% extends "base.html" %} {% block window %}
-<div class="jumbotron">
-    <h1 class="display-3">Begin your WorkFlow</h1>
-    <p class="lead">Welcome {{request.user}}! Get started with common business activities</p>
-    <hr class="my-2">
-    <p>Quick links to the most frequent actions and get a visual overview of a typical workflow.</p>
+<div class="container-fluid">
 
+    <div class="jumbotron">
+        <h1 class="display-3">
+            <i class="fas fa-circle-notch" style="font-size:192px;"></i>
+        Begin your WorkFlow</h1>
+        <p class="lead">Welcome {{request.user}}! Get started with common business activities</p>
+        <hr class="my-2">
+        <p>Quick links to the most frequent actions and get a visual overview of a typical workflow.</p>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Planner 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="/calendar/month/{{month}}">View Calendar</a>
+                                    <a class="dropdown-item" href="{% url 'planner:agenda'  %}">View Agenda</a>
+                                    <a class="dropdown-item" href="{% url 'planner:event-create'  %}">Create Event</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center><a href="/planner/dashboard">
+                        <i class="fas fa-calendar-alt" style="font-size:192px;"></i>
+                        </a></center>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Messaging 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'messaging:inbox'  %}">Go to my inbox</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        
+                        <center>
+                            <a href="/messaging/inbox">
+                                <i class="fas fa-envelope" style="font-size:192px;"></i>
+                            </a>
+                        </center>    
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title dropdown">Sales 
+                            <span style="float:right;">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'invoicing:organization-customers-list' %}">Manage Business Customers</a>
+                                    <a class="dropdown-item" href="{% url 'invoicing:create-combined-invoice' %}">Create General Purpose Invoice</a>
+                                    <a class="dropdown-item" href="{% url 'invoicing:create-service-invoice' %}">Create Service Invoice</a>
+                                    <a class="dropdown-item" href="{% url 'invoicing:create-sales-invoice' %}">Create Product Sales Invoice</a>
+                                    <a class="dropdown-item" href="{% url 'invoicing:config' pk=1 %}">Sales Configuration</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/invoicing/">
+                                <i class="fas fa-cash-register" style="font-size:192px;"></i>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Inventory 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'inventory:order-create' %}">Create Order</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:warehouse-list' %}">Manage Warehouses</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:organization-supplier-list' %}">Manage Organization Suppliers</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:product-create' %}">Add product to database</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:config' pk=1%}">Inventory Configuration</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/inventory/">
+                                <i class="fas fa-warehouse" style="font-size:192px;"></i>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Services 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'services:create-service' %}">Create New Service Listing</a>
+                                    <a class="dropdown-item" href="{% url 'services:work-order-create' %}">Manage Work Orders</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/services/">
+                                <i class="fas fa-toolbox" style="font-size:192px;"></i>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title dropdown">Employees 
+                            <span style="float:right;" >
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'employees:list-employees' %}">View Employees List</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/employees/">
+                                <i class="fas fa-users" style="font-size:192px;"></i>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Accounting 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/accounting/">
+                                <i class="fas fa-dollar-sign" style="font-size:192px;"></i>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Comming soon...</h4>
+                        </div>
+                        <center>
+                            <i class="fas fa-puzzle-piece" style="font-size:192px;color:grey;"></i>
+                        </center>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Comming soon...</h4>
+                        </div>
+                        <center>
+                            <i class="fas fa-puzzle-piece" style="font-size:192px;color:grey;"></i>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<ul>
-    <li style="list-style-type:none;">
-        <span>
-            <h3>
-                <i class="fas fa-arrow-right"></i>Personal</h3>
-                <a href="{% url 'messaging:inbox'  %}">Go to my inbox</a>
-        </span>
-    </li>
-    <li style="list-style-type:none;">
-        <span>
-            <h3>
-                <i class="fas fa-arrow-right"></i>Inventory Tasks</h3>
-                <a href="{% url 'inventory:order-create' %}">Create Order</a><br>
-                <a href="{% url 'inventory:warehouse-list' %}">Manage Warehouses</a><br>
-                <a href="{% url 'inventory:organization-supplier-list' %}">Manage Organization Suppliers</a><br>
-                <a href="{% url 'inventory:product-create' %}">Add product to database</a><br>
-                <a href="{% url 'inventory:config' pk=1%}">Inventory Configuration</a><br>
-        </span>
-    </li>
-    {% if request.user.employee.is_sales_rep or request.user.is_superuser %}
-    <li style="list-style-type:none;">
-        <span>
-            <h3>
-                <i class="fas fa-arrow-right"></i>Sales Related Tasks</h3>
-                <a href="{% url 'invoicing:organization-customers-list' %}">Manage Business Customers</a><br>
-                <a href="{% url 'invoicing:create-combined-invoice' %}">Create General Purpose Invoice</a><br>
-                <a href="{% url 'invoicing:create-service-invoice' %}">Create Service Invoice</a><br>
-                <a href="{% url 'invoicing:create-sales-invoice' %}">Create Product Sales Invoice</a><br>
-                <a href="{% url 'invoicing:config' pk=1 %}">Sales Configuration</a><br>
-        </span> 
-    </li>
-    {% endif %}
-    {% if request.user.employee.is_serviceperson or request.user.is_superuser %}
-    <li style="list-style-type:none;">
-        <span>
-            <h3><i class="fas fa-arrow-right"></i>Service Focused Activities</h3>
-            <a href="{% url 'services:create-service' %}">Create New Service Listing</a><br>
-            <a href="{% url 'services:work-order-create' %}">Manage Work Orders</a>
-        </span>
-    </li>
-    {% endif %}
-    {% if request.user.employee.is_bookkeeper or request.user.is_superuser %}
-    <li style="list-style-type:none;">
-        <span>
-            <h3><i class="fas fa-arrow-right">
-                
-            </i>Bookkeeping</h3>
-            <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
-        </span>
-    </li>
-    {% endif %}
-    {% if request.user.employee.is_payroll_officer or request.user.is_superuser %}
-    <li style="list-style-type:none;">
-        <span>
-            <h3><i class="fas fa-arrow-right"></i>HR Management</h3>
-            <a href="{% url 'employees:list-employees' %}">View Employees List</a>
-            
-        </span>
-    </li>
-    {% endif %}
-</ul>
-
-
-
-
-
 {% endblock %}

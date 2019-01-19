@@ -1,5 +1,5 @@
 import os
-
+import datetime
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -151,6 +151,12 @@ class IndividualListView(ContextMixin, PaginationMixin,  LoginRequiredMixin,
 
 class WorkFlowView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "workflow.html")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        date = datetime.date.today()
+        context["month"] = "{}/{}".format(date.year, date.month)
+        return context
 
 class ReactTestView(TemplateView):
     template_name = os.path.join("common_data", "react_test.html")

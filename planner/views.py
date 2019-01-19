@@ -110,8 +110,19 @@ class EventDeleteView(LoginRequiredMixin, DeleteView):
 class AgendaView(LoginRequiredMixin, ListView):
     template_name = os.path.join('planner', 'agenda.html')
     
+    def get(self, *args, **kwargs):
+        if not hasattr(self.request.user, "employee"):
+            from django.contrib import messages
+            messages.info(self.request, "The user logged in is not linked to any employee. Please login as another user to access the agenda.")
+            return HttpResponseRedirect("/login")
+
+        return super().get(*args, **kwargs)
+
     def get_queryset(self):
         filter = None
+        if not hasattr(self.request.user, "employee"):
+            return None
+
         if self.request.user.employee:
             filter = Q(Q(owner=self.request.user) | Q(eventparticipant__employee=self.request.user.employee))
         else:

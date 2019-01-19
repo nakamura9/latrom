@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 class UserTestMiddleware(object):
     def __init__(self, get_response):
@@ -37,10 +38,12 @@ class UserTestMiddleware(object):
                 return self.get_response(request)
 
             else:
+                messages.info(request, "The currently logged in user does not have permissions to this feature")
                 return HttpResponseRedirect(
                 "/login/")
 
         else:
+            messages.info(request, "The currently logged in user does not have permissions to this feature")
             return HttpResponseRedirect(
                 "/login/")
         

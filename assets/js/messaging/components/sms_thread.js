@@ -86,7 +86,7 @@ class SMSMessageThreadView extends Component{
     }
 }
 
-const {
+const MessageBubble = (props) =>{
         return(
             <div style={{
                 backgroundColor: props.isSender ? "#05f" : "#0cf",
@@ -104,7 +104,6 @@ const {
                 
             </div>
         )
-    }
 }
 
 export default SMSMessageThreadView;
