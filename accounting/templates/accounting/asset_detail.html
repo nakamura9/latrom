@@ -10,27 +10,42 @@
 
 <div class="container-fluid">
     <div class="row">
-            <div class="col-sm-3"></div>
-        <div class="col-sm-6">
-            <div class="card bg-primary text-white" >
-                <div class="card-body ">
-                    <h3 class="card-title">Details</h3>
-                    <p class="card-text">Name: {{object.name}}</p>
-                    <h5>Description</h5>
-                    <p class="card-text">{{object.description}}</p>
-                    <p class="card-text">Date Created: {{object.init_date}}</p>
-                    <p class="card-text">Category: {{object.category_string}}</p>
-                    <h5>Depreciation</h5>
-                    <hr>
-                    <p class="card-text">Initial Value: {{object.initial_value}}</p>
-                    <p class="card-text">Current Value: {{object.current_value}}</p>
-                    <p class="card-text">Total depreciation: {{object.total_depreciation}}</p>
-                    <p class="card-text">Salvage Value: {{object.salvage_value}}</p>
-                    <p class="card-text">Salvage Date: {{object.salvage_date}}</p>
+            <div class="col-sm-3">
+                <div class="card bg-primary text-white" >
+                    <div class="card-body ">
+                        <h3 class="card-title">Details</h3>
+                        <p class="card-text">Name: {{object.name}}</p>
+                        <p class="card-text">
+                            Date Created: {{object.init_date}}</p>
+                        <p class="card-text">
+                            Category: {{object.category_string}}</p>
+                            <hr class="my-2">
+                        <p class="card-text">
+                           <b>Description:</b> {{object.description}}</p>
+                        
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Depreciation</h4>
+                        <p class="card-text">
+                            Initial Value: {{object.initial_value}}</p>
+                        <p class="card-text">
+                            Current Value: {{object.current_value}}</p>
+                        <p class="card-text">
+                            Total depreciation: {{object.total_depreciation}}
+                            </p>
+                        <p class="card-text">
+                            Disposal Value: {{object.salvage_value}}</p>
+                        <p class="card-text">
+                            Disposal Date: {{object.salvage_date}}</p>
+
+                    </div>
+                </div>                
+            </div>
+            <div class="col-sm-3"></div>
     </div>
 </div>
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {SearchableWidget} from '../../src/common';
+import SearchableWidget from '../../src/components/searchable_widget';
 
 const inlineStyles = {
     display: "inline",
@@ -134,19 +134,13 @@ const BillableEntry = (props) => {
         }else{
             return(
                 <div style={{width:"100%"}}>
-                    <input 
-                        type="text"
-                        className="form-control"
-                        list="billable_datalist"
-                        placeholder="Select Billable Expense..."
-                        onChange={props.inputHandler} />
-                    <datalist id="billable_datalist">
-                        {props.billables.map((billable, i)=>(
-                            <option key={i}>
-                                {billable.id + '-' + billable.description}
-                            </option>
-                        ))}
-                    </datalist>
+                    <SearchableWidget 
+                        dataURL={`/accounting/api/expense/customer/${document.getElementById('id_customer').value}`}
+                        onSelect={props.handler}
+                        onClear={props.handler}
+                        idField="id"
+                        displayField="description"
+                    />
                     <button 
                         style={{width:"100%"}}
                         className="btn btn-success"

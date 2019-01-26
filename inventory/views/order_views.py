@@ -127,7 +127,7 @@ class OrderCreateView( ContextMixin,
         "description": "Use this form to order inventory from suppliers. Afterwards inventory may be added to stock using the receive inventory form.",
         "related_links": [
             {
-                'name': 'Add Supplier',
+                'name': 'Add Vendor',
                 'url': '/inventory/organization-supplier-create/'
             },{
                 'name': 'Add Product',

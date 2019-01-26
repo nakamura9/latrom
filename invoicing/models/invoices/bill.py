@@ -31,14 +31,15 @@ class Bill(AbstractSale):
 
     def add_line(self, expense_id):
         expense = Expense.objects.get(pk=expense_id)
-        self.billline_set.create(
-            expense=expense
-        )
+        if expense:
+            self.billline_set.create(
+                expense=expense
+            )
         
     @property
     def subtotal(self):
         return reduce(lambda x, y: x + y, 
-            [e.expense.amount for e in self.billline_set.all()], 0)
+            [line.expense.amount for line in self.billline_set.all() if line.expense], 0)
     
     def __str__(self):
         return "Bill - {}".format(self.pk)

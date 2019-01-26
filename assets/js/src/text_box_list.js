@@ -66,14 +66,23 @@ class TextBoxListWidget extends Component{
     }
 
     render(){
+        const containerStyle= {
+            display: "block",
+            clear: 'both',
+            width: "350px",
+            backgroundColor: "#9cd",
+            borderRadius: "20px",
+            padding: "20px",
+            margin: "5px"
+        };
+        const textAreaStyle = {
+            width: '100%', 
+            borderRadius: "5px", 
+            padding: "3px"};
         return(
-            <div style={{
-                display: "block",
-                clear: 'both',
-                width: "350px"
-            }}>
+            <div style={containerStyle}>
                 <div>
-                    <h3>{this.props.title}</h3>
+                    <h4>{this.props.title}</h4>
                     {this.state.items.map((item, i) => {
                         return(<ListTextBox 
                             text={item} 
@@ -85,11 +94,11 @@ class TextBoxListWidget extends Component{
                 </div>
                 <div>
                     <label>
-                        Enter Text Here
+                        Enter Text below...
                     </label>
                     <br />
                     <textarea 
-                        style={{width: '100%'}}
+                        style={textAreaStyle}
                         name="textInput"
                         rows={5}
                         value={this.state.value}
@@ -105,35 +114,41 @@ class TextBoxListWidget extends Component{
 }
 
 const ListTextBox = (props) => {
+    const containerStyle = {
+        width: "90%",
+        margin: "10px auto",
+        border: "2px solid #07f",
+        padding: "10px",
+        borderRadius: "3px"
+    };
+
+
+    const buttonStyle ={
+        color: "#07f",
+        border: "0px",
+        backgroundColor: "rgba(0,0,0,0)"
+    }
     return(
-        <div style={{
-            width: "90%",
-            margin: "10px auto",
-            border: "1px solid black",
-            padding: "10px"
-        }}>
-            <div style={{
-                display: "block",
-                clear: "both"
-            }}>
-                <span style={{float: "left"}}>{props.index + 1}.</span>
-                <span style={{float: "right"}}>
-                    <button 
-                    className="btn"
-                    onClick={() => props.handler(props.index)}>
-                        <i className="fas fa-times"></i>
-                    </button>
-                    <button 
-                    className="btn"
-                    onClick={() => props.editHandler(props.index)}>
-                        <i className="fas fa-edit"></i>
-                    </button>
-                </span>        
+        <div style={containerStyle}>
+            <div >
+                <div>
+                    <span style={{float: "left"}}>{props.index + 1}.</span>
+                    <span style={{float: "right"}}>
+                        <button 
+                        style={buttonStyle}
+                        onClick={() => props.handler(props.index)}>
+                            <i className="fas fa-times"></i>
+                        </button>
+                        <button 
+                        style={buttonStyle}
+                        
+                        onClick={() => props.editHandler(props.index)}>
+                            <i className="fas fa-edit"></i>
+                        </button>
+                    </span>
+                </div>        
             </div>
-            <div style={{
-                display: "block",
-                clear: "both"
-            }}>{props.text}</div>
+            <div style={{clear: "both"}}>{props.text}</div>
         </div>
     );
 }

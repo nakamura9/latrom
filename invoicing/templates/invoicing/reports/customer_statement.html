@@ -3,8 +3,8 @@
 <style>
     .cell {
         border-collapse: collapse;
-        border-right: 1mm solid black;
-        padding: 2mm;
+        border-right: 1px solid black;
+        padding: 5px;
 
     }
 </style>
@@ -53,21 +53,21 @@
         <tr>
             <td colspan="2">
                 <div>
-                    <table style=" border: 1mm solid black;width:100% height:60%" >
+                    <table style=" border: 1px solid black;width:100% height:60%" >
                         <thead>
-                            <tr style="background-color:black; color:white; padding:3mm;">
-                                <td style="width:15%">Date</td>
-                                <td style="width:15%">Due Date</td>
-                                <td style="width:25%">Description</td>
-                                <td style="width:15%">Credit</td>
-                                <td style="width:15%">Debit</td>
-                                <td style="width:15%">Line Total</td>
+                            <tr style="background-color:black; color:white; padding:10px;">
+                                <th style="width:15%;padding:10px;">Date</th>
+                                <th style="width:15%;padding:10px;">Due Date</th>
+                                <th style="width:25%;padding:10px;">Description</th>
+                                <th style="width:15%;padding:10px;">Credit</th>
+                                <th style="width:15%;padding:10px;">Debit</th>
+                                <th style="width:15%;padding:10px;">Line Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border-bottom: 1mm solid black;" class="cell" colspan="5">Balance Brought Forward: </td>
-                                <td style="border-bottom: 1mm solid black;" class="cell">0.00</td>
+                                <td style="border-bottom: 1px solid black;" class="cell" colspan="5">Balance Brought Forward: </td>
+                                <td style="border-bottom: 1px solid black;" class="cell">0.00</td>
                             </tr>
                             {% for inv in invoices %}
                             <tr>

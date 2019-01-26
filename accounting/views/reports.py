@@ -1,5 +1,5 @@
 import datetime
-import decimal
+from decimal import Decimal as D
 import os
 from functools import reduce
 
@@ -10,7 +10,7 @@ from django.views.generic.edit import FormView
 
 from common_data.forms import PeriodReportForm
 from common_data.utilities import ContextMixin, extract_period, ConfigMixin
-
+from invoicing import models as inv
 
 from accounting import forms, models
 
@@ -138,15 +138,17 @@ class IncomeStatement(ConfigMixin,TemplateView):
         #include non cash sales
 
         #sales tax
-        net_sales = 0 # TODO
-
+        
+        payments = inv.Payment.objects.filter(date__gte=start, date__lt=end) # TODO
+        net_sales = reduce(lambda x, y: x + y, 
+            [p.amount for p in payments], D(0)) 
         # modify accounts to support interest
         
         interest_income = 0
         total_revenue = interest_income + net_sales
         
         total_expenses = reduce(lambda x,y: x + y, 
-            expense_totals.values(), decimal.Decimal(0.0))
+            expense_totals.values(), D(0.0))
 
         #insert config
 

@@ -237,10 +237,11 @@ class EquipmentReturnView( FormView):
         usr = authenticate(
             username=request.POST['received_by'],
             password=request.POST['password'])
+        
         if not usr or not hasattr(usr, 'employee'):
             messages.info(request, 
                 '''The username or password provided were incorrect.''')
-            return HttpResponse('/services/equipment/{}'.format(
+            return HttpResponseRedirect('/services/equipment/{}'.format(
                 self.kwargs['pk']))
 
         requisition = get_object_or_404(models.EquipmentRequisition, 
@@ -268,11 +269,6 @@ class EquipmentReturnView( FormView):
                 )
                 line.returned_condition = request.POST[field]
                 line.save()
-            
-
-
-        print(dict(request.POST).keys())
-        print(dict(request.POST))
 
         return resp
 

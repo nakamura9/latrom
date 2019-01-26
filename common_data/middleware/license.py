@@ -69,7 +69,6 @@ class LicenseMiddleware(object):
         "map each user to a session id"
         "check the number of users that can be logged in"
         
-        print(request.path)
 
         if not request.path.startswith('/base/license-error'):
             try:

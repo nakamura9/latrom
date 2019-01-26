@@ -3,9 +3,9 @@
 
     <div class="jumbotron">
         <h1 class="display-3">
-            <i class="fas fa-circle-notch" style="font-size:192px;"></i>
+            <i class="fas fa-circle-notch" style="font-size:168px;"></i>
         Begin your WorkFlow</h1>
-        <p class="lead">Welcome {{request.user}}! Get started with common business activities</p>
+        <p class="lead">Welcome <strong>{{request.user}}</strong>! Get started with common business activities</p>
         <hr class="my-2">
         <p>Quick links to the most frequent actions and get a visual overview of a typical workflow.</p>
 
@@ -31,7 +31,7 @@
                             </span></h4>
                         </div>
                         <center><a href="/planner/dashboard">
-                        <i class="fas fa-calendar-alt" style="font-size:192px;"></i>
+                        <i class="fas fa-calendar-alt" style="font-size:168px;"></i>
                         </a></center>
                     </div>
                 </div>
@@ -52,9 +52,34 @@
                         
                         <center>
                             <a href="/messaging/inbox">
-                                <i class="fas fa-envelope" style="font-size:192px;"></i>
+                                <i class="fas fa-envelope" style="font-size:168px;"></i>
                             </a>
                         </center>    
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Inventory 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'inventory:order-create' %}">Create Order</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:warehouse-list' %}">Manage Warehouses</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:organization-supplier-list' %}">Manage Organization Suppliers</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:product-create' %}">Add product to database</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:config' pk=1%}">Inventory Configuration</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/inventory/">
+                                <i class="fas fa-warehouse" style="font-size:168px;"></i>
+                            </a>
+                        </center>
                     </div>
                 </div>
                 <div class="card">
@@ -77,7 +102,7 @@
                         </div>
                         <center>
                             <a href="/invoicing/">
-                                <i class="fas fa-cash-register" style="font-size:192px;"></i>
+                                <i class="fas fa-cash-register" style="font-size:168px;"></i>
                             </a>
                         </center>
                     </div>
@@ -89,31 +114,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card-deck">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title">Inventory 
-                            <span style="float:right;" class="dropdown">
-                                <button class="btn " data-toggle="dropdown"     
-                                        type="dropdown" id="planner">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{% url 'inventory:order-create' %}">Create Order</a>
-                                    <a class="dropdown-item" href="{% url 'inventory:warehouse-list' %}">Manage Warehouses</a>
-                                    <a class="dropdown-item" href="{% url 'inventory:organization-supplier-list' %}">Manage Organization Suppliers</a>
-                                    <a class="dropdown-item" href="{% url 'inventory:product-create' %}">Add product to database</a>
-                                    <a class="dropdown-item" href="{% url 'inventory:config' pk=1%}">Inventory Configuration</a>
-                                </div>
-                            </span></h4>
-                        </div>
-                        <center>
-                            <a href="/inventory/">
-                                <i class="fas fa-warehouse" style="font-size:192px;"></i>
-                            </a>
-                        </center>
-                    </div>
-                </div>
+
                 <div class="card">
                     <div class="card-body">
                         <div class="card-header">
@@ -131,7 +132,28 @@
                         </div>
                         <center>
                             <a href="/services/">
-                                <i class="fas fa-toolbox" style="font-size:192px;"></i>
+                                <i class="fas fa-toolbox" style="font-size:168px;"></i>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h4 class="card-title">Accounting 
+                            <span style="float:right;" class="dropdown">
+                                <button class="btn " data-toggle="dropdown"     
+                                        type="dropdown" id="planner">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                                </div>
+                            </span></h4>
+                        </div>
+                        <center>
+                            <a href="/accounting/">
+                                <i class="fas fa-dollar-sign" style="font-size:168px;"></i>
                             </a>
                         </center>
                     </div>
@@ -152,35 +174,7 @@
                         </div>
                         <center>
                             <a href="/employees/">
-                                <i class="fas fa-users" style="font-size:192px;"></i>
-                            </a>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr class="my-4">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card-deck">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title">Accounting 
-                            <span style="float:right;" class="dropdown">
-                                <button class="btn " data-toggle="dropdown"     
-                                        type="dropdown" id="planner">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
-                                </div>
-                            </span></h4>
-                        </div>
-                        <center>
-                            <a href="/accounting/">
-                                <i class="fas fa-dollar-sign" style="font-size:192px;"></i>
+                                <i class="fas fa-users" style="font-size:168px;"></i>
                             </a>
                         </center>
                     </div>
@@ -191,17 +185,7 @@
                             <h4 class="card-title">Comming soon...</h4>
                         </div>
                         <center>
-                            <i class="fas fa-puzzle-piece" style="font-size:192px;color:grey;"></i>
-                        </center>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title">Comming soon...</h4>
-                        </div>
-                        <center>
-                            <i class="fas fa-puzzle-piece" style="font-size:192px;color:grey;"></i>
+                            <i class="fas fa-puzzle-piece" style="font-size:168px;color:grey;"></i>
                         </center>
                     </div>
                 </div>

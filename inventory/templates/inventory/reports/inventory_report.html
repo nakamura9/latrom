@@ -22,9 +22,9 @@
         </tr>
         <tr>
             <td colspan="2">
-                <table class="table">
+                <table class="table table-striped">
                     <thead>
-                        <tr>
+                        <tr class="bg-primary">
                             <th>Item</th>
                             <th>Location</th>
                             <th>Quantity</th>
@@ -36,8 +36,8 @@
                         <tr>
                             <td>{{i.product.name}}</td>
                             <td>{{i.warehouse}}</td>
-                            <td>{{i.quantity}}</td>
-                            <td>{{i.product.stock_value}}</td>
+                            <td>{{i.quantity | floatformat:2 }}</td>
+                            <td>{{i.stock_value | floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -98,13 +98,14 @@
                                 <a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">Manage Sales Representatives</a>
                             </li>
                             <li class="list-group-item">
-                                <a class="card-link" href="{% url 'accounting:bookkeeper-list' %}">Manage Accounting Bookkeepers </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a class="card-link" href="{% url 'services:service-person-list' %}">Manage Service Employees </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a class="card-link" href="{% url 'employees:payroll-officer-list' %}">Manage Payroll Officers </a>
+                                <div class="dropdown">
+                                    <span data-toggle="dropdown" class=" card-link" style="color:blue;">More...</span>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item " href="{% url 'accounting:bookkeeper-list' %}">Manage Bookkeepers </a>
+                                        <a class="dropdown-item" href="{% url 'services:service-person-list' %}">Manage Service Employees </a>
+                                        <a class="dropdown-item" href="{% url 'employees:payroll-officer-list' %}">Manage Payroll Officers </a>
+                                    </div>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -134,3 +135,17 @@
     </div>
 </div>
 {% endblock content %}
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+                Dropdown
+            </button>
+    <div class="dropdown-menu" aria-labelledby="triggerId">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item disabled" href="#">Disabled action</a>
+        <h6 class="dropdown-header">Section header</h6>
+        <a class="dropdown-item" href="#">Action</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">After divider action</a>
+    </div>
+</div>

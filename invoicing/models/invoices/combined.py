@@ -152,6 +152,6 @@ class CombinedInvoiceLine(models.Model):
             return self.service.flat_fee + \
                  (self.service.hourly_rate * self.quantity_or_hours)
         elif self.line_type ==3:
-            return self.expense.amount
+            return self.expense.amount if self.expense else 0
 
         return 0

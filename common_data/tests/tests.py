@@ -240,7 +240,7 @@ class UtilityTests(TestCase):
         start, end = extract_period({
             'default_periods': '1'
         })
-        delta = datetime.date.today() - datetime.timedelta(days=30)
+        delta = datetime.date.today() - datetime.timedelta(days=7)
         self.assertEqual(start, delta)
         self.assertEqual(end, datetime.date.today())
         

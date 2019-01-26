@@ -68,16 +68,10 @@ class EntryWidget extends Component{
     }
 
     //billables
-    handleBillable = (evt) =>{
-        let value = evt.target.value;
-        let billablesList = this.state.billables.map((billable) =>(
-            billable.id + '-' + billable.description
-        ))
-        if(billablesList.indexOf(value) !== -1){
-            this.setState({inputs: {
-                    billable: value
-                }});
-        }
+    handleBillable = (value) =>{
+        let newInputs = {...this.state.inputs};
+        newInputs["billable"] = value;
+        this.setState({inputs: newInputs});
     }
 
     handleButtonClick = () =>{
@@ -163,7 +157,7 @@ class EntryWidget extends Component{
                 <BillableEntry
                     itemList={this.props.itemList} 
                     billables={this.state.billables}
-                    inputHandler={this.handleBillable}/>
+                    handler={this.handleBillable}/>
             );            
         }else{
             renderedForm = (

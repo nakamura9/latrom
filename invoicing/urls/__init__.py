@@ -5,19 +5,7 @@ from .bill_urls import bill_urls
 from .combined_urls import combined_urls
 from .service_urls import service_urls
 from .sales_urls import sales_urls
-
-report_urls = [
-    re_path(r'^(?P<pk>[\w]+)/customer-statement-form/?$', 
-        views.CustomerReportFormView.as_view(),
-             name='customer-statement-form'),
-    re_path(r'^customer-statement-form/?$', 
-        views.CustomerReportFormView.as_view(),
-             name='customer-statement-form'),
-    re_path(r'^customer-statement/?$', views.CustomerStatement.as_view(),
-             name='customer-statement'),
-    re_path(r'^invoice-aging/?$', views.InvoiceAgingReport.as_view(),
-             name='invoice-aging'),
-]
+from .report_urls import report_urls
 
 customer_router = DefaultRouter()
 customer_router.register(r'api/customer', views.CustomerAPIViewSet, base_name='customer')

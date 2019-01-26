@@ -194,10 +194,10 @@ class ServiceProcedureViewTests(TestCase):
                     'some task'
                 ])),
                 'equipment': urllib.parse.quote(json.dumps([
-                    {'value': '1 - item'}
+                    '1 - item'
                 ])),
                 'consumables': urllib.parse.quote(json.dumps([
-                    {'value': '1 - item'}
+                    '1 - item'
                 ])),
                 'as_checklist': True,
                 'name': 'name',
@@ -222,10 +222,10 @@ class ServiceProcedureViewTests(TestCase):
                     'some task'
                 ])),
                 'equipment': urllib.parse.quote(json.dumps([
-                    {'value': '1 - item'}
+                    '1 - item'
                 ])),
                 'consumables': urllib.parse.quote(json.dumps([
-                    {'value': '1 - item'}
+                    '1 - item'
                 ])),
                 'as_checklist': True,
                 'name': 'name',
@@ -371,8 +371,11 @@ class RequisitionViewTests(TestCase):
 
     def test_post_equipment_return_page(self):
         resp = self.client.post('/services/equipment-return/1', data={
-            
+            "received_by": "Testuser",
+            "password": "123",
+            "return_date": TODAY
         })
+        print(resp.content)
         self.assertEqual(resp.status_code, 302)
 
     def test_get_equipment_detail_page(self):

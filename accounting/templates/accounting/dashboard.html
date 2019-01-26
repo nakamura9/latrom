@@ -24,13 +24,10 @@
                                 <a href="{% url 'accounting:create-journal' %}">Create Journal</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:create-entry' %}">Manual Journal entry</a>
+                                <a href="{% url 'accounting:compound-entry' %}">Create Journal Entry</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:compound-entry' %}">Compound Journal entry</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:journal-list' %}">View Journals</a>
+                                <a href="{% url 'accounting:journal-list' %}">Manage Journals</a>
                             </li>
                         </ul>
                     </div>
@@ -42,10 +39,7 @@
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:direct-payment' %}">Create Direct Payment</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:direct-payment-list' %}">List Direct Payments</a>
+                                <a href="{% url 'accounting:direct-payment-list' %}">Manage Direct Payments</a>
                             </li>
                             <li class="list-group-item">
                                 <a href="{% url 'accounting:recurring-expense-list' %}">Manage Recurring Expenses</a>
@@ -64,10 +58,10 @@
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <a href="{% url 'invoicing:organization-customers-list' %}">Organizational Customers</a>
+                                <a href="{% url 'invoicing:organization-customers-list' %}"> Customers</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'inventory:organization-supplier-list' %} ">Organizational Suppliers </a>
+                                <a href="{% url 'inventory:organization-supplier-list' %} ">Vendors </a>
                             </li>
                             
                             <li class="list-group-item">
@@ -108,16 +102,18 @@
                             <li class="list-group-item">
                                 <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
                             </li>
+                            <!--
                             <li class="list-group-item">
                                 <a onclick="return false" style="color:grey;" href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
                             </li>
                             <li class="list-group-item">
-                                <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
-                            </li>
-                            <li class="list-group-item">
                                 <a href="" onclick="return false" style="color:grey;">
                                     Manage Interest bearing Accounts</a>
+                            </li> -->
+                            <li class="list-group-item">
+                                <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
                             </li>
+                            
                         </ul>
                     </div>
                 </div>

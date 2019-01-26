@@ -83,7 +83,6 @@ class ItemInitialMixin(forms.Form):
         return obj
 
 class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
-    
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -91,20 +90,17 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('Description', 
                     'name',
-                    'description',
                     'unit_purchase_price',
-                    'direct_price'
+                    'description',
+                    ),
+                Tab('Pricing', 
+                    'unit',
+                    HTML("<div id='pricing-widget'></div>")
                     ),
                 Tab('Stocking Information',
                     'minimum_order_level',
                     'maximum_stock_level',
                     'supplier'),
-                Tab('Pricing', 
-                    'unit',
-                    'pricing_method',
-                    'markup',
-                    'margin',
-                    ),
                 Tab('Categories', 
                     'category'),
                 Tab('Dimensions', 
@@ -201,27 +197,29 @@ class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 class ProductUpdateForm(forms.ModelForm, BootstrapMixin):
     '''identical to the other form except for not allowing quantity to be changed'''
     def __init__(self, *args, **kwargs):
-        super(ProductUpdateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Description', 
                     'name',
-                    'description',),
-                Tab('Stock Info', 
+                    'unit_purchase_price',
+                    'description',
+                    ),
+                Tab('Pricing', 
+                    'unit',
+                    HTML("<div id='pricing-widget'></div>")
+                ),
+                Tab('Stock Info',
                     'minimum_order_level',
                     'maximum_stock_level',
                     'supplier'),
-                Tab('Pricing', 
-                    'unit',
-                    'unit_purchase_price',
-                    'pricing_method',
-                    'markup',
-                    'margin',
-                    'direct_price'),
+                Tab('Dimensions', 
+                    'length', 
+                    'width',
+                    'height'),
                 Tab('Categories', 
-                    'category', 
-                    'sub_category'),
+                    'category'),
                 Tab('Image', 'image'),
             )
             )

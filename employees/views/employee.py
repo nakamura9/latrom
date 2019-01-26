@@ -42,7 +42,7 @@ class EmployeeCreateView( ContextMixin, CreateView):
 
         with open('license.json') as f:
             license = json.load(f)
-            if license['license']['number_employees'] >= num_employees:
+            if num_employees >= license['license']['number_employees'] :
                 return HttpResponseRedirect('/base/license-error/features')
 
             
@@ -128,7 +128,7 @@ class EmployeeUserCreateView( FormView):
         num_users = User.objects.filter(is_superuser=False).count()
         with open('license.json') as f:
             license = json.load(f)
-            if license['license']['number_users'] >= num_users:
+            if num_users >= license['license']['number_users']:
                 return HttpResponseRedirect('/base/license-error/features')
         
         return super().get(request, *args, **kwargs)

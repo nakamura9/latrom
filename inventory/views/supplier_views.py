@@ -32,7 +32,7 @@ class IndividualSupplierCreateView( ContextMixin,
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = CREATE_TEMPLATE
-    extra_context = {"title": "Create New Supplier"}
+    extra_context = {"title": "Add Vendor"}
 
 
 class OrganizationSupplierCreateView( 
@@ -41,7 +41,7 @@ class OrganizationSupplierCreateView(
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = CREATE_TEMPLATE
-    extra_context = {"title": "Create New Supplier"}
+    extra_context = {"title": "Add Vendor"}
 
 
 class SupplierUpdateView( 
@@ -50,7 +50,7 @@ class SupplierUpdateView(
     model = models.Supplier
     success_url = reverse_lazy('inventory:home')
     template_name = CREATE_TEMPLATE
-    extra_context = {"title": "Update Existing Supplier"}
+    extra_context = {"title": "Update Existing Vendor"}
 
 
 class IndividualSupplierListView( ContextMixin, 
@@ -58,7 +58,7 @@ class IndividualSupplierListView( ContextMixin,
     paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier", "list.html")
-    extra_context = {"title": "Individual Supplier List",
+    extra_context = {"title": "Sole Trading Vendor List",
                     "new_link": reverse_lazy(
                         "inventory:individual-supplier-create")}
 
@@ -71,7 +71,7 @@ class OrganizationSupplierListView( ContextMixin,
     paginate_by = 10
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier", "list.html")
-    extra_context = {"title": "Organization Supplier List",
+    extra_context = {"title": "Vendor List",
                     "new_link": reverse_lazy(
                         "inventory:organization-supplier-create")}
 

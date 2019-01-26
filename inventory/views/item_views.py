@@ -43,9 +43,12 @@ class ProductUpdateView( ContextMixin, UpdateView):
     form_class = forms.ProductUpdateForm
     model = models.Product
     success_url = reverse_lazy('inventory:home')
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Product"}
-
+    
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args, **kwargs)
+        return resp
 
 class ProductDetailView( DetailView):
     model = models.Product
@@ -74,7 +77,7 @@ class ProductCreateView( ContextMixin,
         "title": "Create New Product",
         'description': 'Cycle  through the tabs to enter information regarding product description, quantity, dimensions and pricing. ',
         'related_links': [{
-            'name': 'Create Supplier',
+            'name': 'Add Vendor',
             'url': '/inventory/supplier-create/'
         },{
             'name': 'Add Unit',
@@ -85,13 +88,6 @@ class ProductCreateView( ContextMixin,
         },]
         }
 
-
-class QuickProductCreateView( 
-        ContextMixin, CreateView):
-    form_class = forms.QuickProductForm
-    model = models.Product
-    success_url = reverse_lazy('inventory:home')
-    template_name = os.path.join("common_data", "crispy_create_template.html")
 
 ################################################
 #               Consumable                     #
@@ -139,7 +135,7 @@ class ConsumableCreateView( ContextMixin,
         "title": "Create New Consumable",
         'description': 'Cycle  through the tabs to enter information regarding consumable description, quantity, dimensions and pricing. ',
         'related_links': [{
-            'name': 'Create Supplier',
+            'name': 'Add Vendor',
             'url': '/inventory/supplier-create/'
         },{
             'name': 'Add Unit',
@@ -197,7 +193,7 @@ class EquipmentCreateView( ContextMixin,
         "title": "Add New Equipment",
         'description': 'Cycle  through the tabs to enter information regarding equipment description, quantity, dimensions and pricing. ',
         'related_links': [{
-            'name': 'Create Supplier',
+            'name': 'Add Vendor',
             'url': '/inventory/supplier-create/'
         },{
             'name': 'Add Unit',
@@ -256,7 +252,7 @@ class RawMaterialCreateView( ContextMixin,
         "title": "Add New Raw Material",
         'description': 'Cycle  through the tabs to enter information regarding material description, quantity, dimensions and pricing. ',
         'related_links': [{
-            'name': 'Create Supplier',
+            'name': 'Add Vendor',
             'url': '/inventory/supplier-create/'
         },{
             'name': 'Add Unit',

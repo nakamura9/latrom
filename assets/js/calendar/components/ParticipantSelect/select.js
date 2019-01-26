@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {SearchableWidget, DeleteButton} from '../../../src/common';
+import SearchableWidget from '../../../src/components/searchable_widget';
 import $ from 'jquery';
 import axios from 'axios';
+import {DeleteButton} from "../../../src/common";
 
 class ParticipantSelectWidget extends Component{
     state = {
@@ -77,10 +78,16 @@ class ParticipantSelectWidget extends Component{
     } 
 
     render(){
-        
+        const containerStyle = {
+            backgroundColor: "#9cd",
+            padding: "20px",
+            margin: "5px",
+            borderRadius: "20px"
+            
+        };
         return(
-            <div>
-                <h3>Select Participants</h3>
+            <div style={containerStyle}>
+                <h4>Select Participants</h4>
                 <div>
                     {this.state.items.map((item, i) =>{
                         return(<SelectedItem 

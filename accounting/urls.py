@@ -13,6 +13,7 @@ account_router.register(r'^api/account', views.AccountViewSet)
 expense_router = routers.DefaultRouter()
 expense_router.register(r'^api/expense', views.ExpenseAPIView)
 
+
 currency_router = routers.DefaultRouter()
 currency_router.register(r'^api/currency', views.CurrencyAPIView)
 
@@ -32,6 +33,8 @@ expense_urls = [
         views.ExpenseDetailView.as_view(), name="expense-detail"),
     re_path(r'^expense/delete/(?P<pk>[\d]+)/?$', 
         views.ExpenseDeleteView.as_view(), name="expense-delete"),
+    re_path(r'^api/expense/customer/(?P<customer>[\d]+)/?$', 
+        views.CustomerExpenseAPIView.as_view())
 ]
 
 asset_urls = [
@@ -178,4 +181,4 @@ urlpatterns =[
     entry_urls  + account_router.urls  + expense_urls + report_urls + \
     expense_router.urls + recurring_expense_urls + asset_urls + \
     bookkeeper_urls + currency_urls + currency_router.urls + \
-    currency_conversion_line_router.urls + currency_conversion_table_router.urls
+    currency_conversion_line_router.urls + currency_conversion_table_router.urls 

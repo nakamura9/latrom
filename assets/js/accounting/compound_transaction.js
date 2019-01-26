@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import setMultipleAttrs from '../src/utils';
+import SearchableWidget from '../src/components/searchable_widget';
+import axios from "axios";
 
 export default class TransactionTable extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
+    state = {
             contents: [],
             balanced: 0,
         }
-    }
+    
     balance(){
         let i = 0;
         const transactions = this.state.contents;
@@ -29,16 +30,19 @@ export default class TransactionTable extends Component{
         
     }
     addHandler(data){
+        let form = document.forms[0];
+        let input = document.createElement("input")
         let newContents = this.state.contents;
+
         newContents.push(data);
-        
         this.balance();
-        $("<input>").attr({
+        setMultipleAttrs(input, {
             type: 'hidden',
             id: 'item_' + this.state.contents.length,
             name: 'items[]',
             value: encodeURIComponent(JSON.stringify(data))
-        }).appendTo('form');
+        })
+        form.appendChild(input)
         this.setState({contents: newContents});
     }
 
@@ -47,7 +51,7 @@ export default class TransactionTable extends Component{
         newContents.splice(index, 1);
         this.setState({contents: newContents});
         this.balance();
-        $("#item_" + index).remove();
+        document.getElementById("item_" + (index + 1)).remove();
     }
     
     render(){
@@ -63,8 +67,10 @@ export default class TransactionTable extends Component{
             </thead>
             <Content contents={this.state.contents}
                 removeHandler={this.removeHandler.bind(this)} />
-            <EntryRow addHandler={this.addHandler.bind(this)}
-                balanced={this.state.balanced} />
+            <EntryRow 
+                addHandler={this.addHandler.bind(this)}
+                balanced={this.state.balanced}
+                list={[...this.state.contents]} />
         </table>
         );
         
@@ -94,27 +100,14 @@ class Content extends Component{
     }
 }
 class EntryRow extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            accounts: [],
+    state = {
             inputs: {
                 'account': '',
                 'amount': 0,
                 'debit': ""
             }
         }
-    }
-
-    componentDidMount(){
-        $.ajax({
-            'url': '/accounting/api/account/', 
-            'method': 'get'
-        }).then((res) => {
-            this.setState({'accounts': res});
-        });
-    }
-
+    
     addHandler(){
         if(this.state.inputs.account === "" || 
                 this.state.inputs.amount === 0 ||
@@ -127,14 +120,11 @@ class EntryRow extends Component {
                 'amount': 0,
                 'debit': ""
             }})
-            $('select[name=account]').prop('selectedIndex', 0);
-            $('select[name=debit]').prop('selectedIndex', 0);
-            $('input[name=amount]').val("");
         }
         
     }
 
-    handleInputChange(evt){
+    handleInputChange = (evt) =>{
         let name = evt.target.name;
         let value = evt.target.value;
         let newInputs = this.state.inputs;
@@ -142,31 +132,44 @@ class EntryRow extends Component {
         this.setState({inputs: newInputs});
 
     }
+    
+    selectHandler = (value) =>{
+        let inputs = {...this.state.inputs};
+        inputs["account"] = value;
+        this.setState({inputs: inputs});
+    }
+
+    clearHandler = () =>{
+        let inputs = {...this.state.inputs};
+        inputs["account"] = "";
+        this.setState({inputs: inputs});
+    }
 
     render(){
         return(
             <tfoot>
                 <tr>
                     <td colSpan={2}>
-                        <select name="account" 
-                            className="form-control"
-                            onChange={this.handleInputChange.bind(this)} >
-                            <option value="">-----</option>
-                            {this.state.accounts.map((acc, index) =>(
-                                <option key={index} value={acc.id}> {acc.name}</option>
-                            ))}
-                        </select>
+                        <SearchableWidget
+                            list={this.props.list}
+                            dataURL="/accounting/api/account"
+                            displayField="name"
+                            idField="id"
+                            onSelect={this.selectHandler}
+                            onClear={this.clearHandler}/>
                     </td>
                     <td>
                         <input name="amount" 
                             type="number" 
+                            value={this.state.inputs.amount}
                             className="form-control"
-                            onChange={this.handleInputChange.bind(this)} />
+                            onChange={this.handleInputChange} />
                     </td>
                     <td>
                         <select name="debit" 
+                            value={this.state.inputs.debit}
                             className="form-control"
-                            onChange={this.handleInputChange.bind(this)}>
+                            onChange={this.handleInputChange}>
                             <option value="">-----</option>
                             <option value={1}>Debit</option>
                             <option value={0}>Credit</option>

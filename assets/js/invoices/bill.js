@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {DeleteButton, SearchableWidget, Totals} from '../src/common';
+import {DeleteButton, Totals} from '../src/common';
+import SearchableWidget from "../src/components/searchable_widget";
+
 
 export default class BillTable extends Component{
     
@@ -116,10 +118,10 @@ class EntryRow extends Component{
 
     requestItems = (customer) =>{
         axios({
-            url: '/invoicing/api/customer/' + customer,
+            url: '/accounting/api/expense/customer/' + customer,
             method: 'GET'
         }).then(res => {;
-            this.setState({'items': res.data.expense_set});
+            this.setState({'items': res.data});
         })
     }
     componentDidMount(){
@@ -144,6 +146,14 @@ class EntryRow extends Component{
         
     }
 
+    selectHandler = (value) =>{
+        this.setState({selected: value});
+    }
+
+    clearHandler = () =>{
+        this.setState({selected: ""});
+    }
+
     inputHandler = (evt) => {
         this.setState({'selected': evt.target.value});
     }
@@ -158,19 +168,13 @@ class EntryRow extends Component{
         const hasBillables =(
             <tr style={theadStyle}>
                 <td colSpan={2}>      
-                    <input type="text"
-                        className="form-control"
-                        list="expense-datalist"
-                        onChange={this.inputHandler.bind(this)}
-                        value={this.state.selected}
+                    <SearchableWidget 
+                        dataURL={`/accounting/api/expense/customer/${document.getElementById('id_customer').value}`}
+                        onSelect={this.selectHandler}
+                        onClear={this.clearHandler}
+                        idField="id"
+                        displayField="description"
                         />
-                        <datalist id="expense-datalist">
-                            {this.state.items.map((item, i) =>(
-                                <option key={i}>{item.id + '-' + item.description}</option>
-                            ))}
-                            
-                        </datalist>
-
                 </td>
                 <td>
                     <button 

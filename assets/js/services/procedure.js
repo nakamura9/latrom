@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MultipleSelectWidget from '../src/components/multiple_select';
+import MultipleSelectWidget from '../src/multiple_select/containers/root';
 import TextBoxListWidget from '../src/text_box_list';
 import $ from 'jquery';
 import axios from 'axios';
@@ -10,7 +10,7 @@ class ProcedureViews extends Component{
         const tail = splitURL[splitURL.length - 1];
         let populatedURL  = null;
         if(tail !== 'create-procedure'){
-            const pk =  splitURL[splitURL.length - 2];
+            const pk =  splitURL[splitURL.length - 1];
             populatedURL = '/services/api/procedure/'+ pk;
         }
 
@@ -20,7 +20,7 @@ class ProcedureViews extends Component{
                     title="Procedure Steps"
                     fieldName="tasks"
                     populatedURL={populatedURL}
-                    resProcessor={(res) => (res.data.steps.map((step) => (step.description)))}/>    
+                    resProcessor={(res) => (res.data.steps.map((step) => (step.description)))} />    
             </div>
         )
     }
@@ -31,38 +31,39 @@ const InventorySelectWidgets = (props) => {
     const tail = splitURL[splitURL.length - 1];
     let populatedURL  = null;
     if(tail !== 'create-procedure'){
-        const pk =  splitURL[splitURL.length - 2];
+        const pk =  splitURL[splitURL.length - 1];
+        console.log(pk);
         populatedURL = '/services/api/procedure/'+ pk;
     }
+    console.log(populatedURL);
     
     return(
         <div>
-            <MultipleSelectWidget 
+            <div style={{display: "inline-block", width: "50%"}}>
+                <MultipleSelectWidget 
                 title="Select Equipment"
                 dataURL = '/inventory/api/equipment/'
                 inputField = 'equipment'
                 populatedURL = {populatedURL}
                 resProcessor = {(res) =>{
-                     return res.data.required_equipment.map((c) => (
-                        {
-                            value: c.id + '-' + c.name,
-                            clicked: false
-                        }
-                    ))}}
+                    return res.data.required_equipment.map((c) => (
+                        c.id + '-' + c.name
+                        ))}}
                 />
-            <MultipleSelectWidget 
+            </div>
+            <div style={{display: "inline-block", width: "50%"}}>
+                <MultipleSelectWidget 
                 title="Select Consumables"
                 dataURL = '/inventory/api/consumable/'
                 inputField = 'consumables'
                 populatedURL = {populatedURL}
                 resProcessor = {(res) =>{
                     return res.data.required_consumables.map((c) => (
-                        {
-                            value: c.id + '-' + c.name,
-                            clicked: false
-                        }
+                        c.id + '-' + c.name    
                     ))}}
                 />
+            </div>
+            
         </div>
     )
 }

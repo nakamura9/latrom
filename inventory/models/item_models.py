@@ -29,7 +29,8 @@ class BaseItem(SoftDeletionModel):
     description = models.TextField(blank=True, default="")
     unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True,
         blank=True, default=1)
-    unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2, 
+        default=0.0)
     supplier = models.ForeignKey("inventory.Supplier", on_delete=models.SET_NULL,
         blank=True, null=True)
     

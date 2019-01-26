@@ -105,7 +105,7 @@ class EventParticipant(models.Model):
     PARTICIPANT_TYPES = [
         (0, 'Employee'),
         (1, 'Customer'),
-        (2, 'Supplier')
+        (2, 'Vendor')
     ]
     participant_type = models.PositiveSmallIntegerField(
         choices=PARTICIPANT_TYPES

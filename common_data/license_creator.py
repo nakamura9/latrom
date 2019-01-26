@@ -10,8 +10,8 @@ l = {
     'customer_name': 'customer',
     'date_issued': '21/01/19',
     'expiry_date': '21/09/20',
-    'number_users': 5,
-    'number_employees': 4
+    'number_users': 20,
+    'number_employees': 100
 }
 
 data_string = json.dumps(l)

@@ -1,0 +1,157 @@
+<table id="page-layout">
+    <tbody>
+        <tr>
+            <td colspan="2" id="title">
+                <h1>
+                    Sales {% if object.status == 'quotation' %}Quotation{% else %} Invoice {% endif %}{% if object.status == 'draft' %}(Draft){% endif %}
+                </h1>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
+            </td>
+            <td>
+                <h4>
+                    <b>{{business_name}}</b>
+                </h4>
+                <p>{{business_address | linebreaks}}</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="{{style}}-head-cell">
+                    <p>
+                        <b>Bill To:</b>
+                    </p>
+                    <p>{{object.customer}}</p>
+                    <p>{{object.customer.billing_address | linebreaks}} </p>
+                </div>
+            </td>
+            <td>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{object.date}}</td>
+                        </tr>
+                        {% if object.status != "draft" %}
+                        <tr>
+                            
+                            <td>
+                            {% if object.status == "quotation" %}
+                            Quotation Number:
+                            {% else %}
+                            Invoice Number:
+                            {% endif %}</td>
+                            <td>
+                            {% if object.status == "quotation" %}
+                            QUOT{{object.quotation_number | stringformat:"06d"}}
+                            {% else %}
+                            SALES{{object.invoice_number | stringformat:"06d"}}
+                            {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>Due Date:</td>
+                            <td>{{object.due}}</td>
+                        </tr>
+                        <tr>
+                            <td>Customer PO No:</td>
+                            <td>{{object.purchase_order_number}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table height="400" width="100%" class="{{style}}-content" z>
+                    <thead>
+                        <tr>
+                            <td style="width:10%;">Qty</td>
+                            <td style="width:50%;">Product Name</td>
+                            <td style="width:15%;">Unit Price</td>
+                            {% if include_units_in_sales_invoice %}
+                            <td>Unit</td>
+                            {% endif %}
+                            <td style="width:15%;">Total</td>
+                        </tr>
+                    </thead>
+                    <tbody class="item-table">
+                        {% for item in object.salesinvoiceline_set.all %}
+                        <tr>
+                            <td>{{item.quantity}}</td>
+                            <td>{{item.product.name}}</td>
+                            <td>{{item.price | floatformat:2 }}</td>
+                            {% if include_units_in_sales_invoice %}
+                            <td>{{item.product.unit}}</td>
+                            {% endif %}
+                            <td>{{item.subtotal | floatformat:2 }}</td>
+
+                        </tr>
+                        {% endfor %}
+                        <tr style="height:100%">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            {% if include_units_in_sales_invoice %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
+                                <b>SubTotal:</b>
+                            </td>
+                            <td>{{object.subtotal | floatformat:2 }}</td>
+                        </tr>
+                        {% if tax_column %}
+                        <tr>
+                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
+                                <b>Tax Due @{{object.tax.rate}}%:</b>
+                            </td>
+                            <td>{{object.tax_amount | floatformat:2 }}</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
+                                <b>Total:</b>
+                            </td>
+                            <td>{{object.total | floatformat:2 }}</td>
+                        </tr>
+                        {% endif %}
+                    </tfoot>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="{{style}}-footer-cell">
+                    <div class="{{style}}-footer-cell-heading">
+                        <h6>Terms:</h6>
+                    </div>
+                    <div class="{{style}}-footer-cell-contents">
+                        <p>{{object.terms}}</p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="{{style}}-footer-cell">
+                    <div class="{{style}}-footer-cell-heading">
+                        <h6>Comments:</h6>
+                    </div>
+                    <div class="{{style}}-footer-cell-contents">
+                        <p>{{object.comments | linebreaks}}</p>
+                    </div>
+
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

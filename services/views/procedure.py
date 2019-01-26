@@ -39,13 +39,13 @@ class ProcedureCRUDMixin(object):
         #equipment 
         equipment = json.loads(urllib.parse.unquote(request.POST['equipment']))
         for item in equipment:
-            pk = item['value'].split('-')[0]
+            pk = item.split('-')[0]
             self.object.required_equipment.add(Equipment.objects.get(pk=pk))
 
         #consumables
         consumables = json.loads(urllib.parse.unquote(request.POST['consumables']))
         for item in consumables:
-            pk = item['value'].split('-')[0]
+            pk = item.split('-')[0]
             self.object.required_consumables.add(Consumable.objects.get(pk=pk))
 
 

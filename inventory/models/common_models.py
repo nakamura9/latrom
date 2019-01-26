@@ -153,7 +153,7 @@ class Supplier(SoftDeletionModel):
             n_suppliers = Supplier.objects.all().count()
             #will overwrite if error occurs
             self.account = Account.objects.create(
-                name= "Supplier: %s" % self.name,
+                name= "Vendor: %s" % self.name,
                 id = 2100 + n_suppliers + 1, # the + 1 for the default supplier
                 balance =0,
                 type = 'liability',

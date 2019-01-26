@@ -15,12 +15,13 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from django.shortcuts import get_object_or_404
 
 from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
 from inventory.models import Product
+from invoicing.models import Customer
 from accounting.util import AccountingTaskService
 from accounting import filters, forms, models, serializers
 
@@ -87,8 +88,10 @@ class ComplexEntryView( ContextMixin, CreateView):
         for item in request.POST.getlist('items[]'):
             item_data = json.loads(urllib.parse.unquote(item))
             amount = decimal.Decimal(item_data['amount'])
+                #incase the name includes '-' character
+            pk, _ = item_data['account'].split("-")[:2] 
             account = models.Account.objects.get(
-                    pk=int(item_data['account']))
+                    pk=int(pk))
             #make sure
             if int(item_data['debit']) == 1:
                 j.debit(amount, account)
@@ -311,6 +314,13 @@ class ExpenseAPIView(viewsets.ModelViewSet):
     queryset = models.Expense.objects.all()
     serializer_class = serializers.ExpenseSerializer
 
+
+class CustomerExpenseAPIView(generics.ListAPIView):
+    serializer_class = serializers.ExpenseSerializer
+    
+    def get_queryset(self):
+        customer = Customer.objects.get(pk=self.kwargs['customer'])
+        return models.Expense.objects.filter(customer=customer)
 
 class AssetCreateView(ContextMixin,  CreateView):
     form_class = forms.AssetForm

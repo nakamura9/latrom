@@ -172,24 +172,7 @@ class SearchableWidget extends Component {
                     placeholder="Select item..."
 
                     list={this.props.dataURL + "id_list"}/>
-                {this.props.canCreateNewItem 
-                    ?<div className="input-group-append">
-                        <button 
-                            type="button"
-                            style={{
-                                minHeight: "42px",
-                            }}
-                            className="btn btn-outline"
-                            onClick={() => {
-                                $('#popup-frame').attr('src', this.props.newLink);
-                                var modal = document.getElementById('id-my-modal');
-                                    modal.style.display = 'block';
-                            }}>
-                            <i className="fas fa-plus"></i>
-                        </button>
-                     </div>
-                    : null
-                }                
+                                
                 </div>
                 
             )

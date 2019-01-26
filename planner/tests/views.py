@@ -87,10 +87,13 @@ class PlannerViewTests(TestCase):
         cls.customer = Customer.objects.create(
         organization= cls.organization
     )
-        
+        cls.employee.user = cls.usr 
+        cls.employee.save()
+
     @classmethod
     def setUpTestData(cls):
         cls.usr = User.objects.create_superuser('User', 'abc@xyz.com', '123')
+        
 
     def setUp(self):
         self.client.login(username='User', password='123')

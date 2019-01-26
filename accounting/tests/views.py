@@ -185,7 +185,7 @@ class JournalEntryViewTests(TestCase):
         COMPOUND_DATA['items[]'] = urllib.parse.quote(json.dumps({
             'debit': 1,
             'amount':100,
-            'account': self.account_c.pk
+            'account': "{} - Account - s".format(self.account_c.pk) 
             }))
         resp = self.client.post(reverse('accounting:compound-entry'),
             data=COMPOUND_DATA)

@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
 import axios from 'axios';
 import MessageDetail from '../js/messaging/container/root';
+import MultipleSelectWidget from "./src/multiple_select/containers/root";
 import PaginatedList from '../js/src/paginated_list/containers/root';
-
+import PricingWidget from "../js/inventory/pricing_widget";
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -12,6 +13,7 @@ const categoryView = document.getElementById('category-tree-view');
 const storageMediaView = document.getElementById('storage-media-tree-view');
 const threadView = document.getElementById('thread-widget');
 const testView = document.getElementById('test');
+const pricing = document.getElementById('pricing-widget');
 
 const dataMapper = (node, i) =>{
     
@@ -64,22 +66,7 @@ if(storageMedia){
 }else if(threadView){
     ReactDOM.render(<MessageDetail />, threadView);
 }else if(testView){
-    ReactDOM.render(<PaginatedList
-        dataURL='/inventory/api/warehouse-items/1'
-        rowFields={['name']}
-        resHandler={(comp, res) =>{
-            
-            comp.setState({
-                rows: res.data.results,
-                hasNextPage: res.data.next !== null,
-            });
-            
-        }}
-        headings={['Product']}
-        actionData={[
-            {
-                name: 'Detail',
-                url: '/inventory/product-detail'
-            }
-        ]} />, testView);
+    ReactDOM.render(<PricingWidget />, testView);
+}else if(pricing){
+    ReactDOM.render(<PricingWidget />, pricing);
 }

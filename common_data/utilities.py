@@ -41,10 +41,11 @@ def extract_period(kwargs):
     n = kwargs.get('default_periods', None)
     if n and n != '0':
         deltas = {
-                '1': 30,
-                '2': 90,
-                '3': 180,
-                '4': 365
+                '1': 7,
+                '2': 30,
+                '3': 90,
+                '4': 180,
+                '5': 365
             }
         end = datetime.date.today()
         start = end - datetime.timedelta(

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block window %}
+
+<h1>Sales Report</h1>
+
+<h4>Period Covering: {{period}}</h4>
+<p>Total Sales over period: ${{total_sales | floatformat:2}}</p>
+<p>Average daily sales: ${{average_sales | floatformat:2}}</p>
+
+{% autoescape off %}
+{{report}}
+{% endautoescape %}
+{% endblock window %}

@@ -74,7 +74,6 @@ class WareHouse(models.Model):
         
     def has_item(self, item):
         found_item = self.get_item(item)
-        print('item, ', found_item)
         if found_item:
             return(
                 found_item.quantity > 0
@@ -176,6 +175,11 @@ class WareHouseItem(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def stock_value(self):
+        # TODO test ensure items have stock value implemented
+        return D(self.quantity) * self.item.stock_value
 
     @property
     def item(self):

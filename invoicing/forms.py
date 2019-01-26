@@ -205,3 +205,7 @@ class CreditNoteForm( forms.ModelForm, BootstrapMixin):
 
 class CustomerStatementReportForm(PeriodReportForm):
     customer = forms.ModelChoiceField(models.Customer.objects.all())
+
+class SalesReportForm(PeriodReportForm):
+    '''method = forms.ChoiceField(widget=forms.RadioSelect, choices=[("invoice", "Invoice Count"), ("amount", "Sales Value")])'''
+    pass

@@ -171,7 +171,7 @@ class PaymentModelTests(TestCase):
 
     def test_create_entry(self):
         self.payment.create_entry()
-        self.assertEqual(self.payment.invoice.customer.account.balance, D(10))
+        self.assertEqual(self.payment.invoice.customer.account.balance, -D(10))
 
 
 class SalesRepModelTests(TestCase):
@@ -263,7 +263,7 @@ class CreditNoteModelTests(TestCase):
 
     def test_create_entry(self):
         self.note.create_entry()
-        self.assertEqual(self.note.invoice.customer.account.balance, 10)
+        self.assertEqual(self.note.invoice.customer.account.balance, -D(10))
 
 
 # The abstract sale object will be tested via tests to the sales invoice
@@ -513,7 +513,7 @@ class BillTests(TestCase):
         self.inv.create_entry()
         self.assertEqual(
             Account.objects.get(name='Advertising').balance,
-            pre_balance + 10)
+            pre_balance - 10)
 
     def test_create_bill_line(self):
         obj = BillLine.objects.create(

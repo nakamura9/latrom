@@ -1,7 +1,8 @@
 import datetime
 import itertools
 import os
-
+from decimal import Decimal as D
+from functools import reduce
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
@@ -9,8 +10,8 @@ from django.views.generic.edit import CreateView, FormView
 
 from common_data.utilities import ContextMixin, extract_period
 from invoicing import forms, models
-from invoicing.models import AbstractSale
-
+from invoicing.models import AbstractSale, SalesInvoice
+from .report_utils.plotters import plot_sales
 
 class CustomerReportFormView(ContextMixin, FormView):
     extra_context = {
@@ -18,7 +19,7 @@ class CustomerReportFormView(ContextMixin, FormView):
         'action': reverse_lazy('invoicing:customer-statement')
     }
     form_class = forms.CustomerStatementReportForm
-    template_name = os.path.join('common_data', 'reports', 'report_form.html')
+    template_name = os.path.join('common_data', 'reports', 'report_template.html')
 
     def get_initial(self):
         if self.kwargs.get('pk', None):
@@ -69,4 +70,31 @@ class InvoiceAgingReport(TemplateView):
             'outstanding_invoices': len([i for i in outstanding_invoices])
         })
         context.update(models.SalesConfig.objects.first().__dict__)
+        return context
+
+# TODO test
+class SalesReportFormView(ContextMixin, FormView):
+    template_name = os.path.join('common_data', 'reports', 'report_template.html')
+    form_class = forms.SalesReportForm
+    extra_context = {
+        "action": reverse_lazy("invoicing:sales-report")
+    }
+
+# TODO test
+class SalesReportView(TemplateView):
+    template_name = os.path.join("invoicing", "reports", "sales_report.html")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kwargs = self.request.GET
+
+        start, end = extract_period(kwargs)
+        context["period"] = "{} to {}".format(start, end)
+
+        total_sales = reduce(lambda x, y: x + y, [i.total for i in SalesInvoice.objects.filter(date__gte=start, date__lte=end)], 0)
+        average_sales  = total_sales / D(abs((end - start).days))
+
+        context["total_sales"] = total_sales
+        context["average_sales"] = average_sales
+    
+        context["report"] = plot_sales(start, end)
         return context

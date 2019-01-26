@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { SearchableWidget, AsyncSelect } from '../../common';
+import {AsyncSelect } from '../../common';
+import SearchableWidget from "../../components/searchable_widget";
 
 /* fieldOrder - array of strings 
    insertHandler - function
@@ -7,8 +8,7 @@ import { SearchableWidget, AsyncSelect } from '../../common';
 */
 class inputLine extends Component{
     state = {
-        data: {
-            },
+        data: {},
         fetchField: null,
         selectedPk: null,
     }

@@ -23,7 +23,7 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
 
 class ExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "__all__"
+        exclude = "entry", 
         model = models.Expense
 
 class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
@@ -73,7 +73,7 @@ class SimpleJournalEntryForm(forms.ModelForm, BootstrapMixin):
 
 class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields="__all__"
+        exclude="posted_to_ledger", "adjusted"
         model = models.JournalEntry
 
 class AccountForm(forms.ModelForm, BootstrapMixin):

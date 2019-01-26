@@ -90,7 +90,7 @@ class SimpleModelTests(TestCase):
         )
         self.assertIsInstance(obj, Debit)
         self.assertEqual(str(obj), 'Debit')
-        self.assertEqual(self.account_c.balance, pre_bal - 10)
+        self.assertEqual(self.account_c.balance, pre_bal + 10)
 
     def test_create_credit(self):
         pre_bal = self.account_c.balance
@@ -101,7 +101,7 @@ class SimpleModelTests(TestCase):
         )
         self.assertIsInstance(obj, Credit)
         self.assertEqual(str(obj), 'Credit')
-        self.assertEqual(self.account_c.balance, pre_bal + 10)
+        self.assertEqual(self.account_c.balance, pre_bal - 10)
 
     def test_transaction_execute(self):
         self.entry.draft = True
@@ -121,7 +121,7 @@ class SimpleModelTests(TestCase):
         self.entry.save()
 
         obj.execute()
-        self.assertEqual(self.account_c.balance, pre_bal + 10)
+        self.assertEqual(self.account_c.balance, pre_bal - 10)
 
 
 
@@ -305,8 +305,8 @@ class JournalEntryModelTests(TestCase):
         pre_credit_bal = self.account_c.balance
         pre_debit_bal = self.account_d.balance
         self.entry.simple_entry(10, self.account_c, self.account_d)
-        self.assertEqual(self.account_c.balance, pre_credit_bal + 10)
-        self.assertEqual(self.account_d.balance, pre_debit_bal - 10)
+        self.assertEqual(self.account_c.balance, pre_credit_bal - 10)
+        self.assertEqual(self.account_d.balance, pre_debit_bal -10)
 
     def test_entry_total_debits(self):
         self.assertIsNotNone(self.entry.total_debits)
@@ -408,7 +408,7 @@ class JournalEntryModelTests(TestCase):
         obj.verify()
         self.assertFalse(obj.draft)
         self.assertEqual(
-            Account.objects.get(pk=self.account_c.pk).balance, pre_c_bal + 10)
+            Account.objects.get(pk=self.account_c.pk).balance, pre_c_bal - 10)
 
         self.assertIsInstance(obj, JournalEntry)
 
@@ -456,8 +456,8 @@ class AccountModelTests(TestCase):
 
     def test_account_credit_balance(self):
         
-        self.assertEqual(self.basic_account.credit, D(100))
-        self.assertEqual(self.basic_account.debit, D(0))
+        self.assertEqual(self.basic_account.credit, D(0))
+        self.assertEqual(self.basic_account.debit, D(100))
 
     def test_account_total_debit(self):
         self.assertIsInstance(self.basic_account.total_debit(), D)
@@ -468,7 +468,7 @@ class AccountModelTests(TestCase):
     def test_account_debit_balance(self):
         self.basic_account.balance = -100
         self.basic_account.save()
-        self.assertEqual(self.basic_account.debit, D(100))
+        self.assertEqual(self.basic_account.debit, -D(100))
         self.assertEqual(self.basic_account.credit, D(0))
     
     def test_delete_account(self):
@@ -552,10 +552,10 @@ class AccountModelTests(TestCase):
 
     def test_account_balance_type(self):
         asset = Account.objects.get(pk=1000)#cash
-        self.assertEqual(asset.account_type, "debit")
+        self.assertEqual(asset.balance_type, "debit")
         
         liability = Account.objects.get(pk=2004)#loans payable
-        self.assertEqual(liability.account_type, "credit")
+        self.assertEqual(liability.balance_type, "credit")
     
 class CurrencyTests(TestCase):
     @classmethod
