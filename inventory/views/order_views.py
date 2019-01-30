@@ -265,6 +265,12 @@ class OrderEmailSendView(EmailPlusPDFView):
             'recipient': ord.supplier.email
         }
 
+class ShippingCostDetailView(DetailView):
+    # TODO test
+    template_name = os.path.join("inventory", "order", "shipping_list.html")
+    model = models.Order
+
+
 class ShippingAndHandlingView( 
         ContextMixin, FormView):
     template_name = CREATE_TEMPLATE
@@ -285,16 +291,22 @@ class ShippingAndHandlingView(
             date=form.cleaned_data['date'], 
             memo=form.cleaned_data['description'], 
             journal=Journal.objects.get(pk=2),#disbursements
-            created_by=form.cleaned_data['recorded_by']
+            created_by=form.cleaned_data['recorded_by'],
+            draft=False
         )
         # the unit cost changes but the journal entry for the cost 
         # of the order remains the same
         entry.simple_entry(
             form.cleaned_data['amount'],
             Account.objects.get(pk=1000),
-            Account.objects.get(pk=1004)
+            Account.objects.get(pk=4009)
             )
         
+        order = models.Order.objects.get(pk=self.kwargs['pk'])
+        order.shipping_cost_entries.add(entry)
+        order.save()
+
+
         return resp
 
     
@@ -303,3 +315,4 @@ def verify_order(request, pk=None):
     order.status = "order"
     order.save()
     return HttpResponseRedirect('/inventory/order-detail/{}'.format(order.pk))
+

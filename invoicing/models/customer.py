@@ -59,7 +59,8 @@ class Customer(SoftDeletionModel):
                 id= 1100 + n_customers,
                 type = 'asset',
                 description = 'Account which represents credit extended to a customer',
-                balance_sheet_category='current-assets'
+                balance_sheet_category='current-assets',
+                parent_account=Account.objects.get(pk=1003)#trade receivables
             )
 
     def save(self, *args, **kwargs):

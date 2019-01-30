@@ -34,5 +34,7 @@ order_urls = [
     re_path(r'^order-payment-list/(?P<pk>[\w]+)/?$', views.OrderPaymentDetailView.as_view(), 
         name="order-payment-list"),
     re_path(r'^order/(?P<pk>[\d]+)/verify/?$',
-        views.verify_order, name='verify-order')
+        views.verify_order, name='verify-order'),
+    re_path(r'^order/expense/list/(?P<pk>[\d]+)/?$',
+        views.ShippingCostDetailView.as_view(), name='order-expense-list')
 ] + order_router.urls + order_item_router.urls 

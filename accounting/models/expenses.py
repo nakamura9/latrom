@@ -20,7 +20,7 @@ expense_choices = [
     'Payroll Taxes', 
     'Insurance', 
     'Office Expenses',
-    'Postage', 
+    'Carriage Outwards', 
     'Other']
 
 EXPENSE_CHOICES = [(expense_choices.index(i), i) for i in expense_choices]
@@ -35,8 +35,10 @@ class AbstractExpense(models.Model):
     description = models.TextField()
     category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
-    debit_account = models.ForeignKey('accounting.Account', on_delete=models.SET_NULL, null=True)
-    recorded_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
+    debit_account = models.ForeignKey('accounting.Account', 
+        on_delete=models.SET_NULL, null=True)
+    recorded_by = models.ForeignKey('auth.user', default=1, 
+        on_delete=models.SET_NULL, null=True)
     reference = models.CharField(max_length=32, blank=True, default="")
     entry= models.ForeignKey('accounting.journalentry', 
         on_delete=models.SET_NULL,
@@ -88,7 +90,7 @@ class Expense(AbstractExpense):
             created_by=self.recorded_by,
             draft= False
         )
-        #debits increase expenses credits decrease assets so...
+        #debit cash and credit expense account
         j.simple_entry(self.amount, 
             accounting.models.accounts.Account.objects.get(pk=1000),#cash account
             self.expense_account)
@@ -125,7 +127,6 @@ class RecurringExpense(AbstractExpense):
     @property
     def cycle_string(self):
         return dict(self.EXPENSE_CYCLE_CHOICES)[self.cycle]
-
     
     @property
     def is_current(self):

@@ -36,7 +36,7 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
                     'order_template_theme',
                     'product_sales_pricing_method',
                     'inventory_valuation_method',
-                    'stock_valuation_period'),
+                    ),
                 Tab('WareHousing Settings',
                     'use_warehousing_model',
                     'use_storage_media_model'),

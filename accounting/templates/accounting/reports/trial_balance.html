@@ -16,7 +16,7 @@
             <td colspan="2">
                 <center>
                     <h1>Trial Balance Report</h1>
-                    <h4>Period Ending: {{date}}</h4>
+                    <h4>As At: {{date}}</h4>
                 </center>
             </td>
         </tr>
@@ -36,16 +36,16 @@
                         <tr>
                             <td>{{acc.pk}}</td>
                             <td>{{acc.name}}</td>
-                            <td>{{acc.debit}}</td>
-                            <td>{{acc.credit}}</td>
+                            <td>{{acc.debit | accounting}}</td>
+                            <td>{{acc.credit | accounting}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr class="bg-primary">
                             <th colspan="2">Total</th>
-                            <th>{{total_debit}}</th>
-                            <th>{{total_credit}}</th>
+                            <th>{{total_debit | accounting}}</th>
+                            <th>{{total_credit | accounting}}</th>
                         </tr>
                     </tfoot>
                 </table>
@@ -53,4 +53,6 @@
         </tr>
     </tbody>
 </table>
+
+<p>Inventory at {{date}} was valued at ${{inventory_value  | accounting}}</p>
 {% endblock page_contents %}

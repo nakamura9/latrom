@@ -29,7 +29,7 @@ class BaseItem(SoftDeletionModel):
     description = models.TextField(blank=True, default="")
     unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True,
         blank=True, default=1)
-    unit_purchase_price = models.DecimalField(max_digits=6, decimal_places=2, 
+    unit_purchase_price = models.DecimalField(max_digits=9, decimal_places=2, 
         default=0.0)
     supplier = models.ForeignKey("inventory.Supplier", on_delete=models.SET_NULL,
         blank=True, null=True)
@@ -54,12 +54,14 @@ class BaseItem(SoftDeletionModel):
             items = inventory.models.WareHouseItem.objects.filter(raw_material=self)
         return reduce(lambda x, y: x + y, [i.quantity for i in items], 0)
 
+    
+
     @property
     def stock_value(self):
         raise NotImplementedError()
 
 class Product(BaseItem):
-    '''The most basic element of inventory. Represents tangible products that are sold.
+    '''Represents tangible products that are sold.
     this model tracks details concerning sale and receipt of products as well as their 
     value and pricing.
     
@@ -90,6 +92,70 @@ class Product(BaseItem):
     minimum_order_level = models.IntegerField(default=0)
     maximum_stock_level = models.IntegerField(default=0)
 
+    @staticmethod
+    def total_inventory_value():
+        return reduce(lambda x,y: x + y, [
+            p.stock_value for p in Product.objects.all()
+        ], 0)
+
+
+    def quantity_on_date(self, date):
+        current_quantity = self.quantity
+
+        total_orders = inventory.models.item_management.OrderItem.objects.filter(
+            Q(order__date__gte=date) &
+            Q(order__date__lte=datetime.date.today()) &
+            Q(product=self)
+        )
+
+        ordered_quantity = reduce(lambda x, y: x + y, [
+            i.received for i in total_orders
+        ], 0)
+
+        total_sales = invoicing.models.SalesInvoiceLine.objects.filter(
+            Q(invoice__date__gte=date) &
+            Q(invoice__date__lte=datetime.date.today()) &
+            Q(product=self)
+        )
+
+        sold_quantity = reduce(lambda x, y: x + y, [
+            (i.quantity - i.returned_quantity) for i in total_sales
+        ], 0)
+
+        return current_quantity + sold_quantity - ordered_quantity
+
+    @staticmethod
+    def total_inventory_quantity_on_date(date):
+        # TODO test
+        '''Takes a date and returns the inventory quantity on that date
+        takes todays inventory 
+        starting = todays + sold - ordered'''
+        current_total_product_quantity = reduce(lambda x, y: x + y, [
+             i.quantity for i in Product.objects.all()
+        ], 0)
+
+        total_product_orders = inventory.models.item_management.OrderItem.objects.filter(
+            Q(order__date__gte=date) &
+            Q(order__date__lte=datetime.date.today()) &
+            Q(item_type=1)
+        )
+
+        ordered_quantity = reduce(lambda x, y: x + y, [
+            i.received for i in total_product_orders
+        ], 0)
+
+        total_product_sales = invoicing.models.SalesInvoiceLine.objects.filter(
+            Q(invoice__date__gte=date) &
+            Q(invoice__date__lte=datetime.date.today())
+        )
+
+        sold_quantity = reduce(lambda x, y: x + y, [
+            (i.quantity - i.returned_quantity) for i in total_product_sales
+        ], 0)
+
+        return current_total_product_quantity + sold_quantity - ordered_quantity
+    
+
     @property
     def unit_sales_price(self):
         if self.pricing_method == 0:
@@ -99,34 +165,67 @@ class Product(BaseItem):
         else:
             return D(self.unit_purchase_price * (1 + self.markup))
 
+
+    @property 
+    def unit_value(self):
+        '''the value of inventory on a per item basis'''
+        if self.quantity  == 0:
+            return 0
+        return self.stock_value / D(self.quantity)
+
     @property
     def stock_value(self):
-        '''all calculations are based on the last 30 days
-        currently implementing the options of fifo and averaging.
-        fifo - first in first out, measure the value of the items 
-        based on the price they were bought assuming the remaining items 
-        are the last ones bought.
+        '''.
         averaging- calculating the overall stock value on the average of all
-        the values during the period under consderation.
-        '''
-        inventory_settings = \
-            inventory.models.InventorySettings.objects.first()
-        cut_off_date = datetime.date.today() - datetime.timedelta(
-            days=inventory_settings.stock_valuation_period)
-        ordered_items = inventory.models.OrderItem.objects.filter(
-            Q(order__date__gte=cut_off_date) & 
-            Q(product=self))
-        total_value = D(0)
-        item_quantity = 0
-        for item in ordered_items:
-            total_value += D(item.quantity) * item.order_price
-            item_quantity += D(item.quantity)
+        the values for the quantity in stock.
+        '''  
 
-        if item_quantity == 0:
-            return D(0)
+        current_quantity = self.quantity #optimized 
+        cummulative_quantity = 0
+        orders_with_items_in_stock = []
+        partial_orders = False
 
-        return total_value / item_quantity
+        if current_quantity == 0:
+            return 0
+
+        #getting the latest orderitems in order of date ordered
+        order_items = inventory.models.OrderItem.objects.filter(
+            product=self).order_by("order__date").reverse()
+
+        #iterate over items
+        for item in order_items:
+            # orders for which cumulative ordered quantities are less than
+            # inventory in hand are considered
+            if (item.quantity + cummulative_quantity) < current_quantity:
+                orders_with_items_in_stock.append(item)
+                cummulative_quantity += item.quantity
+                
+
+            else:
+                if cummulative_quantity < current_quantity:
+                    partial_orders = True
+                    orders_with_items_in_stock.append(item)
+
+                else:
+                    break
+
+
+        cumulative_value = D(0)
+        if not partial_orders:
+            for item in orders_with_items_in_stock:
+                cumulative_value += D(item.quantity) * item.order_price
+
+        else:
+            for item in orders_with_items_in_stock[:-1]:
+                cumulative_value += D(item.quantity) * item.order_price
+
+            remainder = current_quantity - cummulative_quantity
+            cumulative_value += D(remainder) * \
+                orders_with_items_in_stock[-1].order_price
         
+        return cumulative_value
+
+
     @property
     def sales_to_date(self):
         items = invoicing.models.SalesInvoiceLine.objects.filter(
@@ -171,6 +270,7 @@ class Product(BaseItem):
             )
 
 class Equipment(BaseItem):
+    """Equipment refers to items used in running the business. Are registered in the accounting system as assets."""
     CONDITION_CHOICES = [
         ('excellent', 'Excellent'),
         ('good', 'Good'),
@@ -190,6 +290,7 @@ class Equipment(BaseItem):
             )
 
 class Consumable(BaseItem):
+    """Consumables are items which are purchased  for use within a business that are not for resale nor contribute directly to products. These purchases are recorded in the accounts as expenses."""
     minimum_order_level = models.IntegerField( default=0)
     maximum_stock_level = models.IntegerField(default=0)
 

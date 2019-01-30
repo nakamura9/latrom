@@ -72,6 +72,10 @@ class CommonViewTests(TestCase):
         resp = self.client.get(reverse('accounting:create-tax'))
         self.assertTrue(resp.status_code==200) 
 
+    def test_get_tax_list_page(self):
+        resp = self.client.get(reverse('accounting:tax-list'))
+        self.assertTrue(resp.status_code==200) 
+
     def test_get_tax_update_page(self):
         resp = self.client.get(reverse('accounting:update-tax', kwargs={
             'pk': self.tax.pk
@@ -342,12 +346,12 @@ class TestReportViews(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_get_income_statement_page(self):
-        resp = self.client.get(reverse('accounting:income-statement'),
+        resp = self.client.get(reverse('accounting:profit-and-loss'),
             data=self.statement_period)
         self.assertEqual(resp.status_code, 200)
 
     def test_get_income_statement_form_page(self):
-        resp = self.client.get(reverse('accounting:income-statement-form'))
+        resp = self.client.get(reverse('accounting:profit-and-loss-form'))
         self.assertEqual(resp.status_code, 200)
 
     #income statement form view has no post

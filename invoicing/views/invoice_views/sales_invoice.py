@@ -26,9 +26,14 @@ from common_data.models import GlobalConfig
 from common_data.utilities import ConfigMixin, ContextMixin, apply_style
 from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
+from inventory.forms import ShippingAndHandlingForm
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
+from accounting.models import Expense, Account
+
+CREATE_TEMPLATE = os.path.join("common_data", "create_template.html")
+
 
 class SalesInvoiceMixin(object):
     def post(self, request, *args, **kwargs):
@@ -239,7 +244,7 @@ class SalesInvoiceReturnsDetailView( ListView):
         ))
 
     def get_context_data(self, *args, **kwargs):
-        context = super(SalesInvoiceReturnsDetailView, self).get_context_data(
+        context = super().get_context_data(
             *args, **kwargs
         )
         context['invoice'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
@@ -276,3 +281,48 @@ def verify_invoice(request, pk=None, status=None):
         inv.create_entry()
 
     return HttpResponseRedirect('/invoicing/sales-invoice-detail/{}'.format(pk))
+
+
+# TODO test
+class ShippingAndHandlingView( 
+        ContextMixin, FormView):
+    template_name = CREATE_TEMPLATE
+    form_class = ShippingAndHandlingForm
+    success_url = reverse_lazy("invoicing:sales-invoice-list")
+    extra_context = {
+        'title': 'Record Shipping and handling'
+    }
+
+    def get_initial(self):
+        return {
+            'reference': 'SINV{}'.format(self.kwargs['pk'])
+        }
+    
+    def form_valid(self, form):
+        resp =  super().form_valid(form)
+
+        invoice = SalesInvoice.objects.get(pk=self.kwargs['pk'])
+
+
+        expense = Expense.objects.create(
+            category=11,
+            amount=form.cleaned_data['amount'],
+            description=form.cleaned_data['description'],
+            debit_account=Account.objects.get(pk=1000),
+            recorded_by=form.cleaned_data['recorded_by'],
+            date=form.cleaned_data['date']
+        )
+
+        expense.create_entry()
+        invoice.shipping_expenses.add(expense)
+        invoice.save()#necessary?
+
+        
+        return resp
+
+class ShippingExpenseListView(DetailView):
+    model = SalesInvoice
+    template_name = os.path.join("invoicing", "sales_invoice", 
+        "shipping_list.html")
+
+        

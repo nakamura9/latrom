@@ -229,7 +229,7 @@ class Payslip(models.Model):
             return
 
         j = accounting.models.JournalEntry.objects.create(
-                memo= 'Auto generated entry from verified payslip.',
+                memo= 'Auto generated entry from verified payslip. ',
                 date=datetime.date.today(),
                 journal =accounting.models.Journal.objects.get(
                     pk=2),#Cash disbursements Journal
@@ -243,7 +243,7 @@ class Payslip(models.Model):
             deduction = Deduction.objects.get(pk=pk)
             amount = deduction.deduct(self)
             deduction_total += amount
-
+            # create a NSSA account etc
             j.debit(amount, deduction.account_paid_into)
 
         

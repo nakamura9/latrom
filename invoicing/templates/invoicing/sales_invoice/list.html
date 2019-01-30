@@ -33,7 +33,7 @@
                 {% if inv.status == "quotation" %}
                     <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-verify' pk=inv.pk status='invoice' %}">Make Invoice from Quotation</a>
                 {% endif %}
-                {% if inv.status == 'invoice' or inv.status == 'paid' %}
+                {% if inv.status == 'invoice' or inv.status == 'paid' or inv.status == "paid-partially" %}
                 
                 <h6 class="dropdown-header">Payments</h6>
                 <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-payment' pk=inv.pk %}">
@@ -50,7 +50,15 @@
                 </a>
                 <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-returns' pk=inv.pk %}">
                         <i class="fas fa-list-ol"></i> View Returns
-                    </a>
+                </a>
+                <h6 class="dropdown-header">Shipping and Handling</h6>                
+                <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-shipping-costs' pk=inv.pk %}">
+                    <i class="fas fa-truck"></i> Record shipping expenses
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:sales-invoice-shipping-costs-list' pk=inv.pk %}">
+                    <i class="fas fa-list-ol"></i> View recorded shipping expenses
+                </a>
+                
                 {% endif %}
                 <h6 class="dropdown-header">Other</h6>
                 

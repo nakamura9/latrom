@@ -34,6 +34,7 @@ class SalesInvoice(AbstractSale):
         on_delete=models.SET_NULL, 
         null=True,
         default=DEFAULT_WAREHOUSE)
+    shipping_expenses = models.ManyToManyField('accounting.Expense')
 
     def add_product(self, product, quantity):
         self.salesinvoiceline_set.create(
@@ -42,6 +43,17 @@ class SalesInvoice(AbstractSale):
             price=product.unit_sales_price,
             invoice=self
         )
+
+    @property
+    def total_shipping_costs(self):
+        # TODO test
+        return reduce(lambda x, y: x +y,[
+            e.amount for  e in self.shipping_expenses.all()
+        ], 0)
+
+    @property
+    def percentage_shipping_cost(self):
+        return (float(self.total_shipping_costs) / float(self.total)) * 100.0
 
     @property
     def returned_total(self):
@@ -100,12 +112,7 @@ class SalesInvoice(AbstractSale):
         if self.tax_amount > D(0):
             j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
         
-        # purchases for cost of goods sold
-        # TODO fix
-        j.debit(self.cost_of_goods_sold, Account.objects.get(pk=4006))
-        #inventory
-        j.credit(self.cost_of_goods_sold, Account.objects.get(pk=1004))
-
+        
         self.entry = j
         self.save()
 

@@ -68,8 +68,8 @@ recurring_expense_urls = [
 report_urls = [
     re_path(r'^balance-sheet/?$', views.BalanceSheet.as_view(), name='balance-sheet'),
     re_path(r'^trial-balance/?$', views.TrialBalance.as_view(), name='trial-balance'),
-    re_path(r'^income-statement/?$', views.IncomeStatement.as_view(), name='income-statement'),
-    re_path(r'^income-statement-form/?$', views.IncomeStatementFormView.as_view(), name='income-statement-form')
+    re_path(r'^profit-and-loss/?$', views.ProfitAndLossReport.as_view(), name='profit-and-loss'),
+    re_path(r'^profit-and-loss-form/?$', views.ProfitAndLossFormView.as_view(), name='profit-and-loss-form')
 ]
 
 account_urls = [

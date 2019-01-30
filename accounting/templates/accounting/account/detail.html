@@ -20,13 +20,12 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-12">
             <div class="card bg-primary text-white">
                 <div class="card-header">
                     <h4 class="card-title">Details</h4>
                 </div>
                 <div class="card-body">
-
                     <table class="table">
                         <tbody>
                             <tr>
@@ -65,25 +64,22 @@
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
-        <div class="col-sm-8">
-                <h3 id="credits_list">Credits</h3>
-                <p>(Scroll down for <a href="#debits_list">debits</a>)</p>
-                <hr />
-                <iframe width="700" height="500" frameborder="0" id="journal-frame" src="/accounting/account/{{object.pk}}/entry-list/credit">
-
-                </iframe>
-                <h3 id="debits_list">Debits</h3>
-                <p>(Scroll up for <a href="#credits_list">credits</a>)</p>
-
-                <hr />
-                <iframe width="700" height="500" frameborder="0"  id="journal-frame" src="/accounting/account/{{object.pk}}/entry-list/debit">
-
-                </iframe>
-            
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+                <div style="display:inline-block;width:48%;border-right:2px solid black;border-top: 2px solid black;margin-top:20px;">
+                    <h4 style="text-align:center;">Credits</h4>
+                    <iframe width="500" height="500" frameborder="0" id="journal-frame" src="/accounting/account/{{object.pk}}/entry-list/credit">
+                    </iframe>
+                </div>
+                <div style="display:inline-block;width:48%;border-top: 2px solid black;margin-top:20px;">
+                    <h4 style="text-align:center;">Debits</h4>
+                    <iframe width="500" height="500" frameborder="0"  id="journal-frame" src="/accounting/account/{{object.pk}}/entry-list/debit">
+                    </iframe>
+                </div>
         </div>
     </div>
 </div>

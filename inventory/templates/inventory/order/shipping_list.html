@@ -1,0 +1,59 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Shipping Costs</h1>
+    <p class="lead">Lists accumulated costs incurred in receiving an order from a supplier</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'inventory:order-expense' pk=object.pk %}" role="button">Record shipping cost</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h4 class="card-title">Meta Data</h4>
+                        <p class="card-text">Order: {{object.pk}}</p>
+                        <p class="card-text">Order Value: ${{object.total}}</p>
+                        <p class="card-text">Total shipping costs: ${{object.total_shipping_costs}}</p>
+                        <p class="card-text">Percentage shipping cost: {{object.percentage_shipping_cost | floatformat:2 }}%</p>
+                    </div>
+                </div>
+                <div class="card" style="min-width:66%">
+                    <div class="card-body">
+                        <h4 class="card-title">Transaction List</h4>
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th>Transaction ID</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in object.shipping_cost_entries.all %}
+                                <tr>
+                                    <td><a href="{% url 'accounting:entry-detail' pk=entry.pk %}">{{entry.pk}}</a></td>
+                                    <td>{{entry.date}}</td>
+                                    <td>{{entry.total_debits}}</td>
+                                    <td style="width:50%">{{entry.memo | truncatechars:80}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

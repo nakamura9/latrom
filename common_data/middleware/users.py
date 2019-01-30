@@ -8,6 +8,8 @@ class UserTestMiddleware(object):
 
     def __call__(self, request):
 
+        redirect = request.META.get('HTTP_REFERER', None)
+
         # TODO add manufacturing
         if request.user.is_superuser or \
                 request.path.startswith("/login") or \
@@ -40,10 +42,10 @@ class UserTestMiddleware(object):
             else:
                 messages.info(request, "The currently logged in user does not have the appropriate permissions to access this feature")
                 return HttpResponseRedirect(
-                "/login/")
+                "/login/?next={}".format(redirect) if redirect else "/login/")
 
         else:
             messages.info(request, "The currently logged in user does not have the appropriate permissions to access this feature")
             return HttpResponseRedirect(
-                "/login/")
+                "/login/?next={}".format(redirect) if redirect else "/login/")
         

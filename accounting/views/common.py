@@ -148,7 +148,8 @@ class AccountCreditIframeView(ListView):
     paginate_by =10
     def get_queryset(self):
         return models.Credit.objects.filter(
-            account= models.Account.objects.get(pk=self.kwargs['pk'])
+            account= models.Account.objects.get(pk=self.kwargs['pk']),
+            entry__draft=False
         ).order_by('pk')
 
 
@@ -157,7 +158,8 @@ class AccountDebitIframeView(ListView):
     paginate_by =10
     def get_queryset(self):
         return models.Debit.objects.filter(
-            account= models.Account.objects.get(pk=self.kwargs['pk'])
+            account= models.Account.objects.get(pk=self.kwargs['pk']),
+            entry__draft=False
         ).order_by('pk')
 
 
@@ -208,6 +210,7 @@ class TaxListView( ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.TaxFilter
     template_name = os.path.join('accounting','tax_list.html')
     paginate_by =10
+    model = models.Tax
     extra_context = {
         'title': 'Tax List',
         'new_link': reverse_lazy('accounting:create-tax')

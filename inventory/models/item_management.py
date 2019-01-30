@@ -70,8 +70,23 @@ class Order(SoftDeletionModel):
     issuing_inventory_controller = models.ForeignKey('auth.user', 
         default=1, on_delete=models.SET_NULL, null=True)
     entry = models.ForeignKey('accounting.JournalEntry',
-         blank=True, on_delete=models.SET_NULL, null=True)
+         blank=True, on_delete=models.SET_NULL, null=True, related_name="order_entry")
+    shipping_cost_entries = models.ManyToManyField('accounting.JournalEntry', 
+        related_name="shipping_cost_entries")
+
+    @property
+    def total_shipping_costs(self):
+        # TODO test
+        return reduce(lambda x, y: x + y, [
+          e.total_credits  for e in self.shipping_cost_entries.all()
+        ], 0)
+
+    @property
+    def percentage_shipping_cost(self):
+        return (float(self.total_shipping_costs) / float(self.total)) * 100.0
     
+
+
     def __str__(self):
         return 'ORD' + str(self.pk)
 
@@ -144,7 +159,7 @@ class Order(SoftDeletionModel):
             if not self.supplier.account:
                 self.supplier.create_account()
             j.credit(self.total, self.supplier.account)
-            j.debit(self.subtotal, Account.objects.get(pk=1004))#inventory
+            j.debit(self.subtotal, Account.objects.get(pk=4006))#purchases
             j.debit(self.tax_amount, Account.objects.get(pk=2001))#tax
         else:
             j = self.entry
@@ -189,19 +204,22 @@ class OrderItem(models.Model):
         (3, 'Equipment'),
         (4, 'Raw Material')
         ]
-    order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, null=True, )
+    order = models.ForeignKey('inventory.Order', 
+        on_delete=models.SET_NULL, null=True)
     item_type = models.PositiveSmallIntegerField(default=1, 
         choices=ITEM_TYPE_CHOICES)
-    product = models.ForeignKey('inventory.product', on_delete=models.SET_NULL, null=True)
-    consumable = models.ForeignKey('inventory.consumable', on_delete=models.SET_NULL, 
-        null=True)
-    equipment = models.ForeignKey('inventory.equipment', on_delete=models.SET_NULL,
-        null=True)
-    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=models.SET_NULL,
-        null=True)
+    product = models.ForeignKey('inventory.product', 
+        on_delete=models.SET_NULL, null=True)
+    consumable = models.ForeignKey('inventory.consumable', 
+        on_delete=models.SET_NULL, null=True)
+    equipment = models.ForeignKey('inventory.equipment', 
+        on_delete=models.SET_NULL, null=True)
+    raw_material = models.ForeignKey('inventory.rawmaterial', 
+        on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True, 
-        default=1)
+    returned_quantity = models.FloatField(default=0.0)
+    unit = models.ForeignKey('inventory.UnitOfMeasure', 
+        on_delete=models.SET_NULL, null=True, default=1)
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
 
@@ -251,6 +269,10 @@ class OrderItem(models.Model):
     def subtotal(self):
         '''The total value of the item as ordered, not received'''
         return D(self.quantity) * self.order_price
+
+    @property
+    def returned(self):
+        return self.returned_quantity > 0
 
 
 class OrderPayment(models.Model):

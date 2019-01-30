@@ -24,7 +24,6 @@ from invoicing.models import *
 
 
 
-
 class Home( ConfigMixin, TemplateView):
     template_name = os.path.join("invoicing", "dashboard.html")
 
@@ -45,3 +44,4 @@ class ConfigView( UpdateView):
 class ConfigAPIView(generics.RetrieveAPIView):
     queryset = SalesConfig.objects.all()
     serializer_class = serializers.ConfigSerializer
+

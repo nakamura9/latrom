@@ -91,7 +91,7 @@ class SalesInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     tax=forms.ModelChoiceField(Tax.objects.all(), widget=forms.HiddenInput)
     class Meta:
-        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'entry'
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'entry', "shipping_expenses"
         model = models.SalesInvoice
 
     

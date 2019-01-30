@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from common_data.models import SoftDeletionModel
+from accounting.models.transactions import Credit, Debit
 
 #Choices for the account model
 TYPE_CHOICES = [
@@ -18,7 +19,7 @@ TYPE_CHOICES = [
 
 BALANCE_SHEET_CATEGORIES = [
         ('current-assets', 'Current Assets'),
-        ('long-term-assets', 'Long Term Assets'),
+        ('non-current-assets', 'Long Term Assets'),
         ('current-liabilites', 'Current Liabilites'),
         ('long-term-liabilites', 'Long Term Liabilites'),
         ('expense', 'Expense'),
@@ -46,6 +47,7 @@ class AbstractAccount(SoftDeletionModel):
     type = models.CharField(max_length=32, choices=TYPE_CHOICES)
     description = models.TextField()
     bank_account = models.BooleanField(default=False)
+    bank_account_number = models.CharField(max_length=32, blank=True, null=True)
     control_account = models.BooleanField(default=False)
     parent_account = models.ForeignKey('accounting.account', blank=True, 
         null=True, on_delete=models.SET_NULL)
@@ -54,6 +56,42 @@ class AbstractAccount(SoftDeletionModel):
     
     def __str__(self):
         return str(self.pk) + "-" + self.name
+
+    
+    def balance_on_date(self, date):
+        # TODO test
+        return self.balance - self.balance_over_period(
+            date, datetime.date.today())
+
+    
+    def balance_over_period(self, start, end):
+        # TODO test
+        credits = Credit.objects.filter(
+            Q(account=self) & 
+            Q(entry__draft=False) &
+            Q(entry__date__gte=start) &
+            Q(entry__date__lte=end)
+            )
+        debits = Debit.objects.filter(
+            Q(account=self) & 
+            Q(entry__draft=False) &
+            Q(entry__date__gte=start) &
+            Q(entry__date__lte=end)
+            )
+
+        credit_total = reduce(lambda x, y: x + y, [
+            c.amount for c in credits
+        ], 0)
+
+        debit_total = reduce(lambda x, y: x + y, [
+            d.amount for d in debits
+        ], 0)
+
+        if self.balance_type == "credit":
+            return credit_total - debit_total
+        else:
+            return debit_total - credit_total
+
 
     def increment(self, amount):
         self.balance += D(amount)
@@ -112,7 +150,7 @@ class Account(AbstractAccount):
     def credit(self):
         '''status of the account'''
         if self.balance_type == "credit":
-            return self.balance
+            return self.control_balance
         
         return D('0.00')
         
@@ -122,7 +160,7 @@ class Account(AbstractAccount):
     def debit(self):
         '''status of account'''
         if self.balance_type == "debit":
-            return self.balance
+            return self.control_balance
 
         return D('0.00')
     

@@ -66,8 +66,6 @@ class InventorySettings(SingletonModel):
     )
     use_warehousing_model = models.BooleanField(default=True)
     use_storage_media_model = models.BooleanField(default=True)
-    stock_valuation_period = models.IntegerField(
-        choices=INVENTORY_VALUATION_PERIOD, default=365)
     use_product_inventory = models.BooleanField(default=True)
     use_equipment_inventory = models.BooleanField(default=True)
     use_consumables_inventory = models.BooleanField(default=True)
@@ -157,8 +155,9 @@ class Supplier(SoftDeletionModel):
                 id = 2100 + n_suppliers + 1, # the + 1 for the default supplier
                 balance =0,
                 type = 'liability',
-                description = 'Account which represents debt owed to a supplier',
-                balance_sheet_category='current-liabilities'
+                description = 'Account which represents debt owed to a Vendor',
+                balance_sheet_category='current-liabilities',
+                parent_account= Account.objects.get(pk=2000)# trade payables
             )
     
     def save(self, *args, **kwargs):

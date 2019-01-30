@@ -3,7 +3,7 @@
         "model": "accounting.account",
         "pk": 1000, 
         "fields": {
-            "name": "Cash in Checking",
+            "name": "Cash",
             "balance": 0,
             "description": "The primary account for operating activites. Used to deposit revenue and pay expenses",
             "type": "asset",
@@ -12,21 +12,11 @@
     },
     {
         "model": "accounting.account",
-        "pk": 1004,
-        "fields": {
-            "name": "Inventory",
-            "balance": 0,
-            "description": "All products on hand for sale to customers.",
-            "type": "asset",
-            "balance_sheet_category": "current-assets"
-        }
-    },
-    {
-        "model": "accounting.account",
         "pk": 2000,
         "fields": {
-            "name": "Accounts Payable",
+            "name": "Trade Payables",
             "balance": 0,
+            "control_account": true,
             "description": "Tracks the money the organization owes its vendors, suppliers consultants and the like. The payments must be made in less than a year.",
             "type": "liability",
             "balance_sheet_category": "current-liabilities"
@@ -47,8 +37,9 @@
         "model": "accounting.account",
         "pk": 1003,
         "fields": {
-            "name": "Accounts Receivable",
+            "name": "Trade Receivables",
             "balance": 0,
+            "control_account": true,
             "description": "Tracks purchases made by customers on store credit, not purchases made with credit cards.",
             "type": "asset",
             "balance_sheet_category": "current-assets"
@@ -69,7 +60,7 @@
         "model": "accounting.account",
         "pk": 4000,
         "fields": {
-            "name": "Sales of Goods and Services",
+            "name": "Sales Revenue",
             "balance": 0,
             "description": "Tracks the all the money earned selling company goods and services",
             "type": "income",
@@ -106,7 +97,7 @@
             "balance": 0,
             "description": "Tracks the land owned by the organization, bsaed on the cost of purchase.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -117,7 +108,7 @@
             "balance": 0,
             "description": "Tracks any buildings owned by the business based on cost of purchase.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -128,7 +119,7 @@
             "balance": 0,
             "description": "Tracks the accumulated depreciation of a building over its lifespan",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -139,7 +130,7 @@
             "balance": 0,
             "description": "Tracks the value of improvements made on a facility that a business leases instead of purchases.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -150,7 +141,7 @@
             "balance": 0,
             "description": "Any Vehicles owned by the business. Initial value listed on the this account",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -161,7 +152,7 @@
             "balance": 0,
             "description": "Depreciation of any vehicles owned by the organization.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -172,7 +163,7 @@
             "balance": 0,
             "description": "Tracks any furniture and fixtures purchased for use by the business.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -183,7 +174,7 @@
             "balance": 0,
             "description": "Tracks any Depreciation on furniture and fixtures",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -194,7 +185,7 @@
             "balance": 0,
             "description": "Equipment Purchased for the business for use of more than one year, such as computers tools and cash registers. Value determined by the cost of purchase.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -205,7 +196,7 @@
             "balance": 0,
             "description": "Tracks any buildings owned by the business based on cost of purchase.",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
         },
     {
@@ -216,7 +207,7 @@
             "balance": 0,
             "description": "Any other assets of small financial value that do not fall in the categories enumerated",
             "type": "asset",
-            "balance_sheet_category": "long-term-assets"
+            "balance_sheet_category": "non-current-assets"
         }
     },
     {
@@ -260,7 +251,7 @@
             "balance": 0,
             "description": "Tracks any long term loans taken out by the organization such as mortgages",
             "type": "liability",
-            "balance_sheet_category": "long-term-liabilities"
+            "balance_sheet_category": "non-current-liabilities"
         }
     },
     {
@@ -271,7 +262,7 @@
             "balance": 0,
             "description": "Tracks money borrowed from other businesses in the form of notes, which are lines of credit that are extended without collateral",
             "type": "liability",
-            "balance_sheet_category": "long-term-liabilities"
+            "balance_sheet_category": "non-current-liabilities"
         }
     },
     {
@@ -282,7 +273,7 @@
             "balance": 0,
             "description": "Tracks liabilities not covered by the categories provided",
             "type": "liability",
-            "balance_sheet_category": "long-term-liabilities"
+            "balance_sheet_category": "non-current-liabilities"
         }
     },
     {
@@ -400,7 +391,7 @@
         "model": "accounting.account",
         "pk": 4009,
         "fields": {
-            "name": "Freight Charges",
+            "name": "Carriage Inwards",
             "balance": 0,
             "description": "Shipping costs accompying the purchase of inventory",
             "type": "cost-of-sales",
@@ -576,9 +567,9 @@
         "model": "accounting.account",
         "pk": 5014,
         "fields": {
-            "name": "Postage",
+            "name": "Carriage Outwards",
             "balance": 0,
-            "description": "Includes payments made for shipping of goods using postal services.",
+            "description": "Includes payments made for shipping of goods to customers.",
             "type": "expense",
             "balance_sheet_category": "not-included"
         }

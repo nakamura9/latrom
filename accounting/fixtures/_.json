@@ -1,0 +1,13 @@
+
+    {
+        "model": "accounting.account",
+        "pk": 1004,
+        "fields": {
+            "name": "Inventory",
+            "balance": 0,
+            "control_account": true,
+            "description": "All products on hand for sale to customers.",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
+        }
+    }

@@ -4,8 +4,17 @@
 <link rel="stylesheet" href="{% static 'common_data/css/filters.css' %}">
 {% endblock %}
 {% block window %}
+<div style="min-height:400px;">
+    <table class="table table-striped table-hover">
+        <thead>
+            {% block list_headings %}{% endblock %}
+        </thead>
+        <tbody>
+            {% block list_content %}{% endblock %}
+        </tbody>
+    </table>
+</div>
 <div>
-
     <ul class="pagination pagination-lg">
                         {% if page_obj.has_previous %}
                         <li class="page-item">
@@ -44,16 +53,6 @@
                     </ul>
 
 </div>
-<div>
-                <table class="table table-striped table-hover">
-                <thead>
-                    {% block list_headings %}{% endblock %}
-                </thead>
-                <tbody>
-                    {% block list_content %}{% endblock %}
-                </tbody>
-            </table>
 
-</div>
 
 {% endblock %}

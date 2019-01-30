@@ -39,4 +39,11 @@ sales_urls = [
     re_path(r'^sales-invoice/(?P<pk>[\d]+)/verify/(?P<status>[a-z]+)/?$', 
         views.verify_invoice, 
         name='sales-invoice-verify'),
+    re_path(r'^sales-invoice/shipping-costs/(?P<pk>[\d]+)/?$', 
+        views.ShippingAndHandlingView.as_view(), 
+        name='sales-invoice-shipping-costs'),
+    re_path(r'^sales-invoice/shipping-costs/list/(?P<pk>[\d]+)/?$', 
+        views.ShippingExpenseListView.as_view(), 
+        name='sales-invoice-shipping-costs-list'),
+    
 ] + sales_router.urls + credit_note_urls

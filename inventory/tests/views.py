@@ -70,7 +70,6 @@ class CommonViewTests(TestCase):
                 'inventory_check_date': 1,
                 'use_warehousing_model': True,
                 'use_storage_media_model': True,
-                'stock_valuation_period': 365,
             })
         self.assertEqual(resp.status_code,  302)
 
@@ -171,7 +170,6 @@ class InventoryManagementViewTests(TestCase):
         self.assertEqual(resp.status_code,  200)
 
     def test_post_stock_receipt_form(self):
-        inv_b4 = Account.objects.get(pk=1004).balance
         resp = self.client.post(reverse('inventory:stock-receipt-create',
             kwargs={'pk': 1}),
             data={

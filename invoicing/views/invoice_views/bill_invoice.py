@@ -80,7 +80,7 @@ class BillCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
                 return HttpResponseRedirect(reverse_lazy('invoicing:bill-create'))
 
         if inv.status in ['invoice', 'paid']: 
-            inv.create_entry()
+            inv.create_entry() # TODO verify if working
         
         process_data(items, inv)
         self.set_payment_amount()
