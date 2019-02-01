@@ -9,31 +9,17 @@ from .credit_note import CreditNote
 
 
 class SalesConfig(SingletonModel):
-    DOCUMENT_THEME_CHOICES = [
-        (1, 'Simple'),
-        (2, 'Blue'),
-        (3, 'Steel'),
-        (4, 'Verdant'),
-        (5, 'Warm')
-    ]
+    
 
     default_invoice_comments = models.TextField(blank=True)
     default_quotation_comments = models.TextField(blank=True)
     default_credit_note_comments = models.TextField(blank=True)
     default_terms = models.TextField(blank=True)
-    sales_tax = models.ForeignKey('accounting.Tax', on_delete=models.SET_NULL,  null=True, blank="True")
+    sales_tax = models.ForeignKey('accounting.Tax', on_delete=models.SET_NULL,  
+        null=True, blank="True")
     include_shipping_address = models.BooleanField(default=False)
-    business_address = models.TextField(blank=True)
-    logo = models.ImageField(null=True,upload_to="logo/", blank=True)
-    document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES)
-    currency = models.ForeignKey('accounting.Currency', blank=True, 
-        on_delete=models.SET_NULL, null=True)
-    business_name = models.CharField(max_length=255)
-    payment_details = models.TextField(blank=True)
-    contact_details = models.TextField(blank=True)
     include_tax_in_invoice = models.BooleanField(default=True)
     include_units_in_sales_invoice = models.BooleanField(default=True)
-    business_registration_number = models.CharField(max_length=32,blank=True)
     next_invoice_number = models.IntegerField(default=1)
     next_quotation_number = models.IntegerField(default=1)
     use_sales_invoice = models.BooleanField(default=True)
@@ -47,9 +33,4 @@ class SalesConfig(SingletonModel):
         del d['_state']
         return d
 
-    @classmethod
-    def logo_url(cls):
-        conf = cls.objects.first()
-        if conf and conf.logo:
-            return conf.logo.url
-        return ""
+    

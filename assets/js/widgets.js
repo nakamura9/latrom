@@ -7,6 +7,8 @@ import MultipleSelectWidget from "./src/multiple_select/containers/root";
 import PaginatedList from '../js/src/paginated_list/containers/root';
 import PricingWidget from "../js/inventory/pricing_widget";
 import MutableTable from "../js/src/mutable_table/container/root";
+import GenericTable from '../js/src/generic_list/containers/root';
+import TimeField from '../js/src/components/time_field';
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -67,37 +69,54 @@ if(storageMedia){
 }else if(threadView){
     ReactDOM.render(<MessageDetail />, threadView);
 }else if(testView){
-    ReactDOM.render(<MutableTable
-        resProcessor={(res) =>{
-            return(res.data.orderitem_set.map((item) =>{
-                let itemType;
-                switch(item.item_type){
-                    case 1:
-                        itemType="product";
-                        break;
-                    case 2:
-                        itemType="consumable";
-                        break;
-                    case 3:
-                        itemType="equipment";
-                        break;
-                } 
-                return({
-                    "item": item[itemType].name,
-                    "quantity": item.quantity,
-                    "returned_quantity": item.returned_quantity
-                })
-            }))
-        }}
-        formHiddenFieldName="order_items"
-        dataURL='/inventory/api/order/1'
-        headings={['Item', 'Ordered Quantity', 'Returned Qauntity']}
-        fields={[
-            {'name': 'item', 'mutable': false},
-            {'name': 'quantity', 'mutable': false},
-            {'name': 'returned_quantity', 'mutable': true},
-        ]}
-         />, testView);
+    ReactDOM.render(<GenericTable
+        formInputID="form"
+        fieldOrder={['employee', 'normal_time', 'overtime']}
+        fields={[{
+            'name': 'employee',
+            'type': 'search',
+            'width': 50,
+            'url' :'/employees/api/employee',
+            'idField': 'employee_number',
+            'displayField': 'first_name'
+        },
+        {
+            'name': 'normal_time',
+            'type': 'widget',
+            'width': 25,
+            'widgetCreator': (comp) =>{
+                return <TimeField 
+                    initial=""
+                    name="normal_time"
+                    handler={(data, name) =>{
+                        if(data.valid){
+                            let newData = {...comp.state.data};
+                            newData['normal_time'] = data.value;
+                            comp.setState({data: newData});    
+                        }
+                    }}/>
+            }
+        },
+        {
+            'name': 'overtime',
+            'type': 'widget',
+            'width': 25,
+            'widgetCreator': (comp) =>{
+                return <TimeField 
+                    initial=""
+                    name="overtime"
+                    handler={(data, name) =>{
+                        if(data.valid){
+                            let newData = {...comp.state.data};
+                            newData['overtime'] = data.value;
+                            comp.setState({data: newData});    
+                        }
+                    }}/>
+            }
+        }
+    ]}
+        fieldDescriptions={['Employee', 'Normal Time(Hours)', 'Overtime(Hours)']}
+        />, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
 }

@@ -167,10 +167,10 @@ class AboutView(LoginRequiredMixin, TemplateView):
 
 
 class GlobalConfigView(ContextMixin,  LoginRequiredMixin, UpdateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join("common_data", "config.html")
     model = models.GlobalConfig
     form_class = forms.GlobalConfigForm
-    success_url = reverse_lazy('invoicing:home')#need a better page
+    success_url = reverse_lazy('/base/workflow')
     extra_context = {
         'title': 'Configure global application features'
     }
@@ -184,7 +184,7 @@ class AuthenticationView(FormView):
 
 
 def get_logo_url(request):
-    return JsonResponse({'url': SalesConfig.logo_url() })
+    return JsonResponse({'url': models.GlobalConfig.logo_url() })
 
 
 class SendEmail(ContextMixin,  LoginRequiredMixin, FormView):

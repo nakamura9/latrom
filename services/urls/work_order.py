@@ -19,6 +19,8 @@ worder_urls = [
         views.work_order_authorize, name='work-order-authorize'),
     re_path(r'^work-order-detail/(?P<pk>\d+)/?$', 
         views.WorkOrderDetailView.as_view(), name='work-order-detail'),
+    re_path(r'^work-order/(?P<pk>\d+)/expense-create/?$', 
+        views.WorkOrderExpenseCreateView.as_view(), name='work-order-expense-create'),
     re_path(r'^work-order/request/list/?$', 
         views.WorkOrderRequestListView.as_view(), name='work-order-request-list'),
     re_path(r'^work-order/request/(?P<pk>[\d]+)/?$', 

@@ -98,10 +98,30 @@ class SingletonModel(models.Model):
         return obj
 
 class GlobalConfig(SingletonModel):
+    DOCUMENT_THEME_CHOICES = [
+        (1, 'Simple'),
+        (2, 'Blue'),
+        (3, 'Steel'),
+        (4, 'Verdant'),
+        (5, 'Warm')
+    ]
     email_host = models.CharField(max_length=32, blank=True, default="")
     email_port = models.IntegerField(null=True, blank=True)
     email_user = models.CharField(max_length=32, blank=True, default="")
     email_password = models.CharField(max_length=255, blank=True, default="")
+    business_address = models.TextField(blank=True)
+    logo = models.ImageField(null=True,upload_to="logo/", blank=True)
+    document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES, 
+        default=1)
+    currency = models.ForeignKey('accounting.Currency', blank=True, 
+        on_delete=models.SET_NULL, null=True)
+    business_name = models.CharField(max_length=255, blank=True, default="")
+    payment_details = models.TextField(blank=True, default="")
+    contact_details = models.TextField(blank=True, default="")
+    business_registration_number = models.CharField(max_length=32,blank=True, 
+        default="")
+
+    
 
     def save(self, *args, **kwargs):
         super(GlobalConfig, self).save(*args, **kwargs)
@@ -112,26 +132,9 @@ class GlobalConfig(SingletonModel):
             del fields['_state']
             json.dump(fields, fil)
 
-
-
-
-'''
-class Task(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-        ('pending', 'Pending'),
-    ]
-    action = models.CharField(max_length=512)
-    created = models.DateTimeField(auto_now=True)
-    due = models.DateField()
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-
-
-    def __str__(self):
-        return self.title
-
-    def __unicode__(self):
-        return self.title
-'''
+    @classmethod
+    def logo_url(cls):
+        conf = cls.objects.first()
+        if conf and conf.logo:
+            return conf.logo.url
+        return ""

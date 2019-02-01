@@ -14,6 +14,8 @@ from django.contrib import messages
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
+from accounting.forms import ExpenseForm
+from accounting.models import Expense
 
 
 class WorkOrderCRUDMixin(object):
@@ -132,3 +134,26 @@ class WorkOrderRequestDetailView(DetailView):
         "detail.html")
 
     model = models.WorkOrderRequest
+
+class WorkOrderExpenseCreateView(ContextMixin, CreateView):
+    template_name = os.path.join("common_data", "create_template.html")
+    form_class = ExpenseForm
+    model = Expense
+    extra_context = {
+        'title': 'Record Work Order Expense'
+    }
+    success_url = "/services/work-order-list"
+
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+
+        if not self.object:
+            return resp
+        work_order = models.ServiceWorkOrder.objects.get(pk=self.kwargs['pk'])
+        
+        models.WorkOrderExpense.objects.create(
+            expense=self.object,
+            work_order=work_order
+        )
+
+        return resp 

@@ -47,8 +47,9 @@ class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
 
 class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    service_time = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        fields = ["status","actual_duration", "comments"]
+        fields = ["status", "comments"]
         model = models.ServiceWorkOrder
 
 

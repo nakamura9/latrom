@@ -1,5 +1,5 @@
 {% extends "window.html" %}
-
+{% load render_bundle from webpack_loader %}
 {% block content %}
 
 <div class="jumbotron">
@@ -47,6 +47,10 @@
                     <form action="" method="POST">
                         {% csrf_token %}
                         {{form.as_p}}
+                        <hr class="my-4">
+                        <h4>Work Order Hours</h4>
+                        <hr class="my-4">
+                        <div id="service-time" ></div>
                         <button class="btn btn-primary">Submit</button>
                     </form>
                 </div>
@@ -54,5 +58,7 @@
         </div>
     </div>
 </div>
+
+{% render_bundle "services" %}
 
 {% endblock content %}

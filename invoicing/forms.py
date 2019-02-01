@@ -37,22 +37,12 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 'include_shipping_address',
                 'document_theme',
                 ),
-            Tab('Financial Data Presentation',
-                'currency',
-                ),
             Tab('Invoice Types',
                 'use_sales_invoice',
                 'use_combined_invoice',
                 'use_bill_invoice',
                 'use_service_invoice',
-                ),
-            Tab('Business Information',
-                'logo',
-                'business_address',
-                'business_name',
-                'business_registration_number',
-                'payment_details',
-                'contact_details')
+                )
         ))
 
         

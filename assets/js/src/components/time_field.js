@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
 
+/**
+ * props
+ * initial - string either "" or time in the form of HH:MM
+ * handler - function that takes the state of the element and its name as args
+ * name - string representing the inputs name
+ */
+
 class TimeField extends Component{
     state = {
         value: this.props.intial === "" 
@@ -32,7 +39,7 @@ class TimeField extends Component{
                 className="form-control"
                 placeholder="HH:MM"
                 style={{
-                    border: `${this.state.valid ? '0' : '1' }px solid red`
+                    border: `${this.state.valid ? '0' : '3' }px solid red`
                 }} />
         )
     }

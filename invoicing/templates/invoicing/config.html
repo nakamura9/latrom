@@ -9,6 +9,7 @@
 </div>
 <div class="container-fluid">
     <div class="row">
+        <div class="col-sm-2"></div>
         <div class="col-sm-8">
             <div class="card ">
                 <div class="card-body">
@@ -17,79 +18,17 @@
                         <table class="table">
                             {% crispy form %}
                         </table>
-                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                        <button class="btn btn-primary pull-right" type="submit">Submit</button>
                     </form>
                 </div>
 
             </div>
         </div>
-        <div class="col-sm-4">
-            <div class="card ">
-                <div class="card-header">
-                    <h3 class="card-title">Template Preview</h3>
-                </div>
-                <div class="card-body">
-                    <img id="template-preview" class="img" src="" alt="template preview image" />
-                </div>
-            </div>
-            <div class="card card-info">
-                <div class="card-header">
-                    <h4 class="card-title">Logo Preview</h4>
-                </div>
-                <div class="card-body">
-                    <img id="id-logo-preview" width="300" height="200" class="img" src="" alt="logo image" />
-                </div>
-            </div>
+        <div class="col-sm-2">  
         </div>
     </div>
 </div>
 
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $.ajax({
-            url: "/base/logo-url",
-            method:"get"
-        }).then(res => {
-            $("#id-logo-preview").attr({src: res.url });
-        })
-        
-        $('input[type="file"]').attr({
-            'onchange': 'upload_img(this)'
-        });
-    })
-
-    function upload_img(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $('#id-logo-preview').attr('src', e.target.result);
-            }
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // for invoice template 
-    var templates = [
-        "{% static 'common_data/images/template-previews/simple.png' %}",
-        "{% static 'common_data/images/template-previews/blue.png' %}",
-        "{% static 'common_data/images/template-previews/steel.png' %}",
-        "{% static 'common_data/images/template-previews/verdant.png' %}",
-        "{% static 'common_data/images/template-previews/dayglow.png' %}"
-    ];
-
-    function setTemplate() {
-        var temp = $('#id_document_theme').val();
-        $("#template-preview").attr({
-            'src': templates[temp - 1]
-        });
-    }
-
-    $(document).ready(function () {
-        setTemplate();
-        $("#id_document_theme").change(setTemplate);
-    })
-</script>
 
 {% endblock %}

@@ -13,8 +13,7 @@
 
 <div class="container-fluid">
     <div class="row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Work Order Details</h4>
@@ -39,7 +38,50 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Service Procedure</h4>
+                        <p class="card-text">Description: {{object.works_request.service.procedure.description}}</p>
+                        <hr class="my-2">
+                        <h5>Stages</h5>
+                        <hr class="my-2">
+                        <ol>
+                            {% for step in object.works_request.service.procedure.steps %}
+                                <li>{{step}}</li>
+                            {% endfor %}
+                        </ol>
+                        <hr class="my-4">
+                        <h4 class="card-title">Comments</h4>
+                        <hr class="my-4">
+                        <p class="card-text">{{object.comments}}</p>
+                        <hr class="my-4">
+                        <h4 class="card-title">Service Time</h4>
+                        <hr class="my-4">
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>Employee</th>
+                                    <th>Normal Time</th>
+                                    <th>Overtime</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for time in object.time_logs %}
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-sm-4">
                 {% if request.user.is_superuser and object.status != 'authorized' %}
                 <h5>Authorization Form</h5>
                 <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
@@ -55,6 +97,31 @@
                 {% endif %}
 
             </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <hr class="my-4">
+                        <h4>Expenses</h4>
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>Expense ID</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exp in object.expenses %}
+                                <tr>
+                                    <td><a class="btn btn-primary" href="{% url 'accounting:expense-detail' pk=exp.expense.pk %}">{{exp.expense.pk}}</a></td>
+                                    <td>{{exp.expense.category_string}}</td>
+                                    <td>{{exp.expense.amount}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

@@ -36,7 +36,7 @@ class AbstractExpense(models.Model):
     category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     debit_account = models.ForeignKey('accounting.Account', 
-        on_delete=models.SET_NULL, null=True)
+        on_delete=models.SET_NULL, null=True, limit_choices_to=Q(type="asset"))
     recorded_by = models.ForeignKey('auth.user', default=1, 
         on_delete=models.SET_NULL, null=True)
     reference = models.CharField(max_length=32, blank=True, default="")

@@ -30,6 +30,7 @@ class SearchableWidget extends Component {
             url: this.props.dataURL
         }).then(res => {
             let newChoices = res.data.map((item) =>{
+                console.log(item);
                 return(item[this.props.idField] + " - " + item[this.props.displayField])
             });
 
@@ -139,7 +140,7 @@ class TextBoxWidget extends Component{
                 backgroundColor: this.props.validChoice === "" ?
                     "#fff" : "#aaf"
         }}/>
-        <button style={{
+        <button type="button" style={{
             width: "15%",
             height: "100%",
             border: "0px",

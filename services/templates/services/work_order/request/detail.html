@@ -28,15 +28,27 @@
 
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" style="min-width:66%;">
                     <div class="card-body">
-                        <h4 class="card-title">Work Order Details </h4>
-                        <p class="card-text">Text</p>
-                    </div>
-                </div><div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Work Progress</h4>
-                        <p class="card-text">Text</p>
+                        <h4 class="card-title">Work Orders</h4>
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>ID</th>
+                                    <th>Status</th>
+                                    <th>No. Employees</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for wo in object.work_orders %}
+                                <tr>
+                                    <td><a href="{% url 'services:work-order-detail' pk=wo.pk %}" class="btn btn-primary">{{wo.pk}}</a></td>
+                                    <td>{{wo.status}}</td>
+                                    <td>{{wo.number_of_employees}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

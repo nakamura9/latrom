@@ -33,7 +33,7 @@ class LeaveDayRequestView(ContextMixin,  CreateView):
     form_class = forms.LeaveRequestForm
     extra_context = {
         'title': 'Vacation Application Form',
-        'description': 'Use this form to apply for vacation or to request leave of absense for the reasons under the category list.'
+        'description': 'Use this form to apply for vacation or to request leave of absence for the reasons under the category list.'
     }
     success_url = '/employees/leave-list/'
     #links available to anyone

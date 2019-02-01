@@ -168,6 +168,7 @@ class inputLine extends Component{
                         <button 
                             style={{float: 'right', marginRight: '10px'}}
                             className="btn"
+                            type="button"
                             onClick={this.insertHandler}>Insert</button>
                         </div>
                     </td>

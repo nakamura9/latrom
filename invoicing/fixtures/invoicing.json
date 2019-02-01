@@ -3,8 +3,8 @@
         "model": "invoicing.SalesConfig",
         "pk": 1,
         "fields": {
-            "default_invoice_comments": "Thank you for your business",
-            "document_theme": 1
+            "default_invoice_comments": "Thank you for your business"
+            
         }
     },
     {

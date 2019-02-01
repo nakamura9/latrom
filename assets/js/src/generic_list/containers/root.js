@@ -95,6 +95,7 @@ class GenericTable extends Component{
     render(){
         return(
             <table className="table table-striped">
+                
                 <TitleBar 
                     fieldOrder={this.props.fieldDescriptions}
                     fields={this.props.fields}

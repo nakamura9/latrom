@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
 from common_data.utilities import time_choices
-
+from functools import reduce
 
 class WorkOrderRequest(models.Model):
     invoice_type = models.PositiveSmallIntegerField(choices=[
@@ -22,6 +22,19 @@ class WorkOrderRequest(models.Model):
         ('in-progress', 'In Progress'),
         ('completed', 'Completed'),
         ])
+
+
+    def update_status(self):
+        if self.work_orders.count() > 0:
+            self.status = "in-progress"
+
+        completed=True 
+        for wo in self.work_orders:
+            if not wo.status in ['completed', 'authorized']:
+                completed=False
+
+        if completed:
+            self.status = 'completed'
 
 
     @property
@@ -77,6 +90,33 @@ class ServiceWorkOrder(models.Model):
     def procedure_pk(self):
         print(self.works_request.service.procedure.pk)
         return self.works_request.service.procedure.pk
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.works_request.update_status()
+
+    @property
+    def number_of_employees(self):
+        # TODO test
+        direct = self.service_people.all().count()
+        team = self.team.members.all().count()
+        return direct + team
+
+    @property
+    def expenses(self):
+        return self.workorderexpense_set.all()
+
+    @property 
+    def time_logs(self):
+        return self.timelog_set.all()
+
+class TimeLog(models.Model):
+    work_order = models.ForeignKey('services.serviceworkorder', null=True, 
+        on_delete=models.SET_NULL)
+    employee = models.ForeignKey('employees.employee', null=True, 
+        on_delete=models.SET_NULL)
+    normal_time = models.DurationField()
+    overtime = models.DurationField()
 
 class WorkOrderExpense(models.Model):
     work_order = models.ForeignKey('services.ServiceWorkOrder', 

@@ -1,0 +1,137 @@
+
+{% extends "window.html" %} {% load static %} {% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
+<style>
+form li {
+    list-style-type: none;
+}
+</style>
+<div class="jumbotron">
+    <div class="container-fluid">
+        <h1 class="display-3">{% if icon %} <i class="fas fa-{{icon}}"></i> {% else %} <i class="fas fa-edit"></i> {% endif %} {{title}}</h1>
+        <p class="lead">{{description}}</p>
+        {% if related_links %}
+        <p>Actions</p>
+            
+            <script>
+                function linkClickHandler(link){
+                    /*
+                    window.open(link ,'popup','width=900,height=480');
+                    
+                    return false;
+                    */
+                   $('#popup-frame').attr('src', link);
+                   var modal = document.getElementById('id-my-modal');
+                    modal.style.display = 'block';
+                    $('#refresher-button').css('display', 'block');
+                }   
+            </script>
+            <div class="btn btn-group">
+                    {% for item in related_links %}
+                        <a class="btn btn-primary text-white"  onclick="linkClickHandler('{{item.url}}')" target="popup">{{item.name}}</a>
+                    {% endfor %}    
+            </div>
+            <button
+                class="btn btn-success"
+                id="refresher-button" 
+                style="display:none;"
+                onclick="window.location.replace(window.location.href);"
+                >Refresh <i class="fas fa-sync"></i>
+            </button>
+        <p class="lead">
+        
+        {% endif %}
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2">
+            {% block other %}{% endblock %}
+            {{form.errors}}
+        </div>
+        <div class="col-sm-6">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table class="table">
+                            {{form.as_p}}
+                        </table>
+                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card ">
+                <div class="card-header">
+                    <h3 class="card-title">Template Preview</h3>
+                </div>
+                <div class="card-body">
+                    <img id="template-preview" class="img" src="" alt="template preview image" />
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Logo Preview</h4>
+                </div>
+                <div class="card-body">
+                    <img id="id-logo-preview" width="300" height="200" class="img" src="" alt="logo image" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            url: "/base/logo-url",
+            method:"get"
+        }).then(res => {
+            $("#id-logo-preview").attr({src: res.url });
+        })
+        
+        $('input[type="file"]').attr({
+            'onchange': 'upload_img(this)'
+        });
+    })
+
+    function upload_img(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#id-logo-preview').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // for invoice template 
+    var templates = [
+        "{% static 'common_data/images/template-previews/simple.png' %}",
+        "{% static 'common_data/images/template-previews/blue.png' %}",
+        "{% static 'common_data/images/template-previews/steel.png' %}",
+        "{% static 'common_data/images/template-previews/verdant.png' %}",
+        "{% static 'common_data/images/template-previews/dayglow.png' %}"
+    ];
+
+    function setTemplate() {
+        var temp = $('#id_document_theme').val();
+        $("#template-preview").attr({
+            'src': templates[temp - 1]
+        });
+    }
+
+    $(document).ready(function () {
+        setTemplate();
+        $("#id_document_theme").change(setTemplate);
+    })
+</script>
+
+
+{% endblock %}

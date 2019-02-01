@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {ProcedureViews, InventorySelectWidgets} from '../js/services/procedure';
 import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import GenericTable from './src/generic_list/containers/root';
+import TimeField from './src/components/time_field';
 
 const procedure = document.getElementById('procedure-widgets');
 const inventory = document.getElementById('inventory-widgets');
@@ -10,6 +11,7 @@ const personnel = document.getElementById('personnel-list');
 const consumableTable = document.getElementById('consumable-requisition-table');
 const equipmentTable = document.getElementById('equipment-requisition-table');
 const workOrderPersons = document.getElementById('work-order-persons');
+const serviceTime = document.getElementById('service-time');
 
 if(procedure){
     ReactDOM.render(<ProcedureViews />, procedure);
@@ -131,4 +133,58 @@ if (equipmentTable){
                 required: true
             }
         ]} />, equipmentTable)
+}
+
+if(serviceTime){
+    ReactDOM.render(<GenericTable
+        formInputID="id_service_time"
+        fieldOrder={['employee', 'normal_time', 'overtime']}
+        fields={[{
+            'name': 'employee',
+            'type': 'search',
+            'width': 50,
+            'url' :'/employees/api/employee',
+            'idField': 'employee_number',
+            'displayField': 'first_name',
+            'required': true
+        },
+        {
+            'name': 'normal_time',
+            'type': 'widget',
+            'width': 25,
+            'required': true,
+            'widgetCreator': (comp) =>{
+                return <TimeField 
+                    initial=""
+                    name="normal_time"
+                    handler={(data, name) =>{
+                        if(data.valid){
+                            let newData = {...comp.state.data};
+                            newData['normal_time'] = data.value;
+                            comp.setState({data: newData});    
+                        }
+                    }}/>
+            }
+        },
+        {
+            'name': 'overtime',
+            'type': 'widget',
+            'width': 25,
+            'required': true,
+            'widgetCreator': (comp) =>{
+                return <TimeField 
+                    initial=""
+                    name="overtime"
+                    handler={(data, name) =>{
+                        if(data.valid){
+                            let newData = {...comp.state.data};
+                            newData['overtime'] = data.value;
+                            comp.setState({data: newData});    
+                        }
+                    }}/>
+            }
+        }
+    ]}
+        fieldDescriptions={['Employee', 'Normal Time(Hours)', 'Overtime(Hours)']}
+        />, serviceTime)
 }
