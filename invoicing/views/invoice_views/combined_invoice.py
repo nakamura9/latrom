@@ -24,24 +24,14 @@ from invoicing.models import *
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 
 
+
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.parse.unquote(items))
         for item in items:
             inv.add_line(item)
             
-    # moved here because the invoice item data must first be 
-    # saved in the database before inventory and entries 
-    # can be created
-
-    if inv.status == 'sent': 
-        #inv.create_credit_entry()
-        pass
-    elif inv.status == 'paid':
-        #inv.create_cash_entry()
-        pass
-    else:#includes drafts and quotations
-        pass
+    
 
 class CombinedInvoiceListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "Combined Invoice List",
@@ -86,6 +76,8 @@ class CombinedInvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
         items = request.POST.get("item_list", None)
         process_data(items, inv)
         self.set_payment_amount()
+
+        
         return resp
 
 class CombinedInvoiceUpdateView(ContextMixin, UpdateView):

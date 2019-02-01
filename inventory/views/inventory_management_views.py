@@ -211,3 +211,5 @@ class GoodsReceivedVoucherView( ConfigMixin,
         DetailView):
     model = models.StockReceipt
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
+
+

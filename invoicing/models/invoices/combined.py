@@ -14,7 +14,7 @@ import inventory
 from accounting.models import Account, Expense, Journal, JournalEntry, Tax
 from common_data.models import Person, SingletonModel
 from employees.models import Employee
-from services.models import Service
+from services.models import Service, WorkOrderRequest
 
 from .abstract import AbstractSale
 
@@ -41,6 +41,16 @@ class CombinedInvoice(AbstractSale):
                 quantity_or_hours= data['data']['hours'],
                 service=service
             )
+
+            if not self.status in ['quotation', 'draft']:
+                if not WorkOrderRequest.objects.filter(
+                        combined_invoice=self, service=service).exists():
+                    WorkOrderRequest.objects.create(
+                        combined_invoice=self, 
+                        service=service,
+                        invoice_type=1,
+                        status="request"
+                    )
 
         elif data['lineType'] == 'billable':
             pk, name = data['data']['billable'].split('-')

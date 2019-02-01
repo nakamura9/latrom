@@ -316,3 +316,44 @@ def verify_order(request, pk=None):
     order.save()
     return HttpResponseRedirect('/inventory/order-detail/{}'.format(order.pk))
 
+class DebitNoteCreateView(CreateView):
+    form_class = forms.DebitNoteForm
+    template_name = os.path.join("inventory", "order", "debit_note", "create.html")
+    model = models.DebitNote
+    success_url = reverse_lazy('inventory:order-list')
+
+    def get_initial(self):
+        return {
+            'order': self.kwargs['pk']
+        }
+
+    def post(self, request, *args, **kwargs):
+        resp =  super().post(request, *args, **kwargs)
+
+        if not self.object:
+            return resp
+
+        data = json.loads(urllib.parse.unquote(request.POST['returned-items']))
+
+        for line in data:
+            pk, _ = line['item'].split('-')
+            item = models.OrderItem.objects.get(pk=pk)
+            # TODO reset or force returned quantity to be initially 0?
+            returned_quantity = float(line['returned_quantity']) - \
+                item.returned_quantity
+            
+            item._return_to_vendor(returned_quantity)
+
+        return resp
+
+class DebitNoteListView(DetailView):
+    template_name = os.path.join("inventory", "order", "debit_note", "list.html")
+    model = models.Order
+
+class DebitNoteDetailView(ContextMixin, ConfigMixin, DetailView):
+    template_name = os.path.join("inventory", "order", "debit_note", 
+        "detail.html")
+    model = models.DebitNote
+    extra_context = {
+        'title': 'Debit Note'
+    }

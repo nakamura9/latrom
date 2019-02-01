@@ -430,3 +430,12 @@ class RawMaterialForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         exclude =  'active',
         model = models.RawMaterial
 
+
+class DebitNoteForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = "__all__"
+        model = models.DebitNote
+
+    order = forms.ModelChoiceField(models.Order.objects.all(),
+        widget=forms.HiddenInput)
+

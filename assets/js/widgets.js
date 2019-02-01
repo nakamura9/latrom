@@ -6,6 +6,7 @@ import MessageDetail from '../js/messaging/container/root';
 import MultipleSelectWidget from "./src/multiple_select/containers/root";
 import PaginatedList from '../js/src/paginated_list/containers/root';
 import PricingWidget from "../js/inventory/pricing_widget";
+import MutableTable from "../js/src/mutable_table/container/root";
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -66,7 +67,37 @@ if(storageMedia){
 }else if(threadView){
     ReactDOM.render(<MessageDetail />, threadView);
 }else if(testView){
-    ReactDOM.render(<PricingWidget />, testView);
+    ReactDOM.render(<MutableTable
+        resProcessor={(res) =>{
+            return(res.data.orderitem_set.map((item) =>{
+                let itemType;
+                switch(item.item_type){
+                    case 1:
+                        itemType="product";
+                        break;
+                    case 2:
+                        itemType="consumable";
+                        break;
+                    case 3:
+                        itemType="equipment";
+                        break;
+                } 
+                return({
+                    "item": item[itemType].name,
+                    "quantity": item.quantity,
+                    "returned_quantity": item.returned_quantity
+                })
+            }))
+        }}
+        formHiddenFieldName="order_items"
+        dataURL='/inventory/api/order/1'
+        headings={['Item', 'Ordered Quantity', 'Returned Qauntity']}
+        fields={[
+            {'name': 'item', 'mutable': false},
+            {'name': 'quantity', 'mutable': false},
+            {'name': 'returned_quantity', 'mutable': true},
+        ]}
+         />, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
 }

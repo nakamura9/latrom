@@ -21,12 +21,7 @@ from common_data.views import PaginationMixin
 from inventory.models import Consumable, Equipment, UnitOfMeasure
 from services import filters, forms, models, serializers
 
-class EquipmentRequisitionCreateView( CreateView):
-    template_name = os.path.join('services', 'requisitions', 'equipment', 
-        'create.html')
-    form_class = forms.EquipmentRequisitionForm
-    success_url = reverse_lazy('services:equipment-requisition-list')
-
+class EquipmentRequisitionMixin(object):
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
         if not self.object:
@@ -44,6 +39,24 @@ class EquipmentRequisitionCreateView( CreateView):
                 quantity=equ['quantity']
             )
         return resp
+
+class EquipmentRequisitionCreateView(EquipmentRequisitionMixin, CreateView):
+    template_name = os.path.join('services', 'requisitions', 'equipment', 
+        'create.html')
+    form_class = forms.EquipmentRequisitionForm
+    success_url = reverse_lazy('services:equipment-requisition-list')
+
+class WorkOrderEquipmentRequisitionCreateView(EquipmentRequisitionMixin, 
+        CreateView):
+    template_name = os.path.join('services', 'requisitions', 'equipment', 
+        'create.html')
+    form_class = forms.WorkOrderEquipmentRequisitionForm
+    success_url = reverse_lazy('services:equipment-requisition-list')
+
+    def get_initial(self):
+        return {
+            'work_order': self.kwargs['pk']
+        }
 
 
 class EquipmentRequisitionAuthorizeView( DetailView):
@@ -121,12 +134,7 @@ def equipment_requisition_release(request, pk=None):
 #            Consumable Requisitions            #
 #################################################
 
-class ConsumableRequisitionCreateView( CreateView):
-    template_name = os.path.join('services', 'requisitions', 'consumables', 
-        'create.html')
-    form_class = forms.ConsumablesRequisitionForm
-    success_url = reverse_lazy('services:consumable-requisition-list')
-
+class ConsumableRequisitionMixin(object):
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
         if not self.object:
@@ -147,6 +155,24 @@ class ConsumableRequisitionCreateView( CreateView):
             )
         return resp
 
+class ConsumableRequisitionCreateView( CreateView):
+    template_name = os.path.join('services', 'requisitions', 'consumables', 
+        'create.html')
+    form_class = forms.ConsumablesRequisitionForm
+    success_url = reverse_lazy('services:consumable-requisition-list')
+
+    
+class WorkOrderConsumableRequisitionCreateView( CreateView):
+    template_name = os.path.join('services', 'requisitions', 'consumables', 
+        'create.html')
+    form_class = forms.WorkOrderConsumablesRequisitionForm
+    success_url = reverse_lazy('services:consumable-requisition-list')
+
+    def get_initial(self):
+        return {
+            'work_order': self.kwargs['pk']
+        }
+        
 
 class ConsumableRequisitionDetailView( DetailView):
     template_name = os.path.join('services', 'requisitions', 'consumables',

@@ -51,16 +51,23 @@ class CreditNoteCreateView( ContextMixin, CreateView):
         }
 
     def post(self, request, *args, **kwargs):
-        resp = super(CreditNoteCreateView, self).post(request, *args, **kwargs)
+        resp = super().post(request, *args, **kwargs)
 
         if not self.object:
             return resp
             
 
         data = json.loads(urllib.parse.unquote(request.POST['returned-items']))
-        for key in data.keys():
-            iitem = SalesInvoiceLine.objects.get(pk=key)
-            iitem._return(data[key])
+        
+        for line in data:
+            pk, _ = line['product'].split('-')
+            inv_line = SalesInvoiceLine.objects.get(pk=pk)
+            # to ensure duplicate returns are not made
+            # TODO refactor
+            returned_quantity =  inv_line.returned_quantity - float(
+                line["returned_quantity"])
+            
+            inv_line._return(returned_quantity)
 
         if self.object:
             self.object.create_entry()

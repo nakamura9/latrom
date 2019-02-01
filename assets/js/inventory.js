@@ -4,13 +4,15 @@ import InventorySelectWidget from './inventory/combined_inventory_select';
 import ItemReceiptTable from './inventory/stock_receipt';
 import InventoryChecker from './inventory/inventory_check';
 import GenericTable from './src/generic_list/containers/root';
+import MutableTable from './src/mutable_table/container/root';
 
 const order = document.getElementById('order-root');
 const inventoryCheck =  document.getElementById('inventory-checker');
 const stockReceipt =  document.getElementById('item-table');
 const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
-const storageMedia = document.getElementById('id-storage-media-select');
+const debitNoteTable = document.getElementById("debit-note-table");
+
 
 const URL = window.location.href;
 const  decomposed = URL.split('/');
@@ -163,4 +165,37 @@ if(inventoryCheck){
                 required: true
             }
         ]} />, scrappingApp);
+}else if(debitNoteTable){
+    ReactDOM.render(<MutableTable 
+        dataURL={"/inventory/api/order/" + tail}
+        headings={["Item", "Orderd Quantity", "Unit Price", "Returned Quantity"]}
+        resProcessor={(res)=>{
+            return res.data.orderitem_set.map((line, i) =>{
+                let itemType;
+                switch(line.item_type){
+                    case 1:
+                        itemType="product";
+                        break;
+                    case 2:
+                        itemType="consumable";
+                        break;
+                    case 3:
+                        itemType="equipment";
+                        break;
+                }
+                return {
+                    'item': line.id + '-' + line[itemType].name.replace('-', '_'),
+                    'quantity': line.quantity,
+                    'order_price': line.order_price,
+                    'returned_quantity': line.returned_quantity,
+                }
+            })
+        }}
+        fields={[
+            {'name': 'item', 'mutable': false},
+            {'name': 'quantity', 'mutable': false},
+            {'name': 'order_price', 'mutable': false},
+            {'name': 'returned_quantity', 'mutable': true},
+        ]}
+        formHiddenFieldName="returned-items"/>, debitNoteTable)
 }

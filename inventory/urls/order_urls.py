@@ -36,5 +36,11 @@ order_urls = [
     re_path(r'^order/(?P<pk>[\d]+)/verify/?$',
         views.verify_order, name='verify-order'),
     re_path(r'^order/expense/list/(?P<pk>[\d]+)/?$',
-        views.ShippingCostDetailView.as_view(), name='order-expense-list')
+        views.ShippingCostDetailView.as_view(), name='order-expense-list'),
+    re_path(r'^debit-note/create/(?P<pk>[\d]+)/?$', 
+        views.DebitNoteCreateView.as_view(), name='debit-note-create'),
+    re_path(r'^debit-note/list/(?P<pk>[\d]+)/?$', 
+        views.DebitNoteListView.as_view(), name='debit-note-list'),
+    re_path(r'^debit-note/detail/(?P<pk>[\d]+)/?$', 
+        views.DebitNoteDetailView.as_view(), name='debit-note-detail')
 ] + order_router.urls + order_item_router.urls 

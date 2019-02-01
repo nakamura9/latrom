@@ -7,7 +7,7 @@ import axios from 'axios';
 
 /**
  * fieldOrder -array of strings 
- * formInputID - string 
+ * formInputID - string used to find the hidden input that updates the form
  * fields - array of objects 
  * prepopulated - boolean for update views 
  * urlFetcher - a function that returns the url with the prepoulation url

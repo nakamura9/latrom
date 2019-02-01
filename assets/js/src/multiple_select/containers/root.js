@@ -4,6 +4,15 @@ import SearchableTextInputWidget from "./text_input";
 import axios from "axios";
 import $ from "jquery";
 
+/**
+ * props
+ *  input field -string
+ *  populatedURL - string
+ *  resProcessor -function
+ *  dataURL -string 
+ *  title - string
+ */
+
 class MultipleSelectWidget extends Component{
     state = {
         selectedItems: [],

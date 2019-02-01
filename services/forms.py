@@ -1,6 +1,7 @@
 from django import forms
 
 from common_data.forms import BootstrapMixin
+from django.contrib.auth import authenticate
 
 from . import models
 from employees.models import Employee
@@ -37,8 +38,11 @@ class ServiceTeamForm(forms.ModelForm, BootstrapMixin):
 class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
     #create service people in react
     status = forms.CharField(widget=forms.HiddenInput)
+    works_request = forms.ModelChoiceField(
+        models.WorkOrderRequest.objects.all(),
+        widget=forms.HiddenInput)
     class Meta:
-        fields = ['date', 'time', 'expected_duration', 'team', 'status', 'description' ]
+        fields = ['date', 'time', 'expected_duration', 'team', 'status', 'description', 'works_request' ]
         model = models.ServiceWorkOrder
 
 class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
@@ -49,9 +53,20 @@ class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
 
 
 class ServiceWorkOrderAuthorizationForm(forms.ModelForm, BootstrapMixin):
+    password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         fields = ["authorized_by", "status"]
         model = models.ServiceWorkOrder
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data['password']
+        user = cleaned_data['authorized_by']
+
+        if not authenticate(username=user.user.username, password=password):
+            raise forms.ValidationError('The password supplied is incorrect.')
+
+        return cleaned_data
 
 class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -59,7 +74,23 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
         model = models.EquipmentRequisition
 
 
+class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
+    work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 
+        widget=forms.HiddenInput)
+    class Meta:
+        exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
+        model = models.EquipmentRequisition
+
+    
+
 class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "authorized_by", "released_by",
+        model = models.ConsumablesRequisition
+
+class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
+    work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 
+        widget=forms.HiddenInput)
     class Meta:
         exclude = "authorized_by", "released_by",
         model = models.ConsumablesRequisition

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {ProcedureViews, InventorySelectWidgets} from '../js/services/procedure';
-import MultipleSelectWidget from '../js/src/components/multiple_select';
+import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import GenericTable from './src/generic_list/containers/root';
 
 const procedure = document.getElementById('procedure-widgets');
@@ -27,10 +27,7 @@ if(personnel){
 
     const resProcessor = (res) =>{
         return res.data.members.map((m) =>{
-            return({
-                value: m.id + '-' + m.name,
-                clicked: false
-            })
+            return(m.id + '-' + m.name)
         });
     }
     ReactDOM.render(<MultipleSelectWidget 
@@ -44,16 +41,13 @@ if(workOrderPersons){
     const splitURL = window.location.href.split('/');
     const tail = splitURL[splitURL.length - 1];
     let populatedURL  = null;
-    if(tail !== 'team-create'){
+    if(tail !== 'team-create'){ // TODO fix
         populatedURL = '/services/api/work-order/'+ tail;
     }
 
     const resProcessor = (res) =>{
         return res.data.service_people.map((sp) =>{
-            return({
-                value: sp.id + '-' + sp.name,
-                clicked: false
-            })
+            return(sp.id + '-' + sp.name)
         });
     }
     ReactDOM.render(<MultipleSelectWidget 

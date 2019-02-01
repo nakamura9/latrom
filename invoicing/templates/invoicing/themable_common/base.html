@@ -9,7 +9,8 @@
                 </tr>
                 <tr>
                     <td>
-                        
+                        <h4>{{business_name}}</h4>
+                        <p>{{business_address | linebreaks }}</p>
                     </td>
                     <td>
                         {% block head_table %}{% endblock %}
@@ -21,7 +22,7 @@
     </tr>            
     </table>
     
-    <table class="{{style}}-content" style="height:60%;width:100%;">
+    <table class="{{style}}-content" style="min-height:500px;width:100%;">
             <thead>
                 {% block content_headings %}{% endblock %}
             </thead>

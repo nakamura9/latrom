@@ -5,7 +5,9 @@ import json
 import os
 import urllib
 
+from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMessage
+from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
@@ -23,6 +25,7 @@ from common_data.views import EmailPlusPDFView, PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
+from services.models import WorkOrderRequest
 
 class ServiceInvoiceMixin(object):
     def post(self, request, *args, **kwargs):
@@ -60,6 +63,19 @@ class ServiceInvoiceMixin(object):
         #valid for both new and existing invoices
         if self.object.status in ["invoice", 'paid']:
             self.object.create_entry()#if existing method returns none
+
+            #Single source of truth, only place where orders are created
+            if not WorkOrderRequest.objects.filter(
+                    service_invoice=self.object).exists():
+                
+                for line in self.object.serviceinvoiceline_set.all():
+                    WorkOrderRequest.objects.create(
+                        service_invoice=self.object,
+                        service=line.service,
+                        status="requested",
+                        invoice_type=0
+                    )
+
 
         self.set_payment_amount()
         return resp
@@ -200,3 +216,15 @@ class ServiceInvoiceDraftDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')
     model = ServiceInvoice
+
+
+def service_invoice_status(request, pk=None):
+    invoice = get_object_or_404(ServiceInvoice, pk=pk)
+    try:   
+        return HttpResponseRedirect(
+            '/services/work-order-request/{}/status'.format(
+        invoice.workorderrequest.pk
+        ))
+    except:
+        messages.info(request, "The service invoice has not workorder request")
+        return HttpResponseRedirect("/invoicing/service-invoice-list")

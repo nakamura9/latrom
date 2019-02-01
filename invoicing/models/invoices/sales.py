@@ -141,6 +141,7 @@ class SalesInvoiceLine(models.Model):
     def _return(self, quantity):
         self.returned_quantity += float(quantity)
         self.returned = True
+        # TODO should i increase inventory quantity here?
         self.save()
 
     def set_value(self):

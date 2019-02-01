@@ -6,6 +6,7 @@ import BillTable from './invoices/bill';
 import CreditNoteTable from './invoices/credit_note';
 import CombinedTable from './invoices/combined_invoice';
 import GenericTable from './src/generic_list/containers/root';
+import MutableTable from './src/mutable_table/container/root';
 
 const sales = document.getElementById('sales-invoice-contents');
 const bill = document.getElementById('bill-contents');
@@ -189,7 +190,28 @@ if(sales){
          />, services);
 
 }else if(creditNote){
-    ReactDOM.render(<CreditNoteTable />, creditNote)
+    let decomposedURL = window.location.href.split('/');
+    let pk = decomposedURL[decomposedURL.length - 1];
+    ReactDOM.render(<MutableTable 
+        dataURL={'/invoicing/api/sales-invoice/' + pk}
+        headings={["Product", "Invoiced Quantity", "Unit Price", "Returned Quantity"]}
+        resProcessor={(res) =>{
+            // filter by lines which have a returned value less than 1
+            return res.data.salesinvoiceline_set.map((line, i)=>({
+                product: line.id + " - " +line.product.name,
+                quantity: line.quantity,
+                unit_price: line.product.unit_sales_price,
+                returned_quantity: line.returned_quantity
+            }))
+        }}
+        fields={[
+            {'name': 'product', 'mutable': false},
+            {'name': 'quantity', 'mutable': false},
+            {'name': 'unit_price', 'mutable': false},
+            {'name': 'returned_quantity', 'mutable': true},
+        ]}
+        formHiddenFieldName="returned-items"
+        />, creditNote)
 }else if(directPurchase){
     ReactDOM.render(<PurchaseTable />, directPurchase);
 }else if(combinedInvoce){

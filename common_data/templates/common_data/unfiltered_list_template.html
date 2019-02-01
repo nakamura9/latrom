@@ -9,12 +9,10 @@
     <div class="container-fluid">
         <h1 class="display-3"> <i class="fas fa-list"></i> {{title}}</h1>
         <p class="lead">{{description}}</p>
+        {% if new_link %}
         <p>Actions</p>
-            {% if new_link %}
             <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New</a>
-            {% endif %}    
-        <p class="lead">
-        </p>
+            {% endif %} 
     </div>
 </div>
 

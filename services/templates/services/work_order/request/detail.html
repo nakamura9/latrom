@@ -1,0 +1,47 @@
+{% extends "window.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Works Request</h1>
+    <p class="lead">View the details of the progress of the Service and other information</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'services:work-order-create' pk=object.pk %}" role="button">Add Work Order</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">            
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Invoice Details</h4>
+                        <p class="card-text">Invoice Number:{{object.invoice.invoice_number}}</p>
+                        <p class="card-text">Services: {{object.invoice.serviceinvoiceline_set.all.count}}</p>
+                        <p class="card-text">Date Created: {{object.invoice.date}}</p>
+                        <p class="card-text">Due Date: {{object.invoice.due}}</p>
+                        <p class="card-text">Customer: {{object.invoice.customer}}</p>
+                        <p class="card-text">Sales Representative: {{object.invoice.salesperson}}</p>
+
+
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Work Order Details </h4>
+                        <p class="card-text">Text</p>
+                    </div>
+                </div><div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Work Progress</h4>
+                        <p class="card-text">Text</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

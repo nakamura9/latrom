@@ -31,7 +31,7 @@ class SalesInvoiceLineSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False)
     class Meta:
         model = SalesInvoiceLine
-        fields = ['product', 'quantity', 'id']
+        fields = ['product', 'quantity', 'id', 'returned_quantity']
 
 
 class SalesInvoiceSerializer(serializers.ModelSerializer):

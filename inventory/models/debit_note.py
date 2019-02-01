@@ -3,9 +3,8 @@ from functools import reduce
 from django.db import models
 
 from accounting.models import Account, Journal, JournalEntry
-
-
-class OrderReturn(models.Model):
+# TODO test
+class DebitNote(models.Model):
     """A document sent by a business to a supplier notifying them
     that inventory has been returned for some reason. Linked to Orders. Stores a list of products returned.
     
@@ -25,24 +24,24 @@ class OrderReturn(models.Model):
 
     @property
     def returned_items(self):
-        return self.order.orderline_set.filter(returned=True)
+        return self.order.orderitem_set.filter(returned_quantity__gt=0)
         
     @property
     def returned_total(self):
-        return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_products], 0)
+        return self.order.returned_total
 
     def create_entry(self):
         
         j = JournalEntry.objects.create(
-            memo="Auto generated journal entry from credit note",
+            memo="Auto generated journal entry from debit note",
             date=self.date,
             journal=Journal.objects.get(pk=3),
             draft=False,
-            created_by = self.invoice.salesperson.employee.user
+            created_by = self.order.issuing_inventory_controller
         )
         j.simple_entry(
             self.returned_total,
-            self.invoice.customer.account,
+            self.order.supplier.account,
             Account.objects.get(pk=4002))# sales returns 
 
         

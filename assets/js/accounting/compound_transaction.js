@@ -31,6 +31,7 @@ export default class TransactionTable extends Component{
     }
     addHandler(data){
         let form = document.forms[0];
+        //jquery replacement
         let input = document.createElement("input")
         let newContents = this.state.contents;
 

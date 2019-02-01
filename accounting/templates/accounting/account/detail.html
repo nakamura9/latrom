@@ -21,53 +21,61 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
-            <div class="card bg-primary text-white">
-                <div class="card-header">
-                    <h4 class="card-title">Details</h4>
+            <div class="card-deck" >
+                <div class="card bg-primary text-white" style="max-width:33%;">
+                    <div class="card-header">
+                        <h4 class="card-title">Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Balance:</th>
+                                    <td>{{object.balance | accounting}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Type:</th>
+                                    <td>{{object.type}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bank Account?</th>
+                                    <td>{{object.bank_account}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Control Account?</th>
+                                    <td>{{object.control_account}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Parent:</th>
+                                    <td>{{object.parent_account}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Children:</th>
+                                    <td>
+                                        <ul>
+                                        {% for c in object.children %}
+                                            <li>{{c}}</li>
+                                        {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th>Balance:</th>
-                                <td>{{object.balance | accounting}}</td>
-                            </tr>
-                            <tr>
-                                <th>Type:</th>
-                                <td>{{object.type}}</td>
-                            </tr>
-                            <tr>
-                                <th>Bank Account?</th>
-                                <td>{{object.bank_account}}</td>
-                            </tr>
-                            <tr>
-                                <th>Control Account?</th>
-                                <td>{{object.control_account}}</td>
-                            </tr>
-                            <tr>
-                                <th>Parent:</th>
-                                <td>{{object.parent_account}}</td>
-                            </tr>
-                            <tr>
-                                <th>Description:</th>
-                                <td>{{object.description}}</td>
-                            </tr>
-                            <tr>
-                                <th>Children:</th>
-                                <td>
-                                    <ul>
-                                    {% for c in object.children %}
-                                        <li>{{c}}</li>
-                                    {% endfor %}
-                                    </ul>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Description</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{object.description}}</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
     <div class="row">
         <div class="col-sm-12">
                 <div style="display:inline-block;width:48%;border-right:2px solid black;border-top: 2px solid black;margin-top:20px;">

@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate
 
 from common_data.forms import BootstrapMixin
 from inventory.models import Supplier
+from accounting.models import Account
 from django.db.models import Q
 
 from . import models
@@ -51,11 +52,14 @@ class CommissionUpdateForm(forms.ModelForm, BootstrapMixin):
         model = models.CommissionRule
 
 class DeductionForm(forms.ModelForm, BootstrapMixin):
+    #only allow deduction accounts for 
+    account_paid_into = forms.ModelChoiceField(Account.objects.filter(type="liability"), required=False)
     class Meta:
         exclude="active",
         model = models.Deduction
 
 class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
+    account_paid_into = forms.ModelChoiceField(Account.objects.filter(type="liability"), required=False)
     class Meta:
         fields = "name",
         model = models.Deduction
