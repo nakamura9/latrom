@@ -52,30 +52,13 @@
                             {% endfor %}
                         </ol>
                         <hr class="my-4">
-                        <h4 class="card-title">Comments</h4>
+                        <h4 class="card-title">Notes</h4>
                         <hr class="my-4">
-                        <p class="card-text">{{object.comments}}</p>
-                        <hr class="my-4">
-                        <h4 class="card-title">Service Time</h4>
-                        <hr class="my-4">
-                        <table class="table">
-                            <thead>
-                                <tr class="bg-primary">
-                                    <th>Employee</th>
-                                    <th>Normal Time</th>
-                                    <th>Overtime</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for time in object.time_logs %}
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        <ul>
+                            {% for note in object.notes.all %}
+                                <li>{{note}}</li>
+                            {% endfor  %}
+                        </ul>
                         
                     </div>
                 </div>
@@ -99,29 +82,53 @@
             </div>
     </div>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-6">
+                <h4>Expenses</h4>
             <hr class="my-4">
-                        <h4>Expenses</h4>
-                        <table class="table">
-                            <thead>
-                                <tr class="bg-primary">
-                                    <th>Expense ID</th>
-                                    <th>Category</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for exp in object.expenses %}
-                                <tr>
-                                    <td><a class="btn btn-primary" href="{% url 'accounting:expense-detail' pk=exp.expense.pk %}">{{exp.expense.pk}}</a></td>
-                                    <td>{{exp.expense.category_string}}</td>
-                                    <td>{{exp.expense.amount}}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+
+                <table class="table">
+                    <thead>
+                        <tr class="bg-primary">
+                            <th>Expense ID</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exp in object.expenses %}
+                        <tr>
+                            <td><a class="btn btn-primary" href="{% url 'accounting:expense-detail' pk=exp.expense.pk %}">{{exp.expense.pk}}</a></td>
+                            <td>{{exp.expense.category_string}}</td>
+                            <td>{{exp.expense.amount}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+        <div class="col-sm-6">
+            <h4 class="card-title">Service Time</h4>
+                <hr class="my-4">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-primary">
+                            <th>Employee</th>
+                            <th>Normal Time</th>
+                            <th>Overtime</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for time in object.time_logs %}
+                        <tr>
+                            <td>{{time.employee}}</td>
+                            <td>{{time.normal_time}}</td>
+                            <td>{{time.overtime}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
         </div>
     </div>
+
 </div>
 
 {% endblock %}

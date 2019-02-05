@@ -12,7 +12,7 @@ const stockReceipt =  document.getElementById('item-table');
 const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
 const debitNoteTable = document.getElementById("debit-note-table");
-
+const receiveTable = document.getElementById('receive-table');
 
 const URL = window.location.href;
 const  decomposed = URL.split('/');
@@ -198,4 +198,20 @@ if(inventoryCheck){
             {'name': 'returned_quantity', 'mutable': true},
         ]}
         formHiddenFieldName="returned-items"/>, debitNoteTable)
+}else if(receiveTable){
+    ReactDOM.render(<MutableTable
+            formHiddenFieldName="received-items" 
+            dataURL={"/inventory/api/transfer-order/" + tail}
+            headings={["Item", "Quantity", "Quantity Received"]}
+            resProcessor={(res) =>{
+                return res.data.transferorderline_set.map((item)=>({
+                    'item': item.id + ' - ' + item.product.name,
+                    'quantity': item.quantity, 
+                    'moved_quantity': item.moved_quantity
+                }))
+            }}
+            fields={[
+                {'name': 'item', 'mutable': false},
+                {'name': 'quantity', 'mutable': false},
+                {'name': 'moved_quantity', 'mutable': true}]}/>, receiveTable)
 }

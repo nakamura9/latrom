@@ -12,4 +12,6 @@ transfer_urls = [
         views.TransferOrderDetailView.as_view(), name='transfer-order-detail'),
     re_path(r'^receive-transfer/(?P<pk>[\d]+)/?$', 
         views.TransferOrderReceiveView.as_view(), name='receive-transfer'),
+    re_path(r'^api/transfer-order/(?P<pk>[\d]+)/?$', 
+        views.TransferOrderAPIView.as_view()),
 ]

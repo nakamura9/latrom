@@ -1,21 +1,25 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
+{% load crispy_forms_tags %}
 <div class="jumbotron">
     <h1 class="display-3">Create Consumable Requisition</h1>
-    <p class="lead">Jumbo helper text</p>
+    <p class="lead">Request consumables that are stored in inventory for the purpose of completing a work order.</p>
     <hr class="my-2">
 </div>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-8">
+        <div class="col-sm-12">
+            {{form.errors}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Requisition Form</h4>
                     <form action="" method="POST">
-                        {% csrf_token %}
-                        {{form.as_p}}
+                        {% crispy form %}
                         <input name="consumables" type="hidden" id="id_items" />
                         <button class="btn btn-primary">Submit</button>
                     </form>
@@ -24,7 +28,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-2"></div>
     </div>
 </div>
 {% render_bundle "services" %}

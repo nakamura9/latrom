@@ -1,0 +1,27 @@
+<h1>Service Report</h1>
+<h3>Period spanning: {{start}} to {{end}}</h3>
+<style>
+    td {
+        padding: 5px;
+        align: left;
+    }
+</style>
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Date</th>
+            <td>{{date}}</td>
+        </tr>
+        <tr>
+            <th>Number of Employees Analysed</th>
+            <td>{{number_employees}}</td>
+        </tr>
+        <tr>
+            <th>Average service time</th>
+            <td>{{average_time | floatformat:2 }}</td>
+        </tr>
+    </tbody>
+</table>
+{% autoescape off %}
+{{graph}}
+{% endautoescape %}

@@ -2,7 +2,9 @@ from django import forms
 
 from common_data.forms import BootstrapMixin
 from django.contrib.auth import authenticate
+from crispy_forms.helper import FormHelper
 
+from crispy_forms.layout import Row, Column, Fieldset, Layout
 from . import models
 from employees.models import Employee
 
@@ -46,10 +48,10 @@ class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
         model = models.ServiceWorkOrder
 
 class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
-    status = forms.CharField(widget=forms.HiddenInput)
-    service_time = forms.CharField(widget=forms.HiddenInput)
+    progress = forms.CharField(widget=forms.HiddenInput, required=False)
+    service_time = forms.CharField(widget=forms.HiddenInput, required=False)
     class Meta:
-        fields = ["status", "comments"]
+        fields = ["progress"]
         model = models.ServiceWorkOrder
 
 
@@ -74,6 +76,24 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
         exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
         model = models.EquipmentRequisition
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('date', css_class="col-sm-6"), 
+                Column('work_order', css_class="col-sm-6"), css_class="form-row"),
+            Row(
+                Column('department', css_class="col-sm-6"),
+                Column('warehouse', css_class="col-sm-6"), 
+                 css_class="form-row"),
+            Row(
+                Column('reference', css_class="col-sm-6"), 
+                Column('requested_by', css_class="col-sm-6"), css_class="form-row")
+        )
+        
+
 
 class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
     work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 
@@ -82,12 +102,47 @@ class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
         exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
         model = models.EquipmentRequisition
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('work_order', css_class="col-sm-12"), css_class="form-row"),
+            Row(
+                Column('date', css_class="col-sm-6"), 
+                Column('requested_by', css_class="col-sm-6"), css_class="form-row"),
+            Row(
+                Column('department', css_class="col-sm-6"),
+                Column('warehouse', css_class="col-sm-6"), 
+                 css_class="form-row"),
+            Row(
+                Column('reference', css_class="col-sm-12"),
+                css_class="form-row")
+        )
     
 
 class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "authorized_by", "released_by",
         model = models.ConsumablesRequisition
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('date', css_class="col-sm-6"), 
+                Column('work_order', css_class="col-sm-6"), css_class="form-row"),
+            Row(
+                Column('department', css_class="col-sm-6"),
+                Column('warehouse', css_class="col-sm-6"), 
+                 css_class="form-row"),
+            Row(
+                Column('reference', css_class="col-sm-6"), 
+                Column('requested_by', css_class="col-sm-6"), css_class="form-row")
+        )
 
 class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
     work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 
@@ -96,6 +151,24 @@ class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
         exclude = "authorized_by", "released_by",
         model = models.ConsumablesRequisition
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('work_order', css_class="col-sm-12"), css_class="form-row"),
+            Row(
+                Column('date', css_class="col-sm-6"), 
+                Column('requested_by', css_class="col-sm-6"), css_class="form-row"),
+            Row(
+                Column('department', css_class="col-sm-6"),
+                Column('warehouse', css_class="col-sm-6"), 
+                 css_class="form-row"),
+            Row(
+                Column('reference', css_class="col-sm-12"),
+                css_class="form-row")
+        )
 class ServiceProcedureForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "required_equipment", "required_consumables"

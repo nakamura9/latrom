@@ -142,8 +142,18 @@ class TransferOrder(models.Model):
     def complete(self):
         '''move all the outstanding items at the same time.'''
         for line in self.transferorderline_set.filter(moved=False):
-            line.move()
+            line.move(line.quantity)
         self.completed = True
+        self.save()
+
+    def update_completed_status(self):
+        # TODO inefficient
+        completed = True
+        for line in self.transferorderline_set.all():
+            if line.quantity > line.moved_quantity:
+                completed = False
+
+        self.completed = completed
         self.save()
 
 class TransferOrderLine(models.Model):
@@ -153,16 +163,17 @@ class TransferOrderLine(models.Model):
     quantity = models.FloatField()
     transfer_order = models.ForeignKey('inventory.TransferOrder', 
         on_delete=models.SET_NULL, null=True)
-    moved = models.BooleanField(default=False)
+    moved_quantity = models.FloatField(default=0.0)
 
-    def move(self):
+    def move(self, quantity):
         '''performs the actual transfer of the item between warehouses'''
         self.transfer_order.source_warehouse.decrement_item(
-            self.product, self.quantity)
+            self.product, quantity)
         self.transfer_order.receiving_warehouse.add_item(
-            self.product, self.quantity)
-        self.moved=True
+            self.product, quantity)
+        self.moved=quantity
         self.save()
+        self.transfer_order.update_completed_status()
 
 class InventoryScrappingRecord(models.Model):
     date = models.DateField()

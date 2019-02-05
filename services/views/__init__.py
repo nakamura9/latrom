@@ -4,3 +4,4 @@ from .personnel import *
 from .work_orders import *
 from .requisitions import *
 from .category import *
+from .reports import *

@@ -102,7 +102,7 @@ class Product(BaseItem):
     def quantity_on_date(self, date):
         current_quantity = self.quantity
 
-        total_orders = inventory.models.item_management.OrderItem.objects.filter(
+        total_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
             Q(order__date__lte=datetime.date.today()) &
             Q(product=self)
@@ -134,7 +134,7 @@ class Product(BaseItem):
              i.quantity for i in Product.objects.all()
         ], 0)
 
-        total_product_orders = inventory.models.item_management.OrderItem.objects.filter(
+        total_product_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
             Q(order__date__lte=datetime.date.today()) &
             Q(item_type=1)

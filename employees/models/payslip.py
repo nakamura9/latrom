@@ -77,11 +77,11 @@ class Payslip(models.Model):
             return 0
         commission = CommissionRule.objects.get(
             pk=self.paygrade_['commission_id'])
-        if not commission:
+        
+        
+        if not hasattr(self.employee, 'salesrepresentative'):
             return 0
         
-        elif not hasattr(self.employee, 'salesrepresentative'):
-            return 0
         else:
             total_sales = self.employee.salesrepresentative.sales(
                 self.start_period, 

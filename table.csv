@@ -1,0 +1,12 @@
+Account Code,Account Title,Debit,Credit
+1000,Cash,9935.00,0.00
+1003,Trade Receivables,663.00,0.00
+2000,Trade Payables,0.00,0.00
+2001,VAT Control Account,0.00,63.00
+3002,Capital,0.00,10000.00
+4000,Sales Revenue,0.00,450.00
+4002,Sales Returns,0.00,150.00
+4009,Carriage Inwards,5.00,0.00
+5003,Equipment Rental,20.00,0.00
+5005,Vehicles,20.00,0.00
+5013,Office Expenses,20.00,0.00

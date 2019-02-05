@@ -137,7 +137,7 @@ class TransferOrderListView(ContextMixin, PaginationMixin, FilterView):
     }
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['warehouse'] = self.kwargs['pk']
+        context['warehouse'] = int(self.kwargs['pk'])
         context['new_link'] = '/inventory/create-transfer-order/' + \
             self.kwargs['pk']
         return context
@@ -148,15 +148,13 @@ class TransferOrderListView(ContextMixin, PaginationMixin, FilterView):
 
     
 
-
-
 class TransferOrderDetailView(DetailView):
     model = models.TransferOrder
     template_name = os.path.join('inventory', 'transfer', 'detail.html')
 
 
 class TransferOrderReceiveView(ContextMixin, UpdateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('inventory', 'transfer', 'receive.html')
     form_class = forms.TransferReceiptForm
     model = models.TransferOrder
     success_url = reverse_lazy('inventory:home')
@@ -168,15 +166,19 @@ class TransferOrderReceiveView(ContextMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         resp = super(TransferOrderReceiveView, self).post(request, *args, **kwargs)
 
-        self.object.complete()
+        for item in json.loads(urllib.parse.unquote(
+                request.POST['received-items'])):
+            line = models.TransferOrderLine.objects.get(
+                pk=item['item'].split('-')[0])
+            line.move(float(item['moved_quantity']))
+        
         return resp
-
-
 
 
 #######################################################
 #               Goods Received Views                  #
 #######################################################
+
 
 class StockReceiptCreateView(CreateView):
     form_class = forms.StockReceiptForm
@@ -213,3 +215,6 @@ class GoodsReceivedVoucherView( ConfigMixin,
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
 
 
+class TransferOrderAPIView(RetrieveAPIView):
+    serializer_class = serializers.TransferOrderSerializer 
+    queryset = models.TransferOrder.objects.all()

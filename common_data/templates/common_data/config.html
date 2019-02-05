@@ -1,6 +1,8 @@
 
 {% extends "window.html" %} {% load static %} {% block head %}
-<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} 
+{% load crispy_forms_tags %}
+{% block content %}
 <style>
 form li {
     list-style-type: none;
@@ -56,7 +58,7 @@ form li {
                     <form method="POST" action="" enctype="multipart/form-data">
                         {% csrf_token %}
                         <table class="table">
-                            {{form.as_p}}
+                            {% crispy form %}
                         </table>
                         <button class="btn btn-default pull-right" type="submit">Submit</button>
                     </form>

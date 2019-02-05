@@ -411,6 +411,17 @@
     },
     {
         "model": "accounting.account",
+        "pk": 4011,
+        "fields": {
+            "name": "Sales Commission",
+            "balance": 0,
+            "description": "This represents the percentage of sales earned by sales represetatives as part of their income.",
+            "type": "cost-of-sales",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
         "pk": 5000,
         "fields": {
             "name": "Advertising",
@@ -568,6 +579,7 @@
         "pk": 5014,
         "fields": {
             "name": "Carriage Outwards",
+            "parent_account": 
             "balance": 0,
             "description": "Includes payments made for shipping of goods to customers.",
             "type": "expense",

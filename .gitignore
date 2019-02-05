@@ -12,3 +12,4 @@ build/
 dbs/
 global_config.json
 assets/webpack-stats.json
+license.json

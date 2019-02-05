@@ -1,6 +1,7 @@
 from functools import reduce
 
 from django.db import models
+from decimal import Decimal as D
 
 from accounting.models import Account, Journal, JournalEntry
 
@@ -34,6 +35,17 @@ class CreditNote(models.Model):
     def returned_total(self):
         return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_products], 0)
 
+    # TODO test
+    @property
+    def tax_credit(self):
+        if not self.invoice.tax:
+            return 0
+        return D(self.invoice.tax.rate / 100.0) * self.returned_total
+        
+    @property
+    def returned_total_with_tax(self):
+        return self.returned_total + self.tax_credit
+
     def create_entry(self):
         j = JournalEntry.objects.create(
             memo="Auto generated journal entry from credit note",
@@ -43,7 +55,7 @@ class CreditNote(models.Model):
             created_by = self.invoice.salesperson.employee.user
         )
         j.simple_entry(
-            self.returned_total,
+            self.returned_total_with_tax,
             self.invoice.customer.account,
             Account.objects.get(pk=4002))# sales returns 
 

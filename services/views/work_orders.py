@@ -1,6 +1,8 @@
 import json
 import os
 import urllib
+import datetime 
+from functools import reduce
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -16,7 +18,8 @@ from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
 from accounting.forms import ExpenseForm
 from accounting.models import Expense
-
+from employees.models import Employee
+from decimal import Decimal as D
 
 class WorkOrderCRUDMixin(object):
     def post(self, request, *args, **kwargs):
@@ -72,10 +75,49 @@ class WorkOrderCompleteView( UpdateView):
     success_url = reverse_lazy('services:work-order-list')
     model = models.ServiceWorkOrder
 
-    def get_initial(self):
-        return {
-            'status': 'requested'
-        }
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args, **kwargs)
+        print("POST data")
+        print(request.POST)
+        
+
+        if not self.object:
+            self.get_object()
+        
+        log_data = json.loads(urllib.parse.unquote(request.POST['service_time'])) if request.POST['service_time'] != '' else []
+
+        for log in log_data:
+            pk = log['employee'].split('-')[0]
+            employee = Employee.objects.get(pk=pk)
+            date= datetime.datetime.strptime(
+                log['date'], "%Y-%m-%d")
+            normal_time = datetime.datetime.strptime(
+                log['normal_time'], "%H:%M")
+            normal_time = datetime.timedelta(
+                hours=normal_time.hour, minutes=normal_time.minute)
+            
+            overtime = datetime.datetime.strptime(log['overtime'], "%H:%M")
+            overtime = datetime.timedelta(
+                hours=overtime.hour, minutes=overtime.minute)
+
+            models.TimeLog.objects.create(
+                work_order=self.object,
+                date=date,
+                employee=employee,
+                normal_time=normal_time,
+                overtime=overtime
+            )
+
+        # get the progress
+        if request.POST.get('steps[]', None):
+            steps = request.POST.getlist('steps[]')
+            self.object.progress = ",".join(steps)
+            self.object.save()
+        else:
+            self.object.progress = ""
+            self.object.save()
+
+        return resp 
 
 
 class WorkOrderDetailView( DetailView):
@@ -157,3 +199,21 @@ class WorkOrderExpenseCreateView(ContextMixin, CreateView):
         )
 
         return resp 
+
+
+class WorkOrderCostingView(DetailView):
+    template_name = os.path.join('services', 'work_order', 'costing.html')
+    model = models.ServiceWorkOrder
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        labour = reduce(lambda x, y: x +y, 
+            [i.total_cost for i in self.object.time_logs], D(0.0))
+        expenses = reduce(lambda x, y: x +y, 
+            [i.expense.amount for i in self.object.workorderexpense_set.all()], 
+            D(0.0))
+    
+        context['total_labour_cost'] = labour 
+        context['total_expense_costs'] = expenses
+        context['total_costs'] = labour + expenses
+        return context

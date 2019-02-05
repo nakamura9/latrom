@@ -14,10 +14,12 @@
 </div>
 
 <div class="container-fluid">
+    <form action="" method="POST">
+    {{form}}
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body" style="min-height:500px;">
                     <h4 class="card-title">Work Order Details</h4>
                     <p class="card-text">Date: {{object.date}}</p>
                     <p class="card-text">Time: {{object.time}}</p>
@@ -40,23 +42,82 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Work Order Completion Form</h4>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        {{form.as_p}}
-                        <hr class="my-4">
-                        <h4>Work Order Hours</h4>
-                        <hr class="my-4">
-                        <div id="service-time" ></div>
-                        <button class="btn btn-primary">Submit</button>
-                    </form>
+                <div class="card-body" style="min-height:500px;max-height:500px;overflow-y:auto;">
+                    <h4 class="ccard-title">Work Order Progress</h4>
+                    <h5>Procedure: {{object.works_request.service.procedure}}
+                    </h5>
+                    <div>
+                        <div style="width:85%;height:30px;border:1px solid #bbb;background-color:#eee;display:inline-block;">
+                            <div style="width:{{object.progress_percentage}}%;background-color:#3f2;height:100%"></div>
+                        </div>
+                        <div style="display:inline-block;width:12%;">
+                            <strong>{{object.progress_percentage}}%</strong>
+                        </div>
+                    </div>
+                    
+                    <ol>
+                        {% for step in object.works_request.service.procedure.steps %}
+                            <li> {% if forloop.counter in object.progress_list %} <input checked  style="display:inline;" type="checkbox" name="steps[]" value="{{forloop.counter}}">{% else %} <input  style="display:inline;" type="checkbox" name="steps[]" value="{{forloop.counter}}"> {% endif %} {{step}}</li>
+                        {% endfor %}
+                    </ol>                
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body" style="min-height:500px;">
+                    <h4 class="card-title">Notes</h4>
+                    {% csrf_token %}
+                    <div style="max-height:400px;overflow-y:auto;">
+                        {% for note in object.notes.all %}
+                            <p class="card-text">{{note | linebreaks }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <div id="notes-widget"></div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <hr class="my-4">
+                    <h4>Work Order Hours</h4>
+                    <hr class="my-4">
+                    <table class="table">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th>Date</th>
+                                <th>Employee</th>
+                                <th>Normal Time</th>
+                                <th>Overtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in object.timelog_set.all %}
+                                <tr>
+                                    <td>{{log.date}}</td>
+                                    <td>{{log.employee}}</td>
+                                    <td>{{log.normal_time}}</td>
+                                    <td>{{log.overtime}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" >Total</th>
+                                <td>{{object.total_normal_hours}}</td>
+                                <td>{{object.total_overtime_hours}}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div id="service-time" ></div>
+                    <button class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+    </form>
 </div>
 
 {% render_bundle "services" %}

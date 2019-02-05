@@ -9,6 +9,8 @@ import PricingWidget from "../js/inventory/pricing_widget";
 import MutableTable from "../js/src/mutable_table/container/root";
 import GenericTable from '../js/src/generic_list/containers/root';
 import TimeField from '../js/src/components/time_field';
+import NoteWidget from '../js/src/notes_widget/root';
+
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -69,54 +71,11 @@ if(storageMedia){
 }else if(threadView){
     ReactDOM.render(<MessageDetail />, threadView);
 }else if(testView){
-    ReactDOM.render(<GenericTable
-        formInputID="form"
-        fieldOrder={['employee', 'normal_time', 'overtime']}
-        fields={[{
-            'name': 'employee',
-            'type': 'search',
-            'width': 50,
-            'url' :'/employees/api/employee',
-            'idField': 'employee_number',
-            'displayField': 'first_name'
-        },
-        {
-            'name': 'normal_time',
-            'type': 'widget',
-            'width': 25,
-            'widgetCreator': (comp) =>{
-                return <TimeField 
-                    initial=""
-                    name="normal_time"
-                    handler={(data, name) =>{
-                        if(data.valid){
-                            let newData = {...comp.state.data};
-                            newData['normal_time'] = data.value;
-                            comp.setState({data: newData});    
-                        }
-                    }}/>
-            }
-        },
-        {
-            'name': 'overtime',
-            'type': 'widget',
-            'width': 25,
-            'widgetCreator': (comp) =>{
-                return <TimeField 
-                    initial=""
-                    name="overtime"
-                    handler={(data, name) =>{
-                        if(data.valid){
-                            let newData = {...comp.state.data};
-                            newData['overtime'] = data.value;
-                            comp.setState({data: newData});    
-                        }
-                    }}/>
-            }
-        }
-    ]}
-        fieldDescriptions={['Employee', 'Normal Time(Hours)', 'Overtime(Hours)']}
-        />, testView);
+    const token = document.getElementById('page-token').value;
+    ReactDOM.render(<NoteWidget 
+            target="work_order" 
+            targetID={3}
+            token={token}/>, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
 }

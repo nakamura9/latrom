@@ -23,8 +23,13 @@ from invoicing import filters, forms, serializers
 from invoicing.models import *
 
 
+class SalesConfigMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(SalesConfig.objects.first().__dict__)
+        return context
 
-class Home( ConfigMixin, TemplateView):
+class Home(SalesConfigMixin, TemplateView):
     template_name = os.path.join("invoicing", "dashboard.html")
 
         

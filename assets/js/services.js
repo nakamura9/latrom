@@ -4,6 +4,7 @@ import {ProcedureViews, InventorySelectWidgets} from '../js/services/procedure';
 import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import GenericTable from './src/generic_list/containers/root';
 import TimeField from './src/components/time_field';
+import NotesWidget from './src/notes_widget/root';
 
 const procedure = document.getElementById('procedure-widgets');
 const inventory = document.getElementById('inventory-widgets');
@@ -12,6 +13,7 @@ const consumableTable = document.getElementById('consumable-requisition-table');
 const equipmentTable = document.getElementById('equipment-requisition-table');
 const workOrderPersons = document.getElementById('work-order-persons');
 const serviceTime = document.getElementById('service-time');
+const notes = document.getElementById('notes-widget');
 
 if(procedure){
     ReactDOM.render(<ProcedureViews />, procedure);
@@ -138,11 +140,27 @@ if (equipmentTable){
 if(serviceTime){
     ReactDOM.render(<GenericTable
         formInputID="id_service_time"
-        fieldOrder={['employee', 'normal_time', 'overtime']}
-        fields={[{
+        fieldOrder={['date','employee', 'normal_time', 'overtime']}
+        fields={[
+            {
+                'name': 'date',
+                'type': 'widget',
+                'width': 25,
+                'required': true,
+                'widgetCreator': (comp) =>{
+                    return <input type="date" 
+                                    className="form-control"
+                                    onChange={(evt) =>{
+                                        let newData = {...comp.state.data};
+                                        newData['date'] = evt.target.value;
+                                        comp.setState({data: newData}); 
+                                    }} />
+                }
+            },
+            {
             'name': 'employee',
             'type': 'search',
-            'width': 50,
+            'width': 25,
             'url' :'/employees/api/employee',
             'idField': 'employee_number',
             'displayField': 'first_name',
@@ -185,6 +203,18 @@ if(serviceTime){
             }
         }
     ]}
-        fieldDescriptions={['Employee', 'Normal Time(Hours)', 'Overtime(Hours)']}
+        fieldDescriptions={['Date','Employee', 'Normal Time(Hours)', 'Overtime(Hours)']}
         />, serviceTime)
+}
+
+if(notes){
+    const splitURL = window.location.href.split('/');
+    const tail = splitURL[splitURL.length - 1];
+    const target='work_order';
+    const token= document.querySelector(
+        'input[name="csrfmiddlewaretoken"]').value;
+    ReactDOM.render(<NotesWidget 
+        token={token}
+        target={target}
+        targetID={tail} />, notes)
 }

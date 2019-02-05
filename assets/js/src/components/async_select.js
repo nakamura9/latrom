@@ -1,6 +1,16 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+/**
+ * props 
+ * dataURL - string with the data that populates the form
+ * name - string that sets the name attribute in the select 
+ * resProcessor - a function that takes the axios data and returns an array of 
+ *                  value name objects
+ * onPopulated - optional attr that provides an initial value of the form
+ * handler - the function that is called when the select is changed.
+ */
+
 
 class AsyncSelect extends Component{
     state = {

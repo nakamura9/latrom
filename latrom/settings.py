@@ -68,6 +68,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -178,8 +179,17 @@ WKHTMLTOPDF_CMD_OPTIONS = {
 }
 
 #EMAIL
-config_file = open('global_config.json', 'r')
-email_config = json.load(config_file)
+try:
+    config_file = open('global_config.json', 'r')
+    email_config = json.load(config_file)
+except json.JSONDecodeError:
+    email_config = {
+        'email_host': '',
+        'email_port': '',
+        'email_user': '',
+        'email_password': ''
+    }
+
 
 EMAIL_HOST = email_config['email_host']
 EMAIL_PORT =email_config['email_port']

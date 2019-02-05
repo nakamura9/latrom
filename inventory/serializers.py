@@ -92,3 +92,17 @@ class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnitOfMeasure
         fields = ['id', 'name']
+
+
+
+class TransferOrderLineSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(many=False)
+    class Meta:
+        model = TransferOrderLine
+        fields ="__all__"
+
+class TransferOrderSerializer(serializers.ModelSerializer):
+    transferorderline_set = TransferOrderLineSerializer(many=True)
+    class Meta:
+        model = TransferOrder
+        fields ="__all__"

@@ -21,7 +21,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
                 <a class="dropdown-item" href="{% url 'services:work-order-update' pk=wo.pk %}">
-                    <i class="fas fa-edit"></i> Update
+                    <i class="fas fa-edit"></i> Update Requirements
                 </a>
 
                 <a class="dropdown-item" href="{% url 'services:work-order-detail' pk=wo.pk %}">
@@ -32,7 +32,7 @@
                 </a>
                 {% if wo.status != 'authorized' %}
                 <a class="dropdown-item" href="{% url 'services:work-order-complete' pk=wo.pk %}">
-                    <i class="fas fa-check"></i> Complete
+                    <i class="fas fa-check"></i> Update Progress
                 </a>
                 <a class="dropdown-item" href="{% url 'services:work-order-equipment-requisition-create' pk=wo.pk %}">
                     <i class="fas fa-file-invoice"></i> Request Equipment
@@ -42,6 +42,9 @@
                 </a>
                 <a class="dropdown-item" href="{% url 'services:work-order-expense-create' pk=wo.pk %}">
                     <i class="fas fa-dollar-sign"></i> Record Work Related Expense
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-costing' pk=wo.pk %}">
+                    <i class="fas fa-receipt"></i> Costing
                 </a>
                 {% endif %}
             </div>

@@ -183,11 +183,11 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var reac
 /*!*************************!*\
   !*** ./js/src/utils.js ***!
   \*************************/
-/*! exports provided: default */
+/*! exports provided: default, setDataPayload */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\nfunction setMultipleAttrs(element, obj) {\n    for (var key in obj) {\n        element.setAttribute(key, obj[key]);\n    }\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (setMultipleAttrs);\n\n//# sourceURL=webpack:///./js/src/utils.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"setDataPayload\", function() { return setDataPayload; });\nfunction setMultipleAttrs(element, obj) {\n    for (var key in obj) {\n        element.setAttribute(key, obj[key]);\n    }\n}\n\nfunction setDataPayload(data) {\n    //takes an object and a csrfmiddlewaretoken as arguments\n    let payload = new FormData();\n    for (var key in data) {\n        payload.set(key, data[key]);\n    }\n    return payload;\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (setMultipleAttrs);\n\n\n\n//# sourceURL=webpack:///./js/src/utils.js?");
 
 /***/ }),
 

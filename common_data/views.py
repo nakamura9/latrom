@@ -20,7 +20,7 @@ from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 from common_data.utilities import ContextMixin, apply_style
 from invoicing.models import SalesConfig
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 from common_data import serializers 
 from django.contrib.auth.models import User
 from . import forms
@@ -170,7 +170,7 @@ class GlobalConfigView(ContextMixin,  LoginRequiredMixin, UpdateView):
     template_name = os.path.join("common_data", "config.html")
     model = models.GlobalConfig
     form_class = forms.GlobalConfigForm
-    success_url = reverse_lazy('/base/workflow')
+    success_url = '/base/workflow'
     extra_context = {
         'title': 'Configure global application features'
     }
@@ -271,9 +271,10 @@ class EmailPlusPDFView(ContextMixin, FormView):
         return resp
 
 
-class UserAPIView(RetrieveAPIView):
+class UserAPIView(ListAPIView):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
+    model = User
 
 
 def get_current_user(request):
@@ -293,3 +294,21 @@ class LicenseFeaturesErrorPage(TemplateView):
 
 class UsersErrorPage(TemplateView):
     template_name = os.path.join('common_data', 'users_error.html')
+
+from services.models import ServiceWorkOrder
+NOTE_TARGET = {
+    'work_order': ServiceWorkOrder
+}
+
+def create_note(request):
+    author = User.objects.get(pk=request.POST['author'])
+    note = models.Note.objects.create(
+        author = author,
+        note = request.POST['note']
+    )
+
+    NOTE_TARGET[request.POST['target']].objects.get(
+        pk=request.POST['target_id']
+    ).notes.add(note)
+
+    return JsonResponse({'status': 'ok'})

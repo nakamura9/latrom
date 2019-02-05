@@ -37,7 +37,7 @@
 {% endblock content_headings %}
 
 {% block content_body %}
-{% for item in object.returned_items %}
+{% for item in object.returned_products %}
 <tr>
     <td>{{item.product.name}}</td>
     <td>{{item.returned_quantity}}</td>
@@ -56,8 +56,16 @@
 
 {% block content_footer %}
 <tr>
+    <th colspan="3">Subtotal:</th>
+    <td>{{object.returned_total | floatformat:2 }}</td>
+</tr>
+<tr>
+    <th colspan="3">Tax {{object.invoice.tax}} {% if object.invoice.tax %}@{{object.invoice.tax.rate}}{% endif %} :</th>
+    <td>{{object.tax_credit | floatformat:2 }}</td>
+</tr>
+<tr>
     <th colspan="3">Total:</th>
-    <td>{{object.returned_total}}</td>
+    <td>{{object.returned_total_with_tax | floatformat:2 }}</td>
 </tr>
 {% endblock %}
 

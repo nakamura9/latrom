@@ -1,1 +1,0 @@
-dont forget to copy wkhtmltopdf to the root directory!

@@ -1,6 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from crispy_forms.bootstrap import Tab, TabHolder
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+
+
 from . import models
 
 
@@ -51,6 +56,30 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.GlobalConfig
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Business Details',
+                    'business_name',
+                    'business_address',
+                    'logo',
+                    'document_theme',
+                    'currency',
+                    'payment_details',
+                    'contact_details',
+                    'business_registration_number'),
+                Tab('Email Config',
+                    'email_host',
+                    'email_port',
+                    'email_user',
+                    'email_password',
+                )
+            )
+        )
 
 class SendMailForm(BootstrapMixin, forms.Form):
     recipient = forms.EmailField()

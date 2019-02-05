@@ -5,6 +5,7 @@ from .procedure import procedure_urls
 from .work_order import worder_urls
 from .service import service_urls
 from .requisition import requisition_urls
+import services
 
 urlpatterns = [
     re_path(r'^$', views.Dashboard.as_view(), name='dashboard'),
@@ -14,8 +15,18 @@ urlpatterns = [
     re_path(r'^category-list/?$', views.ServiceCategoryListView.as_view(), name='category-list')
 ]
 
+report_urls = [
+    re_path(r'^reports/forms/service-person-utilization/?$', 
+        services.views.reports.ServicePersonUtilizationFormView.as_view(), 
+        name="reports-service-person-utilization-form"),
+    re_path(r'^reports/service-person-utilization$', 
+        services.views.reports.ServicePersonUtilizationReport.as_view(), 
+        name="reports-service-person-utilization")
+]
+
 urlpatterns += personnel_urls
 urlpatterns += worder_urls 
 urlpatterns += service_urls 
 urlpatterns += procedure_urls
 urlpatterns += requisition_urls
+urlpatterns += report_urls

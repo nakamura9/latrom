@@ -28,11 +28,11 @@
                             </button>
                     <div class="dropdown-menu" aria-labelledby="triggerId">
                         <a class="dropdown-item" href="{% url 'inventory:transfer-order-detail' pk=t.pk %}"> 
-                            Detail
+                           <i class="fas fa-file-alt    "></i> Detail
                         </a>
                     {% if not t.completed and t.receiving_warehouse.pk == warehouse %}
                     <a class="dropdown-item" href="{% url 'inventory:receive-transfer' pk=t.pk %}">
-                        Complete Transfer
+                       <i class="fa fa-check" aria-hidden="true"></i> Complete Transfer
                     </a>
                     {% endif %}        
                     </div>

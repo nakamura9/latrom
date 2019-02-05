@@ -5,7 +5,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
-            <form></form>
+            <form>
+                {% csrf_token %}
+            </form>
             <div id="test" class="row"></div>
         </div>
     </div>

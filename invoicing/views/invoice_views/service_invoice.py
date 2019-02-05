@@ -61,6 +61,7 @@ class ServiceInvoiceMixin(object):
             self.process_data(item_string)
 
         #valid for both new and existing invoices
+        # TODO check for proforma invoice work request generation
         if self.object.status in ["invoice", 'paid']:
             self.object.create_entry()#if existing method returns none
 

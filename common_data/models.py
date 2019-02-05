@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import json
 import os
+import copy
 
 from django.db import models
 
@@ -56,9 +57,12 @@ class Individual(Person, SoftDeletionModel):
 
 class Note(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True,)
+    author = models.ForeignKey('auth.User', on_delete=models.SET_NULL, 
+        null=True)
     note = models.TextField()
 
+    def __str__(self):
+        return "{}({}): {}".format(self.timestamp.strftime("%d %b %y, %H:%M "), self.author, self.note)
 
 class Organization(models.Model):
     legal_name = models.CharField(max_length=255)
@@ -105,9 +109,11 @@ class GlobalConfig(SingletonModel):
         (4, 'Verdant'),
         (5, 'Warm')
     ]
+    # TODO personalize email settings for each user
     email_host = models.CharField(max_length=32, blank=True, default="")
     email_port = models.IntegerField(null=True, blank=True)
     email_user = models.CharField(max_length=32, blank=True, default="")
+    # TODO secure email password
     email_password = models.CharField(max_length=255, blank=True, default="")
     business_address = models.TextField(blank=True)
     logo = models.ImageField(null=True,upload_to="logo/", blank=True)
@@ -128,7 +134,8 @@ class GlobalConfig(SingletonModel):
         #serialize and store in json file so settings.py can access
         json_config = os.path.join(settings.BASE_DIR, 'global_config.json')
         with open(json_config, 'w+') as fil:
-            fields = self.__dict__
+            fields = copy.deepcopy(self.__dict__)
+            del fields['logo']
             del fields['_state']
             json.dump(fields, fil)
 
