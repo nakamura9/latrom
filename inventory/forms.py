@@ -278,7 +278,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
             """)
             )
     class Meta:
-        exclude = ["entry", "received_to_date",]
+        exclude = ["entry", "received_to_date", "shipping_cost_entries"]
         model = models.Order
         
 

@@ -193,7 +193,8 @@ class ViewTests(TestCase):
         #ensure that all links are shown
         resp = self.client.post('/base/config/1',
             data={
-                'email_user': 'username'
+                'email_user': 'username',
+                'document_theme': 1,
             })
         self.assertEqual(resp.status_code, 302)
 

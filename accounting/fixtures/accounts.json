@@ -579,7 +579,6 @@
         "pk": 5014,
         "fields": {
             "name": "Carriage Outwards",
-            "parent_account": 
             "balance": 0,
             "description": "Includes payments made for shipping of goods to customers.",
             "type": "expense",

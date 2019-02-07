@@ -36,8 +36,8 @@ class WareHouse(models.Model):
     @property
     def total_item_quantity(self):
         '''returns the total number of physical entities stored in the warehouse'''
-        return reduce(lambda x, y: x + y, 
-            [i.quantity for i in self.all_items], 0)
+        return sum(
+            [i.quantity for i in self.all_items])
 
     @property
     def all_items(self):

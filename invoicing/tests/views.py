@@ -102,6 +102,16 @@ class ReportViewsTests(TestCase):
         resp = self.client.get(reverse('invoicing:invoice-aging'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_get_sales_report_form_page(self):
+        resp = self.client.get(reverse('invoicing:sales-report-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_sales_report_page(self):
+        resp = self.client.get(reverse('invoicing:sales-report'), data={
+            'default_periods': 4,
+        })
+        self.assertEqual(resp.status_code, 200)
+
 class CustomerViewsTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 
         'invoicing.json']
@@ -654,7 +664,6 @@ class SalesViewTests(TestCase):
         resp = self.client.post(reverse('invoicing:sales-invoice-update',
             kwargs={'pk': 1}),
                 data=simple_data)
-
         self.assertEqual(resp.status_code, 302)
     
     def test_get_sale_list_page(self):
@@ -729,9 +738,10 @@ class SalesViewTests(TestCase):
                 'date': TODAY.strftime('%m/%d/%Y'),
                 'invoice': 1,
                 'comments': 'test comments',
-                'returned-items': json.dumps({
-                    '1': 1
-                })
+                'returned-items': json.dumps([{
+                    'product': '1 - product',
+                    'returned_quantity': 1    
+                }])
             })
         self.assertEqual(resp.status_code, 302)
 
@@ -748,6 +758,23 @@ class SalesViewTests(TestCase):
         resp = self.client.get('/invoicing/sales-invoice/1/verify/quotation')
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(SalesInvoice.objects.get(pk=1).status, "quotation")
+
+    def test_get_sales_invoice_expense_page(self):
+        resp = self.client.get("/invoicing/sales-invoice/shipping-costs/1")
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_sales_invoice_expense_page(self):
+        resp = self.client.post("/invoicing/sales-invoice/shipping-costs/1", data={
+            'amount': 10,
+            'description': 'description',
+            'recorded_by': 1,
+            'date': datetime.date.today()
+        })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_shipping_expense_list(self):
+        resp = self.client.get('/invoicing/sales-invoice/shipping-costs/list/1')
+        self.assertEqual(resp.status_code, 200)
 
 
 class ServiceInvoiceViewTests(TestCase):

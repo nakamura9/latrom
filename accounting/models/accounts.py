@@ -59,7 +59,6 @@ class AbstractAccount(SoftDeletionModel):
 
     
     def balance_on_date(self, date):
-        # TODO test
         return self.balance - self.balance_over_period(
             date, datetime.date.today())
 
@@ -79,13 +78,9 @@ class AbstractAccount(SoftDeletionModel):
             Q(entry__date__lte=end)
             )
 
-        credit_total = reduce(lambda x, y: x + y, [
-            c.amount for c in credits
-        ], 0)
+        credit_total = sum([c.amount for c in credits])
 
-        debit_total = reduce(lambda x, y: x + y, [
-            d.amount for d in debits
-        ], 0)
+        debit_total = sum([d.amount for d in debits])
 
         if self.balance_type == "credit":
             return credit_total - debit_total

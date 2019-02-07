@@ -165,6 +165,12 @@ def create_test_inventory_models(cls):
         scrapping_record=cls.scrap
     )
 
+    cls.note = models.DebitNote.objects.create(
+            date=datetime.date.today(),
+            order=cls.order,
+            comments= "comment"
+        )
+
 
 class CommonModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json']
@@ -288,7 +294,13 @@ class ItemManagementModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_inventory_models(cls)
+        
 
+    def tearDown(self):
+        self.order_item.received = 0
+        self.order_item.save()
+    
+    
     def test_create_order(self):
         obj = models.Order.objects.create(
             expected_receipt_date = TODAY,
@@ -303,11 +315,6 @@ class ItemManagementModelTests(TestCase):
 
         self.assertIsInstance(obj, models.Order)
         obj.delete()
-
-    def tearDown(self):
-        self.order_item.received = 0
-        self.order_item.save()
-    
 
     def test_order_items_set(self):
         self.assertEqual(self.order.items.count(), 1)
@@ -373,6 +380,43 @@ class ItemManagementModelTests(TestCase):
 
     def test_order_item_subtotal(self):
         self.assertEqual(self.order_item.subtotal, 10)
+
+    def test_create_debit_note(self):
+        obj = models.DebitNote.objects.create(
+            date=datetime.date.today(),
+            order=models.Order.objects.first(),
+            comments= "comment"
+        )
+        self.assertIsInstance(obj, models.DebitNote)
+
+    def test_debit_note_returned_items(self):
+        self.assertEqual(self.note.returned_items.count(), 0)
+
+        self.order_item.returned_quantity = 1
+        self.order_item.save()
+
+        self.assertEqual(self.note.returned_items.count(), 1)
+
+        self.order_item.returned_quantity = 0
+        self.order_item.save()
+
+    def test_debit_note_returned_total(self):
+        self.assertEqual(self.note.returned_items.count(), 0)
+
+        self.order_item.returned_quantity = 1
+        self.order_item.save()
+
+        self.assertEqual(self.note.returned_total, D(10))
+
+        self.order_item.returned_quantity = 0
+        self.order_item.save()
+
+    def test_debit_note_create_entry(self):
+        entries = JournalEntry.objects.all().count()
+        
+        self.note.create_entry()
+        
+        self.assertNotEqual(entries, JournalEntry.objects.all().count())
 
     def test_create_stock_receipt(self):
         obj = models.StockReceipt.objects.create(
@@ -553,9 +597,6 @@ class ItemModelTests(TestCase):
         self.assertIsInstance(obj, models.Equipment)
         obj.delete()
 
-    
-
-
     def test_create_raw_material(self):
         obj = models.RawMaterial.objects.create(
             name='test raw material',
@@ -584,6 +625,10 @@ class ItemModelTests(TestCase):
         )
         self.assertIsInstance(obj, models.Consumable)
         obj.delete()
+
+    def test_inventory_on_date(self):
+        quantity = self.product.quantity_on_date(datetime.date.today())
+        self.assertEqual(quantity, 10)
 
 class WarehouseModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json',]

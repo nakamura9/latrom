@@ -103,7 +103,8 @@ class CommonViewTests(TestCase):
         resp = self.client.post(reverse('accounting:config', kwargs={'pk': 1}),
             data={
                 'start_of_financial_year': TODAY,
-                'currency_exchange_table': self.currency_table.pk
+                'currency_exchange_table': self.currency_table.pk,
+                'default_accounting_period': 0
             })
         self.assertEqual(resp.status_code, 302)
         

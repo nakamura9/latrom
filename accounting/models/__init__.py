@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal as D
-from functools import reduce
 
 from django.db import models
 from django.db.models import Q

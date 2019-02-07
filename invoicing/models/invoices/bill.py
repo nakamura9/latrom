@@ -38,8 +38,8 @@ class Bill(AbstractSale):
         
     @property
     def subtotal(self):
-        return reduce(lambda x, y: x + y, 
-            [line.expense.amount for line in self.billline_set.all() if line.expense], 0)
+        return sum(
+            [line.expense.amount for line in self.billline_set.all() if line.expense])
     
     def __str__(self):
         return "Bill - {}".format(self.pk)

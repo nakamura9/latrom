@@ -33,9 +33,8 @@ class CreditNote(models.Model):
         
     @property
     def returned_total(self):
-        return reduce(lambda x, y: x + y, [i.returned_value for i in self.returned_products], 0)
+        return sum([i.returned_value for i in self.returned_products])
 
-    # TODO test
     @property
     def tax_credit(self):
         if not self.invoice.tax:

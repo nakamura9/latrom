@@ -202,7 +202,7 @@ if(inventoryCheck){
     ReactDOM.render(<MutableTable
             formHiddenFieldName="received-items" 
             dataURL={"/inventory/api/transfer-order/" + tail}
-            headings={["Item", "Quantity", "Quantity Received"]}
+            headings={["Item", "Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
             resProcessor={(res) =>{
                 return res.data.transferorderline_set.map((item)=>({
                     'item': item.id + ' - ' + item.product.name,
@@ -213,5 +213,15 @@ if(inventoryCheck){
             fields={[
                 {'name': 'item', 'mutable': false},
                 {'name': 'quantity', 'mutable': false},
-                {'name': 'moved_quantity', 'mutable': true}]}/>, receiveTable)
+                {'name': 'moved_quantity', 'mutable': true},
+                
+                
+                
+            ]}/>, receiveTable)
+
+            /**
+             * 'quantity_to_move': 0,
+                    'receiving_location': ""
+             * {'name': 'quantity_to_move', 'mutable': true},
+                {'name': 'receiving_location', 'mutable': true}, */
 }

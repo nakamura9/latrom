@@ -96,8 +96,8 @@ class InventoryCheck(models.Model):
 
     @property
     def value_of_all_adjustments(self):
-        return reduce(lambda x, y: x + y, 
-            [i.adjustment_value for i in self.adjustments], 0)
+        return sum(
+            [i.adjustment_value for i in self.adjustments])
 
 class StockAdjustment(models.Model):
     warehouse_item = models.ForeignKey('inventory.WareHouseItem', on_delete=models.SET_NULL, null=True)
@@ -141,7 +141,7 @@ class TransferOrder(models.Model):
     
     def complete(self):
         '''move all the outstanding items at the same time.'''
-        for line in self.transferorderline_set.filter(moved=False):
+        for line in self.transferorderline_set.filter(moved_quantity=0):
             line.move(line.quantity)
         self.completed = True
         self.save()
@@ -185,7 +185,7 @@ class InventoryScrappingRecord(models.Model):
 
     @property
     def scrapping_value(self):
-        return reduce(lambda x, y: x + y, 
+        return sum(
             [i.scrapped_value \
                 for i in self.inventoryscrappingrecordline_set.all()], 
                 0)

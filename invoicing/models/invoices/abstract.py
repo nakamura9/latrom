@@ -85,8 +85,8 @@ class AbstractSale(SoftDeletionModel):
 
     @property
     def total_paid(self):
-        return reduce(lambda x,y: x + y, 
-            [p.amount for p in self.payment_set.all()], 0)
+        return sum(
+            [p.amount for p in self.payment_set.all()])
 
     @property
     def total_due(self):

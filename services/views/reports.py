@@ -41,8 +41,7 @@ class ServicePersonUtilizationReport(TemplateView):
             histogram[str(log.employee)].append(log.normal_time)
 
         x = histogram.keys()
-        y = [(reduce(lambda x,y: x + y, [i.seconds for i in histogram[key]], 0)) / 3600 \
-                for key in x]
+        y = [reduce(lambda x,y: x + y, x[key], datetime.timedelta(seconds=0)) for key in x]
         
         fig = plt.figure()
         ax = fig.add_subplot(111)

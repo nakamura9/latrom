@@ -13,11 +13,11 @@ class WorkOrderRequest(models.Model):
         (0, 'Service Invoice'),
         (1, 'Combined Invoice')
     ])
-    service_invoice = models.OneToOneField('invoicing.serviceinvoice', 
+    service_invoice = models.ForeignKey('invoicing.serviceinvoice', 
         blank=True, null=True, on_delete=models.SET_NULL)
     combined_invoice = models.OneToOneField('invoicing.combinedinvoice',
         blank=True, null=True, on_delete=models.SET_NULL)
-    service = models.ForeignKey('services.service', null=True, 
+    service = models.OneToOneField('services.service', null=True, 
         on_delete=models.SET_NULL)
     status = models.CharField(max_length=16, choices=[
         ('request', 'Requested'),
@@ -37,6 +37,8 @@ class WorkOrderRequest(models.Model):
 
         if completed:
             self.status = 'completed'
+        
+        self.save()
 
 
     @property
@@ -88,7 +90,6 @@ class ServiceWorkOrder(models.Model):
 
     @property
     def procedure_pk(self):
-        print(self.works_request.service.procedure.pk)
         return self.works_request.service.procedure.pk
 
     def save(self, *args, **kwargs):
@@ -97,9 +98,11 @@ class ServiceWorkOrder(models.Model):
 
     @property
     def number_of_employees(self):
-        # TODO test
         direct = self.service_people.all().count()
-        team = self.team.members.all().count()
+        team = 0
+        if self.team:
+            team = self.team.members.all().count()
+    
         return direct + team
 
     @property
@@ -108,7 +111,6 @@ class ServiceWorkOrder(models.Model):
 
     @property 
     def time_logs(self):
-        #TODO test
         # may decide to remove the filter and use .all()
         return self.timelog_set.filter(employee__uses_timesheet=True)
 
@@ -119,9 +121,11 @@ class ServiceWorkOrder(models.Model):
 
     @property
     def progress_percentage(self):
-        if not self.works_request.service.procedure:
+        if not self.works_request.service.procedure or \
+                self.works_request.service.procedure.steps.count() ==0:
             return 100 
         
+
         total_steps = self.works_request.service.procedure.steps.count()
         progress = len(self.progress_list)
 
@@ -129,16 +133,14 @@ class ServiceWorkOrder(models.Model):
         
 
     @property
-    def total_normal_hours(self):
-        return reduce(lambda x,y: x + y, 
-            [i.normal_time for i in self.time_logs], 
-                datetime.timedelta(seconds=0))
+    def total_normal_time(self):
+        return reduce(lambda x, y: x + y, [i.normal_time \
+                for i in self.time_logs], datetime.timedelta(seconds=0))
     
     @property
-    def total_overtime_hours(self):
-        return reduce(lambda x,y: x + y, 
-            [i.overtime for i in self.time_logs], 
-            datetime.timedelta(seconds=0))
+    def total_overtime(self):
+        return reduce(lambda x, y: x + y,
+            [i.overtime for i in self.time_logs], datetime.timedelta(seconds=0))
 
 class TimeLog(models.Model):
     work_order = models.ForeignKey('services.serviceworkorder', null=True, 

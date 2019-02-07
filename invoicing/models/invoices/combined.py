@@ -62,8 +62,8 @@ class CombinedInvoice(AbstractSale):
 
     @property
     def subtotal(self):
-        return reduce(lambda x, y: x + y,
-            [i.subtotal for i in self.combinedinvoiceline_set.all()], 0)
+        return sum(
+            [i.subtotal for i in self.combinedinvoiceline_set.all()])
 
     def create_entry(self):
         j = JournalEntry.objects.create(

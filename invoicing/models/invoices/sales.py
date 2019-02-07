@@ -47,9 +47,7 @@ class SalesInvoice(AbstractSale):
     @property
     def total_shipping_costs(self):
         # TODO test
-        return reduce(lambda x, y: x +y,[
-            e.amount for  e in self.shipping_expenses.all()
-        ], 0)
+        return sum([e.amount for  e in self.shipping_expenses.all()])
 
     @property
     def percentage_shipping_cost(self):
@@ -57,13 +55,13 @@ class SalesInvoice(AbstractSale):
 
     @property
     def returned_total(self):
-        return reduce(lambda x,y: x + y, 
-            [i.returned_value for i in self.salesinvoiceline_set.all()], 0)
+        return sum(
+            [i.returned_value for i in self.salesinvoiceline_set.all()])
 
     @property
     def subtotal(self):
-        return reduce(lambda x, y: x+ y, 
-            [i.subtotal for i in self.salesinvoiceline_set.all()], 0)
+        return sum(
+            [i.subtotal for i in self.salesinvoiceline_set.all()])
 
     @property
     def cost_of_goods_sold(self):

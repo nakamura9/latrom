@@ -557,6 +557,18 @@ class AccountModelTests(TestCase):
         liability = Account.objects.get(pk=2004)#loans payable
         self.assertEqual(liability.balance_type, "credit")
     
+    def test_account_balance_on_date(self):
+        date = datetime.date.today() - datetime.timedelta(days=7)
+        self.assertEqual(self.basic_account.balance_on_date(date), 100)
+
+    def test_account_balance_over_period(self):
+        today = datetime.date.today()
+        date = today - datetime.timedelta(days=7)
+        self.assertEqual(
+            self.basic_account.balance_over_period(date, today), 
+                0)
+
+
 class CurrencyTests(TestCase):
     @classmethod
     def setUpTestData(cls):

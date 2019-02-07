@@ -444,7 +444,8 @@ class DeductionPageTests(TestCase):
     def test_post_deduction_page(self):
         resp = self.client.post(reverse('employees:create-deduction'),
             data=self.DEDUCTION_DATA)
-        self.assertTrue(resp.status_code == 302)
+        
+        self.assertEqual(resp.status_code, 302)
         
     def test_get_deduction_update_page(self):
         resp = self.client.get(reverse('employees:update-deduction',
@@ -458,7 +459,7 @@ class DeductionPageTests(TestCase):
                 'pk': self.deduction.pk
             }), data=self.DEDUCTION_DATA)
 
-        self.assertTrue(resp.status_code == 302)
+        self.assertEqual(resp.status_code, 302)
 
     def test_get_deduction_delete(self):
         resp = self.client.get(reverse('employees:delete-deduction',

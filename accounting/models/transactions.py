@@ -134,13 +134,13 @@ class JournalEntry(models.Model):
 
     @property
     def total_debits(self):
-        return reduce(lambda x, y: x + y,
-            [d.amount for d in self.debit_set.all()], 0)
+        return sum(
+            [d.amount for d in self.debit_set.all()])
     
     @property
     def total_credits(self):
-        return reduce(lambda x, y: x + y,
-            [d.amount for d in self.credit_set.all()], 0)
+        return sum(
+            [d.amount for d in self.credit_set.all()])
     
     @property
     def balanced(self):

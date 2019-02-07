@@ -66,14 +66,12 @@ class Employee(Person, SoftDeletionModel):
     @property
     def deductions_YTD(self):
         slips = self._payslips_YTD
-        return reduce(lambda x, y: x + y, [i.total_deductions \
-             for i in slips], 0)
+        return sum([i.total_deductions for i in slips])
 
     @property
     def earnings_YTD(self):
         slips = self._payslips_YTD
-        return reduce(lambda x, y: x + y, [i.gross_pay \
-             for i in slips], 0)    
+        return sum([i.gross_pay for i in slips])    
 
     @property
     def is_sales_rep(self):

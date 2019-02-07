@@ -467,6 +467,7 @@ class OrderViewTests(TestCase):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
         self.assertEqual(resp.status_code,  302)
+
     
     def test_get_order_list(self):
         resp = self.client.get(reverse('inventory:order-list'))
@@ -518,6 +519,50 @@ class OrderViewTests(TestCase):
         resp = self.client.get(reverse('inventory:order-email',
             kwargs={'pk': 1}))
         self.assertEqual(resp.status_code,  200)
+
+    def test_get_shipping_costs_detail_view(self):
+        resp = self.client.get("/inventory/order/expense/list/1")
+        self.assertEqual(resp.status_code, 200)
+        
+    def test_get_shipping_form_view(self):
+        resp = self.client.get("/inventory/order-expense/1")
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_shipping_form(self):
+        resp = self.client.post("/inventory/order-expense/1", data={
+            'date': datetime.date.today(),
+            'description': 'Some description',
+            'recorded_by': 1,
+            'amount': 10,
+            'reference': "123"
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_debit_note_create_view(self):
+        resp = self.client.get('/inventory/debit-note/create/1')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_debit_note_create_view(self):
+        resp = self.client.post('/inventory/debit-note/create/1', 
+            data={
+                'returned-items': urllib.parse.quote(json.dumps([{
+                    'item': '1 -item',
+                    'returned_quantity': 1   
+                }])),
+                'date': datetime.date.today(),
+                'order': 1,
+                'comments': 'some comment'
+            })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_debit_note_list_view(self):
+        resp = self.client.get('/inventory/debit-note/list/1')
+        self.assertEqual(resp.status_code, 200)
+
+
+    def test_debit_note_detail_view(self):
+        resp = self.client.get('/inventory/debit-note/detail/1')
+        self.assertEqual(resp.status_code, 200)
 
     #order pdf assume that the detail view covers it
     #order emaiL only use the get view

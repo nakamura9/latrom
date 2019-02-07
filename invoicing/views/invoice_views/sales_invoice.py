@@ -317,7 +317,6 @@ class ShippingAndHandlingView(
         invoice.shipping_expenses.add(expense)
         invoice.save()#necessary?
 
-        
         return resp
 
 class ShippingExpenseListView(DetailView):

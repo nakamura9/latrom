@@ -38,8 +38,8 @@ class BalanceSheet(ConfigMixin,TemplateView):
             Q(balance_sheet_category='non-current-assets')).exclude(
                 Q(balance=0) & Q(control_account=False))
 
-        long_term_assets_total = reduce(lambda x, y: x + y,
-            [i.balance for i in long_term_assets], 0 
+        long_term_assets_total = sum(
+            [i.balance for i in long_term_assets]
         )
 
 
@@ -53,9 +53,9 @@ class BalanceSheet(ConfigMixin,TemplateView):
 
         inventory = inventory_models.Product.total_inventory_value()
         
-        current_assets_total = reduce(lambda x, y: x + y,
-            [i.control_balance for i in current_assets], inventory 
-        )
+        current_assets_total = sum(
+            [i.control_balance for i in current_assets] 
+        ) + inventory
 
         #CURRENT LIABILITIES
         current_liabilities = models.Account.objects.filter(
@@ -66,8 +66,8 @@ class BalanceSheet(ConfigMixin,TemplateView):
                 Q(parent_account=models.Account.objects.get(pk=2000)))
 
         
-        current_liabilities_total = reduce(lambda x, y: x + y,
-            [i.control_balance for i in current_liabilities], 0 
+        current_liabilities_total = sum(
+            [i.control_balance for i in current_liabilities]
         )
 
         working_capital =  current_assets_total - current_liabilities_total
@@ -78,8 +78,8 @@ class BalanceSheet(ConfigMixin,TemplateView):
             Q(balance_sheet_category='non-current-liabilities')).exclude(
                 Q(balance=0))
 
-        long_term_liabilities_total = reduce(lambda x, y: x + y,
-            [i.balance for i in long_term_liabilities], 0 
+        long_term_liabilities_total = sum(
+            [i.balance for i in long_term_liabilities]
         )
 
         net_assets = long_term_assets_total + working_capital - \
@@ -94,9 +94,9 @@ class BalanceSheet(ConfigMixin,TemplateView):
 
         net_profit = net_profit_calculator(start, end)
 
-        equity_total = reduce(lambda x, y: x + y,
-            [i.balance for i in equity], net_profit - drawings
-        )
+        equity_total = sum(
+            [i.balance for i in equity]
+        ) +  net_profit - drawings
 
         context.update({
             'date': datetime.date.today(),

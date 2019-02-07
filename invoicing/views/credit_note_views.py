@@ -60,7 +60,7 @@ class CreditNoteCreateView( ContextMixin, CreateView):
         data = json.loads(urllib.parse.unquote(request.POST['returned-items']))
         
         for line in data:
-            pk, _ = line['product'].split('-')
+            pk = line['product'].split('-')[0]
             inv_line = SalesInvoiceLine.objects.get(pk=pk)
             # to ensure duplicate returns are not made
             # TODO refactor

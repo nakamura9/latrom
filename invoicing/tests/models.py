@@ -265,8 +265,14 @@ class CreditNoteModelTests(TestCase):
         self.note.create_entry()
         self.assertEqual(self.note.invoice.customer.account.balance, -D(10))
 
+    def test_credit_note_tax_credit(self):
+        self.assertEqual(self.note.tax_credit, 0)
 
-# The abstract sale object will be tested via tests to the sales invoice
+    def test_returned_total_with_tax(self):
+        self.assertEqual(self.note.returned_total_with_tax, 10)
+
+        
+#the abstract sale object will be tested via tests to the sales invoice
 # object.
 
 class SalesInvoiceTests(TestCase):

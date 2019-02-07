@@ -53,13 +53,14 @@ class CommissionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class DeductionForm(forms.ModelForm, BootstrapMixin):
     #only allow deduction accounts for 
-    account_paid_into = forms.ModelChoiceField(Account.objects.filter(type="liability"), required=False)
+    account_paid_into = forms.ModelChoiceField(Account.objects.filter(Q(type="liability") | Q(type="expense")), required=False)
     class Meta:
         exclude="active",
         model = models.Deduction
 
 class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
-    account_paid_into = forms.ModelChoiceField(Account.objects.filter(type="liability"), required=False)
+    account_paid_into = forms.ModelChoiceField(Account.objects.filter(
+        Q(type="liability") | Q(type="expense")), required=False)
     class Meta:
         fields = "name",
         model = models.Deduction

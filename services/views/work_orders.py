@@ -77,9 +77,6 @@ class WorkOrderCompleteView( UpdateView):
 
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
-        print("POST data")
-        print(request.POST)
-        
 
         if not self.object:
             self.get_object()
@@ -124,14 +121,6 @@ class WorkOrderDetailView( DetailView):
     template_name = os.path.join('services', 'work_order', 'detail.html')
     model = models.ServiceWorkOrder
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(WorkOrderDetailView, self).get_context_data(
-            *args, **kwargs)
-        # provide initial data for this form
-        context['authorization_form'] = forms.ServiceWorkOrderAuthorizationForm(
-            
-        )
-        return context
 
 class WorkOrderListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'work_order', 'list.html')
@@ -149,6 +138,7 @@ class WorkOrderViewSet(ModelViewSet):
 
 def work_order_authorize(request, pk=None):
     worder = get_object_or_404(models.ServiceWorkOrder, pk=pk)
+    print(request.POST)
     form = forms.ServiceWorkOrderAuthorizationForm(request.POST)
     if form.is_valid():
         worder.status = form.cleaned_data['status']
@@ -207,11 +197,8 @@ class WorkOrderCostingView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        labour = reduce(lambda x, y: x +y, 
-            [i.total_cost for i in self.object.time_logs], D(0.0))
-        expenses = reduce(lambda x, y: x +y, 
-            [i.expense.amount for i in self.object.workorderexpense_set.all()], 
-            D(0.0))
+        labour = sum([i.total_cost for i in self.object.time_logs])
+        expenses = sum([i.expense.amount for i in self.object.workorderexpense_set.all()])
     
         context['total_labour_cost'] = labour 
         context['total_expense_costs'] = expenses

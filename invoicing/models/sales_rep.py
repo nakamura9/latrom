@@ -31,4 +31,4 @@ class SalesRepresentative(SoftDeletionModel):
         #should i filter for paid invoices?
 
         #exclude tax in the calculation
-        return reduce(lambda x, y: x + y, [i.subtotal for i in invoices], 0)
+        return sum([i.subtotal for i in invoices])

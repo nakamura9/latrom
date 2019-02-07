@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import FormView
+from django.http import HttpResponseRedirect
 
 from common_data.forms import PeriodReportForm
 from common_data.utilities import ContextMixin, extract_period, ConfigMixin
@@ -14,6 +15,10 @@ from invoicing import models as inv
 from inventory import models as inventory_models
 
 from accounting import forms, models
+
+from django.test import Client
+from bs4 import BeautifulSoup
+import csv
 
 class ProfitAndLossFormView(ContextMixin, FormView):
     form_class = PeriodReportForm
@@ -43,8 +48,8 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
         purchases_acc = models.Account.objects.get(pk=4006)
         purchases = purchases_acc.balance_over_period(start, end)
         
-        opening_inventory = reduce(lambda x, y: x + y,
-            [D(i.quantity_on_date(start)) * i.unit_value for i in inventory_models.Product.objects.all()], 0)
+        opening_inventory = sum(
+            [D(i.quantity_on_date(start)) * i.unit_value for i in inventory_models.Product.objects.all()])
         
         closing_inventory = inventory_models.Product.total_inventory_value()
         cogs = opening_inventory +  purchases - closing_inventory
@@ -52,9 +57,7 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
         other_income = models.Account.objects.filter(type="income").exclude(
             Q(balance=0.0)).exclude(Q(pk__in=[4000]))
 
-        other_income_total = reduce(lambda x, y: x + y, [
-            i.control_balance for i in other_income
-        ], 0)
+        other_income_total = sum([i.control_balance for i in other_income])
 
         total_gross_profit = sales - cogs + other_income_total
 
@@ -63,9 +66,7 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
             type="expense").exclude(
                 Q(balance=0.0))
 
-        total_expenses = reduce(lambda x, y: x + y, [
-            i.control_balance for i in expenses
-        ], 0)
+        total_expenses = sum([i.control_balance for i in expenses])
 
         context.update({
             'start': start,
@@ -85,3 +86,9 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
         })
         
         return context
+
+
+def profit_and_loss_csv(request):
+    client = Client()
+
+    return HttpResponseRedirect("/accounting")

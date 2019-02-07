@@ -30,8 +30,8 @@ class ServiceInvoice(AbstractSale):
 
     @property
     def subtotal(self):
-        return reduce(lambda x,y: x + y, 
-            [i.total for i in self.serviceinvoiceline_set.all() ], 0)
+        return sum(
+            [i.total for i in self.serviceinvoiceline_set.all() ])
 
     def create_entry(self):
         if self.entry:

@@ -69,7 +69,8 @@ report_urls = [
     re_path(r'^balance-sheet/?$', views.BalanceSheet.as_view(), name='balance-sheet'),
     re_path(r'^trial-balance/?$', views.TrialBalance.as_view(), name='trial-balance'),
     re_path(r'^profit-and-loss/?$', views.ProfitAndLossReport.as_view(), name='profit-and-loss'),
-    re_path(r'^profit-and-loss-form/?$', views.ProfitAndLossFormView.as_view(), name='profit-and-loss-form')
+    re_path(r'^profit-and-loss-form/?$', views.ProfitAndLossFormView.as_view(), name='profit-and-loss-form'),
+    re_path(r'^csv/profit-and-loss/?$', views.profit_and_loss_csv, name='profit-and-loss-csv')
 ]
 
 account_urls = [

@@ -52,7 +52,7 @@ class BaseItem(SoftDeletionModel):
             items = inventory.models.WareHouseItem.objects.filter(equipment=self)
         if isinstance(self, RawMaterial):
             items = inventory.models.WareHouseItem.objects.filter(raw_material=self)
-        return reduce(lambda x, y: x + y, [i.quantity for i in items], 0)
+        return sum([i.quantity for i in items])
 
     
 
@@ -94,9 +94,7 @@ class Product(BaseItem):
 
     @staticmethod
     def total_inventory_value():
-        return reduce(lambda x,y: x + y, [
-            p.stock_value for p in Product.objects.all()
-        ], 0)
+        return sum([p.stock_value for p in Product.objects.all()])
 
 
     def quantity_on_date(self, date):
@@ -108,9 +106,7 @@ class Product(BaseItem):
             Q(product=self)
         )
 
-        ordered_quantity = reduce(lambda x, y: x + y, [
-            i.received for i in total_orders
-        ], 0)
+        ordered_quantity = sum([i.received for i in total_orders])
 
         total_sales = invoicing.models.SalesInvoiceLine.objects.filter(
             Q(invoice__date__gte=date) &
@@ -118,9 +114,8 @@ class Product(BaseItem):
             Q(product=self)
         )
 
-        sold_quantity = reduce(lambda x, y: x + y, [
-            (i.quantity - i.returned_quantity) for i in total_sales
-        ], 0)
+        sold_quantity = sum([(i.quantity - i.returned_quantity) \
+                for i in total_sales])
 
         return current_quantity + sold_quantity - ordered_quantity
 
@@ -130,9 +125,8 @@ class Product(BaseItem):
         '''Takes a date and returns the inventory quantity on that date
         takes todays inventory 
         starting = todays + sold - ordered'''
-        current_total_product_quantity = reduce(lambda x, y: x + y, [
-             i.quantity for i in Product.objects.all()
-        ], 0)
+        current_total_product_quantity = sum([i.quantity \
+                for i in Product.objects.all()])
 
         total_product_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
@@ -140,18 +134,15 @@ class Product(BaseItem):
             Q(item_type=1)
         )
 
-        ordered_quantity = reduce(lambda x, y: x + y, [
-            i.received for i in total_product_orders
-        ], 0)
+        ordered_quantity = sum([i.received for i in total_product_orders])
 
         total_product_sales = invoicing.models.SalesInvoiceLine.objects.filter(
             Q(invoice__date__gte=date) &
             Q(invoice__date__lte=datetime.date.today())
         )
 
-        sold_quantity = reduce(lambda x, y: x + y, [
-            (i.quantity - i.returned_quantity) for i in total_product_sales
-        ], 0)
+        sold_quantity = sum([(i.quantity - i.returned_quantity) \
+                for i in total_product_sales])
 
         return current_total_product_quantity + sold_quantity - ordered_quantity
     
@@ -230,8 +221,8 @@ class Product(BaseItem):
     def sales_to_date(self):
         items = invoicing.models.SalesInvoiceLine.objects.filter(
             product=self)
-        total_sales = reduce(lambda x,y: x + y, 
-            [D(item.quantity) * item.price for item in items], 0)
+        total_sales = sum(
+            [D(item.quantity) * item.price for item in items])
         return total_sales
     
 

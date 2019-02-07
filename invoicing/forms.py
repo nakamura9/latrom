@@ -35,7 +35,6 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 'next_quotation_number',
                 'include_units_in_sales_invoice',
                 'include_shipping_address',
-                'document_theme',
                 ),
             Tab('Invoice Types',
                 'use_sales_invoice',
@@ -88,7 +87,8 @@ class SalesInvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
 
 class SalesInvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = ['customer', 'active', 'discount', 'invoice_number', 'quotation_number', 'status', 'entry'] 
+        exclude = ['customer', 'active', 'discount', 'invoice_number', 
+        'quotation_number', 'status', 'entry', 'shipping_expenses'] 
         model = models.SalesInvoice
 
 class SalesInvoicePaymentForm(forms.ModelForm, BootstrapMixin):

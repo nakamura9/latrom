@@ -55,8 +55,10 @@ INSTALLED_APPS = [
     'crispy_forms',
     'autofixture',
     'wkhtmltopdf',
-    'reversion'
+    'reversion',
 ] + USER_APPS
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 LOGIN_REQUIRED_FOR_CRUD = True
 PROJECT_NAME = 'Smart business solutions'
@@ -151,7 +153,7 @@ DATE_FORMAT = "d/m/Y"
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'assets'),
+    os.path.join(BASE_DIR, 'assets', 'bundles'),
 )
 STATIC_ROOT = os.path.join(BASE_DIR, 'common_data', 'static')
 

@@ -10,6 +10,8 @@ from invoicing.models import Customer
 
 TODAY = datetime.date.today()
 class PlannerModelTests(TestCase):
+    fixtures = ['accounts.json']
+    
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

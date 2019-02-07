@@ -90,7 +90,7 @@ class SalesReportView(TemplateView):
         start, end = extract_period(kwargs)
         context["period"] = "{} to {}".format(start, end)
 
-        total_sales = reduce(lambda x, y: x + y, [i.total for i in SalesInvoice.objects.filter(date__gte=start, date__lte=end)], 0)
+        total_sales = sum([i.subtotal for i in SalesInvoice.objects.filter(Q(date__gte=start) & Q(date__lte=end))])
         average_sales  = total_sales / D(abs((end - start).days))
 
         context["total_sales"] = total_sales

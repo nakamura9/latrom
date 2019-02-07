@@ -60,7 +60,7 @@ class PlannerAPIViewTests(TestCase):
 
 
 class PlannerViewTests(TestCase):
-    fixtures = ['planner.json']
+    fixtures = ['planner.json', 'accounts.json']
 
     @classmethod
     def setUpClass(cls):
