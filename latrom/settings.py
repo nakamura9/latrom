@@ -166,7 +166,7 @@ LOGIN_REDIRECT_URL = '/base/workflow'
 
 WEBPACK_LOADER = {
     'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': '/',
         'STATS_FILE': os.path.join(BASE_DIR, 'assets', 'webpack-stats.json'),
     }
 }
