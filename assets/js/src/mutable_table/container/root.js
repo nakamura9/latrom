@@ -79,6 +79,7 @@ class MutableTable extends Component{
                                 fieldData={fieldData}
                                 fields={this.props.fields}
                                 rowID={i}
+                                root={this}
                                 inputHandler={this.inputHandler}/>
                         ))}
                     </tbody>

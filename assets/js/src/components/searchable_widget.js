@@ -107,7 +107,8 @@ class SearchableWidget extends Component {
                     currValue={this.state.currValue}
                     validChoice={this.state.selectedValue}
                     handleChange={this.handleChange}
-                    toggleOptions={this.toggleOptions}/>
+                    toggleOptions={this.toggleOptions}
+                    bordered={this.props.bordered}/>
                    
                 <OptionsWidget 
                     choices={this.state.filteredChoices}
@@ -135,7 +136,7 @@ class TextBoxWidget extends Component{
             placeholder="Select item..."
             style={{
                 padding: "3px",
-                border: "0px",
+                border: this.props.bordered ? "1px" : "0px",
                 width:"85%",
                 backgroundColor: this.props.validChoice === "" ?
                     "#fff" : "#aaf"

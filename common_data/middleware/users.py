@@ -15,7 +15,8 @@ class UserTestMiddleware(object):
                 request.path.startswith("/login") or \
                 request.path.startswith("/base") or \
                 request.path.startswith("/messaging") or \
-                request.path.startswith("/planner"):
+                request.path.startswith("/planner") or \
+                request.path.startswith("/media"):
             return self.get_response(request)
         
         elif hasattr(request.user, 'employee'):
