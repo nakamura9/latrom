@@ -14,7 +14,8 @@ const row = (props) =>{
                     key={i}
                     inputHandler={props.inputHandler}
                     data={props.fieldData[field.name]}
-                    mutable={props.fields[i].mutable}
+                    field={props.fields[i]}
+                    root={props.root}
                     columnID={`${props.rowID}__${field.name}`} />
             ))}
         </tr>

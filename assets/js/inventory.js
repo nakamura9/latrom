@@ -5,6 +5,7 @@ import ItemReceiptTable from './inventory/stock_receipt';
 import InventoryChecker from './inventory/inventory_check';
 import GenericTable from './src/generic_list/containers/root';
 import MutableTable from './src/mutable_table/container/root';
+import SearchableWidget from './src/components/searchable_widget';
 
 const order = document.getElementById('order-root');
 const inventoryCheck =  document.getElementById('inventory-checker');
@@ -207,21 +208,30 @@ if(inventoryCheck){
                 return res.data.transferorderline_set.map((item)=>({
                     'item': item.id + ' - ' + item.product.name,
                     'quantity': item.quantity, 
-                    'moved_quantity': item.moved_quantity
+                    'moved_quantity': item.moved_quantity,
+                    'quantity_to_move': 0,
+                    'receiving_location': ""
                 }))
             }}
             fields={[
                 {'name': 'item', 'mutable': false},
                 {'name': 'quantity', 'mutable': false},
-                {'name': 'moved_quantity', 'mutable': true},
-                
-                
+                {'name': 'moved_quantity', 'mutable': false},
+                {'name': 'quantity_to_move', 'mutable': true},
+                {
+                    'name': 'receiving_location', 
+                    'mutable': true,
+                    'widget': true,
+                    'widgetCreator': (component) =>{
+                        return(<SearchableWidget 
+                            bordered
+                            dataURL="/inventory/api/storage-media/1"
+                            idField="id"
+                            displayField="name"
+                            onSelect={(val) => component.setState({})}
+                            onClear={() =>{}}/>)
+                    }
+                } 
                 
             ]}/>, receiveTable)
-
-            /**
-             * 'quantity_to_move': 0,
-                    'receiving_location': ""
-             * {'name': 'quantity_to_move', 'mutable': true},
-                {'name': 'receiving_location', 'mutable': true}, */
 }
