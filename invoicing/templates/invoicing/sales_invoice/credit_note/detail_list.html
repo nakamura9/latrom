@@ -33,15 +33,30 @@
                             <th>Credit Note</th>
                             <th>Number of Items</th>
                             <th>Value</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for return in object_list %}
                             <tr>
                                 <td>{{return.date}}</td>
-                                <td><a href="{% url 'invoicing:credit-note-detail' pk=return.pk %}">{{return.id | stringformat:'06d' }}</a></td>
+                                <td>{{return.id | stringformat:'06d' }}</td>
                                 <td>{{return.returned_items.count}}</td>
                                 <td>{{return.returned_total}}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                                            <a class="dropdown-item" href="{% url 'invoicing:credit-note-detail' pk=return.pk %}">fa <i class="fa fa-eye" aria-hidden="true"></i> View</a>
+                                            <a class="dropdown-item" href="{% url 'invoicing:credit-note-pdf' pk=return.pk %}"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i> Generate PDF</a>  
+                                        </div>
+                                    </div>
+
+                                    
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

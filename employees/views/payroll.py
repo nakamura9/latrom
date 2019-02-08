@@ -20,7 +20,8 @@ from django.db.models import Q
 
 from accounting.models import Tax
 from common_data.utilities import ContextMixin, ConfigMixin, apply_style
-from common_data.views import PaginationMixin
+from common_data.views import PaginationMixin, PDFDetailView
+
 
 from employees import filters, forms, models, serializers
 from messaging.models import Notification
@@ -396,3 +397,8 @@ class ManualPayrollService(object):
                 leave.employee.leave_days -= leave.duration
                 leave.save()
                 leave.employee.save()
+
+class PayslipPDFView(ConfigMixin, PDFDetailView):
+    template_name = os.path.join('employees', 'payslip', 'detail.html')
+    file_name="payslip.pdf"
+    model = models.Payslip

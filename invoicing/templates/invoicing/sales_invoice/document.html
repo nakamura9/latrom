@@ -20,13 +20,7 @@
         </tr>
         <tr>
             <td>
-                <div class="{{style}}-head-cell">
-                    <p>
-                        <b>Bill To:</b>
-                    </p>
-                    <p>{{object.customer}}</p>
-                    <p>{{object.customer.billing_address | linebreaks}} </p>
-                </div>
+                
             </td>
             <td>
                 <table>
@@ -128,30 +122,6 @@
                 </table>
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <div class="{{style}}-footer-cell">
-                    <div class="{{style}}-footer-cell-heading">
-                        <h6>Terms:</h6>
-                    </div>
-                    <div class="{{style}}-footer-cell-contents">
-                        <p>{{object.terms}}</p>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div class="{{style}}-footer-cell">
-                    <div class="{{style}}-footer-cell-heading">
-                        <h6>Comments:</h6>
-                    </div>
-                    <div class="{{style}}-footer-cell-contents">
-                        <p>{{object.comments | linebreaks}}</p>
-                    </div>
-
-                </div>
-            </td>
-        </tr>
+        
     </tbody>
 </table>

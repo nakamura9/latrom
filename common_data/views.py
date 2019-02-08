@@ -312,3 +312,13 @@ def create_note(request):
     ).notes.add(note)
 
     return JsonResponse({'status': 'ok'})
+
+
+class PDFDetailView(PDFTemplateView):
+    model = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = self.model.object.get(pk=self.kwargs['pk'])
+
+        return context

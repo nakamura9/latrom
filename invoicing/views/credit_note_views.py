@@ -18,12 +18,11 @@ from rest_framework import generics, viewsets
 
 from accounting.forms import TaxForm
 from common_data.utilities import ConfigMixin, ContextMixin
-from common_data.views import PaginationMixin
+from common_data.views import PaginationMixin, PDFDetailView
 from inventory.forms import QuickProductForm
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import CreditNote, SalesConfig, SalesInvoiceLine
-
 
 #########################################
 #           Credit Note Views           #
@@ -102,3 +101,9 @@ class CreditNoteListView( ContextMixin, PaginationMixin, FilterView):
 
     def get_queryset(self):
         return CreditNote.objects.all().order_by('date').reverse()
+
+
+class CreditNotePDFView(ConfigMixin, PDFDetailView):
+    model = CreditNote
+    template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'detail.html')
+    file_name = "credit note.pdf"

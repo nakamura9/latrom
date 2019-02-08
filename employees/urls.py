@@ -47,6 +47,8 @@ pay_urls = [
         name='list-pay-slips'),
     re_path(r'^pay-slip-detail/(?P<pk>[\w]+)/?$', views.PayslipView.as_view(), 
         name='pay-slip-detail'),
+    re_path(r'^pay-slip-pdf/(?P<pk>[\w]+)/?$', views.PayslipPDFView.as_view(), 
+        name='pay-slip-pdf'),
     re_path(r'^pay-slip-verify/(?P<pk>[\w]+)/?$', 
         views.PayslipVerificationView.as_view(), name='pay-slip-verify'),
     re_path(r'^pay-slip-delete/(?P<pk>[\w]+)/?$', 
