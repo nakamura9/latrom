@@ -73,5 +73,7 @@
         </tr>
     </tbody>
 </table>
-
+{% if pdf_link %}
+<a href="/invoicing/invoice-aging-pdf" style="padding:10px;border-radius:10px;background-color:#f22;color:white;"><i class="fas fa-file-pdf    "></i>Generate PDF</a>
+{% endif %}
 {% endblock %}

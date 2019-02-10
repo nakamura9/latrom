@@ -62,7 +62,7 @@
                         <tbody>
                             <tr>
                                 <td style="border-bottom: 1px solid black;" class="cell" colspan="5">Balance Brought Forward: </td>
-                                <td style="border-bottom: 1px solid black;" class="cell">0.00</td>
+                                <td style="border-bottom: 1px solid black;" class="cell">{{balance_brought_forward}}</td>
                             </tr>
                             {% for inv in invoices %}
                             <tr>
@@ -100,7 +100,7 @@
                         <tfoot>
                             <tr style="border-top: 1mm solid black;">
                                 <td colspan="5">Remaining Balance:</td>
-                                <td>{{customer.account.balance | accounting}}</td>
+                                <td>{{balance_at_end_of_period | accounting}}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -110,7 +110,7 @@
 
     </tbody>
 </table>
-
-
-
+{% if pdf_link %}
+<a style="padding:10px;border-radius:10px;background-color:#f22;color:white;" href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
+{% endif %}
 {% endblock %}

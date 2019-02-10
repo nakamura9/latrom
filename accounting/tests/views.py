@@ -16,7 +16,6 @@ from common_data.tests import create_account_models, create_test_user
 from inventory.tests import create_test_inventory_models
 from latrom import settings
 
-settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
 class CommonViewTests(TestCase):

@@ -15,7 +15,6 @@ from inventory.tests import create_test_inventory_models
 from services.models import Service, ServiceCategory
 
 TODAY = datetime.datetime.today()
-settings.TEST_RUN_MODE = True
 
 class CommonViewsTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 

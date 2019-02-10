@@ -316,9 +316,10 @@ def create_note(request):
 
 class PDFDetailView(PDFTemplateView):
     model = None
+    context = {}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['object'] = self.model.objects.get(pk=self.kwargs['pk'])
-
+        context.update(self.context)
         return context

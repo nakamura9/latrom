@@ -19,7 +19,6 @@ from inventory.tests import create_test_inventory_models
 from latrom import settings
 from django.contrib.auth.models import User
 
-settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
 class SimpleModelTests(TestCase):

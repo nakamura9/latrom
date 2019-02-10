@@ -13,7 +13,6 @@ from latrom import settings
 from accounting.models import Account, JournalEntry
 from .models import create_test_employees_models
 
-settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
 

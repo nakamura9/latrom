@@ -17,7 +17,6 @@ from invoicing.models import (SalesRepresentative,
                               SalesInvoiceLine
                               )
 from inventory.models import Product, UnitOfMeasure
-settings.TEST_RUN_MODE = True
 TODAY = datetime.date.today()
 
 def create_test_employees_models(cls):
