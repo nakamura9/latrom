@@ -15,6 +15,9 @@ from common_data.models import SingletonModel
 from .item_models import Consumable, Equipment, Product
 
 
+class WarehouseExeption(Exception):
+    pass
+
 class WareHouse(models.Model):
     name = models.CharField(max_length=128)
     address = models.TextField()
@@ -81,21 +84,22 @@ class WareHouse(models.Model):
         return False 
             
     
-    def add_item(self, item, quantity):
+    def add_item(self, item, quantity, location=None):
         #check if record of item is already in warehouse
+        #ignore location if present
         if self.has_item(item):
             self.get_item(item).increment(quantity)
             
         else:
             if isinstance(item, Product):
                 return self.warehouseitem_set.create(product=item, 
-                    quantity=quantity, item_type=1)
+                    quantity=quantity, item_type=1, location=location)
             elif isinstance(item, Consumable):
                 return self.warehouseitem_set.create(consumable=item, 
-                    quantity=quantity, item_type=2)
+                    quantity=quantity, item_type=2, location=location)
             elif isinstance(item, Equipment):
                 return self.warehouseitem_set.create(equipment=item, 
-                    quantity=quantity, item_type=3)
+                    quantity=quantity, item_type=3, location=location)
             
         return self.get_item(item)
 
@@ -125,20 +129,21 @@ class WareHouseItem(models.Model):
         (3, 'Equipment'),
         (4, 'Raw Material')
     ]
+    # NB for now the software will require all items of the same type to be 
+    # stored in the same location for the same warehouse.
     
     item_type = models.PositiveSmallIntegerField()
-    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
-    consumable = models.ForeignKey('inventory.Consumable', on_delete=models.SET_NULL, 
+    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, 
         null=True)
-    equipment = models.ForeignKey('inventory.Equipment', on_delete=models.SET_NULL, 
-        null=True)
-    raw_material = models.ForeignKey('inventory.rawmaterial', on_delete=models.SET_NULL,
-        null=True)
+    consumable = models.ForeignKey('inventory.Consumable', 
+        on_delete=models.SET_NULL, null=True)
+    equipment = models.ForeignKey('inventory.Equipment', 
+        on_delete=models.SET_NULL, null=True)
+    raw_material = models.ForeignKey('inventory.rawmaterial', 
+        on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
     warehouse = models.ForeignKey('inventory.Warehouse', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        default=1)
+        on_delete=models.SET_NULL, null=True, default=1)
     #might support multiple locations for the same item in the same warehouse
     location = models.ForeignKey('inventory.StorageMedia', blank=True, 
         on_delete=models.SET_NULL, null=True)
@@ -186,6 +191,10 @@ class WareHouseItem(models.Model):
         return self.mapping[self.item_type]
 
     def save(self, *args, **kwargs):
+        if self.warehouse.has_item(self.item) and self.pk is None:
+            self.warehouse.add_item(self.item, self.quantity)
+            return # do not allow a new item to be created
+            
         super().save(*args, **kwargs)
         if self.location is None:
             if self.warehouse.storagemedia_set.all().count() == 0:

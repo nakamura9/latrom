@@ -1,7 +1,12 @@
 
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit, HTML
+from crispy_forms.layout import (Fieldset, 
+                                Layout, 
+                                Submit, 
+                                HTML,
+                                Row,
+                                Column)
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -310,6 +315,25 @@ class StockReceiptForm(forms.ModelForm, BootstrapMixin):
         model= models.StockReceipt
 
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('received_by', 
+                    'receive_date',
+                    'order',
+                    'warehouse',
+                    css_class="col-sm-6"),
+            Column('note', css_class="col-sm-6")
+            )
+        )
+
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "active",
@@ -351,6 +375,18 @@ class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
         fields = ['actual_completion_date', 'receive_notes', 'receiving_inventory_controller']
         model = models.TransferOrder
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('actual_completion_date', 
+                    'receiving_inventory_controller', 
+                    css_class="col-sm-6"),
+            Column('receive_notes', css_class="col-sm-6")
+            )
+        )
 
 class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
     class Meta:

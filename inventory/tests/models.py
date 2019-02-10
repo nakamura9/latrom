@@ -700,11 +700,15 @@ class WarehouseModelTests(TestCase):
         obj.delete()
 
     def test_create_warehouse_item(self):
+        warehouse_2 = models.WareHouse.objects.create(
+            name='Test Location',
+            address='Test Address'
+        )
         obj = models.WareHouseItem.objects.create(
             item_type=1,
             product=self.product,
             quantity=10,
-            warehouse=self.warehouse,
+            warehouse=warehouse_2,
         )
         self.assertIsInstance(obj, models.WareHouseItem)
         obj.delete()

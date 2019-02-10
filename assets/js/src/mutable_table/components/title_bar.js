@@ -6,6 +6,7 @@ const titleBar = (props) =>{
                 {props.headings.map((heading, i)=>(
                     <td key={i}>{heading}</td>
                 ))}
+                <td></td>
             </tr>        
         </thead>)
 };

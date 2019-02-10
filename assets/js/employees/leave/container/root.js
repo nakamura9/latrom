@@ -48,7 +48,7 @@ class LeaveCalendar extends Component{
     render(){
         return(
             <Router >
-            <div className="container-fluid">
+            <div className="container">
                 <div className="row">
                     <div 
                         className="col-sm-2" 

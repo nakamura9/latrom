@@ -19,9 +19,8 @@ from accounting import forms, models
 class TrialBalance(ConfigMixin, TemplateView):
     template_name = os.path.join('accounting', 'reports', 'trial_balance.html')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        
+    @staticmethod
+    def common_context(context):
         context['date'] = datetime.date.today()
         context['accounts'] = models.Account.objects.all().exclude(
             Q(balance=0.0) & Q(control_account=False)).exclude(
@@ -30,5 +29,10 @@ class TrialBalance(ConfigMixin, TemplateView):
         context['total_debit'] = models.Account.total_debit()
         context['total_credit'] = models.Account.total_credit()
         context["inventory_value"] = inventory_models.Product.total_inventory_value()
-
+        
         return context
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        return TrialBalance.common_context(context)

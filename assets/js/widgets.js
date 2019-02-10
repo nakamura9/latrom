@@ -10,7 +10,7 @@ import MutableTable from "../js/src/mutable_table/container/root";
 import GenericTable from '../js/src/generic_list/containers/root';
 import TimeField from '../js/src/components/time_field';
 import NoteWidget from '../js/src/notes_widget/root';
-
+import SearchableWidget from '../js/src/components/searchable_widget';
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -71,11 +71,40 @@ if(storageMedia){
 }else if(threadView){
     ReactDOM.render(<MessageDetail />, threadView);
 }else if(testView){
-    const token = document.getElementById('page-token').value;
-    ReactDOM.render(<NoteWidget 
-            target="work_order" 
-            targetID={3}
-            token={token}/>, testView);
+    ReactDOM.render(<MutableTable
+        formHiddenFieldName="received-items" 
+        dataURL={"/inventory/api/transfer-order/" + 1}
+        headings={["Item", "Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
+        resProcessor={(res) =>{
+            return res.data.transferorderline_set.map((item)=>({
+                'item': item.id + ' - ' + item.product.name,
+                'quantity': item.quantity, 
+                'moved_quantity': item.moved_quantity,
+                'quantity_to_move': 0,
+                'receiving_location': ""
+            }))
+        }}
+        fields={[
+            {'name': 'item', 'mutable': false},
+            {'name': 'quantity', 'mutable': false},
+            {'name': 'moved_quantity', 'mutable': false},
+            {'name': 'quantity_to_move', 'mutable': true},
+            {
+                'name': 'receiving_location', 
+                'mutable': true,
+                'widget': true,
+                'widgetCreator': (component) =>{
+                    return(<SearchableWidget 
+                        bordered
+                        dataURL="/inventory/api/storage-media/1"
+                        idField="id"
+                        displayField="name"
+                        onSelect={(val) => component.setState({})}
+                        onClear={() =>{}}/>)
+                }
+            } 
+            
+        ]}/>, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
 }

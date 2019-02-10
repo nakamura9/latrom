@@ -5,32 +5,28 @@
 <link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> 
 {% endblock %} 
 {% block content %}
+{% load crispy_forms_tags %}
 
 <div class="jumbotron">
-    <div class="container-fluid">
+    <div class="container">
         <h1 class="display-3">Order Receipt Form</h1>
 
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card bg-primary text-white">
+        <div class="col-sm-12">
+            <div class="card">
                 <div class="card-body">
-                    <form method="POST" action="" 
-                        enctype="multipart/form-data"
-                        id="form">
-                        {% csrf_token %}
-                        <table class="table">
-                            {{form.as_table}}
-                        </table>
-                        <button id="submit-button" class="btn btn-default pull-right" type="submit">Submit</button>
-                    </form>
+                            {% crispy form %}
+                    
                 </div>
             </div>
         </div>
-        <div id="item-table" class="col-sm-8">
+    </div>
+    <div class="row">
+        <div id="item-table" class="col-sm-12">
             
         </div>
     </div>

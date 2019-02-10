@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, FormView
 
-from common_data.utilities import ContextMixin, extract_period
+from common_data.utilities import ContextMixin, extract_period, ConfigMixin
 from invoicing import forms, models
 from invoicing.models import AbstractSale, SalesInvoice
 from .report_utils.plotters import plot_sales
@@ -29,7 +29,7 @@ class CustomerReportFormView(ContextMixin, FormView):
         return {}
 
 
-class CustomerStatement(TemplateView):
+class CustomerStatement(ConfigMixin, TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'customer_statement.html')
     def get_context_data(self, *args, **kwargs):
         context = super(CustomerStatement, self).get_context_data(*args, **kwargs)
@@ -59,7 +59,7 @@ class CustomerStatement(TemplateView):
         return context
         
 
-class InvoiceAgingReport(TemplateView):
+class InvoiceAgingReport(ConfigMixin, TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'aging.html')
 
     def get_context_data(self, *args, **kwargs):
@@ -81,7 +81,7 @@ class SalesReportFormView(ContextMixin, FormView):
     }
 
 # TODO test
-class SalesReportView(TemplateView):
+class SalesReportView(ConfigMixin, TemplateView):
     template_name = os.path.join("invoicing", "reports", "sales_report.html")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

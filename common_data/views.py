@@ -319,6 +319,6 @@ class PDFDetailView(PDFTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object'] = self.model.object.get(pk=self.kwargs['pk'])
+        context['object'] = self.model.objects.get(pk=self.kwargs['pk'])
 
         return context

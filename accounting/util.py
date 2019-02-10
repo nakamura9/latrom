@@ -1,6 +1,8 @@
 import datetime
 from accounting import models 
 from django.db.models import Q
+from calendar import monthrange
+
 
 class AccountingTaskService(object):
     def __init__(self):
@@ -10,6 +12,7 @@ class AccountingTaskService(object):
         print('running accounting services')
         self.run_recurring_expenses()
         self.run_interest_on_accounts()
+        self.depreciate_assets()
         
 
     def run_recurring_expenses(self):
@@ -40,3 +43,26 @@ class AccountingTaskService(object):
                 acc.last_interest_earned_date = self.today
                 acc.save()
 
+
+    def depreciate_assets(self):
+        print('depreciating assets')
+        end_of_month = monthrange(self.today.year, self.today.month)[1]
+        if self.today.day ==  end_of_month:
+            #fix
+            for asset in models.Asset.objects.filter(
+                    Q(category=1) | 
+                    Q(category=2) | 
+                    Q(category=4) | 
+                    Q(category=5)):
+                
+                amount = asset.depreciation_for_month(self.today.month, 
+                    self.today.year)
+                j = models.JournalEntry.objects.create(
+                        date=self.today,
+                        draft=False,
+                        memo="Asset depreciation",
+                        journal=models.Journal.objects.get(pk=5),
+                        created_by=models.AccountingSettings.objects.first().default_bookkeeper
+                    )
+                j.simple_entry(amount, asset.account, 
+                    asset.depreciation_account)

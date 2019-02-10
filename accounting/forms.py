@@ -1,7 +1,12 @@
 
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit
+from crispy_forms.layout import (Fieldset, 
+                                Layout, 
+                                Submit, 
+                                HTML,
+                                Row,
+                                Column)
 from django import forms
 from django.contrib.auth.models import User
 
@@ -75,6 +80,21 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="posted_to_ledger", "adjusted"
         model = models.JournalEntry
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'journal',
+                    'created_by',
+                    'draft',
+                    css_class="col-sm-6"),
+            Column('memo', css_class="col-sm-6")
+            )
+        )
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:

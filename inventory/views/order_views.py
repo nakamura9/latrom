@@ -61,13 +61,13 @@ class OrderPOSTMixin(object):
                 i.delete()
 
         for data in items:
-            id, _ = data['item'].split('-') # name is discarded
+            id= data['item'].split('-')[0] 
             item_type = id[0] # one of P, C or E
             pk = id.strip(item_type) # removes letter from pk
             
             unit_id = 1 # default value
             if data['unit'] != "":
-                unit_id, _ = data['unit'].split('-')
+                unit_id = data['unit'].split('-')[0]
             
             unit = models.UnitOfMeasure.objects.get(
                         pk=unit_id)
@@ -336,7 +336,7 @@ class DebitNoteCreateView(CreateView):
         data = json.loads(urllib.parse.unquote(request.POST['returned-items']))
 
         for line in data:
-            pk, _ = line['item'].split('-')
+            pk = line['item'].split('-')[0]
             item = models.OrderItem.objects.get(pk=pk)
             # TODO reset or force returned quantity to be initially 0?
             returned_quantity = float(line['returned_quantity']) - \

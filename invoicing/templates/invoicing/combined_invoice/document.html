@@ -6,27 +6,15 @@
             </td>
         </tr>
         <tr>
-            <td>
-                <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
-            </td>
-            <td>
-                <h4>
-                    <b>{{business_name}}</b>
-                </h4>
-                <p>{{business_address | linebreaks}}</p>
+            <td colspan="2" id="business-data">
+                {% include "common_data/common/business_information.html" %}
             </td>
         </tr>
         <tr>
-            <td>
-                <div class="{{style}}-head-cell">
-                    <p>
-                        <b>Bill To:</b>
-                    </p>
-                    <p>{{object.customer}}</p>
-                    <p>{{object.customer.billing_address | linebreaks}}</p>
-                </div>
+            <td id="customer-data">
+                {% include "common_data/common/customer_data.html" %}  
             </td>
-            <td>
+            <td id="details">
                 <table>
                     <tbody>
                         <tr>
@@ -93,7 +81,6 @@
                             </td>
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
-                        {% if tax_column %}
                         <tr>
                             <td >
                                 <b>Tax Due @{{object.tax.rate}}%:</b>
@@ -107,34 +94,13 @@
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>
                         </tr>
-                        {% endif %}
                     </tfoot>
                 </table>
             </td>
         </tr>
         <tr>
             <td colspan="2">
-                <div class="{{style}}-footer-cell">
-                    <div class="{{style}}-footer-cell-heading">
-                        <h6>Terms:</h6>
-                    </div>
-                    <div class="{{style}}-footer-cell-contents">
-                        <p>{{object.terms}}</p>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div class="{{style}}-footer-cell">
-                    <div class="{{style}}-footer-cell-heading">
-                        <h6>Comments:</h6>
-                    </div>
-                    <div class="{{style}}-footer-cell-contents">
-                        <p>{{object.comments | linebreaks}}</p>
-                    </div>
-
-                </div>
+                {% include "common_data/common/terms_and_comments.html" %}
             </td>
         </tr>
     </tbody>

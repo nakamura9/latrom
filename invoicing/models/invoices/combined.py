@@ -34,7 +34,7 @@ class CombinedInvoice(AbstractSale):
             )
         
         elif data['lineType'] == 'service':
-            pk, name = data['data']['service'].split('-')
+            pk = data['data']['service'].split('-')[0]
             service = Service.objects.get(pk=pk)
             self.combinedinvoiceline_set.create(
                 line_type=2,#service
@@ -53,7 +53,7 @@ class CombinedInvoice(AbstractSale):
                     )
 
         elif data['lineType'] == 'billable':
-            pk, name = data['data']['billable'].split('-')
+            pk = data['data']['billable'].split('-')[0]
             expense = Expense.objects.get(pk=pk)
             self.combinedinvoiceline_set.create(
                 line_type=3,#expense

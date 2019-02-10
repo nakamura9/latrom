@@ -7,9 +7,14 @@ sales_router = DefaultRouter()
 sales_router.register('api/sales-invoice', views.SalesInvoiceAPIViewSet)
 
 credit_note_urls = [
-    re_path(r'^credit-note-create/(?P<pk>[\w]+)/?$', views.CreditNoteCreateView.as_view(), name='credit-note-create'),
-    re_path(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), name='credit-note-list'),
-    re_path(r'^credit-note-detail/(?P<pk>[\w]+)/?$', views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
+    re_path(r'^credit-note-create/(?P<pk>[\w]+)/?$', 
+        views.CreditNoteCreateView.as_view(), name='credit-note-create'),
+    re_path(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), 
+        name='credit-note-list'),
+    re_path(r'^credit-note-detail/(?P<pk>[\w]+)/?$', 
+        views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
+    re_path(r'^credit-note-pdf/(?P<pk>[\w]+)/?$', 
+        views.CreditNotePDFView.as_view(), name='credit-note-pdf'),
 ]
 
 sales_urls = [

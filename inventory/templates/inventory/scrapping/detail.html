@@ -1,70 +1,85 @@
-{% extends "invoicing/themable_common/base.html" %}
+{% extends "common_data/page/pdf_page.html" %}
 
 
-{% block head_table %}
-<table >
+{% block page_contents %}
+
+<table>
     <tbody>
         <tr>
-            <td>Date:</td>
-            <td>{{object.date}}</td>
+            <td colspan="2" id="title"></td>
         </tr>
         <tr>
-            <td>Performed By:</td>
-            <td>{{object.controller}}</td>
+            <td colspan="2" id="business_data">
+                {% include "common_data/common/business_information.html" %}
+            </td>
         </tr>
         <tr>
-            <td>Scrapping Record Number:</td>
-            <td>{{object.pk}}</td>
+            <td id="customer-data">
+                    <p><b>Warehouse:</b></p>
+                    <p>{{object.warehouse}}</p>
+                    <p>{{object.warehouse.address}}</p>
+            </td>
+            <td id="details">
+                <table >
+                    <tbody>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{object.date}}</td>
+                        </tr>
+                        <tr>
+                            <td>Performed By:</td>
+                            <td>{{object.controller}}</td>
+                        </tr>
+                        <tr>
+                            <td>Scrapping Record Number:</td>
+                            <td>{{object.pk}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" id="item-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <td >Item</td>
+                            <td >Quantity</td>
+                            <td style="width:300px;">Note</td>
+                            <td >Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in object.inventoryscrappingrecordline_set.all %}
+                            <tr>
+                                <td >{{line.product.name}}</td>
+                                <td >{{line.quantity}}</td>
+                                <td>{{line.note}}</td>
+                                <td >{{line.scrapped_value}}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr style="height:100%">
+                                <td ></td>
+                                <td ></td>
+                                <td ></td>
+                                <td ></td>
+                            </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><b>Total:</b></td>
+                            <td>{{object.scrapping_value}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" id="comments">
+                {% include "common_data/common/terms_and_comments.html" %}
+            </td>
         </tr>
     </tbody>
 </table>
-{% endblock %}
-{% block head_cell %}
-<td class="{{style}}-head-cell">
-    <p><b>Warehouse:</b></p>
-    <p>{{object.warehouse}}</p>
-    <p>{{object.warehouse.address}}</p>
-</td>
-{% endblock %}                        
-{% block content_headings %}
-<tr>
-    <td >Item</td>
-    <td >Quantity</td>
-    <td style="width:300px;">Note</td>
-    <td >Value</td>
-</tr>
-{% endblock content_headings %}
-{% block content_body %}
-{% for line in object.inventoryscrappingrecordline_set.all %}
-<tr>
-    <td >{{line.product.name}}</td>
-    <td >{{line.quantity}}</td>
-    <td>{{line.note}}</td>
-    <td >{{line.scrapped_value}}</td>
-</tr>
-{% endfor %}
-<tr style="height:100%">
-    <td ></td>
-    <td ></td>
-    <td ></td>
-    <td ></td>
-</tr>
-{% endblock content_body %} 
 
-{% block content_footer %}
-<tr>
-    <td colspan="3"><b>Total:</b></td>
-    <td>{{object.scrapping_value}}</td>
-</tr>
-{% endblock content_footer %}
-{% block footer_statements %}
-<div style="border: 1px solid black;margin:10px 0px;">
-    <div style="color:white;background-color:black;padding:10px;">
-        <h4>Comments</h4>
-    </div>
-    <div style="padding:15px;">
-        <p>{{object.comments}}</p>
-    </div>
-</div>
-
-{% endblock footer_statements %}            
+{% endblock page_contents %}

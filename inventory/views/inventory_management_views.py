@@ -52,16 +52,19 @@ class InventoryCheckCreateView(CreateView):
         if not self.object:
             return resp
         
-        raw_data = request.POST['adjustments']
+        raw_data = request.POST['check-table']
         adjustments = json.loads(urllib.parse.unquote(raw_data))
         for adj in adjustments:
-            wh_item = models.WareHouseItem.objects.get(pk=adj['warehouse_item'])
-            models.StockAdjustment.objects.create(
-                warehouse_item = wh_item,
-                inventory_check = self.object,
-                note = adj['note'],
-                adjustment = adj['adjustment']
-            )
+            pk = adj['item'].split('-')[0]
+            delta = float(adj['quantity']) - float(adj['measured'])
+            if delta != 0:
+                wh_item = models.WareHouseItem.objects.get(pk=pk)
+                models.StockAdjustment.objects.create(
+                    warehouse_item = wh_item,
+                    inventory_check = self.object,
+                    note = "",# could add note widget
+                    adjustment = delta
+                )
 
         return resp
 
@@ -170,8 +173,13 @@ class TransferOrderReceiveView(ContextMixin, UpdateView):
                 request.POST['received-items'])):
             line = models.TransferOrderLine.objects.get(
                 pk=item['item'].split('-')[0])
-            line.move(float(item['moved_quantity']))
-        
+            if item["receiving_location"] != "":
+                location = item["receiving_location"].split("-")[0]
+                line.move(float(item['quantity_to_move']), 
+                    location=location)
+            else:
+                line.move(float(item['quantity_to_move']))
+                
         return resp
 
 
@@ -199,10 +207,13 @@ class StockReceiptCreateView(CreateView):
         resp = super(StockReceiptCreateView, self).post(request, *args, **kwargs)
         data = json.loads(urllib.parse.unquote(request.POST['received-items']))
         for line in data:
-            pk = line['orderItem']
-            n = line['quantity']
-            if line['medium'] != "":
-                medium, _ = line['medium'].split('-')
+            pk = line['item'].split("-")[0]
+            n = line['quantity_to_move']
+            if n == 0:
+                break
+
+            if line['receiving_location'] != "":
+                medium = line['receiving_location'].split('-')[0]
                 models.OrderItem.objects.get(pk=pk).receive(n, medium)
             else:
                 models.OrderItem.objects.get(pk=pk).receive(n)

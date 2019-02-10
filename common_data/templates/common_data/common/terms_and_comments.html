@@ -1,17 +1,12 @@
-<tr>
-    <td colspan="2">
-        <div>
-            <div>
-                <h6>Terms:</h6>
-            </div>
-            <div">
-                <p>{{object.terms}}</p>
-            </div>
+
+{% if object.terms %}
+    <div class="{{style}}-footer-cell">
+        <div class="{{style}}-footer-cell-heading">
+            <h6>Terms:</h6>
         </div>
-    </td>
-</tr>
-<tr>
-    <td colspan="2">
-        {% include "common_data/common/comments.html" %}
-    </td>
-</tr>
+        <div class="{{style}}-footer-cell-contents">
+            <p>{{object.terms}}</p>
+        </div>
+    </div>
+{% endif %}
+{% include "common_data/common/comments.html" %}

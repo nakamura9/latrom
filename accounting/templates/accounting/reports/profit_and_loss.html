@@ -38,18 +38,18 @@
                         </tr>
                         <tr>
                             <td>Less Cost of Goods Sold:</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Opening inventory</td>
                             <td>{{opening_inventory | accounting}}</td>
-                            <td>&nbsp;</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Purchases</td>
                             <td>{{purchases | accounting}}</td>
-                            <td>&nbsp;</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Less Closing Inventory</td>
@@ -58,7 +58,7 @@
                         </tr>
                         <tr>
                             <td>Gross Profit</td>
-                            <td>&nbsp;</td>
+                            <td></td>
                             <td>{{gross_profit | floatformat:2}}</td>
                         </tr>
                     {% if other_income_total != 0 %}
@@ -83,7 +83,7 @@
 
                         <tr>
                             <td>Less Expenses:</td>
-                            <td>&nbsp;</td>
+                            <td></td>
                             <td></td>
                         </tr>
                         {% for exp in expenses %}
@@ -109,5 +109,5 @@
         </tr>
     </tbody>
 </table>
-<a href="/accounting/csv/profit-and-loss">Export as csv</a>
+<a href="/accounting/csv/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}">Export as csv</a>
 {% endblock page_contents %}

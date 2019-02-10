@@ -19,8 +19,9 @@ from accounting import forms, models
 class BalanceSheet(ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(BalanceSheet, self).get_context_data(*args, **kwargs)
+
+    @staticmethod
+    def common_context(context):
         delta_mapping = {
             0: 365,
             1: 30,
@@ -120,3 +121,8 @@ class BalanceSheet(ConfigMixin,TemplateView):
         })
         #insert config !!!
         return context
+        
+    def get_context_data(self, *args, **kwargs):
+        context = super(BalanceSheet, self).get_context_data(*args, **kwargs)
+        
+        return BalanceSheet.common_context(context)

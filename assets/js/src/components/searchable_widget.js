@@ -30,7 +30,6 @@ class SearchableWidget extends Component {
             url: this.props.dataURL
         }).then(res => {
             let newChoices = res.data.map((item) =>{
-                console.log(item);
                 return(item[this.props.idField] + " - " + item[this.props.displayField])
             });
 

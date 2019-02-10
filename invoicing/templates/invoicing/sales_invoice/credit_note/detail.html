@@ -1,81 +1,83 @@
-{% extends "invoicing/themable_common/base.html" %}
-{% block head_table %}
-<!-- Update Later-->
-<table >
-        <tbody>
-            <tr>
-                <td>Date:</td>
-                <td>{{object.date}}</td>
-            </tr>
-            <tr>
-                    <td>Credit Note ID:</td>
-                    <td>{{object.pk | stringformat:"06d"}}</td>
-                </tr>
-            <tr>
-                <td>Invoice Number:</td>
-                <td>{{object.invoice.id | stringformat:"06d"}}</td>
-            </tr>
-        </tbody>
-    </table>
-{% endblock head_table %}
-{% block head_cell %}
-<td class="{{style}}-head-cell">
-        <p><b>Customer:</b></p>
-        <p>{{object.invoice.customer}}</p>
-        {% if include_shipping %}
-        {{object.invoice.customer.business_address | linebreaks}}
-        {% endif %}
-    </td>   
-{% endblock %}
-{% block content_headings %}
-<tr>
-        <td style="width:60%">Description</td>
-        <td>Quantity</td>
-        <td>Unit Price</td>
-        <td>Subtotal</td>
-    </tr>  
-{% endblock content_headings %}
+{% extends "invoicing/invoice_templates/common.html" %} 
 
-{% block content_body %}
-{% for item in object.returned_products %}
-<tr>
-    <td>{{item.product.name}}</td>
-    <td>{{item.returned_quantity}}</td>
-    <td>{{item.price}}</td>
-    <td>{{item.returned_value}}</td>
-</tr>
-<tr style="height:100%">
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-</tr>
-{% endfor %}
-{% endblock %}
+{% block page_contents %}
+<table id="page-layout">
+    <tbody>
+        <tr>
+            <td colspan="2">
+                <h1>{{title}}</h1>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {% include "common_data/common/business_information.html" %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b>Customer:</b></p>
+                <p>{{object.invoice.customer}}</p>
+                {% if include_shipping %}
+                {{object.invoice.customer.business_address | linebreaks}}
+                {% endif %}  
+            </td>
+            <td>
+                <table >
+                    <tbody>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{object.date}}</td>
+                        </tr>
+                        <tr>
+                                <td>Credit Note ID:</td>
+                                <td>{{object.pk | stringformat:"06d"}}</td>
+                            </tr>
+                        <tr>
+                            <td>Invoice Number:</td>
+                            <td>{{object.invoice.id | stringformat:"06d"}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <thead>
+                        <tr>
+                            <td style="width:60%">Description</td>
+                            <td>Quantity</td>
+                            <td>Unit Price</td>
+                            <td>Subtotal</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in object.returned_products %}
+                            <tr>
+                                <td>{{item.product.name}}</td>
+                                <td>{{item.returned_quantity}}</td>
+                                <td>{{item.price}}</td>
+                                <td>{{item.returned_value}}</td>
+                            </tr>
+                            <tr style="height:100%">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                    {% include "common_data/common/invoice_footer.html" %}
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {% include "common_data/common/terms_and_comments.html" %}
+            </td>
+        </tr>
+    </tbody>
+</table>
 
-
-{% block content_footer %}
-<tr>
-    <th colspan="3">Subtotal:</th>
-    <td>{{object.returned_total | floatformat:2 }}</td>
-</tr>
-<tr>
-    <th colspan="3">Tax {{object.invoice.tax}} {% if object.invoice.tax %}@{{object.invoice.tax.rate}}{% endif %} :</th>
-    <td>{{object.tax_credit | floatformat:2 }}</td>
-</tr>
-<tr>
-    <th colspan="3">Total:</th>
-    <td>{{object.returned_total_with_tax | floatformat:2 }}</td>
-</tr>
-{% endblock %}
-
-
-{% block footer_statements %}
-<div style="border-radius:0.25cm;border:1mm solid black;margin-top: 0.5cm;">
-    <div class="text-white" style="background-color:black;padding:0.2cm;" >
-        <h5>Comments</h5>
-    </div>
-        <p style="margin:0.5cm"><b>{{object.comments}}</b></p>
-</div>
 
 {% endblock %}

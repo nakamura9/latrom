@@ -249,11 +249,7 @@ class OrderItem(models.Model):
         n= float(n)
         self.received += n
         
-        wh_item = self.order.ship_to.add_item(self.item, n)
-        if medium:
-            medium = StorageMedia.objects.get(pk=medium)
-            wh_item.location=medium
-            wh_item.save()
+        wh_item = self.order.ship_to.add_item(self.item, n, location=medium)
         
         self.item.set_purchase_price(self.order_price)
             

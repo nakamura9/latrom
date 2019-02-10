@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import TitleBar from '../components/title_bar';
 import Row from '../components/row';
+import ProgressBar from '../components/progress_bar';
 import setMultipleAttrs from '../../utils';
 /**
  * the mutable table does not have any input lines
@@ -22,6 +23,13 @@ import setMultipleAttrs from '../../utils';
  * 
  */
 
+ const getSubmit = () =>{
+     let button = document.querySelector("button[type='submit']");
+     if(button){
+         return button
+     }
+     return document.querySelector("input[type='submit']")
+ }
 
 class MutableTable extends Component{
     state = {
@@ -29,6 +37,12 @@ class MutableTable extends Component{
     }
 
     componentDidMount(){
+        //start off by disabling the submit button
+        let submitButton = getSubmit();
+        if(submitButton){
+            submitButton.setAttribute('disabled', 'disabled');
+        }
+
         let form = document.forms[0];
 
         let input = document.createElement("input");
@@ -44,15 +58,50 @@ class MutableTable extends Component{
             'url': this.props.dataURL,
             'method': 'GET'
         }).then(res =>{
-            this.setState({data: this.props.resProcessor(res)})
+            this.setState({data: this.props.resProcessor(res).map((data) =>({
+                ...data,
+                verified: false
+            }))})
         });
+    }
+
+    toggleVerify = (rowID) =>{
+        let newData = [...this.state.data];
+        let newRow = {...this.state.data[rowID]};
+        newRow['verified'] = !newRow.verified;
+        newData[rowID] =  newRow;
+        this.setState({data: newData}, this.verifyHandler);
+    }
+
+    verifyHandler = () =>{
+        // iterate over all lines if all are verified enable the submit button 
+
+        let i =0;
+        let verified = true;
+        for(i in this.state.data){
+            if(!this.state.data[i].verified){
+                verified = false;
+            }
+        }
+        if(verified){
+            let submitButton = getSubmit();
+            if(submitButton){
+                submitButton.removeAttribute('disabled');
+            }
+        }else{
+            let submitButton = getSubmit();
+            if(submitButton){
+                submitButton.setAttribute('disabled', 'disabled');
+            }
+        }
     }
 
     updateForm = () =>{
         let input = document.getElementById(`id_${this.props.formHiddenFieldName}`);
         const formValue = encodeURIComponent(JSON.stringify(
             this.state.data));
-        input.setAttribute('value', formValue);         
+        input.setAttribute('value', formValue);
+                
     }
     inputHandler = (evt) =>{
         const inputComponents = evt.target.name.split("__");
@@ -70,18 +119,27 @@ class MutableTable extends Component{
     render(){
         return(
             <div>
+                <ProgressBar data={this.state.data} />
                 <table className="table">
                 <TitleBar headings={this.props.headings}/>          
                     <tbody>
-                        {this.state.data.map((fieldData, i) =>(
-                            <Row
-                                key={i}
-                                fieldData={fieldData}
-                                fields={this.props.fields}
-                                rowID={i}
-                                root={this}
-                                inputHandler={this.inputHandler}/>
-                        ))}
+                        {this.state.data.length === 0 ? 
+                            <tr>
+                                <td colSpan={this.props.headings.length -1}>
+                                    <b>This List Has No Items</b>
+                                </td>
+                            </tr>
+                            : this.state.data.map((fieldData, i) =>(
+                                <Row
+                                    key={i}
+                                    fieldData={fieldData}
+                                    fields={this.props.fields}
+                                    rowID={i}
+                                    root={this}
+                                    inputHandler={this.inputHandler}
+                                    toggle={this.toggleVerify}/>
+                            ))
+                        }
                     </tbody>
                 </table>
             </div>

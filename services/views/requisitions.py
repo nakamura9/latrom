@@ -145,7 +145,7 @@ class ConsumableRequisitionMixin(object):
         for con in consumables:
             con_pk = con['item'].split('-')[0]
             con_item = Consumable.objects.get(pk=con_pk)
-            unit_pk, _ = con['unit'].split('-')
+            unit_pk = con['unit'].split('-')[0]
             unit = UnitOfMeasure.objects.get(pk=unit_pk)
             line = models.ConsumablesRequisitionLine.objects.create(
                 requisition=self.object,

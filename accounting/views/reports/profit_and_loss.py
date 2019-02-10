@@ -32,12 +32,8 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 
         'profit_and_loss.html')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        kwargs =  self.request.GET
-        start, end = extract_period(kwargs)
-
-        # sales
+    @staticmethod
+    def common_context(context, start, end):
         sales_acc = models.Account.objects.get(pk=4000)
         sales_balance_carried_over = sales_acc.balance_on_date(start)
         sales = sales_acc.balance - sales_balance_carried_over
@@ -69,8 +65,8 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
         total_expenses = sum([i.control_balance for i in expenses])
 
         context.update({
-            'start': start,
-            'end': end,
+            'start': start.strftime("%d %B %Y"),
+            'end': end.strftime("%d %B %Y"),
             'sales': sales,
             'purchases': purchases,
             'closing_inventory': closing_inventory,
@@ -88,7 +84,10 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
         return context
 
 
-def profit_and_loss_csv(request):
-    client = Client()
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        kwargs =  self.request.GET
+        start, end = extract_period(kwargs)
 
-    return HttpResponseRedirect("/accounting")
+        # sales
+        return ProfitAndLossReport.common_context(context, start, end)

@@ -180,9 +180,9 @@ class InventoryManagementViewTests(TestCase):
                 'warehouse': 1,
                 'received-items': urllib.parse.quote(json.dumps([
                     {
-                        'orderItem': self.order_item.pk, 
-                        'quantity': 1,
-                        'medium': ""
+                        'item': '1 - some item', 
+                        'quantity_to_move': 1,
+                        'receiving_location': "1 - some location"
                 }]))
             })
         self.assertEqual(resp.status_code,  302)
@@ -204,11 +204,11 @@ class InventoryManagementViewTests(TestCase):
                'adjusted_by': 1,
                'warehouse': 1,
                'comments': 'Test comments',
-               'adjustments': urllib.parse.quote(json.dumps([
+               'check-table': urllib.parse.quote(json.dumps([
                    {
-                       'warehouse_item': 1,
-                       'note': 'adj note',
-                       'adjustment': 1
+                       'item': '1 - item',
+                       'quantity': 2,
+                       'measured': 1
                     }
                ]))
             })

@@ -55,4 +55,6 @@
 </table>
 
 <p>Inventory at {{date}} was valued at ${{inventory_value  | accounting}}</p>
+
+<a href="{% url 'accounting:trial-balance-csv' %}" class="btn btn-success">Export as csv</a>
 {% endblock page_contents %}

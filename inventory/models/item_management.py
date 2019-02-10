@@ -100,10 +100,12 @@ class InventoryCheck(models.Model):
             [i.adjustment_value for i in self.adjustments])
 
 class StockAdjustment(models.Model):
-    warehouse_item = models.ForeignKey('inventory.WareHouseItem', on_delete=models.SET_NULL, null=True)
+    warehouse_item = models.ForeignKey('inventory.WareHouseItem', 
+        on_delete=models.SET_NULL, null=True)
     adjustment = models.FloatField()
     note = models.TextField()
-    inventory_check = models.ForeignKey('inventory.InventoryCheck', on_delete=models.SET_NULL, null=True)
+    inventory_check = models.ForeignKey('inventory.InventoryCheck', 
+        on_delete=models.SET_NULL, null=True)
 
     @property
     def adjustment_value(self):
@@ -165,12 +167,12 @@ class TransferOrderLine(models.Model):
         on_delete=models.SET_NULL, null=True)
     moved_quantity = models.FloatField(default=0.0)
 
-    def move(self, quantity):
+    def move(self, quantity, location=None):
         '''performs the actual transfer of the item between warehouses'''
         self.transfer_order.source_warehouse.decrement_item(
             self.product, quantity)
         self.transfer_order.receiving_warehouse.add_item(
-            self.product, quantity)
+            self.product, quantity, location=location)
         self.moved=quantity
         self.save()
         self.transfer_order.update_completed_status()

@@ -108,7 +108,7 @@ export default class CalendarRouter extends Component{
     render(){
         return(
             <Router>
-                <div className="container-fluid">
+                <div className="container">
                 <div className="row">
                 <div className="col-sm-2" style={{
                     backgroundColor: "#07f"

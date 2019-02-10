@@ -595,6 +595,61 @@
             "type": "expense",
             "balance_sheet_category": "not-included"
         }
-    }
-
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5016,
+        "fields": {
+            "name": "Depreciation Expense - Vehicles",
+            "balance": 0,
+            "description": "Records the depreciation on the asset.",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5017,
+        "fields": {
+            "name": "Depreciation Expense - Buildings",
+            "balance": 0,
+            "description": "Records the depreciation on the asset",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5018,
+        "fields": {
+            "name": "Depreciation Expense - Furniture and Fixtures",
+            "balance": 0,
+            "description": "Records depreciation on the asset",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5019,
+        "fields": {
+            "name": "Depreciation Expense- Equipment",
+            "balance": 0,
+            "description": "Records depreciation on the asset",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+        }
+        ,
+    {
+        "model": "accounting.account",
+        "pk": 5020,
+        "fields": {
+            "name": "Depreciation Expense- Leasehold Improvements",
+            "balance": 0,
+            "description": "Records depreciation on the asset",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+        }
 ]

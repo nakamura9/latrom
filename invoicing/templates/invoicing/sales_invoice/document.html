@@ -8,21 +8,15 @@
             </td>
         </tr>
         <tr>
-            <td>
-                <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
-            </td>
-            <td>
-                <h4>
-                    <b>{{business_name}}</b>
-                </h4>
-                <p>{{business_address | linebreaks}}</p>
+            <td colspan="2" id="business-data">
+                {% include "common_data/common/business_information.html" %}
             </td>
         </tr>
         <tr>
-            <td>
-                
+            <td id="customer-data">
+                {% include "common_data/common/customer_data.html" %}  
             </td>
-            <td>
+            <td id="details">
                 <table>
                     <tbody>
                         <tr>
@@ -60,7 +54,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" id="invoice-table">
                 <table height="400" width="100%" class="{{style}}-content" z>
                     <thead>
                         <tr>
@@ -83,7 +77,6 @@
                             <td>{{item.product.unit}}</td>
                             {% endif %}
                             <td>{{item.subtotal | floatformat:2 }}</td>
-
                         </tr>
                         {% endfor %}
                         <tr style="height:100%">
@@ -96,32 +89,16 @@
                             {% endif %}
                         </tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
-                                <b>SubTotal:</b>
-                            </td>
-                            <td>{{object.subtotal | floatformat:2 }}</td>
-                        </tr>
-                        {% if tax_column %}
-                        <tr>
-                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
-                                <b>Tax Due @{{object.tax.rate}}%:</b>
-                            </td>
-                            <td>{{object.tax_amount | floatformat:2 }}</td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
-                                <b>Total:</b>
-                            </td>
-                            <td>{{object.total | floatformat:2 }}</td>
-                        </tr>
-                        {% endif %}
-                    </tfoot>
+                    {% include "common_data/common/invoice_footer.html" %}
                 </table>
             </td>
         </tr>
-        
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2" id="comments-and-terms">
+                {% include "common_data/common/terms_and_comments.html" %}
+            </td>
+        </tr>
+    </tfoot>
 </table>

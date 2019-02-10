@@ -78,7 +78,7 @@ class SalesInvoiceMixin(object):
         if items:
             items = json.loads(urllib.parse.unquote(items))
             for item in items:
-                pk, name = item['product'].split('-')
+                pk = item['product'].split('-')[0]
                 self.object.add_product(Product.objects.get(pk=pk), 
                     item['quantity'])
     

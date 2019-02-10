@@ -1,13 +1,14 @@
 {% extends "window.html" %} {% load static %} {% block head %}
 <link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
 {% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
 <style>
 form li {
     list-style-type: none;
 }
 </style>
 <div class="jumbotron">
-    <div class="container-fluid">
+    <div class="container">
         <h1 class="display-3">{% if icon %} <i class="fas fa-{{icon}}"></i> {% else %} <i class="fas fa-edit"></i> {% endif %} {{title}}</h1>
         <p class="lead">{{description}}</p>
         {% if related_links %}
@@ -44,29 +45,29 @@ form li {
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
             {{form.errors}}            
             <div class="card ">
                 <div class="card-body">
                     <form method="POST" action="" enctype="multipart/form-data">
                         {% csrf_token %}
                         <table class="table">
-                            {{form.as_p}}
+                            {% crispy form %}
                         </table>
-                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                        <button class="btn btn-default pull-right" type="submit" >Submit</button>
                     </form>
                 </div>
 
             </div>
         </div>
-        <div class="col-sm-6">
-        <p>Set the quantity of the items received and submit the form on the left.</p>
-        <div id="receive-table"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="receive-table"></div>
         </div>
     </div>
-
 </div>
 {% render_bundle "inventory" %}
 

@@ -1,10 +1,10 @@
 {% extends "common_data/printable_page.html" %} {% block page_contents %}
 {% load accounting %}
-<table class="table" style="width:100%">
+<table class="table" style="widtd:100%">
     <tbody>
         <tr>
-            <td style="width:50%">
-                <img src="/media/{{logo}}" alt="Logo" width='300' height='200'>
+            <td style="widtd:50%">
+                <img src="/media/{{logo}}" alt="Logo" widtd='300' height='200'>
             </td>
             <td>
                 <h2>{{business_name}}</h2>
@@ -22,17 +22,17 @@
         </tr>
         <tr>
             <td colspan="2">
-                <table style="width:100%;">
+                <table id="report" style="widtd:100%;">
                     <tbody>
                         <tr>
                             <td></td>
-                            <th>$</th>
-                            <th>$</th>
+                            <td>$</td>
+                            <td>$</td>
                         </tr>
                         <tr>
-                            <th>Non-current assets:</th>
-                            <th></th>
-                            <th></th>
+                            <td>Non-current assets:</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         {% for a in long_term_assets %}                        
                         <tr>
@@ -42,9 +42,9 @@
                         </tr>
                         {% endfor %}
                         <tr>
-                            <th>Current assets:</th>
-                            <th></th>
-                            <th></th>
+                            <td>Current assets:</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Inventory</td>
@@ -64,9 +64,9 @@
                             <td></td>
                         </tr>
                         <tr>
-                            <th>Current liabilities:</th>
-                            <th></th>
-                            <th></th>
+                            <td>Current liabilities:</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         {% for a in current_liabilities %}                     
                         <tr>
@@ -76,14 +76,14 @@
                         </tr>
                         {% endfor %}
                         <tr>
-                            <th>Working Capital</th>
+                            <td>Working Capital</td>
                             <td></td>
                             <td>{{working_capital | accounting}}</td>
                         </tr>
                         <tr>
-                            <th>Less non-current liabilities:</th>
-                            <th></th>
-                            <th></th>
+                            <td>Less non-current liabilities:</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         {% for a in long_term_liabilities %}
                         <tr>
@@ -98,9 +98,9 @@
                             <td style="border-bottom:4px double black;">{{net_assets | accounting}}</td>
                         </tr>
                         <tr>
-                            <th>Equity:</th>
-                            <th></th>
-                            <th></th>
+                            <td>Equity:</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         {% for a in equity %}
                         <tr>
@@ -130,4 +130,6 @@
 </tr>
     </tbody>
 </table>
+
+<a href="{% url 'accounting:balance-sheet-csv' %}" class="btn btn-success">Export as csv</a>
 {% endblock page_contents %}

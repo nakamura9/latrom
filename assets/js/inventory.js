@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import InventorySelectWidget from './inventory/combined_inventory_select';
-import ItemReceiptTable from './inventory/stock_receipt';
-import InventoryChecker from './inventory/inventory_check';
 import GenericTable from './src/generic_list/containers/root';
 import MutableTable from './src/mutable_table/container/root';
 import SearchableWidget from './src/components/searchable_widget';
@@ -19,7 +17,37 @@ const URL = window.location.href;
 const  decomposed = URL.split('/');
 const tail = decomposed[decomposed.length - 1];
 if(inventoryCheck){
-    ReactDOM.render(<InventoryChecker />, inventoryCheck);
+    ReactDOM.render(<MutableTable 
+        formHiddenFieldName="check-table"
+        dataURL={'/inventory/api/warehouse-items/' + tail}
+        headings={["Item", "Recorded Quantity", "Measured Quantity"]}
+        resProcessor={(res) =>{
+            return res.data.results.map((item) =>{
+                let itemType;
+                switch(item.item_type){
+                    case 1:
+                        itemType="product";
+                        break;
+                    case 2:
+                        itemType="consumable";
+                        break;
+                    case 3:
+                        itemType="equipment";
+                        break;
+                }
+                return {
+                    item: item.id + "-" +item[itemType].name,
+                    quantity: item.quantity,
+                    measured: 0
+                }
+            })
+        }}
+        fields={[
+            {name: 'item', mutable:false},
+            {name: 'quantity', mutable: false},
+            {name: 'measured', mutable: true}
+        ]}
+        />, inventoryCheck);
 }else if(order){
     
     const isUpdate = tail !== "order-create";
@@ -114,7 +142,56 @@ if(inventoryCheck){
         
         
 }else if(stockReceipt){
-    ReactDOM.render(<ItemReceiptTable />, stockReceipt);
+    ReactDOM.render(<MutableTable
+        formHiddenFieldName="received-items" 
+        dataURL={"/inventory/api/order/" + tail}
+        headings={["Item", "Quantity", "Quantity Received", "Quantity to Receive", "Receiving Location"]}
+        resProcessor={(res) =>{
+            const itemset = res.data.orderitem_set.filter((item)=>(
+                item.quantity > item.received
+            ))
+            return itemset.map((item)=>{
+                let itemType;
+                switch(item.item_type){
+                    case 1:
+                        itemType="product";
+                        break;
+                    case 2:
+                        itemType="consumable";
+                        break;
+                    case 3:
+                        itemType="equipment";
+                        break;
+                }
+
+                return {'item': item.id + '-' + item[itemType].name.replace('-', '_'),
+                'quantity': item.quantity, 
+                'moved_quantity': item.received,
+                'quantity_to_move': 0,
+                'receiving_location': ""}
+            })
+        }}
+        fields={[
+            {'name': 'item', 'mutable': false},
+            {'name': 'quantity', 'mutable': false},
+            {'name': 'moved_quantity', 'mutable': false},
+            {'name': 'quantity_to_move', 'mutable': true},
+            {
+                'name': 'receiving_location', 
+                'mutable': true,
+                'widget': true,
+                'widgetCreator': (component) =>{
+                    return(<SearchableWidget 
+                        bordered
+                        dataURL="/inventory/api/storage-media/1"
+                        idField="id"
+                        displayField="name"
+                        onSelect={(val) => component.setState({})}
+                        onClear={() =>{}}/>)
+                }
+            } 
+            
+        ]}/>, stockReceipt);
 }else if(transferOrder){
     ReactDOM.render(<GenericTable
         fieldDescriptions={['Item', 'Quantity']}
