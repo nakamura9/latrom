@@ -1,5 +1,6 @@
 import datetime
 import os
+import urllib
 
 from services.models import TimeLog
 from django.views.generic import TemplateView
@@ -10,6 +11,7 @@ from django.views.generic.edit import FormView
 from common_data.views import ContextMixin
 from common_data.forms import PeriodReportForm
 from functools import reduce
+from wkhtmltopdf.views import PDFTemplateView
 
 import matplotlib as mpl
 mpl.use("svg")
@@ -28,12 +30,8 @@ class ServicePersonUtilizationFormView(ContextMixin, FormView):
 class ServicePersonUtilizationReport(TemplateView):
     template_name = os.path.join('services', 'reports', 'service_person_utilization.html')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        kwargs =  self.request.GET
-        start, end = extract_period(kwargs)
-
-        # fix
+    @staticmethod
+    def common_context(context, start, end):
         logs = TimeLog.objects.filter(Q(date__gte=start), Q(date__lte=end))
         histogram = {}
         for log in logs:
@@ -41,7 +39,9 @@ class ServicePersonUtilizationReport(TemplateView):
             histogram[str(log.employee)].append(log.normal_time)
 
         x = histogram.keys()
-        y = [reduce(lambda x,y: x + y, x[key], datetime.timedelta(seconds=0)) for key in x]
+        print(x)
+        print(histogram)
+        y = [reduce(lambda x, y: x + y, histogram[key], datetime.timedelta(seconds=0)).seconds / 3600  for key in x]
         
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -51,10 +51,33 @@ class ServicePersonUtilizationReport(TemplateView):
         ax.bar(x, y)
         context['graph'] = svgString(fig)
         context.update({
-            'start': start,
-            'end': end,
+            'start': start.strftime("%d %B %Y"),
+            'end': end.strftime("%d %B %Y"),
             'date': datetime.date.today(),
             'number_employees': len(x),
             'average_time': sum(y) / len(y)
             })
         return context
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        kwargs =  self.request.GET
+        start, end = extract_period(kwargs)
+        context['pdf_link'] = True
+        return ServicePersonUtilizationReport.common_context(context, start, 
+            end)
+
+
+class ServicePersonUtilizationReportPDFView(PDFTemplateView):
+    template_name = os.path.join('services', 'reports', 'service_person_utilization.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data( **kwargs)
+        print(self.kwargs)
+        start = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['start']), "%d %B %Y")
+        end = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['end']), "%d %B %Y")
+
+        return ServicePersonUtilizationReport.common_context(context, start, 
+            end)

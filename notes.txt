@@ -1,2 +1,0 @@
-dont forget to copy wkhtmltopdf to the root directory!
-waitress and whitenoise work together only after using production settings

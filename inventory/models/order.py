@@ -16,7 +16,8 @@ from common_data.models import SingletonModel, SoftDeletionModel
 
 from .warehouse_models import StorageMedia, WareHouseItem
 
-
+# TODO i need to separate the order types into product, consumable and 
+# equipment orders. Each order has its own entries 
 
 class Order(SoftDeletionModel):
     '''The record of all purchase orders for inventory of items that 
@@ -88,6 +89,22 @@ class Order(SoftDeletionModel):
 
     def __str__(self):
         return 'ORD' + str(self.pk)
+
+    # TODO test
+    @property
+    def product_total(self):
+        return sum([i.subtotal for i in self.orderitem_set.filter(
+            item_type = 1)])
+
+    @property
+    def equipment_total(self):
+        return sum([i.subtotal for i in self.orderitem_set.filter(
+            item_type = 3)])
+
+    @property
+    def consumables_total(self):
+        return sum([i.subtotal for i in self.orderitem_set.filter(
+            item_type = 2)])
 
     @property
     def items(self):

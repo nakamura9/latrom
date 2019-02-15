@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block window %}
+
 <h1>Service Report</h1>
 <h3>Period spanning: {{start}} to {{end}}</h3>
 <style>
@@ -24,4 +27,11 @@
 </table>
 {% autoescape off %}
 {{graph}}
+
+{% if pdf_link %}
+
+<a href="/services/reports/service-person-utilization/pdf/{{start|urlencode}}/{{end|urlencode}}" class="btn btn-danger">Generate PDF</a>
+
+{% endif %}
 {% endautoescape %}
+{% endblock window %}

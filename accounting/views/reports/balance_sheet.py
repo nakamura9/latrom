@@ -13,6 +13,7 @@ from common_data.utilities import ContextMixin, extract_period, ConfigMixin
 from invoicing import models as inv
 from inventory import models as inventory_models
 from .util import net_profit_calculator
+from wkhtmltopdf.views import PDFTemplateView
 
 from accounting import forms, models
 
@@ -124,5 +125,13 @@ class BalanceSheet(ConfigMixin,TemplateView):
         
     def get_context_data(self, *args, **kwargs):
         context = super(BalanceSheet, self).get_context_data(*args, **kwargs)
-        
+        context['pdf_link'] = True
+        return BalanceSheet.common_context(context)
+
+class BalanceSheetPDFView(ConfigMixin, PDFTemplateView):
+    template_name = BalanceSheet.template_name
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         return BalanceSheet.common_context(context)

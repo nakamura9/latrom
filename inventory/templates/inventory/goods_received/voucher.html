@@ -1,4 +1,4 @@
-{% extends "common_data/page/pdf_page.html" %} {% block page_contents %}
+{% extends "base.html" %} {% block window %}
 <center>
     <h3>Goods Received Note</h3>
 </center>
@@ -67,4 +67,8 @@
         <p style="padding:5mm">{{object.note}}</p>
     </div>
 </div>
+
+{% if pdf_link %}
+<a href="{% url 'inventory:goods-received-pdf' pk=object.pk %}" class="btn btn-danger">Generate PDF</a>
+{% endif %}
 {% endblock %}

@@ -4,11 +4,14 @@
 
 <h1>Sales Report</h1>
 
-<h4>Period Covering: {{period}}</h4>
+<h4>Period Covering: {{start}} to {{end}}</h4>
 <p>Total Sales over period: ${{total_sales | floatformat:2}}</p>
 <p>Average daily sales: ${{average_sales | floatformat:2}}</p>
 
 {% autoescape off %}
 {{report}}
 {% endautoescape %}
+{% if pdf_link %}
+<a href="/invoicing/sales-report-pdf/{{start|urlencode}}/{{end|urlencode}}" style="padding:10px;background-color:red;border-radius:10px;color:white">Generate PDF</a>
+{% endif %}
 {% endblock window %}

@@ -25,12 +25,13 @@ from wkhtmltopdf.views import PDFTemplateView
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 from common_data.utilities import *
-from common_data.views import PaginationMixin, EmailPlusPDFView
+from common_data.views import PaginationMixin, EmailPlusPDFView, PDFDetailView
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from accounting.models import Expense, JournalEntry, Account, Journal
 
 from .common import CREATE_TEMPLATE
+
 
 
 class OrderAPIView(ModelViewSet):
@@ -355,5 +356,14 @@ class DebitNoteDetailView(ContextMixin, ConfigMixin, DetailView):
         "detail.html")
     model = models.DebitNote
     extra_context = {
+        'title': 'Debit Note'
+    }
+
+
+class DebitNotePDFView(ConfigMixin, PDFDetailView):
+    template_name = os.path.join("inventory", "order", "debit_note", 
+        "detail.html")
+    model = models.DebitNote
+    context = {
         'title': 'Debit Note'
     }

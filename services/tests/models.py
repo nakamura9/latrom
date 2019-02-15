@@ -379,8 +379,8 @@ class WorkOrderModelTests(TestCase):
         
 
     def test_work_order_normal_hours(self):
-        self.assertEqual(self.wo.total_normal_time, datetime.timedelta(seconds=0))
+        self.assertEqual(self.wo.total_normal_time, datetime.timedelta(seconds=3600))
 
     def test_work_order_total_overtime(self):
-        self.assertEqual(self.wo.total_overtime, datetime.timedelta(seconds=0))
+        self.assertEqual(self.wo.total_overtime, datetime.timedelta(seconds=3600))
         

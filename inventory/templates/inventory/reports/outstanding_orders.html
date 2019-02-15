@@ -1,4 +1,4 @@
-{% extends "common_data/printable_page.html" %} {% block page_contents %}
+{% extends "base.html" %} {% block window %}
 
 <table class="table" style="width:100%">
     <tbody>
@@ -50,4 +50,8 @@
         </tr>
     </tbody>
 </table>
+{% if pdf_link %}
+<a href="{% url 'inventory:outstanding-orders-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
+
+{% endif %}
 {% endblock %}

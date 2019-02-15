@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal as D
 import os
 from functools import reduce
+import urllib
 
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -13,7 +14,7 @@ from common_data.forms import PeriodReportForm
 from common_data.utilities import ContextMixin, extract_period, ConfigMixin
 from invoicing import models as inv
 from inventory import models as inventory_models
-
+from wkhtmltopdf.views import PDFTemplateView
 from accounting import forms, models
 
 from django.test import Client
@@ -88,6 +89,18 @@ class ProfitAndLossReport(ConfigMixin,TemplateView):
         context = super().get_context_data(*args, **kwargs)
         kwargs =  self.request.GET
         start, end = extract_period(kwargs)
-
+        context['pdf_link'] = True
         # sales
+        return ProfitAndLossReport.common_context(context, start, end)
+
+class ProfitAndLossReportPDFView(ConfigMixin, PDFTemplateView):
+    template_name = ProfitAndLossReport.template_name
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        start = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['start']), "%d %B %Y")
+        end = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['end']), "%d %B %Y")
         return ProfitAndLossReport.common_context(context, start, end)

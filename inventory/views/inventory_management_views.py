@@ -21,7 +21,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from common_data.models import GlobalConfig
 from common_data.utilities import *
-from common_data.views import PaginationMixin
+from common_data.views import PaginationMixin, PDFDetailView
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
@@ -220,12 +220,18 @@ class StockReceiptCreateView(CreateView):
             
         return resp 
 
-class GoodsReceivedVoucherView( ConfigMixin, 
+class GoodsReceivedVoucherView(ContextMixin, ConfigMixin, 
         DetailView):
     model = models.StockReceipt
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
-
-
+    extra_context ={
+        'pdf_link': True
+    }
+class GoodsReceivedVoucherPDFView( ConfigMixin, PDFDetailView):
+    template_name = os.path.join("inventory", "goods_received", "voucher.html")
+    model = models.StockReceipt
+    
+    
 class TransferOrderAPIView(RetrieveAPIView):
     serializer_class = serializers.TransferOrderSerializer 
     queryset = models.TransferOrder.objects.all()

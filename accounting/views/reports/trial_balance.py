@@ -12,6 +12,7 @@ from common_data.forms import PeriodReportForm
 from common_data.utilities import ContextMixin, extract_period, ConfigMixin
 from invoicing import models as inv
 from inventory import models as inventory_models
+from wkhtmltopdf.views import PDFTemplateView
 
 from accounting import forms, models
 
@@ -34,5 +35,14 @@ class TrialBalance(ConfigMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['pdf_link'] = True
 
         return TrialBalance.common_context(context)
+
+class TrialBalancePDFView(ConfigMixin, PDFTemplateView):
+    template_name = TrialBalance.template_name
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return TrialBalance.common_context(context)
+        

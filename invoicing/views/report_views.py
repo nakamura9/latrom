@@ -74,7 +74,8 @@ class CustomerStatementPDFView(ConfigMixin, PDFTemplateView):
         context = super().get_context_data(**kwargs)
         start = datetime.datetime.strptime(urllib.parse.unquote(
             self.kwargs['start']), "%d %B %Y")
-        end = datetime.datetime.strptime(urllib.parse.unquote(self.kwargs['end']), "%d %B %Y")
+        end = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['end']), "%d %B %Y")
         customer = models.Customer.objects.get(pk=self.kwargs['customer'])
         return CustomerStatement.common_context(context, customer, start, end)
         
@@ -116,18 +117,37 @@ class SalesReportFormView(ContextMixin, FormView):
 # TODO test
 class SalesReportView(ConfigMixin, TemplateView):
     template_name = os.path.join("invoicing", "reports", "sales_report.html")
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        kwargs = self.request.GET
 
-        start, end = extract_period(kwargs)
-        context["period"] = "{} to {}".format(start, end)
+    @staticmethod
+    def common_context(context, start, end):
 
         total_sales = sum([i.subtotal for i in SalesInvoice.objects.filter(Q(date__gte=start) & Q(date__lte=end))])
         average_sales  = total_sales / D(abs((end - start).days))
 
         context["total_sales"] = total_sales
         context["average_sales"] = average_sales
-    
+        context.update({
+            'start': start.strftime("%d %B %Y"), 
+            'end': end.strftime("%d %B %Y")
+            })
         context["report"] = plot_sales(start, end)
         return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kwargs = self.request.GET
+        context['pdf_link'] = True
+        start, end = extract_period(kwargs)
+        return SalesReportView.common_context(context, start, end)
+
+class SalesReportPDFView(ConfigMixin, PDFTemplateView):
+    template_name = SalesReportView.template_name
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        start = datetime.datetime.strptime(
+            urllib.parse.unquote(self.kwargs['start']), "%d %B %Y")
+        end = datetime.datetime.strptime(
+            urllib.parse.unquote(self.kwargs['end']), "%d %B %Y")
+        return SalesReportView.common_context(context, start, end)
+        

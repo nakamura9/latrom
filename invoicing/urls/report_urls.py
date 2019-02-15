@@ -22,5 +22,7 @@ report_urls = [
              name='sales-report-form'),
     re_path(r'^sales-report/?$', views.SalesReportView.as_view(),
              name='sales-report'),
-        
+    re_path(r'^sales-report-pdf/(?P<start>[\w %]+)/(?P<end>[\w %]+)/?$', 
+        views.SalesReportPDFView.as_view(),
+             name='sales-report-pdf'),        
 ]

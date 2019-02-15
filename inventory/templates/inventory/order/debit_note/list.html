@@ -32,15 +32,28 @@
                             <th>Debit Note</th>
                             <th>Number of Items</th>
                             <th>Value</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for note in object.debitnote_set.all %}
                             <tr>
                                 <td>{{note.date}}</td>
-                                <td><a href="{% url 'inventory:debit-note-detail' pk=note.pk %}">{{note.id | stringformat:'06d' }}</a></td>
+                                <td>{{note.id | stringformat:'06d' }}</td>
                                 <td>{{note.returned_items.count}}</td>
                                 <td>{{note.returned_total}}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                                            <a href="{% url 'inventory:debit-note-detail' pk=note.pk %}" class="dropdown-item"> <i class="fa fa-file" aria-hidden="true"></i> Detail </a>
+                                            <a href="{% url 'inventory:debit-note-pdf' pk=note.pk %}" class="dropdown-item"> <i class="fas fa-file-pdf    "></i> Generate PDF </a>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

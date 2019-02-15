@@ -66,13 +66,26 @@ recurring_expense_urls = [
 ]
 
 report_urls = [
-    re_path(r'^balance-sheet/?$', views.BalanceSheet.as_view(), name='balance-sheet'),
-    re_path(r'^trial-balance/?$', views.TrialBalance.as_view(), name='trial-balance'),
-    re_path(r'^profit-and-loss/?$', views.ProfitAndLossReport.as_view(), name='profit-and-loss'),
-    re_path(r'^profit-and-loss-form/?$', views.ProfitAndLossFormView.as_view(), name='profit-and-loss-form'),
-    re_path(r'^csv/profit-and-loss/(?P<start>[\w %]+)/(?P<end>[\w %]+)/?$', views.profit_and_loss_csv, name='profit-and-loss-csv'),
-    re_path(r'^csv/balance-sheet/?$', views.balance_sheet_csv, name='balance-sheet-csv'),
-    re_path(r'^csv/trial-balance/?$', views.trial_balance_csv, name='trial-balance-csv')
+    re_path(r'^balance-sheet/?$', views.BalanceSheet.as_view(), 
+        name='balance-sheet'),
+    re_path(r'^balance-sheet-pdf/?$', views.BalanceSheetPDFView.as_view(), 
+        name='balance-sheet-pdf'),
+    re_path(r'^trial-balance/?$', views.TrialBalance.as_view(), 
+        name='trial-balance'),
+    re_path(r'^trial-balance-pdf/?$', views.TrialBalancePDFView.as_view(), 
+        name='trial-balance-pdf'),
+    re_path(r'^profit-and-loss/?$', views.ProfitAndLossReport.as_view(), 
+        name='profit-and-loss'),
+    re_path(r'^profit-and-loss-form/?$', views.ProfitAndLossFormView.as_view(), 
+        name='profit-and-loss-form'),
+    re_path(r'^csv/profit-and-loss/(?P<start>[\w %]+)/(?P<end>[\w %]+)/?$', 
+        views.profit_and_loss_csv, name='profit-and-loss-csv'),
+    re_path(r'^pdf/profit-and-loss/(?P<start>[\w %]+)/(?P<end>[\w %]+)/?$', 
+        views.ProfitAndLossReportPDFView.as_view(), name='profit-and-loss-pdf'),
+    re_path(r'^csv/balance-sheet/?$', views.balance_sheet_csv, 
+        name='balance-sheet-csv'),
+    re_path(r'^csv/trial-balance/?$', views.trial_balance_csv, 
+        name='trial-balance-csv')
 ]
 
 account_urls = [

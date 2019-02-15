@@ -12,6 +12,8 @@ inventory_management_urls = [
         views.StockReceiptCreateView.as_view(), name="stock-receipt-create"),
     re_path(r'^goods-received/(?P<pk>[\w]+)/?$', 
         views.GoodsReceivedVoucherView.as_view(), name="goods-received"),
+    re_path(r'^goods-received-pdf/(?P<pk>[\w]+)/?$', 
+        views.GoodsReceivedVoucherPDFView.as_view(), name="goods-received-pdf"),
     re_path(r'^create-inventory-check/(?P<pk>[\w]+)/?$', 
         views.InventoryCheckCreateView.as_view(), 
             name='create-inventory-check'),

@@ -42,5 +42,7 @@ order_urls = [
     re_path(r'^debit-note/list/(?P<pk>[\d]+)/?$', 
         views.DebitNoteListView.as_view(), name='debit-note-list'),
     re_path(r'^debit-note/detail/(?P<pk>[\d]+)/?$', 
-        views.DebitNoteDetailView.as_view(), name='debit-note-detail')
+        views.DebitNoteDetailView.as_view(), name='debit-note-detail'),
+    re_path(r'^debit-note/pdf/(?P<pk>[\d]+)/?$', 
+        views.DebitNotePDFView.as_view(), name='debit-note-pdf')
 ] + order_router.urls + order_item_router.urls 

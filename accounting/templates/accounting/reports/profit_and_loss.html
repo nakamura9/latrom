@@ -1,4 +1,4 @@
-{% extends "common_data/printable_page.html" %} {% block page_contents %}
+{% extends "base.html" %} {% block window %}
 {% load accounting %}
 <table class="table" style="width:100%">
     <tbody>
@@ -109,5 +109,8 @@
         </tr>
     </tbody>
 </table>
-<a href="/accounting/csv/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}">Export as csv</a>
-{% endblock page_contents %}
+{% if pdf_link %}
+<a class="btn btn-success" href="/accounting/csv/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}">Export as csv</a>
+<a class="btn btn-danger" href="/accounting/pdf/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}">Generate PDF</a>
+{% endif %}
+{% endblock %}

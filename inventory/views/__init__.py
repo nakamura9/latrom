@@ -6,3 +6,4 @@ from .supplier_views import *
 from .warehouse_views import *
 from .scrapping_views import *
 from .storage_media_views import *
+from .reports import *

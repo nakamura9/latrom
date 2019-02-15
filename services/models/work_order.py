@@ -111,8 +111,8 @@ class ServiceWorkOrder(models.Model):
 
     @property 
     def time_logs(self):
-        # may decide to remove the filter and use .all()
-        return self.timelog_set.filter(employee__uses_timesheet=True)
+        # may decide to remove the .all() and use a filter of uses timesheet
+        return self.timelog_set.all()
 
     @property
     def progress_list(self):

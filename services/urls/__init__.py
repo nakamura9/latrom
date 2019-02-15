@@ -19,9 +19,12 @@ report_urls = [
     re_path(r'^reports/forms/service-person-utilization/?$', 
         services.views.reports.ServicePersonUtilizationFormView.as_view(), 
         name="reports-service-person-utilization-form"),
-    re_path(r'^reports/service-person-utilization$', 
+    re_path(r'^reports/service-person-utilization/?$', 
         services.views.reports.ServicePersonUtilizationReport.as_view(), 
-        name="reports-service-person-utilization")
+        name="reports-service-person-utilization"),
+    re_path(r'^reports/service-person-utilization/pdf/(?P<start>[\w %]+)/(?P<end>[\w %]+)/?$', 
+        services.views.reports.ServicePersonUtilizationReportPDFView.as_view(), 
+        name="reports-service-person-utilization-pdf")
 ]
 
 urlpatterns += personnel_urls
