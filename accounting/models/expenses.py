@@ -90,10 +90,9 @@ class Expense(AbstractExpense):
             created_by=self.recorded_by,
             draft= False
         )
-        #debit cash and credit expense account
-        j.simple_entry(self.amount, 
-            accounting.models.accounts.Account.objects.get(pk=1000),#cash account
-            self.expense_account)
+        #credit cash and debit expense account
+        j.credit(self.amount,accounting.models.accounts.Account.objects.get(pk=1000))
+        j.debit(self.amount,self.expense_account)
         
         #only create accounts payable after billing the customer
         self.entry = j
@@ -106,8 +105,6 @@ class Expense(AbstractExpense):
             raise ValueError('A billable expense needs a customer')
         
         super(Expense, self).save(*args, **kwargs)
-        if flag is None:
-            self.create_entry()
 
 
 class RecurringExpense(AbstractExpense):

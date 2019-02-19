@@ -9,8 +9,6 @@ from .credit_note import CreditNote
 
 
 class SalesConfig(SingletonModel):
-    
-
     default_invoice_comments = models.TextField(blank=True)
     default_quotation_comments = models.TextField(blank=True)
     default_credit_note_comments = models.TextField(blank=True)

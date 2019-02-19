@@ -55,7 +55,8 @@ class AbstractAccount(SoftDeletionModel):
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
     
     def __str__(self):
-        return str(self.pk) + "-" + self.name
+        return str(self.pk) + "-" + self.name + '-' + \
+            str(self.control_balance)
 
     
     def balance_on_date(self, date):

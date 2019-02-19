@@ -1,8 +1,8 @@
 PRODUCTION = False
 
 if PRODUCTION:
-    from latrom.settings.production_settings import *
+    from latrom.settings.production import *
 
 else:
-    from latrom.settings.dev_settings import *
+    from latrom.settings.development import *
     

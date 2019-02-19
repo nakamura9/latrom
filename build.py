@@ -19,6 +19,8 @@ import sys
 import os
 from distutils.dir_util import copy_tree
 
+QUICK = '--quick' in sys.argv
+
 START = time.time()
 BASE_DIR = os.getcwd()
 SYS_PATH = os.environ['path']
@@ -44,6 +46,12 @@ TREE = [
     'dist/app/python' 
 ]
 
+def remove_python_from_path():
+    paths = os.environ['path'].split(";")
+    new_path = [path for path in paths if not "Python" in path]
+    return ";".join(new_path)       
+
+
 log_file = os.path.join(BASE_DIR, "build.log")
 if os.path.exists(log_file):
     os.remove(log_file)
@@ -62,28 +70,23 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
+if not QUICK:
+    logger.info("running unit tests")
+    result = subprocess.run(['python', 'manage.py', 'test'])
+    if result.returncode != 0:
+        logger.info("failed unit tests preventing application from building")
+        #raise Exception('The build cannot continue because of a failed unit test.')
 
-logger.info("running unit tests")
-result = subprocess.run(['python', 'manage.py', 'test'])
-if result.returncode != 0:
-    logger.info("failed unit tests preventing application from building")
-    raise Exception('The build cannot continue because of a failed unit test.')
 
-result = subprocess.run(['python', 'manage.py', 'collectstatic'])
-if result.returncode != 0:
-    logger.info("Failed to collect stati files")
-    raise Exception("The static files collection process failed")
+    result = subprocess.run(['python', 'manage.py', 'collectstatic'])
+    if result.returncode != 0:
+        logger.info("Failed to collect stati files")
+        raise Exception("The static files collection process failed")
 
 
 logger.info("copying source code")
 if os.path.exists('dist'):
     shutil.rmtree('dist')
-
-def remove_python_from_path():
-    paths = os.environ['path'].split(";")
-    new_path = [path for path in paths if not "Python" in path]
-    return ";".join(new_path)       
-
 
 for path in TREE:
     os.mkdir(os.path.join(path))
@@ -119,7 +122,8 @@ for file in FILES:
 
 
 logger.info('copying binaries')
-copy_tree(os.path.join('build', 'app', 'bin'), os.path.join('dist', 'app', 'bin'))
+copy_tree(os.path.join('build', 'app', 'bin'), os.path.join(
+    'dist', 'app', 'bin'))
 
 logger.info('installing python modules')
 
@@ -129,14 +133,14 @@ requirements_path = os.path.join(BASE_DIR, 'requirements.txt')
 
 os.environ['path'] = remove_python_from_path()
 
-result = subprocess.run(['./python', '-m', 'pip', 'install', '-r', 
-    requirements_path])
+if not QUICK:
+    result = subprocess.run(['./python', '-m', 'pip', 'install', '-r', 
+        requirements_path])
+
+    if result.returncode != 0:
+        raise Exception("Failed to install some modules to python")
 
 os.environ['path'] = SYS_PATH
-
-if result.returncode != 0:
-    raise Exception("Failed to install some modules to python")
-
 os.chdir(BASE_DIR)
 
 logger.info('copying python')
@@ -168,9 +172,19 @@ logger.info("removing temp files")
 shutil.rmtree(os.path.join(BASE_DIR, "build", "install"))
 shutil.rmtree(os.path.join(BASE_DIR, "build", "run"))
 
-
-
 logger.info("Compressing the application")
 shutil.make_archive(os.path.join('dist', 'archive'), 'zip', os.path.abspath('dist'))
 
 logger.info("Completed the build process successfully in {0:.2f} seconds".format(time.time() - START))
+
+#create a secret key
+
+# create temp license with key
+# ship it with software
+# add to os environment
+# delete key
+# store key in database on server
+# all license signatures for the specific customer must use the same secret key 
+# to generate
+# the license check module must retrieve the secret key from the environment
+# build the zip file for every deployment

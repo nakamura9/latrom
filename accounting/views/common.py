@@ -334,6 +334,13 @@ class AssetCreateView(ContextMixin,  CreateView):
         'description': 'Used to formally record valuable property belonging to the organization'
     }
 
+    def post(self, *args, **kwargs):
+        resp = super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+
+        return resp
+        
 class AssetUpdateView(ContextMixin,  UpdateView):
     form_class = forms.AssetForm
     template_name = CREATE_TEMPLATE
@@ -367,6 +374,12 @@ class ExpenseCreateView(ContextMixin,  CreateView):
         'title': 'Record Expense',
         'description': 'Record costs incurred in the process of running a business.'
     }
+
+    def post(self, *args, **kwargs):
+        resp =super().post(*args, **kwargs)
+        if self.object:
+            self.object.create_entry()
+        return resp
 
 class ExpenseListView(ContextMixin,  PaginationMixin, 
         FilterView):

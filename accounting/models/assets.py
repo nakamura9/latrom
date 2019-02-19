@@ -133,9 +133,3 @@ class Asset(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        #check if the item exists before trying to save it
-        flag = self.pk
-        super(Asset, self).save(*args, **kwargs)
-        if flag is None:
-            self.create_entry()

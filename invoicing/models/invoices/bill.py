@@ -60,9 +60,7 @@ class Bill(AbstractSale):
             draft=False
         )
         #check these accounts
-        # the corresponding account for the expense incurred
-        for line in self.billline_set.all():
-            j.credit(line.expense.amount, line.expense.expense_account)
+        j.credit(self.total, Account.objects.get(pk=4000))
         j.debit(self.total, self.customer.account)#customer account
 
         self.entry = j

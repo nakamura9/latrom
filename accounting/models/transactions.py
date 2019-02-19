@@ -110,6 +110,9 @@ class JournalEntry(models.Model):
         default=1, 
         on_delete=models.SET_NULL, null=True)
 
+    def __str__(self):
+        return "{}: {}".format(self.pk, self.str_total)
+
     def verify(self):
         if not self.draft:
             return #to prevent repeat execution of transactions

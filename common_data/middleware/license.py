@@ -84,7 +84,7 @@ class LicenseMiddleware(object):
             except FileNotFoundError:
                 return HttpResponseRedirect('/base/license-error-page')
 
-            data_string = json.dumps(license['license'])
+            data_string = json.dumps(license['license']) # + os.environ['django_token]
             byte_data = bytes(data_string, 'ascii')
             hash = hashlib.sha3_512(byte_data).hexdigest()
 
