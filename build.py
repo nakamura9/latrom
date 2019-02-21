@@ -2,7 +2,7 @@
 the application consists of the server files( the pyd equivalents not the plain text source )
 the server also includes the wkhtml2pdf binary
 it includes the python install - it will make sure that all the requirements.txt are met in the file
-it will also create a new copy of client.exe
+
 
 with time this build script will target multiple os's
 
@@ -11,6 +11,7 @@ it will create a windows service that starts with windows and runs the server
 
 '''
 import time
+import json
 import logging
 
 import subprocess
@@ -70,15 +71,23 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
+logger.info("Checking react bundles")
+stats_file_path = os.path.join(BASE_DIR, 'assets', 'webpack-stats.json')
+stats_file = open(stats_file_path, 'r')
+
+if json.load(stats_file).get("status", "") != "done":
+    logger.critical("The webpack bundles are not ready")
+    raise Exception("There are errors in the webpack bundles")
+
 if not QUICK:
     logger.info("running unit tests")
     result = subprocess.run(['python', 'manage.py', 'test'])
     if result.returncode != 0:
         logger.info("failed unit tests preventing application from building")
-        #raise Exception('The build cannot continue because of a failed unit test.')
+        raise Exception('The build cannot continue because of a failed unit test.')
 
 
-    result = subprocess.run(['python', 'manage.py', 'collectstatic'])
+    result = subprocess.run(['python', 'manage.py', 'collectstatic', '--noinput'])
     if result.returncode != 0:
         logger.info("Failed to collect stati files")
         raise Exception("The static files collection process failed")
@@ -121,7 +130,7 @@ for file in FILES:
     
 
 
-logger.info('copying binaries')
+logger.info('copying binaries')#vc++ nginx wkhtml
 copy_tree(os.path.join('build', 'app', 'bin'), os.path.join(
     'dist', 'app', 'bin'))
 
@@ -149,7 +158,7 @@ copy_tree(os.path.join('build', 'app', 'python'), os.path.join('dist', 'app', 'p
 
 logger.info("Creating setup executable")
 result = subprocess.run(['pyinstaller', os.path.join(
-                    BASE_DIR, "build", "app", 'install.py'), '--onefile'])
+                    BASE_DIR, "build", "app", 'install.py'), '--onefile', '--noconsole'])
 if result.returncode != 0:
     logger.critical("The executable for the setup failed to be created")
     raise Exception("The executable for the setup failed to be created")
@@ -167,6 +176,11 @@ shutil.move(os.path.join(BASE_DIR, "dist", "run.exe"),
     os.path.join(BASE_DIR, "dist", "app"))
 shutil.move(os.path.join(BASE_DIR, "dist", "install.exe"), 
     os.path.join(BASE_DIR, "dist", "app"))
+
+logger.info("moving utilities")
+shutil.copy(os.path.join(BASE_DIR, 'build', 'app', 'password_util.py'),
+    os.path.join(BASE_DIR, "dist", "app"))
+shutil.copy(stats_file_path, os.path.join(BASE_DIR, "dist", "app", "server"))
 
 logger.info("removing temp files")
 shutil.rmtree(os.path.join(BASE_DIR, "build", "install"))
