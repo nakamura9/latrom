@@ -515,11 +515,8 @@ class BillTests(TestCase):
         self.assertEqual(self.inv.total, 10)
 
     def test_create_entry(self):
-        pre_balance = Account.objects.get(name='Advertising').balance
         self.inv.create_entry()
-        self.assertEqual(
-            Account.objects.get(name='Advertising').balance,
-            pre_balance - 10)
+        self.assertIsInstance(self.inv.entry, JournalEntry)
 
     def test_create_bill_line(self):
         obj = BillLine.objects.create(

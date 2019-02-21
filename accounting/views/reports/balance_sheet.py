@@ -16,6 +16,7 @@ from .util import net_profit_calculator
 from wkhtmltopdf.views import PDFTemplateView
 
 from accounting import forms, models
+'''Note: Recorded carriage and other costs of goods sold as current assets'''
 
 class BalanceSheet(ConfigMixin,TemplateView):
     template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')
@@ -47,7 +48,7 @@ class BalanceSheet(ConfigMixin,TemplateView):
 
         #CURRENT ASSETS 
         current_assets = models.Account.objects.filter(
-            Q(balance_sheet_category='current-assets')).exclude(
+            Q(balance_sheet_category='current-assets') ).exclude(
                 Q(
                     Q(balance=0)  & Q(control_account=False)
                     ) | 

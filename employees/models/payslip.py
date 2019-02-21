@@ -247,7 +247,8 @@ class Payslip(models.Model):
             j.debit(amount, deduction.account_paid_into)
 
         
-        j.debit(D(self.gross_pay) - self.total_payroll_taxes, 
+        j.debit(D(self.gross_pay) - \
+                (self.total_payroll_taxes + D(deduction_total)), 
             accounting.models.Account.objects.get(pk=5008))#salaries
         j.debit(self.total_payroll_taxes, 
             accounting.models.Account.objects.get(pk=5010))#payroll taxes

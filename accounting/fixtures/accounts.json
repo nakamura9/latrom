@@ -373,7 +373,7 @@
             "balance": 0,
             "description": "Records discounts received from vendors.",
             "type": "cost-of-sales",
-            "balance_sheet_category": "not-included"
+            "balance_sheet_category": "current-assets"
         }
     },
     {
@@ -384,7 +384,7 @@
             "balance": 0,
             "description": "Relates to products returned for stated reasons",
             "type": "cost-of-sales",
-            "balance_sheet_category": "not-included"
+            "balance_sheet_category": "current-assets"
         }
     },
     {
@@ -395,7 +395,7 @@
             "balance": 0,
             "description": "Shipping costs accompying the purchase of inventory",
             "type": "cost-of-sales",
-            "balance_sheet_category": "not-included"
+            "balance_sheet_category": "current-assets"
         }
     },
     {

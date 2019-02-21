@@ -16,21 +16,25 @@ from invoicing.models import (SalesInvoice,
                             CombinedInvoice,
                             CombinedInvoiceLine,
                             SalesRepresentative, 
-                            Payment)
+                            Payment,
+                            CreditNote)
 from inventory.models import (WareHouse,
                                 UnitOfMeasure,
                                 Supplier,
                                 Category,
                                 Product,
                                 Order,
-                                OrderItem)
+                                OrderItem,
+                                DebitNote)
 from services.models import (Service,
                             ServiceCategory,
                             )
 from accounting.models import (Account,
                                 Expense,
                                 Tax,
-                                Asset,)
+                                Asset,
+                                Journal,
+                                JournalEntry)
 
 import datetime
 
@@ -197,11 +201,23 @@ class ReportTests(TestCase):
             sales_rep=SalesRepresentative.objects.first()
         )
 
-        cls.employee.user = User.objects.create_user(username="caleb")
+        cls.employee.user = User.objects.create_user(username="tstusr")
         cls.employee.save()
         es = EmployeesSettings.objects.first()
         es.payroll_officer = cls.employee
         es.save()
+
+        cls.credit_note = CreditNote.objects.create(
+            date=TODAY,
+            invoice=cls.sales_inv,
+            comments="Test comment"
+        )
+
+        cls.debit_note = DebitNote.objects.create(
+            date=datetime.date.today(),
+            order=cls.order,
+            comments= "comment"
+        )
 
     def tearDown(self):
         self.customer_org.account.balance = D(0)
@@ -272,21 +288,65 @@ class ReportTests(TestCase):
 
     def test_create_invoice_payment(self):
         print("Testing Payslip")
+        
         self.payment.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
-    def test_create_inventory_receipt(self):
-        pass # really
-
     def test_credit_note(self):
-        pass
+        print("Testing Credit Note")
+        
+        self.credit_note.create_entry()
+        self.assertTrue(self.trialBalanceInBalance())
+        self.assertTrue(self.balanceSheetInBalance())
+
     
     def test_debit_note(self):
-        pass
+        print("Testing Debit Note")
+        
+        self.debit_note.create_entry()
+        self.assertTrue(self.trialBalanceInBalance())
+        self.assertTrue(self.balanceSheetInBalance())
+
 
     def test_carriage_outwards(self):
-        pass
+        # simple expense without a seperate model
+        print('Testing carriage outwards')
+        expense = Expense.objects.create(
+            category=11,
+            amount=100,
+            description='description',
+            debit_account=Account.objects.get(pk=1000),
+            recorded_by=self.employee.user,
+            date=TODAY
+        )
+
+        expense.create_entry()
+
+        self.assertTrue(self.trialBalanceInBalance())
+        self.assertTrue(self.balanceSheetInBalance())
+
+
 
     def test_carriage_inwards(self):
-        pass
+        #simple form view without corresponding model, replicate with a 
+        #function call
+        print('Testing carriage inwards')
+
+        entry = JournalEntry.objects.create(
+            date=TODAY, 
+            memo='memo', 
+            journal=Journal.objects.get(pk=2),#disbursements
+            created_by=self.employee.user,
+            draft=False
+        )
+        # the unit cost changes but the journal entry for the cost 
+        # of the order remains the same
+        entry.simple_entry(
+            100,
+            Account.objects.get(pk=1000),
+            Account.objects.get(pk=4009)
+            )
+
+        self.assertTrue(self.trialBalanceInBalance())
+        self.assertTrue(self.balanceSheetInBalance())

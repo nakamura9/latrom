@@ -253,6 +253,7 @@ class ExpenseModelTests(TestCase):
         self.assertIsInstance(self.expense.expense_account, Account)
 
     def test_expense_entry(self):
+        self.expense.create_entry()
         self.assertIsNotNone(self.expense.entry)
 
     def test_expense_category_string(self):

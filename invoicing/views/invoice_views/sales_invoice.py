@@ -308,7 +308,7 @@ class ShippingAndHandlingView(
             category=11,
             amount=form.cleaned_data['amount'],
             description=form.cleaned_data['description'],
-            debit_account=Account.objects.get(pk=1000),
+            debit_account=Account.objects.get(pk=1000),#cash
             recorded_by=form.cleaned_data['recorded_by'],
             date=form.cleaned_data['date']
         )

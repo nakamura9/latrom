@@ -7,15 +7,12 @@ env/
 media/*.*
 media/
 wkhtmltopdf/
-build/
+build/app/*/
+!build/app/server/
 dist/
-dbs/
-.coverage
 global_config.json
 assets/webpack-stats.json
 license.json
-install.spec
-run.spec
 build.log
 common_data/static/rest_framework/
 common_data/static/*.js
