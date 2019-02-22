@@ -349,6 +349,7 @@ class InstallGUI(ttk.Frame):
     def create_widgets(self):
         self.header = ttk.Label(self,
                                 text="Suave Business Tools")
+        self.header.config(font=('Times', 32))
         self.container = WelcomePage(self)
         self.cancelButton = ttk.Button(self, 
                                 text="Cancel", 
@@ -395,7 +396,7 @@ class InstallGUI(ttk.Frame):
         page =  self.pages[self.current_page]
         self.container.destroy()
         self.container = page(self)
-        self.container.grid(row=0, column=0, columnspan=3)
+        self.container.grid(row=1, column=0, columnspan=3)
         self.update_buttons()
 
 app = InstallGUI()
