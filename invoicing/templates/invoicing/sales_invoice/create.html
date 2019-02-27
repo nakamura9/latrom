@@ -1,4 +1,4 @@
-{% extends "common_data/page.html" %}
+{% extends "invoicing/invoice_templates/create.html" %}
 {% load render_bundle from webpack_loader %}
 
 {% block prepage %}
@@ -21,17 +21,6 @@
         <tbody>
             <tr>
                 <td colspan="2"><center><h1>Sales Invoice</h1></center></td>
-            </tr>
-            <tr>
-                <td>
-                    <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
-                </td>
-                <td>
-                    <h4><b>{{business_name}}</b></h4>
-                    {% if include_business_address %}
-                        {{business_address | linebreaks}}
-                    {% endif %}
-                </td>
             </tr>
             <tr>
                 <td valign="top">

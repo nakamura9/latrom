@@ -103,5 +103,4 @@ const day = (props) => {
         </div>
     )
 }
-
 export default day;

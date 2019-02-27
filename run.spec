@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['install.py'],
-             pathex=['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\build\\app'],
+a = Analysis(['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\build\\app\\run.py'],
+             pathex=['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -23,10 +23,10 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='install',
+          name='run',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False )
+          console=True )

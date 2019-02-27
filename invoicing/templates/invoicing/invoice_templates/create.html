@@ -1,0 +1,35 @@
+{% extends "window.html" %}
+{% load static %}
+{% block content %}
+<!--
+    <div class="jumbotron" id="jumbo">
+        <h1 class="display-3">Document preview</h1>
+        
+            {% autoescape off %}
+            {% if notes %}
+            <hr class="my-4"/>
+            <h3>Notes</h3>
+            <ul>
+                {% for note in notes %}
+                    <li>{{note}}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endautoescape %}
+            {% if actions %}
+            <h3>Actions</h3>
+            <ul>
+                {% for action in actions %}
+                    <li style="list-style-type:none;margin-top:5px;">
+                        <a class="btn btn-info" href="{{action.url}}">{{action.name}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+-->
+<div class="container">
+       {% block page_contents %}{% endblock %}
+</div>
+
+{% endblock %}

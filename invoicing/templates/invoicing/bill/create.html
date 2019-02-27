@@ -1,4 +1,4 @@
-{% extends "common_data/page.html" %}
+{% extends "invoicing/invoice_templates/create.html" %}
 {% load render_bundle from webpack_loader %}
 
 {% block prepage %}
@@ -20,37 +20,38 @@
             </tr>
             <tr>
                 <td>
-                    <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
-                </td>
-                <td>
-                    <h4><b>{{business_name}}</b></h4>
-                    {% if include_business_address %}
-                        {{business_address | linebreaks}}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
                     {% if include_customer %}
                     <p>Customer</p>
                     {% endif %}
                     <p>{{form.customer}}</p>
-                    
+                </td>
+                <td>
                     <p>Date</p>
                     <p>{{form.date}}</p>
-                    <p>Due</p>
-                    <p>{{form.due}}</p>
-                    <p>Sales Representative</p>
-                    <p>{{form.salesperson}}</p>
-                    <p>Customer Reference</p>
-                    <p>{{form.customer_reference}}</p>
-                    <p>Tax</p>
-                    <p>{{form.tax}}</p>
-                    <p>Apply Payment?</p>
-                    <p>{{form.apply_payment}}</p>
-                    
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <p>Due</p>
+                    <p>{{form.due}}</p>
+                </td>
+                <td>
+                    <p>Sales Representative</p>
+                    <p>{{form.salesperson}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Customer Reference</p>
+                    <p>{{form.customer_reference}}</p>
+                    
+                    <p>{{form.apply_payment}}Apply Payment?</p>
+                </td>
+                <td>
+                    <p>Tax</p>
+                    <p>{{form.tax}}</p></td>
+            </tr>
+
             <tr>
                 <td colspan="2">
                     <div id="bill-contents"></div>

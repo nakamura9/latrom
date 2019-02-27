@@ -98,6 +98,7 @@ class SearchableWidget extends Component {
         
         return(
             <div style={{
+                width:"100%",
                 margin: "2px",
                 position:"relative",
                 display: "inline-block"

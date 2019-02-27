@@ -38,26 +38,37 @@ class ServiceEntry extends Component{
         
         return(
             <div>
-                <div style={{...inlineStyles, width:"70%"}}>
-                    <SearchableWidget
-                        list={this.props.itemList}
-                        dataURL="/services/api/service/"
-                        displayField="name"
-                        idField="id"
-                        canCreateNewItem={true}
-                        newLink='/services/create-service'
-                        onSelect={this.props.onSelect}
-                        onClear={this.props.onClear} />
-                    
-                </div>
-                <div style={{...inlineStyles, width:"30%"}}>
-                    <input 
-                        type="number"
-                        placeholder="Hours..."
-                        className="form-control"
-                        value={this.state.hours}
-                        onChange={this.handler}/>
-                </div>
+                <table style={{width:"100%"}}>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td >
+                                <SearchableWidget
+                                    list={this.props.itemList}
+                                    dataURL="/services/api/service/"
+                                    displayField="name"
+                                    idField="id"
+                                    canCreateNewItem={true}
+                                    newLink='/services/create-service'
+                                    onSelect={this.props.onSelect}
+                                    onClear={this.props.onClear} />
+                            </td>
+                            <td>
+                                <input 
+                                    type="number"
+                                    placeholder="Hours..."
+                                    className="form-control"
+                                    value={this.state.hours}
+                                    onChange={this.handler}/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         )
     };
@@ -91,27 +102,39 @@ class ProductEntry extends Component{
     render(){
         return(
             <div>
-                <div style={{...inlineStyles, width:"70%"}}>
-                    <SearchableWidget
-                        list={this.props.itemList}
-                        dataURL="/inventory/api/product/"
-                        displayField="name"
-                        idField="id"
-                        canCreateNewItem={true}
-                        newLink='/inventory/product-create/'
-                        onSelect={this.props.onSelect}
-                        onClear={this.props.onClear} />
-                </div>
-                <div style={{...inlineStyles, width:"30%"}}>
-                    <input 
-                        type="number"
-                        value={this.state.quantity}
-                        placeholder="Quantity..."
-                        className="form-control"
-                        onChange={this.handler}/>
-                </div>
+                <table style={{width:"100%"}}>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <SearchableWidget
+                                    list={this.props.itemList}
+                                    dataURL="/inventory/api/product/"
+                                    displayField="name"
+                                    idField="id"
+                                    canCreateNewItem={true}
+                                    newLink='/inventory/product-create/'
+                                    onSelect={this.props.onSelect}
+                                    onClear={this.props.onClear} />
+                            </td>
+                            <td>
+                                <input 
+                                    type="number"
+                                    value={this.state.quantity}
+                                    placeholder="Quantity..."
+                                    className="form-control"
+                                    onChange={this.handler}/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            )
+            )   
     }
 }
 

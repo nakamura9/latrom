@@ -23,7 +23,8 @@ const optionsWidget = (props) =>{
             backgroundColor: "#fff",
             maxHeight: "150px",
             overflowY: "auto",
-            maxWidth: "200px"
+            maxWidth: "300px",
+            minWidth: "150px"
         }}>
             {rendered}
         </div>
