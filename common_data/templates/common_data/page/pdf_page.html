@@ -3,17 +3,46 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'common_data/css/bootstrap/css/bootstrap.min.css' %}" />
+    {% if pdf_link %}
     
+    
+    <link rel="stylesheet" type="text/css" 
+        href="{% static 'common_data/assets/css/all.min.css' %}" />
+ 
+        {% endif %}
     <link rel="stylesheet" type="text/css" href="{% static 'common_data/css/document-styles.css' %}" >
 </head>
 <body>
-    <div>
-    
+    <style>
+        .custom-page {
+            width: 8.5in;
+            height: 11in;
+            padding: 0.5in;
+        }
 
-        {% block page_contents %}{% endblock %}
-     
-    </div>
- 
+        .page-container {
+            margin: 0 auto;
+            border: 1px solid grey;
+            box-shadow: 15px 30px 20px #ccc;
+            width: 8.5in;
+            height: 11in;
+        }
+    </style>
+    
+        {% if pdf_link %}
+        {% include "nav.html" %}
+        {% endif %}
+        <div class="page-container"> 
+            <div class="custom-page">
+                {% block page_contents %}{% endblock %}
+            </div>
+        </div>
+        {% if pdf_link %}
+        {% include "footer.html" %}
+        {% endif %}
+        
+
  
 </body>
 </html>

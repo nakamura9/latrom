@@ -1,6 +1,6 @@
-{% extends "base.html" %} {% block window %}
+{% extends "common_data/page/pdf_page.html" %} {% block page_contents %}
 {% load accounting %}
-<table class="table" style="widtd:100%">
+<table  style="width:100%">
     <tbody>
         <tr>
             <td style="widtd:50%">
@@ -22,7 +22,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <table id="report" style="widtd:100%;">
+                <table id="report" style="width:100%;">
                     <tbody>
                         <tr>
                             <td></td>
@@ -134,4 +134,4 @@
     <a href="{% url 'accounting:balance-sheet-csv' %}" class="btn btn-success">Export as csv</a>
     <a href="{% url 'accounting:balance-sheet-pdf' %}" class="btn btn-primary">Generate PDF</a>
 {% endif %}
-{% endblock window %}
+{% endblock  %}
