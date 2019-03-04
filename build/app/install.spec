@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['install.py'],
-             pathex=['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\build\\app'],
+             pathex=['F:\\Documents\\code\\git\\latrom\\build\\app'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -29,4 +29,4 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False )
+          console=True )

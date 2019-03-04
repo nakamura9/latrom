@@ -12,7 +12,7 @@ import json
 from distutils.dir_util import copy_tree
 import shutil
 import time
-
+import copy
 #the install app should collect a default username and password
 # the server should have a name 
 # the install script should do some dns and configure the pdf
@@ -33,6 +33,8 @@ logger.addHandler(file_handler)
 SYS_PATH = os.environ['path']
 BASE_DIR = os.getcwd()
 INSTALL_CONFIG = {}
+
+#NB the trailing slash must match between the media location  and the formatted path
 NGINX_CONFIG = '''
     worker_processes  1;
 
@@ -61,7 +63,7 @@ http {{
         root  /html/;
         try_files $uri @django;
 
-        location /media/ {{
+        location /media {{
             alias   "{}";
             
         }}
@@ -80,13 +82,13 @@ http {{
 '''
 
 
-def create_superuser():
+def create_superuser(env):
     '''edits a the common fixture to include a default superuser as defined by the prompts in the install process'''
     global INSTALL_CONFIG
     global BASE_DIR
 
     result = subprocess.run(['python', 'password_util.py', 
-        INSTALL_CONFIG['password']], stdout=subprocess.DEVNULL)
+        INSTALL_CONFIG['password']], env=env)
     if result.returncode != 0:
         raise Exception("Failed to create password hash")
     with open('hashed_password.txt', 'r') as f:
@@ -111,14 +113,6 @@ def create_superuser():
 
     json.dump(common_fixture, open(fixture_path, 'w'))
 
-def add_path_to_sys_path(path):
-    print("setting system path")
-    proc = subprocess.run(["setx", "path", "%path%;{}".format(path)], 
-        stdout=subprocess.DEVNULL)
-    if not proc.returncode == 0:
-        raise Exception("Failed to set system path")
-
-    
 class WelcomePage(ttk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -329,9 +323,17 @@ class InstallApplicationPage(ttk.Frame):
         global BASE_DIR
         global INSTALL_CONFIG
         global NGINX_CONFIG
-
         TARGET_DIR = INSTALL_CONFIG['path']
-        
+
+        ENVIRONMENT = copy.deepcopy(os.environ)
+        ENVIRONMENT['PATH'] +=  ";" if not SYS_PATH.endswith(";") else ""
+        ENVIRONMENT['PATH'] += ";".join([os.path.join(TARGET_DIR, 'python'),
+                                os.path.join(TARGET_DIR, 'bin',
+                                                        'wkhtmltopdf', 
+                                                        'bin')])
+
+        print(ENVIRONMENT['PATH'])
+        logger.info(TARGET_DIR)
         if TARGET_DIR != os.getcwd():
             self.push_message("Copying application files")
             for dir in ['bin', 'database', 'python', 'server']:
@@ -339,17 +341,17 @@ class InstallApplicationPage(ttk.Frame):
 
             shutil.copy('run.exe', TARGET_DIR)
         self.progress_var.set(30)
+        self.update()
         
         self.push_message("Adding python to system path")
-        add_path_to_sys_path(os.path.join(TARGET_DIR, 'python'))
-
         self.push_message("Adding wkhtmltopdf to system path")
-        add_path_to_sys_path(os.path.join(TARGET_DIR, 'bin',
-                                                    'wkhtmltopdf', 
-                                                    'bin'))
+    
 
+        
         self.push_message("Installing Visual C++ binaries")
         self.progress_var.set(40)
+        self.update()
+
 
         os.chdir(os.path.join(TARGET_DIR, 'bin'))
         result = subprocess.run('./vc_redist.x64.exe')
@@ -358,20 +360,20 @@ class InstallApplicationPage(ttk.Frame):
 
         os.chdir(TARGET_DIR)
         self.push_message("Creating superuser")#KEY!
-        create_superuser()
+        create_superuser(ENVIRONMENT)
         self.progress_var.set(50)
 
         os.chdir(os.path.join(TARGET_DIR, 'server'))
 
         self.push_message("Creating a new database")
-        results = subprocess.run(['python', 'manage.py', 'migrate'], 
-            stdout=subprocess.DEVNULL)
+        results = subprocess.run(['python', 'manage.py', 'migrate'], env=ENVIRONMENT)
         
         self.progress_var.set(90)
+        self.update()
+
         self.push_message("Installing database fixtures")
 
-        results = subprocess.run(['python', 'manage.py', 'loaddata', 'accounts.json', 'journals.json', 'settings.json', 'common.json', 'employees.json', 'inventory.json', 'invoicing.json', 'planner.json'], 
-            stdout=subprocess.DEVNULL)
+        results = subprocess.run(['python', 'manage.py', 'loaddata', 'accounts.json', 'journals.json', 'settings.json', 'common.json', 'employees.json', 'inventory.json', 'invoicing.json', 'planner.json'], env=ENVIRONMENT)
     
 
         if results.returncode != 0:
@@ -456,7 +458,7 @@ class InstallGUI(ttk.Frame):
         self.container.grid(row=1, column=0, columnspan=3)
         self.update_buttons()
 
-        time.sleep(1)
+        self.update()
         if isinstance(self.container, InstallApplicationPage):
             
             try:
