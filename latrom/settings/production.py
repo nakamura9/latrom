@@ -19,3 +19,5 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
 }
+
+WKHTMLTOPDF_CMD = os.path.abspath(os.path.join(BASE_DIR, '..', 'bin', 'wkhtmltopdf', 'bin'))

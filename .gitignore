@@ -18,6 +18,7 @@ common_data/static/rest_framework/
 common_data/static/*.js
 common_data/static/admin/
 *.gz
-
-
-
+.vscode/
+*.log
+*.spec
+build/app/hashed_password.txt

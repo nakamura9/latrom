@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\build\\app\\run.py'],
-             pathex=['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom'],
+a = Analysis(['F:\\Documents\\code\\git\\latrom\\build\\app\\run.py'],
+             pathex=['F:\\Documents\\code\\git\\latrom'],
              binaries=[],
              datas=[],
              hiddenimports=[],

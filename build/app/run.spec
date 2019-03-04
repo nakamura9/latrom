@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['run.py'],
-             pathex=['C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\build\\app'],
+             pathex=['F:\\Documents\\code\\git\\latrom\\build\\app'],
              binaries=[],
              datas=[],
              hiddenimports=[],
