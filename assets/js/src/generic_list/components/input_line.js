@@ -140,39 +140,42 @@ class inputLine extends Component{
     }
     render(){
         return(
+            <tfoot>
                 <tr className="bg-primary text-white"
-                    style={{
-                        borderTop: '2px solid white',
-                    }}>
-                    {this.props.fieldOrder.map((fieldName, i) =>(
-                        <td key={i}>
-                            <div style={{
-                                paddingTop: '10px',
-                                height: '70px',
-                                margin: '0px auto'
-                            }}>
-                                {this.fieldSelector(i)}
-
-                            </div>
-                        </td>
-                    ))}
-                    <td colSpan={this.props.hasLineTotal 
-                        ? 2
-                        : 1}>
-                        
+                style={{
+                    borderTop: '2px solid white',
+                }}>
+                {this.props.fieldOrder.map((fieldName, i) =>(
+                    <td key={i}>
                         <div style={{
                             paddingTop: '10px',
                             height: '70px',
-                            margin: 'auto'
+                            margin: '0px auto'
                         }}>
-                        <button 
-                            style={{float: 'right', marginRight: '10px'}}
-                            className="btn"
-                            type="button"
-                            onClick={this.insertHandler}>Insert</button>
+                            {this.fieldSelector(i)}
+
                         </div>
                     </td>
-                </tr>
+                ))}
+                <td colSpan={this.props.hasLineTotal 
+                    ? 2
+                    : 1}>
+                    
+                    <div style={{
+                        paddingTop: '10px',
+                        height: '70px',
+                        margin: 'auto'
+                    }}>
+                    <button 
+                        style={{float: 'right', marginRight: '10px'}}
+                        className="btn"
+                        type="button"
+                        onClick={this.insertHandler}>Insert</button>
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+                
         );
     }
 }

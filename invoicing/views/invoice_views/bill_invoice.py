@@ -15,7 +15,7 @@ from rest_framework import viewsets
 from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument
 from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
@@ -39,11 +39,15 @@ class BillListView( ContextMixin, PaginationMixin, FilterView):
     queryset = Bill.objects.filter(active=True).order_by('date').reverse()
     
 
-class BillDetailView( ConfigMixin, DetailView):
+class BillDetailView( ConfigMixin, MultiPageDocument, DetailView):
     model = Bill
     template_name = os.path.join("invoicing", "bill",
         'detail.html')
 
+    page_length =16
+
+    def get_multipage_queryset(self):
+        return BillLine.objects.filter(bill=Bill.objects.get(pk=self.kwargs['pk']))
         
 class BillCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
@@ -179,10 +183,15 @@ class BillPaymentDetailView(ListView):
         return context
 
 
-class BillPDFView(ConfigMixin, PDFTemplateView):
+class BillPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = os.path.join("invoicing", "bill",
         'pdf.html')
     file_name = 'bill.pdf'
+    page_length =16
+
+    def get_multipage_queryset(self):
+        return BillLine.objects.filter(bill=Bill.objects.get(pk=self.kwargs['pk']))
+
     def get_context_data(self, *args, **kwargs):
         context = super(BillPDFView, self).get_context_data(*args, **kwargs)
         context['object'] = Bill.objects.get(pk=self.kwargs['pk'])

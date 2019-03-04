@@ -159,9 +159,12 @@ class PayGradeDeleteView( DeleteView):
     success_url = reverse_lazy('employees:list-pay-grades')
     model = models.PayGrade
 
-class PayslipView( ConfigMixin, DetailView):
+class PayslipView(ContextMixin, ConfigMixin, DetailView):
     template_name = os.path.join('employees', 'payslip', 'detail.html')
     model= models.Payslip
+    extra_context = {
+        'pdf_link': True
+    }
     
 class PayslipListView( 
         ContextMixin, 

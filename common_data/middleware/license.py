@@ -74,7 +74,7 @@ class LicenseMiddleware(object):
             try:
                 TRACKER.track_user(request)
             except UserTrackerException:
-                return HttpResponseRedirect('/base/license-error-users')
+                return HttpResponseRedirect('/base/license-error/users')
             
             license = None
             try:

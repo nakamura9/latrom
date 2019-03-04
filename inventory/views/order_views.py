@@ -129,7 +129,7 @@ class OrderCreateView( ContextMixin,
         "related_links": [
             {
                 'name': 'Add Vendor',
-                'url': '/inventory/organization-supplier-create/'
+                'url': '/inventory/supplier-create/organization/'
             },{
                 'name': 'Add Product',
                 'url': '/inventory/product-create/'
@@ -185,12 +185,17 @@ class OrderDeleteView( DeleteView):
 
 
 class OrderDetailView( ContextMixin, 
-        ConfigMixin, DetailView):
+        ConfigMixin, MultiPageDocument, DetailView):
     model = models.Order
     template_name = os.path.join('inventory', 'order', 'detail.html')
     extra_context = {
         'title': 'Purchase Order',
     }
+    page_length=20
+    
+    def get_multipage_queryset(self):
+        self.get_object()
+        return models.OrderItem.objects.filter(order=self.object)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -242,10 +247,16 @@ class OrderItemAPIView(ModelViewSet):
 
 
 #pdf and email
-class OrderPDFView(ConfigMixin, PDFTemplateView):
+class OrderPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = os.path.join("inventory", "order",
         'pdf.html')
     file_name = 'order.pdf'
+    page_length=20
+
+    def get_multipage_queryset(self):
+        obj = models.Order.objects.get(pk=self.kwargs['pk'])
+        return models.OrderItem.objects.filter(order=obj)
+
     def get_context_data(self, *args, **kwargs):
         context = super(OrderPDFView, self).get_context_data(*args, **kwargs)
         context['object'] = models.Order.objects.get(pk=self.kwargs['pk'])
@@ -339,31 +350,49 @@ class DebitNoteCreateView(CreateView):
         for line in data:
             pk = line['item'].split('-')[0]
             item = models.OrderItem.objects.get(pk=pk)
-            # TODO reset or force returned quantity to be initially 0?
-            returned_quantity = float(line['returned_quantity']) - \
-                item.returned_quantity
-            
-            item._return_to_vendor(returned_quantity)
-
+            if float(line['quantity']) > 0:
+                models.DebitNoteLine.objects.create(
+                    note=self.object,
+                    item=item,
+                    quantity=float(line['quantity'])
+                )
+                # TODO test
+                item._return_to_vendor(float(line['quantity']))
+                
         return resp
 
 class DebitNoteListView(DetailView):
     template_name = os.path.join("inventory", "order", "debit_note", "list.html")
     model = models.Order
 
-class DebitNoteDetailView(ContextMixin, ConfigMixin, DetailView):
+class DebitNoteDetailView(ContextMixin, 
+                            ConfigMixin, 
+                            MultiPageDocument, 
+                            DetailView):
     template_name = os.path.join("inventory", "order", "debit_note", 
         "detail.html")
     model = models.DebitNote
     extra_context = {
         'title': 'Debit Note'
     }
+    page_length =16
+
+    def get_multipage_queryset(self):
+        return models.DebitNoteLine.objects.filter(
+            note=models.DebitNote.objects.get(
+                pk=self.kwargs['pk']))
 
 
-class DebitNotePDFView(ConfigMixin, PDFDetailView):
+class DebitNotePDFView(ConfigMixin, MultiPageDocument, PDFDetailView):
     template_name = os.path.join("inventory", "order", "debit_note", 
         "detail.html")
     model = models.DebitNote
     context = {
         'title': 'Debit Note'
     }
+    page_length =16
+
+    def get_multipage_queryset(self):
+        return models.DebitNoteLine.objects.filter(
+            note=models.DebitNote.objects.get(
+                pk=self.kwargs['pk']))

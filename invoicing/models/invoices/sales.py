@@ -23,6 +23,7 @@ from invoicing.models.payment import Payment
 from services.models import Service
 
 from .abstract import AbstractSale
+from invoicing.models.credit_note import CreditNoteLine
 
 
 class SalesInvoice(AbstractSale):
@@ -126,18 +127,25 @@ class SalesInvoiceLine(models.Model):
     quantity = models.FloatField(default=0.0)
     price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
-    returned_quantity = models.FloatField(default=0.0)
     returned = models.BooleanField(default=False)
     # value is calculated once when the invoice is generated to prevent 
     # distortions as prices change
     value = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     
     @property
+    def returned_quantity(self):
+        
+        return sum([ item.quantity \
+            for item in CreditNoteLine.objects.filter(line=self)])
+
+    def __str__(self):
+        return str(self.product)
+
+    @property
     def subtotal(self):
         return D(self.quantity) * self.price
 
     def _return(self, quantity):
-        self.returned_quantity += float(quantity)
         self.returned = True
         # TODO should i increase inventory quantity here?
         self.save()

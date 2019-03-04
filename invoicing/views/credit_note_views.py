@@ -17,13 +17,13 @@ from django_filters.views import FilterView
 from rest_framework import generics, viewsets
 
 from accounting.forms import TaxForm
-from common_data.utilities import ConfigMixin, ContextMixin
+from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument
 from common_data.views import PaginationMixin, PDFDetailView
 from inventory.forms import QuickProductForm
 from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import CreditNote, SalesConfig, SalesInvoiceLine
-
+from invoicing.models.credit_note import CreditNoteLine
 #########################################
 #           Credit Note Views           #
 #########################################
@@ -62,11 +62,13 @@ class CreditNoteCreateView( ContextMixin, CreateView):
             pk = line['product'].split('-')[0]
             inv_line = SalesInvoiceLine.objects.get(pk=pk)
             # to ensure duplicate returns are not made
-            # TODO refactor
-            returned_quantity =  inv_line.returned_quantity - float(
-                line["returned_quantity"])
+            CreditNoteLine.objects.create(
+                line=inv_line,
+                note=self.object,
+                quantity=float(line["returned_quantity"])
+            )
             
-            inv_line._return(returned_quantity)
+            inv_line._return(float(line["returned_quantity"]))
 
         if self.object:
             self.object.create_entry()
@@ -82,10 +84,16 @@ class CreditNoteUpdateView( ContextMixin, UpdateView):
     success_url = reverse_lazy("invoicing:home")
 
 
-class CreditNoteDetailView( ConfigMixin, DetailView):
+class CreditNoteDetailView( ConfigMixin, MultiPageDocument, DetailView):
     template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'detail.html')
     model = CreditNote
     
+    page_length=16
+
+    def get_multipage_queryset(self):
+        return CreditNoteLine.objects.filter(note=CreditNote.objects.get(
+            pk=self.kwargs['pk']))
+
     def get_context_data(self, *args, **kwargs):
         context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
         context['title'] = 'Credit Note'
@@ -103,7 +111,12 @@ class CreditNoteListView( ContextMixin, PaginationMixin, FilterView):
         return CreditNote.objects.all().order_by('date').reverse()
 
 
-class CreditNotePDFView(ConfigMixin, PDFDetailView):
+class CreditNotePDFView(ConfigMixin, MultiPageDocument, PDFDetailView):
     model = CreditNote
-    template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'detail.html')
+    template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'pdf.html')
     file_name = "credit note.pdf"
+    page_length=16
+
+    def get_multipage_queryset(self):
+        return CreditNoteLine.objects.filter(note=CreditNote.objects.get(
+            pk=self.kwargs['pk']))

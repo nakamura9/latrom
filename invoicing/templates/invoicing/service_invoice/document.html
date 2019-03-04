@@ -53,6 +53,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                {% for page in pages %}
                 <table class="{{style}}-content" height="500" width="100%">
                     <thead>
                         <tr>
@@ -63,7 +64,7 @@
                         </tr>
                     </thead>
                     <tbody class="item-table">
-                        {% for item in object.serviceinvoiceline_set.all %}
+                        {% for item in page %}
                         <tr>
                             <td>{{item.service}} ${{item.service.flat_fee}} flat fee.</td> 
                             <td>{{item.service.hourly_rate | floatformat:2 }}</td>
@@ -82,8 +83,15 @@
                             {% endif %}
                         </tr>
                     </tbody>
+                   {% if not page.has_next %}
                     {% include "common_data/common/invoice_footer.html" %}
-                </table>
+                    {% endif %}
+                    </table>
+                    <p>{{page}}</p>
+                    {% if page.has_next %}
+                    <p style="page-break-before:always"></p>
+                    {% endif %}
+                    {% endfor %}
             </td>
         </tr>
         <tr>

@@ -1,8 +1,21 @@
-.item-table {
-    border: 1px solid black;
-    width:200px;
-    height:200px;
+#item-table thead td{
+    padding: 10px;
+    color: white;
+    background-color: black;
+    border-right: 1px solid white;
+}
 
+#item-table tbody{
+    border: 1px solid black;
+    
+}
+
+#item-table{
+    min-height: 500px;
+}
+#item-table tbody td{
+    border-right: 1px solid black;
+    padding: 10px;
 }
 
 table {

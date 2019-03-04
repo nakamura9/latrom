@@ -362,12 +362,41 @@ class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.InventoryCheck
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'next_adjustment_date',
+                    'adjusted_by',
+                    css_class="col-sm-6"),
+            Column('comments', css_class="col-sm-6")
+            )
+        )
+
 class TransferOrderForm(forms.ModelForm, BootstrapMixin):
     source_warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(),
         widget=forms.HiddenInput)
     class Meta:
         exclude = ['actual_completion_date', 'receiving_inventory_controller','receive_notes', 'completed']
         model = models.TransferOrder
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'expected_completion_date',
+                    'issuing_inventory_controller',
+                    'receiving_warehouse',
+                    css_class="col-sm-6"),
+            Column('order_issuing_notes', css_class="col-sm-6")
+            )
+        )
 
 
 class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
@@ -405,6 +434,19 @@ class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.InventoryScrappingRecord
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'controller',
+                    css_class="col-sm-6"),
+            Column('comments', css_class="col-sm-6")
+            )
+        )
 
 class StorageMediaForm(forms.ModelForm, BootstrapMixin):
     location = forms.ModelChoiceField(models.StorageMedia.objects.all(), widget=forms.HiddenInput, required=False)

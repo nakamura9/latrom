@@ -8,14 +8,12 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-
 from common_data.forms import BootstrapMixin
 from inventory.models import Supplier
 from accounting.models import Account
 from django.db.models import Q
 
 from . import models
-
 
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     automate_payroll_for = forms.ModelMultipleChoiceField(
@@ -278,4 +276,3 @@ class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
             raise forms.ValidationError('You entered an incorrect password for this form')
 
         return cleaned_data
-        

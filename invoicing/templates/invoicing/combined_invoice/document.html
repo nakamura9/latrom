@@ -54,6 +54,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                {% for page in pages %}
                 <table class="{{style}}-content" height="500" width="100%">
                     <thead>
                         <tr>
@@ -62,7 +63,7 @@
                         </tr>
                     </thead>
                     <tbody class="item-table">
-                        {% for item in object.combinedinvoiceline_set.all %}
+                        {% for item in page %}
                         <tr>
                             <td>{{item}}</td>
                             <td>{{item.subtotal | floatformat:2 }}</td>
@@ -74,6 +75,7 @@
                             <td></td>
                         </tr>
                     </tbody>
+                    {% if not page.has_next %}
                     <tfoot>
                         <tr>
                             <td>
@@ -95,7 +97,13 @@
                             <td>{{object.total | floatformat:2 }}</td>
                         </tr>
                     </tfoot>
+                    {% endif %}
                 </table>
+                <p>{{page}}</p>
+                {% if page.has_next %}
+                <p style="page-break-before:always"></p>
+                {% endif %}
+                {% endfor %}
             </td>
         </tr>
         <tr>

@@ -9,7 +9,10 @@ from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import FormView
 
 from common_data.forms import PeriodReportForm
-from common_data.utilities import ContextMixin, extract_period, ConfigMixin
+from common_data.utilities import (ContextMixin, 
+                                    extract_period, 
+                                    ConfigMixin,
+                                    MultiPageDocument) 
 from invoicing import models as inv
 from inventory import models as inventory_models
 from wkhtmltopdf.views import PDFTemplateView
@@ -17,8 +20,15 @@ from wkhtmltopdf.views import PDFTemplateView
 from accounting import forms, models
 
 
-class TrialBalance(ConfigMixin, TemplateView):
+class TrialBalance(ConfigMixin, MultiPageDocument, TemplateView):
     template_name = os.path.join('accounting', 'reports', 'trial_balance.html')
+
+    page_length=16
+
+    def get_multipage_queryset(self):
+        return models.Account.objects.all().exclude(
+            Q(balance=0.0) & Q(control_account=False)).exclude(
+                parent_account__isnull=False).order_by('pk')
 
     @staticmethod
     def common_context(context):
@@ -39,9 +49,15 @@ class TrialBalance(ConfigMixin, TemplateView):
 
         return TrialBalance.common_context(context)
 
-class TrialBalancePDFView(ConfigMixin, PDFTemplateView):
+class TrialBalancePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = TrialBalance.template_name
+    page_length=16
 
+    def get_multipage_queryset(self):
+        return models.Account.objects.all().exclude(
+            Q(balance=0.0) & Q(control_account=False)).exclude(
+                parent_account__isnull=False).order_by('pk')
+   
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return TrialBalance.common_context(context)

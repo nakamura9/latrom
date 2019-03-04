@@ -1,4 +1,4 @@
-<table id="page-layout">
+<table id="page-layout" style="width:100%;">
     <tbody>
         <tr>
             <td colspan="2" id="title">
@@ -55,6 +55,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                {% for page in pages %}
                 <table class="{{style}}-content" height="500" width="100%">
                     <thead>
                         <tr>
@@ -64,7 +65,7 @@
                         </tr>
                     </thead>
                     <tbody class="item-table">
-                        {% for item in object.billline_set.all %}
+                        {% for item in page %}
                         <tr>
                             <td>{{item.pk}}</td>
                             <td>{{item.expense.description}}</td>
@@ -78,6 +79,7 @@
                             <td></td>
                         </tr>
                     </tbody>
+                    {% if not page.has_next %}
                     <tfoot>
                         <tr>
                             <td colspan="2">
@@ -86,7 +88,13 @@
                             <td>{{object.total | floatformat:2 }}</td>
                         </tr>
                     </tfoot>
-                </table>
+                    {% endif %}
+                    </table>
+                    <p>{{page}}</p>
+                    {% if page.has_next %}
+                    <p style="page-break-before:always"></p>
+                    {% endif %}
+                    {% endfor %}
             </td>
         </tr>
         <tr>

@@ -78,7 +78,7 @@ class ProductCreateView( ContextMixin,
         'description': 'Cycle  through the tabs to enter information regarding product description, quantity, dimensions and pricing. ',
         'related_links': [{
             'name': 'Add Vendor',
-            'url': '/inventory/supplier-create/'
+            'url': '/inventory/supplier-create/organization/'
         },{
             'name': 'Add Unit',
             'url': '/inventory/unit-create/'
@@ -136,7 +136,7 @@ class ConsumableCreateView( ContextMixin,
         'description': 'Cycle  through the tabs to enter information regarding consumable description, quantity, dimensions and pricing. ',
         'related_links': [{
             'name': 'Add Vendor',
-            'url': '/inventory/supplier-create/'
+            'url': '/inventory/supplier-create/organization/'
         },{
             'name': 'Add Unit',
             'url': '/inventory/unit-create/'
@@ -194,7 +194,7 @@ class EquipmentCreateView( ContextMixin,
         'description': 'Cycle  through the tabs to enter information regarding equipment description, quantity, dimensions and pricing. ',
         'related_links': [{
             'name': 'Add Vendor',
-            'url': '/inventory/supplier-create/'
+            'url': '/inventory/supplier-create/organization/'
         },{
             'name': 'Add Unit',
             'url': '/inventory/unit-create/'
@@ -253,7 +253,7 @@ class RawMaterialCreateView( ContextMixin,
         'description': 'Cycle  through the tabs to enter information regarding material description, quantity, dimensions and pricing. ',
         'related_links': [{
             'name': 'Add Vendor',
-            'url': '/inventory/supplier-create/'
+            'url': '/inventory/supplier-create/organization/'
         },{
             'name': 'Add Unit',
             'url': '/inventory/unit-create/'
