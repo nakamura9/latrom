@@ -17,7 +17,7 @@
                 {% include "common_data/common/customer_data.html" %}  
             </td>
             <td id="details">
-                <table>
+                <table >
                     <tbody>
                         <tr>
                             <td>Date:</td>
@@ -54,9 +54,9 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" id="invoice-table">
+            <td colspan="2">
                 {% for page in pages %}
-                <table height="400" width="100%" class="{{style}}-content" z>
+                <table height="400" width="100%" id='item-table'>
                     <thead>
                         <tr>
                             <td style="width:10%;">Qty</td>

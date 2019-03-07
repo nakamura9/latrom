@@ -30,7 +30,7 @@ class CreditNote(models.Model):
 
     @property
     def returned_products(self):
-        return self.invoice.salesinvoiceline_set.filter(returned=True)
+        return self.creditnoteline_set.all()
         
     @property
     def returned_total(self):

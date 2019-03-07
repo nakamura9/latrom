@@ -38,7 +38,6 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
                 Tab('Inventory Settings',
                     'inventory_check_date',
                     'inventory_check_frequency',
-                    'order_template_theme',
                     'product_sales_pricing_method',
                     'inventory_valuation_method',
                     ),

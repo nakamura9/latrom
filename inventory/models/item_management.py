@@ -85,7 +85,6 @@ class StockReceipt(models.Model):
 #might need to rename
 class InventoryCheck(models.Model):
     date = models.DateField()
-    next_adjustment_date = models.DateField(null=True, blank=True)#not required
     adjusted_by = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True, limit_choices_to=Q(user__isnull=False) )
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True )
     comments = models.TextField()
@@ -98,6 +97,10 @@ class InventoryCheck(models.Model):
     def value_of_all_adjustments(self):
         return sum(
             [i.adjustment_value for i in self.adjustments])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.warehouse.last_inventory_check_date = self.date
 
 class StockAdjustment(models.Model):
     warehouse_item = models.ForeignKey('inventory.WareHouseItem', 

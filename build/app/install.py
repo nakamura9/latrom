@@ -332,7 +332,6 @@ class InstallApplicationPage(ttk.Frame):
                                                         'wkhtmltopdf', 
                                                         'bin')])
 
-        print(ENVIRONMENT['PATH'])
         logger.info(TARGET_DIR)
         if TARGET_DIR != os.getcwd():
             self.push_message("Copying application files")

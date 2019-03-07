@@ -97,6 +97,7 @@ class CreditNoteDetailView( ConfigMixin, MultiPageDocument, DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
         context['title'] = 'Credit Note'
+        context['pdf_link'] = True
         return context
 
 #Deprecated

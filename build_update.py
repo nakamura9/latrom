@@ -1,23 +1,18 @@
-'''The build process creates an exe that will install the application on the target machine
-the application consists of the server files( the pyd equivalents not the plain text source )
-the server also includes the wkhtml2pdf binary
-it includes the python install - it will make sure that all the requirements.txt are met in the file
+'''The update process creates an exe that will update an existing version of the applicaiton on the target machine
+the update consists of the server files, and the migrations
 
+the update script requires a previous version to check if the update must include updates to the requirements of the python installation
 
-with time this build script will target multiple os's
+it should also check for changes in the database fixtures and compile these to a single file that can then be pushed to clients
 
-THE BUILD COUNTER
-Major.minor.patch
-the build counter is incremented by each build if the build completes successfully 
+the update also bundles in changed static files
 
-each build must exist on the master branch with all changes committed.
-Each build is linked to this hash value
-each build must have an argument specifying if the build is major minor or a 
-patch
-versions will not be recorded for quick builds
+the update executable finds the location of the application on the system
+it overwrites the source files
+it runs the django migrate command to update the database
+it creates fixtures 
 '''
 import time
-import datetime
 import json
 import logging
 
@@ -27,38 +22,7 @@ import sys
 import os
 from distutils.dir_util import copy_tree
 
-QUICK = '--quick' == sys.argv[1]
-BUILD_TYPE = None
 
-if not QUICK:
-    BUILD_TYPE = sys.argv[1]
-
-def increment_build_counter():
-    today = datetime.date.today()
-    with open("build_counter.json", 'r') as f:
-        current_build = json.load(f)
-        new_build_count = {
-            "major": current_build['major'] + 1 if BUILD_TYPE == "-M" else + 0,
-            "minor": current_build['minor'] + 1 if BUILD_TYPE == "-m" else + 0,
-            "patch": current_build['patch'] + 1 if BUILD_TYPE == "-p" else + 0
-        }
-        build_summary = {
-            "version": f"{new_build_count['major']}."
-                        f"{new_build_count['minor']}."
-                        f"{new_build_count['patch']}",
-            "hash": "",
-            "date": f"{today.strftime("%d/%m/%Y")}"
-        }
-        new_build = new_build_count
-        new_build['builds'] current_build['builds'].append(build_summary)
-
-"""
-BUILD_TYPES = {
-    '-M': 'major',
-    '-m': 'minor',
-    '-p': 'patch'
-}
-"""
 START = time.time()
 BASE_DIR = os.getcwd()
 SYS_PATH = os.environ['path']
@@ -76,26 +40,23 @@ APPS = [
 ]
 
 TREE = [
-    'dist',
-    'dist/app',
-    'dist/app/server',
-    'dist/app/database',
-    'dist/app/bin',
-    'dist/app/python' 
+    'dist/update',
+    'dist/update/server',
+    'dist/update/python' 
 ]
-    
 
 
-log_file = os.path.join(BASE_DIR, "build.log")
+
+log_file = os.path.join(BASE_DIR, "build_update.log")
 if os.path.exists(log_file):
     os.remove(log_file)
 
-logger = logging.getLogger('build_process')
+logger = logging.getLogger('update_build_process')
 logger.setLevel(logging.DEBUG)
 
 log_format = logging.Formatter("%(asctime)s [%(levelname)-5.5s ] %(message)s")
 
-file_handler = logging.FileHandler('build.log')
+file_handler = logging.FileHandler('update_build.log')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(log_format)
 console_handler = logging.StreamHandler(sys.stdout)
@@ -112,7 +73,6 @@ if json.load(stats_file).get("status", "") != "done":
     logger.critical("The webpack bundles are not ready")
     raise Exception("There are errors in the webpack bundles")
 
-if not QUICK:
     logger.info("running unit tests")
     result = subprocess.run(['python', 'manage.py', 'test'])
     if result.returncode != 0:
@@ -173,6 +133,7 @@ os.chdir(os.path.join(BASE_DIR, 'build', 'app', 'python'))
 
 requirements_path = os.path.join(BASE_DIR, 'requirements.txt')
 
+os.environ['path'] = remove_python_from_path()
 
 if not QUICK:
     result = subprocess.run(['./python', '-m', 'pip', 'install', '-r', 
@@ -220,10 +181,6 @@ shutil.rmtree(os.path.join(BASE_DIR, "build", "run"))
 
 logger.info("Compressing the application")
 shutil.make_archive(os.path.join('dist', 'archive'), 'zip', os.path.abspath('dist'))
-
-if not QUICK:
-    increment_build_counter()
-
 
 logger.info("Completed the build process successfully in {0:.2f} seconds".format(time.time() - START))
 

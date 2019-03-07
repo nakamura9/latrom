@@ -8,7 +8,6 @@ import time
 import threading
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-print(BASE_DIR)
 ENVIRONMENT = copy.deepcopy(os.environ)
 ENVIRONMENT['PATH'] += ";" if not ENVIRONMENT['PATH'].endswith(";") else ""
 ENVIRONMENT['PATH'] += ";".join([os.path.join(BASE_DIR, 'python'),

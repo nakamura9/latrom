@@ -373,7 +373,8 @@ class DebitNoteDetailView(ContextMixin,
         "detail.html")
     model = models.DebitNote
     extra_context = {
-        'title': 'Debit Note'
+        'title': 'Debit Note',
+        'pdf_link': True
     }
     page_length =16
 

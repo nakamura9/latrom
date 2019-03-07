@@ -14,7 +14,8 @@ from invoicing.models import Customer
 
 class PlannerConfig(SingletonModel):
     number_of_agenda_items = models.PositiveIntegerField(default=10)
-    autogenerate_events_from_models = models.BooleanField(default=False)
+    autogenerate_events_from_models = models.BooleanField(default=False, 
+        blank=True)
 
 class Event(models.Model):
     REMINDER_CHOICES = [

@@ -29,6 +29,7 @@ class WareHouse(models.Model):
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
+    last_inventory_check_date = models.DateField(blank=True, null=True)
 
     
     @property

@@ -39,8 +39,6 @@ class ServicePersonUtilizationReport(TemplateView):
             histogram[str(log.employee)].append(log.normal_time)
 
         x = histogram.keys()
-        print(x)
-        print(histogram)
         y = [reduce(lambda x, y: x + y, histogram[key], datetime.timedelta(seconds=0)).seconds / 3600  for key in x]
         
         fig = plt.figure()
@@ -73,7 +71,6 @@ class ServicePersonUtilizationReportPDFView(PDFTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data( **kwargs)
-        print(self.kwargs)
         start = datetime.datetime.strptime(urllib.parse.unquote(
             self.kwargs['start']), "%d %B %Y")
         end = datetime.datetime.strptime(urllib.parse.unquote(

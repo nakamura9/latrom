@@ -120,6 +120,7 @@ class AgendaView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         filter = None
+        agenda_items = models.PlannerConfig.objects.first().number_of_agenda_items
         if not hasattr(self.request.user, "employee"):
             return None
 
@@ -130,7 +131,7 @@ class AgendaView(LoginRequiredMixin, ListView):
         
         return models.Event.objects.filter(
             Q(date__gte=datetime.date.today()) & 
-            Q(completed=False) & filter)
+            Q(completed=False) & filter).order_by('date')[:agenda_items]
 
 class EventAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.EventSerializer
