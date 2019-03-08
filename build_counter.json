@@ -1,13 +1,12 @@
 {
-    "major": 0,
-    "minor": 0,
-    "patch": 0,
+    "major": 0, 
+    "minor": 0, 
+    "patch": 2, 
     "builds": [
-        {
-            "version": "0.0.0",
-            "hash": "",
-            "date": "01/12/2018"
+    {
+        "version": "0.0.2", 
+        "hash": "982bb7a0527ac9ba4e403092a6f9aecfe87ba547", 
+        "date": "07/03/2019"
         }
     ]
-
 }

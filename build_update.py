@@ -12,6 +12,9 @@ it overwrites the source files
 it runs the django migrate command to update the database
 it creates fixtures 
 '''
+#any version that changes the requirements.txt or adds a new binary must be a 
+# major revision that cannot be updated, this utility is only for minor patches 
+# and fixes
 import time
 import json
 import logging

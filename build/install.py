@@ -13,23 +13,13 @@ from distutils.dir_util import copy_tree
 import shutil
 import time
 import copy
+import build_logger
 #the install app should collect a default username and password
 # the server should have a name 
 # the install script should do some dns and configure the pdf
 
-logger = logging.getLogger('setup')
-logger.setLevel(logging.DEBUG)
-log_format = logging.Formatter("%(asctime)s [%(levelname)-5.5s ] %(message)s")
 
-file_handler = logging.FileHandler('install.log')
-file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler(sys.stdout)
-file_handler.setFormatter(log_format)
-console_handler.setFormatter(log_format)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
-
+logger = build_logger.create_logger('install')
 SYS_PATH = os.environ['path']
 BASE_DIR = os.getcwd()
 INSTALL_CONFIG = {}
