@@ -2,7 +2,7 @@ import compileall
 import os
 import datetime
 import json
-
+import copy
 def remove_source_files(source_dir):
     '''iterates over source_dir and removes all .py files'''
     for _dir, subdirs, files in os.walk(source_dir):
@@ -45,7 +45,13 @@ def increment_build_counter(REPO, BUILD_TYPE):
         }
         new_build = new_build_count
         current_build['builds'].append(build_summary)
+        if BUILD_TYPE == "-M":
+            major_release = copy.deepcopy(build_summary)
+            major_release['updates'] = []
+            current_build['major_releases'].append(major_release)
+            
         new_build['builds'] = current_build['builds']
+        new_build['major_releases'] = current_build['major_releases']
 
     with open('build_counter.json', 'w') as bc:
         json.dump(new_build, bc)
