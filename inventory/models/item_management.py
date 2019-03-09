@@ -85,8 +85,13 @@ class StockReceipt(models.Model):
 #might need to rename
 class InventoryCheck(models.Model):
     date = models.DateField()
-    adjusted_by = models.ForeignKey('employees.Employee', on_delete=models.SET_NULL, null=True, limit_choices_to=Q(user__isnull=False) )
-    warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True )
+    adjusted_by = models.ForeignKey('employees.Employee', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        limit_choices_to=Q(user__isnull=False) )
+    warehouse = models.ForeignKey('inventory.WareHouse', 
+        on_delete=models.SET_NULL, 
+        null=True )
     comments = models.TextField()
     
     @property 

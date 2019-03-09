@@ -65,7 +65,7 @@ if (consumableTable){
     ReactDOM.render(<GenericTable
         fieldDescriptions={['Item', 'Unit', 'Quantity']}
         fieldOrder={['item', 'unit', 'quantity']}
-        formInputID='id_items'
+        formInputID='id_consumables'
         fields={[
             {
                 name: 'item',
@@ -94,7 +94,7 @@ if (equipmentTable){
     ReactDOM.render(<GenericTable
         fieldDescriptions={['Item', 'Condition', 'Quantity']}
         fieldOrder={['item', 'condition', 'quantity']}
-        formInputID='id_items'
+        formInputID='id_equipment'
         fields={[
             {
                 name: 'item',

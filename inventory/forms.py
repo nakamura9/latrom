@@ -368,16 +368,19 @@ class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             Row(
             Column('date', 
-                    'next_adjustment_date',
                     'adjusted_by',
+                    'warehouse',
                     css_class="col-sm-6"),
             Column('comments', css_class="col-sm-6")
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 
 class TransferOrderForm(forms.ModelForm, BootstrapMixin):
     source_warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(),
         widget=forms.HiddenInput)
+    items = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = ['actual_completion_date', 'receiving_inventory_controller','receive_notes', 'completed']
         model = models.TransferOrder
@@ -392,10 +395,14 @@ class TransferOrderForm(forms.ModelForm, BootstrapMixin):
                     'expected_completion_date',
                     'issuing_inventory_controller',
                     'receiving_warehouse',
+                    'source_warehouse',
+                    'items',
                     css_class="col-sm-6"),
             Column('order_issuing_notes', css_class="col-sm-6")
             )
         )
+
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
@@ -415,6 +422,7 @@ class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
             Column('receive_notes', css_class="col-sm-6")
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -430,6 +438,7 @@ class InventoryControllerUpdateForm(forms.ModelForm, BootstrapMixin):
 class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):
     warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), 
         widget=forms.HiddenInput)
+    items = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         fields = "__all__"
         model = models.InventoryScrappingRecord
@@ -442,10 +451,13 @@ class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):
             Row(
             Column('date', 
                     'controller',
+                    'items',
+                    'warehouse',
                     css_class="col-sm-6"),
             Column('comments', css_class="col-sm-6")
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class StorageMediaForm(forms.ModelForm, BootstrapMixin):
     location = forms.ModelChoiceField(models.StorageMedia.objects.all(), widget=forms.HiddenInput, required=False)

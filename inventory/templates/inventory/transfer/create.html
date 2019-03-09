@@ -14,12 +14,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Transfer Details</h4>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        {% crispy form %}
-                        <input type="hidden" name="items" id="id_items" />
-                        <button class="btn btn-primary">Submit</button>
-                    </form>
+                        {% crispy form %}    
                     <div id="transfer-items"></div>
                 </div>
             </div>

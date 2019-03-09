@@ -4,7 +4,11 @@ from common_data.forms import BootstrapMixin
 from django.contrib.auth import authenticate
 from crispy_forms.helper import FormHelper
 
-from crispy_forms.layout import Row, Column, Fieldset, Layout
+from crispy_forms.layout import (Row, 
+                                Column, 
+                                Fieldset,
+                                Submit, 
+                                Layout)
 from . import models
 from employees.models import Employee
 
@@ -72,6 +76,7 @@ class ServiceWorkOrderAuthorizationForm(forms.ModelForm, BootstrapMixin):
         return cleaned_data
 
 class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
+    equipment = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
         model = models.EquipmentRequisition
@@ -82,7 +87,7 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('date', css_class="col-sm-6"), 
+                Column('date','equipment' , css_class="col-sm-6"), 
                 Column('work_order', css_class="col-sm-6"), css_class="form-row"),
             Row(
                 Column('department', css_class="col-sm-6"),
@@ -92,6 +97,7 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
                 Column('reference', css_class="col-sm-6"), 
                 Column('requested_by', css_class="col-sm-6"), css_class="form-row")
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
         
 
 
@@ -123,6 +129,8 @@ class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
     
 
 class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
+    consumables = forms.CharField(widget=forms.HiddenInput)
+    
     class Meta:
         exclude = "authorized_by", "released_by",
         model = models.ConsumablesRequisition
@@ -133,7 +141,7 @@ class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('date', css_class="col-sm-6"), 
+                Column('date', 'consumables', css_class="col-sm-6"), 
                 Column('work_order', css_class="col-sm-6"), css_class="form-row"),
             Row(
                 Column('department', css_class="col-sm-6"),
@@ -143,6 +151,8 @@ class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
                 Column('reference', css_class="col-sm-6"), 
                 Column('requested_by', css_class="col-sm-6"), css_class="form-row")
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 
 class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
     work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 

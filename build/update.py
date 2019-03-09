@@ -104,8 +104,9 @@ for d in diffs:
             os.makedirs(dest_dir)
         try:
             shutil.copy(os.path.join(BASE_DIR, pathname), dest_dir)
-        except:
+        except Exception as e:
             fail_counter += 1
+            print(e)
             print(d.change_type)
 
 delete_list.close()

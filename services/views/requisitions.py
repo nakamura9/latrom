@@ -134,7 +134,8 @@ def equipment_requisition_release(request, pk=None):
 #            Consumable Requisitions            #
 #################################################
 
-class ConsumableRequisitionMixin(object):
+class ConsumableRequisitionMixin():
+
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
         if not self.object:
@@ -155,7 +156,7 @@ class ConsumableRequisitionMixin(object):
             )
         return resp
 
-class ConsumableRequisitionCreateView( CreateView):
+class ConsumableRequisitionCreateView(ConsumableRequisitionMixin, CreateView):
     template_name = os.path.join('services', 'requisitions', 'consumables', 
         'create.html')
     form_class = forms.ConsumablesRequisitionForm

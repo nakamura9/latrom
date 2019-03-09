@@ -13,15 +13,8 @@
         <div class="col-sm-8">
             <div class="card ">
                 <div class="card-body">
-                    <form method="POST" action="" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <table class="table">
-                            {% crispy form %}
-                        </table>
-                        <button class="btn btn-primary pull-right" type="submit">Submit</button>
-                    </form>
+                    {% crispy form %}
                 </div>
-
             </div>
         </div>
         <div class="col-sm-2">  

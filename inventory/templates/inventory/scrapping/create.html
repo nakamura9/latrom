@@ -10,13 +10,8 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    <form method="POST">
                         {{form.errors}}
-                        {% csrf_token %}
                         {% crispy form %}
-                        <input type="hidden" name="items" id="id_items" />
-                        <button class="btn btn-primary">Submit</button>
-                    </form>
                     <div id="scrapping-table"></div>
                 </div>
             </div>
