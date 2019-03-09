@@ -127,7 +127,6 @@ def create_test_inventory_models(cls):
 
     cls.check = models.InventoryCheck.objects.create(
         date=TODAY,
-        next_adjustment_date=TODAY,
         adjusted_by=Employee.objects.first(),
         warehouse=cls.warehouse,
         comments="Nothing new"
@@ -444,7 +443,6 @@ class ItemManagementModelTests(TestCase):
     def test_create_inventory_check(self):
         obj = models.InventoryCheck.objects.create(
             date=TODAY,
-            next_adjustment_date=TODAY,
             adjusted_by=Employee.objects.first(),
             warehouse=self.warehouse,
             comments="Nothing new"
