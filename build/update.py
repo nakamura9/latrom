@@ -1,123 +1,100 @@
-#To build an update
-# use git to identify changed and new source files
-# store them in a tree similar to that of the original
-# send the 
+# replace all updated files with those stored in the files folder 
+# delete all the files marked for deleting
+# run the migrate service on 
 
-# to update the app
-# look for the apps path in the system_path
-# replace the source files that have changed
-# migrate the database
-# restart the server
-
-# must have a command line argument for the previous version
-
-# each update build is assigned to a major release 
-# each update builds up on the last released update
-# major build changes cannot be updated
-# changes to the requirements of the applications must prevent any update from #
-# being performed, instead suggesting a new major release
-
-import sys
 import os 
-import shutil
-from distutils.dir_util import copy_tree
-import time
-import git 
-from build_logger import create_logger
 import json
-import re
+from distutils.dir_util import copy_tree
 
-START = time.time()
-BASE_DIR = os.path.dirname(os.getcwd())
-REPO = git.Repo(BASE_DIR)
-BUILD_COUNTER = None
+class VersionString():
+    def __init__(self, value):
+        self.value = value
+        major, minor, patch = value.split('.')
+        self.major = int(major)
+        self.minor = int(minor)
+        self.patch = int(patch)
 
-logger = create_logger('update')
+    def __lt__(self, other):
+        if other.major > self.major:
+            return True
 
-with open(os.path.join(BASE_DIR, 'build_counter.json'), 'r') as bc:
-    BUILD_COUNTER  = json.load(bc)
+        if other.minor > self.minor:
+            return True
 
-if len(BUILD_COUNTER['major_releases']) == 0:
-    raise Exception("No previous major release found. Build the application using the -M argument and then updates can be made to the release")
-
-UPDATE_FROM = BUILD_COUNTER['major_releases'][-1]['hash'] # newest release
-
-#check the current changes have been committed
-if len(REPO.index.diff(None)) > 0:
-    logger.critical("Changes to the repository were not yet committed")
-    #raise Exception("Please commit changes before continuing with the build process")
+        if other.patch > self.patch:
+            return True
 
 
+        return False
 
-#get specific versions commit sha
-def get_sha_from_version(counter, version):
-    for build in counter['builds']:
-        if build['version'] == version:
-            return build['hash']
+    def __eq__(self, other):
+        return self.value == other.value 
 
+def run():
 
+    update_metadata = None
+    delete_files = None
+    INSTALLER_DIR = os.getcwd()
 
-#search for specific commit 
-def get_specific_commit(repo, sha):
-    for commit in repo.iter_commits():
-        if commit.hexsha == sha:
-            return commit
+    if os.path.exists('delete_files.txt'):
+        delete_files = open('delete_files.txt', 'r')
 
-    return None
-
-def search_differences(diffs, regex):
-    results = []
-    for diff in diffs:
-        if re.search(regex, diff.b_path):
-            results.append(diff.b_path)
-
-    return results 
-
-# get diffs between current version and supplied argument version
-
-commit = get_specific_commit(REPO, UPDATE_FROM)
+    with open('meta.json', 'r') as meta:
+        update_metadata = json.load(meta)
 
 
-diffs = REPO.head.commit.diff(UPDATE_FROM)
+    #find the application path
+    app_path = os.environ.get("SBT_PATH", None)
 
-# analyse differences to make changes on differences
-# seach for changes to the requirements.txt
-requirements = search_differences(diffs, r'^requirements.txt$')
-if len(requirements) > 0:
-    logger.critical("The applications dependancies have changed. Exiting")
-    raise Exception("The dependencies for the application have changed. Build a"
-    " new release instead of an update to this version of the software")
+    ENVIRONMENT = copy.deepcopy(os.environ)
+    ENVIRONMENT['PATH'] +=  ";" if not SYS_PATH.endswith(";") else ""
+    ENVIRONMENT['PATH'] += os.path.join(app_path, 'python') + ";"
 
-update_dir = os.path.join(BASE_DIR, 'dist', 'update', 'files')
-if not os.path.exists(update_dir):
-    os.mkdir(update_dir)
+    if not app_path:
+        raise Exception('Could Not find the application path on the system, contact support for assistance')# allow users to set this variable manually if they know what they are doing 
 
-fail_counter = 0
-delete_list = open(os.path.join(os.path.dirname(update_dir), 'del_list.txt'), 'w')
-for d in diffs:
-    if d.change_type == "D":
-        delete_list.write(d.b_path + '\n')
-    else:
-        pathname = d.b_path.replace("/", "\\")
-        dest_dir = os.path.join(update_dir, os.path.dirname(pathname))
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        try:
-            shutil.copy(os.path.join(BASE_DIR, pathname), dest_dir)
-        except Exception as e:
-            fail_counter += 1
-            print(e)
-            print(d.change_type)
-
-delete_list.close()
+    # ensure that the version we are replacing is lower than the update
+    config = None
+    with open(os.path.join(app_path, 'server', 'global_config.json'), 'r') as fp:
+        config = json.load(fp)
 
 
-if fail_counter > 0:
-    logger.warning("{} files failed to copy".format(fail_counter))
-    raise Exception('Some files failed to copy')
 
-# check if a diff is a deleted file. if so create a file with a list of files to delete
-# analyse webpack stats
-# analyse common_data_static
-# analyse source files 
-# analyse 
+    installed_verison = VersionString(config['application_version'])
+    incoming_version = VersionString(update_metadata['version'])
+
+
+    if installed_verison >= incoming_version:
+        raise Exception("Installation cannot continue because the incoming version of the software is less than or equal to the currently installed version")
+
+    #copy the source files
+    #iterates over changed files and replaces the ones in the application 
+    # directory
+    for _dir, subdirs, files in os.walk(os.path.join(INSTALLER_DIR, 'files')):
+        for file in files:
+            #first remove the existing file in the target
+            os.remove(os.path.join(app_path, 'server', _dir, file))
+            # copy the replacement from the files folder into the place of the old 
+            # file
+            shutil.copy(os.path.join(INSTALLER_DIR, 'files', _dir, file),
+                os.path.join(app_path, 'server', _dir))
+
+    #delete the marked files
+    if delete_files:
+        for file in delete_files:
+            os.remove(os.path.join(app_path, 'server', file))
+
+    delete_files.close()
+
+
+
+    #migrate the database
+    os.chdir(os.path.join(app_path, 'server'))
+    results = subprocess.run(['python', 'manage.py', 'migrate'], env=ENVIRONMENT)
+
+    os.chdir(INSTALLER_DIR)
+
+    print('completed the update successfully')
+
+if __name__ == "__main__":
+    run()

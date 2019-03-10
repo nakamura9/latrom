@@ -373,6 +373,15 @@ class InstallApplicationPage(ttk.Frame):
         with open(nginx_path, 'w') as conf:
             conf.write(NGINX_CONFIG.format(os.path.join(TARGET_DIR, 'server', 'media')))
 
+        self.push_message("setting application environment variables")
+        
+        #! never change 'SBT_PATH' this variable so not to break future updates 
+        result = subprocess.run(["setx", "SBT_PATH", TARGET_DIR ])
+        
+        if result.returncode() != 0:
+            self.push_message("Failed To set application Path")
+            raise Exception("Failed To set application Path")
+
         self.push_message("Installed Application successfully.")
         self.progress_var.set(100)
 

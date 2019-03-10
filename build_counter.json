@@ -1,15 +1,15 @@
 {
-    "major": 0, 
-    "minor": 0, 
-    "patch": 2, 
-    "builds": [
-    {
-        "version": "0.0.2", 
-        "hash": "982bb7a0527ac9ba4e403092a6f9aecfe87ba547", 
+    "major": 0,
+    "minor": 1,
+    "patch": 0,
+    "builds": [{
+        "version": "0.0.2",
+        "hash": "982bb7a0527ac9ba4e403092a6f9aecfe87ba547",
         "date": "07/03/2019"
-        }
-    ],
-    "major_releases": [
-        
-    ]
+    }, {
+        "version": "0.1.0",
+        "hash": "d604c4885b2d8f71ef91b3a697f16f2af69bef63",
+        "date": "09/03/2019"
+    }],
+    "major_releases": []
 }

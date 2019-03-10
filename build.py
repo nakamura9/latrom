@@ -29,7 +29,9 @@ from distutils.dir_util import copy_tree
 import git 
 from build.build_logger import create_logger
 from build.consts import *
-from build.util import increment_build_counter
+from build.util import (increment_build_counter, 
+                       repo_checks,
+                       run_tests)
 
 START = time.time()
 BASE_DIR = os.getcwd()
@@ -45,14 +47,8 @@ REPO = git.Repo(BASE_DIR)
 
 logger = create_logger('build')
 
-if len(REPO.index.diff(None)) > 0 and not QUICK:
-    logger.critical("Changes to the repository were not yet committed")
-    raise Exception("Please commit changes before continuing with the build process")
-
-if REPO.head.reference.name != "master" and not QUICK:
-    logger.critical("The build is not on the master branch")
-    raise Exception("The build is not on the master branch please checkout to master")
-
+if not quick:
+    repo_checks(REPO, logger)
 
 logger.info("Checking react bundles")
 stats_file_path = os.path.join(BASE_DIR, 'assets', 'webpack-stats.json')
@@ -63,11 +59,7 @@ if json.load(stats_file).get("status", "") != "done":
     raise Exception("There are errors in the webpack bundles")
 
 if not QUICK:
-    logger.info("running unit tests")
-    result = subprocess.run(['python', 'manage.py', 'test'])
-    if result.returncode != 0:
-        logger.info("failed unit tests preventing application from building")
-        raise Exception('The build cannot continue because of a failed unit test.')
+    run_tests(logger)
 
 
     result = subprocess.run(['python', 'manage.py', 'collectstatic', '--noinput'])
@@ -89,7 +81,7 @@ for app in APPS:
 
 #compile_app(os.path.join('dist', 'app', 'server'))
 
-
+# set up production settings TODO improve
 os.remove(os.path.join('dist', 'app', 'server', 'latrom', '__init__.py'))
 shutil.copy(os.path.join('build', 'app', 'server', 'latrom', '__init__.py'),
     os.path.join('dist', 'app', 'server', 'latrom', 'settings'))

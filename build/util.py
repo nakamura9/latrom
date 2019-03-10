@@ -3,6 +3,8 @@ import os
 import datetime
 import json
 import copy
+import subprocess
+
 def remove_source_files(source_dir):
     '''iterates over source_dir and removes all .py files'''
     for _dir, subdirs, files in os.walk(source_dir):
@@ -30,11 +32,22 @@ def increment_build_counter(REPO, BUILD_TYPE):
     new_build = None
     with open("build_counter.json", 'r') as f:
         current_build = json.load(f)
-        new_build_count = {
-            "major": current_build['major'] + 1 if BUILD_TYPE == "-M" else 0,
-            "minor": current_build['minor'] + 1 if BUILD_TYPE == "-m" else 0,
-            "patch": current_build['patch'] + 1 if BUILD_TYPE == "-p" else 0
-        }
+
+        new_build_count = copy.deepcopy(current_build)
+        
+        if BUILD_TYPE == '-M':
+            new_build_count['major'] += 1
+            new_build_count['minor'] = 0
+            new_build_count['patch'] = 0
+
+        elif BUILD_TYPE == '-m':
+            new_build_count['minor'] += 1
+            new_build_count['patch'] = 0
+
+        elif BUILD_TYPE == '-p':
+            new_build_count['patch'] += 1
+
+
         build_summary = {
             "version": "{}.{}.{}".format(
                 new_build_count['major'], 
@@ -55,3 +68,21 @@ def increment_build_counter(REPO, BUILD_TYPE):
 
     with open('build_counter.json', 'w') as bc:
         json.dump(new_build, bc)
+
+
+def repo_checks(repo, logger):
+    if len(repo.index.diff(None)) > 0:
+        logger.critical("Changes to the repository were not yet committed")
+        raise Exception("Please commit changes before continuing with the build process")
+
+    if repo.head.reference.name != "master":
+        logger.critical("The build is not on the master branch")
+        raise Exception("The build is not on the master branch please checkout to master")
+
+
+def run_tests(logger):
+    logger.info("running unit tests")
+    result = subprocess.run(['python', 'manage.py', 'test'])
+    if result.returncode != 0:
+        logger.info("failed unit tests preventing application from building")
+        raise Exception('The build cannot continue because of a failed unit test.')
