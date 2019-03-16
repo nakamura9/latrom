@@ -10,17 +10,21 @@
 {% endblock prepage %}
 
 {% block page_contents %}
-    <div>
-        {{form.errors}}
-    </div>
-    <table class="table">
-            <form action="" method="POST" id="invoice-form">
-                {% csrf_token %}
-                {{form.tax}}
-                <input type="hidden" name="item_list" value="" id="id-item-list"/>
+<div>
+    {{form.errors}}
+</div>
+<table class="table">
+    <form action="" method="POST" id="invoice-form">
+        {% csrf_token %}
+        {{form.tax}}
+        <input type="hidden" name="item_list" value="" id="id-item-list" />
         <tbody>
             <tr>
-                <td colspan="2"><center><h1>Sales Invoice</h1></center></td>
+                <td colspan="2">
+                    <center>
+                        <h1>Sales Invoice</h1>
+                    </center>
+                </td>
             </tr>
             <tr>
                 <td valign="top">
@@ -33,10 +37,10 @@
                     <p>{{form.discount}}</p>
                     
                     -->
-                    
+
                     <p>Create Invoice and Apply Payment?</p>
                     <p>{{form.apply_payment}}</p>
-                    
+
                 </td>
                 <td>
                     <p>Date</p>
@@ -51,51 +55,53 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <div id="sales-invoice-contents"></div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="{{style}}-footer-cell">
-                        <div class="{{style}}-footer-cell-heading">
-                                                    Terms:
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item"><a class="nav-link active" href="#lines" data-toggle="tab">Invoice Lines</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#comments-terms" data-toggle="tab">Ts & Cs</a></li>
+                    </ul>
+                    <div class="tab-content panel-body">
+                        <div id="lines" class="tab-pane active">
+                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
+                                    Invoice Lines</label>
+                                <div id="sales-invoice-contents"></div>
+                            </div>
                         </div>
-                        <div class="{{style}}-footer-cell-contents">
-                            {{form.terms}}
-                        </div>
-                    </div>
-                    <div class="{{style}}-footer-cell">
-                        <div class="{{style}}-footer-cell-heading">
-                            Comments:
-                        </div>
-                        <div class="{{style}}-footer-cell-contents">
-                            {{form.comments}}
+                        <div id="comments-terms" class="tab-pane">
+                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
+                                    Terms and Comments</label>
+                                <div class="{{style}}-footer-cell">
+                                    <div class="{{style}}-footer-cell-heading">
+                                            Terms:
+                                    </div>
+                                    <div class="{{style}}-footer-cell-contents">
+                                            {{form.terms}}
+                                    </div>
+                                </div>
+                                <div class="{{style}}-footer-cell">
+                                    <div class="{{style}}-footer-cell-heading">
+                                            Comments:
+                                    </div>
+                                    <div class="{{style}}-footer-cell-contents">
+                                            {{form.comments}}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="dropdown open">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" >
-                                    Submit as...
-                                </button>
+                        <button class="btn btn-info dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown">
+                            Submit as...
+                        </button>
                         <div class="dropdown-menu" aria-labelledby="triggerId">
-                            <input class="dropdown-item" 
-                                type="submit"
-                                name="status"
-                                value="draft">
-                            <input class="dropdown-item" 
-                                type="submit"
-                                name="status"
-                                value="quotation">
-                            <input class="dropdown-item" 
-                                type="submit"
-                                name="status"
-                                value="invoice">
-                            
+                            <input class="dropdown-item" type="submit" name="status" value="draft">
+                            <input class="dropdown-item" type="submit" name="status" value="quotation">
+                            <input class="dropdown-item" type="submit" name="status" value="invoice">
                         </div>
                     </div>
                 </td>
             </tr>
         </tbody>
-        </form>
-    </table>
+    </form>
+</table>
 {% render_bundle 'invoicing' %}
 {% endblock page_contents %}
