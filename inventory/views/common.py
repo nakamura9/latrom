@@ -22,6 +22,7 @@ from common_data.models import GlobalConfig
 from common_data.utilities import *
 from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
+from inventory.views.util import InventoryService
 from invoicing.models import SalesConfig
 
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
@@ -71,6 +72,10 @@ class InventoryDashboard(
     TemplateView):
     template_name = os.path.join("inventory", "dashboard.html")
 
+    def get(self, *args, **kwargs):
+        resp = super().get(*args, **kwargs)
+        InventoryService().run()
+        return resp 
 
 #######################################################
 #                       Units                         #

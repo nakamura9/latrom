@@ -1,0 +1,108 @@
+<style>
+    #item-table thead td{
+        padding: 10px;
+        color: white;
+        background-color: black;
+        border-right: 1px solid white;
+    }
+
+    #item-table tbody{
+        border: 1px solid black;
+        
+    }
+
+    #item-table{
+        min-height: 500px;
+    }
+    #item-table tbody td{
+        border-right: 1px solid black;
+        padding: 10px;
+    }
+
+</style>
+<table id="page-layout" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2">
+                <h1>{{title}}</h1>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {% include "common_data/common/business_information.html" %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b>Customer:</b></p>
+                <p>{{object.invoice.customer}}</p>
+                {% if include_shipping %}
+                {{object.invoice.customer.business_address | linebreaks}}
+                {% endif %}  
+            </td>
+            <td>
+                <table >
+                    <tbody>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{object.date}}</td>
+                        </tr>
+                        <tr>
+                                <td>Credit Note ID:</td>
+                                <td>{{object.pk | stringformat:"06d"}}</td>
+                            </tr>
+                        <tr>
+                            <td>Invoice Number:</td>
+                            <td>{{object.invoice.id | stringformat:"06d"}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {% for page in pages %}
+                <table style="width:100%" id="item-table">
+                    <thead>
+                        <tr>
+                            <td style="width:60%">Description</td>
+                            <td>Quantity</td>
+                            <td>Unit Price</td>
+                            <td>Subtotal</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in page %}
+                            <tr>
+                                <td>{{item}}</td>
+                                <td>{{item.quantity}}</td>
+                                <td>{{item.line.price}}</td>
+                                <td>{{item.returned_value}}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr style="height:100%">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                    </tbody>
+                    {% if not page.has_next %}
+                    {% include "common_data/common/invoice_footer.html" %}
+                    {% endif %}
+                    </table>
+                    <p>{{page}}</p>
+                    {% if page.has_next %}
+                    <p style="page-break-before:always"></p>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {% include "common_data/common/terms_and_comments.html" %}
+            </td>
+        </tr>
+    </tbody>
+</table>

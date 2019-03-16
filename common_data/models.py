@@ -126,6 +126,7 @@ class GlobalConfig(SingletonModel):
     contact_details = models.TextField(blank=True, default="")
     business_registration_number = models.CharField(max_length=32,blank=True, 
         default="")
+    application_version = models.CharField(max_length=16, blank=True, default="0.0.1")
 
     
 

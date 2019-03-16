@@ -6,7 +6,6 @@ import decimal
 import json
 import os
 import urllib
-import pprint
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase

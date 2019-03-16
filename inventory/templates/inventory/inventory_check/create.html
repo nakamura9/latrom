@@ -1,6 +1,7 @@
 {% extends "window.html" %}
 {% block content %}
 {% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
 <div class="jumbotron">
     <h1 class="display-3">Inventory Check Form</h1>
     <p class="lead">Provide data for the inventory check.</p>
@@ -9,24 +10,13 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Inventory Check Form</h4>
-                    
-                    <form action="" method="POST">
-                            {% csrf_token %}
-                        {{form.as_p}}
-                        <button class="btn btn-primary">Submit</button>
-                    </form>
+                        {% crispy form %}
+                    <div id="inventory-checker"></div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-8">
-            <h3>Items:</h3>
-            <div id="inventory-checker">
-
-                
             </div>
         </div>
     </div>

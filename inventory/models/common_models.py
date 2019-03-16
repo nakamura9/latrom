@@ -24,21 +24,11 @@ class InventorySettings(SingletonModel):
     ]
     INVENTORY_VALUATION_METHODS = [
         (1, 'Averaging'),
-        (2, 'FIFO'),
-        (3, 'LIFO'),
-        (4, 'Last order price')
     ]
     PRICING_METHODS = [
         (1, 'Direct Pricing'),
         (2, 'Margin'),
         (3, 'Markup')
-    ]
-    DOCUMENT_THEME_CHOICES = [
-        (1, 'Simple'),
-        (2, 'Blue'),
-        (3, 'Steel'),
-        (4, 'Verdant'),
-        (5, 'Warm')
     ]
     INVENTORY_CHECK_FREQUENCY = [
         (1, 'Monthly'),
@@ -52,11 +42,8 @@ class InventorySettings(SingletonModel):
     inventory_valuation_method = models.PositiveSmallIntegerField(
         choices = INVENTORY_VALUATION_METHODS, default=1
     )
-    product_sales_pricing_method= models.PositiveSmallIntegerField(
+    default_product_sales_pricing_method= models.PositiveSmallIntegerField(
         choices=PRICING_METHODS, default=1
-    )
-    order_template_theme = models.PositiveSmallIntegerField(
-        choices=DOCUMENT_THEME_CHOICES, default=1
     )
     inventory_check_frequency = models.PositiveSmallIntegerField(
         choices=INVENTORY_CHECK_FREQUENCY, default=1
@@ -70,7 +57,7 @@ class InventorySettings(SingletonModel):
     use_equipment_inventory = models.BooleanField(default=True)
     use_consumables_inventory = models.BooleanField(default=True)
     use_raw_materials_inventory = models.BooleanField(default=True)
-
+    #TODO capitalization_limit = models.DecimalField(max_digits=6, decimal_places=2)
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 

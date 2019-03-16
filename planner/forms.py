@@ -9,7 +9,7 @@ from . import models
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.PlannerConfig
-        fields = "__all__"
+        fields = "number_of_agenda_items",
 
 class EventForm(forms.ModelForm, BootstrapMixin):
     owner = forms.ModelChoiceField(

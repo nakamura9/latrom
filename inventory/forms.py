@@ -38,7 +38,6 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
                 Tab('Inventory Settings',
                     'inventory_check_date',
                     'inventory_check_frequency',
-                    'order_template_theme',
                     'product_sales_pricing_method',
                     'inventory_valuation_method',
                     ),
@@ -362,12 +361,48 @@ class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.InventoryCheck
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'adjusted_by',
+                    'warehouse',
+                    css_class="col-sm-6"),
+            Column('comments', css_class="col-sm-6")
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
 class TransferOrderForm(forms.ModelForm, BootstrapMixin):
     source_warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(),
         widget=forms.HiddenInput)
+    items = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         exclude = ['actual_completion_date', 'receiving_inventory_controller','receive_notes', 'completed']
         model = models.TransferOrder
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'expected_completion_date',
+                    'issuing_inventory_controller',
+                    'receiving_warehouse',
+                    'source_warehouse',
+                    'items',
+                    css_class="col-sm-6"),
+            Column('order_issuing_notes', css_class="col-sm-6")
+            )
+        )
+
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
@@ -387,6 +422,7 @@ class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
             Column('receive_notes', css_class="col-sm-6")
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -402,9 +438,26 @@ class InventoryControllerUpdateForm(forms.ModelForm, BootstrapMixin):
 class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):
     warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), 
         widget=forms.HiddenInput)
+    items = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         fields = "__all__"
         model = models.InventoryScrappingRecord
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('date', 
+                    'controller',
+                    'items',
+                    'warehouse',
+                    css_class="col-sm-6"),
+            Column('comments', css_class="col-sm-6")
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class StorageMediaForm(forms.ModelForm, BootstrapMixin):
     location = forms.ModelChoiceField(models.StorageMedia.objects.all(), widget=forms.HiddenInput, required=False)

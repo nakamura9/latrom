@@ -15,6 +15,7 @@ from django.views.generic.edit import (CreateView,
                                         UpdateView, 
                                         DeleteView)
 
+from common_data.utilities import MultiPageDocument
 from django.http import HttpResponseRedirect
 from django_filters.views import FilterView
 from rest_framework import viewsets
@@ -96,10 +97,15 @@ class SalesInvoiceListView( ContextMixin, PaginationMixin,
             active=True).order_by('date').reverse()
     
 
-class SalesInvoiceDetailView( ConfigMixin, DetailView):
+class SalesInvoiceDetailView( ConfigMixin, MultiPageDocument, DetailView):
     model = SalesInvoice
     template_name = os.path.join("invoicing", "sales_invoice",
         'detail.html')
+    page_length =16
+
+    def get_multipage_queryset(self):
+        return SalesInvoiceLine.objects.filter(invoice=SalesInvoice.objects.get(pk=self.kwargs['pk']))
+        
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = context.get('invoice_title', "Invoice")
@@ -251,14 +257,18 @@ class SalesInvoiceReturnsDetailView( ListView):
         return context
 
 
-class SalesInvoicePDFView(ConfigMixin, PDFTemplateView):
+class SalesInvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = os.path.join("invoicing", "sales_invoice",
         'pdf.html')
     file_name = 'sales_invoice.pdf'
+    page_length =16
     def get_context_data(self, *args, **kwargs):
         context = super(SalesInvoicePDFView, self).get_context_data(*args, **kwargs)
         context['object'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
         return context
+
+    def get_multipage_queryset(self):
+        return SalesInvoiceLine.objects.filter(invoice=SalesInvoice.objects.get(pk=self.kwargs['pk']))
 
 class SalesInvoiceEmailSendView( EmailPlusPDFView):
     inv_class = SalesInvoice

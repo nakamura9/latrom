@@ -3,7 +3,10 @@ from django.contrib.auth.models import User
 
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+from crispy_forms.layout import (HTML, 
+                                Fieldset, 
+                                Layout, 
+                                Submit)
 
 
 from . import models
@@ -80,6 +83,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
                 )
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class SendMailForm(BootstrapMixin, forms.Form):
     recipient = forms.EmailField()

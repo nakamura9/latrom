@@ -1,6 +1,7 @@
 from functools import reduce
 
 from django.db import models
+from decimal import Decimal as D
 
 from accounting.models import Account, Journal, JournalEntry
 # TODO test
@@ -24,11 +25,11 @@ class DebitNote(models.Model):
 
     @property
     def returned_items(self):
-        return self.order.orderitem_set.filter(returned_quantity__gt=0)
+        return self.debitnoteline_set.all()
         
     @property
     def returned_total(self):
-        return self.order.returned_total
+        return sum([i.returned_value for i in self.returned_items ])
 
     def create_entry(self):
         
@@ -45,3 +46,16 @@ class DebitNote(models.Model):
             Account.objects.get(pk=4002))# sales returns 
 
         
+class DebitNoteLine(models.Model):
+    item = models.ForeignKey('inventory.OrderItem', null=True, 
+        on_delete=models.SET_NULL)
+    note = models.ForeignKey('inventory.DebitNote', null=True,
+        on_delete = models.SET_NULL)
+    quantity = models.FloatField()
+
+    def __str__(self):
+        return str(self.item)
+
+    @property
+    def returned_value(self):
+        return self.item.order_price * D(self.quantity)

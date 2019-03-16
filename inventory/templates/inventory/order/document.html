@@ -1,0 +1,162 @@
+<style>
+    #item-table th{
+        color: white;
+        background-color: black;
+        padding: 10px;
+        border-right: 1px solid white;
+    }
+
+    #item-table tbody td{
+        border-collapse: collapse;
+        border-right: 1px solid black;
+        padding: 5px;
+    }
+
+    #item-table tbody{
+        border: 1px solid black;
+    }
+
+    
+
+    .subtotals{
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    #item-table{
+        width:100%;
+        min-height: 15cm;
+    }
+
+    #comments h5{
+        color: white;
+        background-color: black;
+        padding: 15px;
+    }
+
+    #comments{
+        margin-top: 15px;
+        border: 1px solid black;
+        border-radius: 0px 0px 15px 15px;
+    }
+
+    #comments p{
+        min-height: 75px;
+    }
+
+
+</style>
+
+<table style="width:100%;">
+    <tbody>
+        <tr>
+            <td colspan="2" id="title"><h3>Purchase Order</h3></td>
+        </tr>
+        <tr>
+            <td colspan="2" id="business_data">
+                {% include "common_data/common/business_information.html" %}
+            </td>
+        </tr>
+        <tr>
+            <td id="customer-data">
+                {% include "common_data/common/supplier_data.html" %}
+            </td>
+            <td id="details">
+                <table style="width:100%;">
+                    <tbody>
+                        <tr>
+                            <td>Issue Date:</td>
+                            <td>{{object.date}}</td>
+                        </tr>
+                        <tr>
+                            <td>Expected Receipt Date:</td>
+                            <td>{{object.expected_receipt_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>Purchase Order Number:</td>
+                            <td>{{object.pk}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" >
+                {% for page in pages %}                
+                <table id="item-table" >
+                    <thead>
+                        <tr>
+                            <th >Qty</th>
+                            <th  style="width:300px;">Description</th>
+                            <th>Unit</th>
+                            <th >Unit Price</th>
+                            <th >Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>                        
+                        {% for item in page %}
+                        <tr>
+                            <td >{{item.quantity}}</td>
+                            <td >{{item.item.name}}</td>
+                            <td>{{item.item.unit}}</td>
+                            <td >{{item.order_price}}</td>
+                            <td >{{item.subtotal}}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr style="height:100%">
+                            <td ></td>
+                            <td ></td>
+                            <td ></td>
+                            <td ></td>
+                            <td ></td>
+                        </tr>
+                    </tbody>
+                    {% if not page.has_next %}
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="subtotals">
+                                <b>SubTotal:</b>
+                            </td>
+                            <td class="subtotals">{{object.subtotal | floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="subtotals">
+                                <b>Tax Due @{{object.tax.rate}}%:</b>
+                            </td>
+                            <td class="subtotals">{{object.tax_amount | floatformat:2 }}</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="subtotals">
+                                <b>Total:</b>
+                            </td>
+                            <td class="subtotals">{{object.total | floatformat:2 }}</td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+                <p>{{page}}</p>
+                {% if page.has_next %}
+                <p style="page-break-before:always"></p>
+                {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" >
+                <div id="comments">
+                    <div>
+                        <h5>Notes:</h5>
+                    </div>
+                    <div>
+                        <p>{{object.notes}}</p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

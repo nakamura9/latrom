@@ -29,6 +29,7 @@ class WareHouse(models.Model):
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
+    last_inventory_check_date = models.DateField(blank=True, null=True)
 
     
     @property
@@ -76,13 +77,14 @@ class WareHouse(models.Model):
             return None # next code is dead for now
         
     def has_item(self, item):
-        found_item = self.get_item(item)
-        if found_item:
-            return(
-                found_item.quantity > 0
-            )
-        return False 
-            
+        return self.get_item(item) is not None
+
+    def has_quantity_greater_than_zero(self, item):
+        queried_item = self.has_item(item)
+        
+        if not queried_item: return False
+
+        return queried_item.quantity > 0
     
     def add_item(self, item, quantity, location=None):
         #check if record of item is already in warehouse

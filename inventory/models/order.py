@@ -237,7 +237,6 @@ class OrderItem(models.Model):
     raw_material = models.ForeignKey('inventory.rawmaterial', 
         on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
-    returned_quantity = models.FloatField(default=0.0)
     unit = models.ForeignKey('inventory.UnitOfMeasure', 
         on_delete=models.SET_NULL, null=True, default=1)
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -251,6 +250,11 @@ class OrderItem(models.Model):
             3: self.equipment,
             4: self.raw_material
         }
+
+    @property
+    def returned_quantity(self):
+        return sum([dn.quantity \
+            for dn in inventory.models.debit_note.DebitNoteLine.objects.filter(item=self)])
 
     @property
     def item(self):
@@ -292,10 +296,8 @@ class OrderItem(models.Model):
 
 
     def _return_to_vendor(self, n):
-        n = float(n)
-        self.returned_quantity += n
         self.order.ship_to.decrement_item(self.item, n)
-        self.save()
+        
 
     @property
     def returned_value(self):

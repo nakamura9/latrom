@@ -20,7 +20,7 @@ from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument 
 from common_data.views import EmailPlusPDFView, PaginationMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
@@ -108,10 +108,14 @@ class ServiceInvoiceListView( ContextMixin, PaginationMixin,
         return ServiceInvoice.objects.all().order_by('date').reverse()
     
 
-class ServiceInvoiceDetailView( ConfigMixin, DetailView):
+class ServiceInvoiceDetailView( ConfigMixin, MultiPageDocument, DetailView):
     model = ServiceInvoice
     template_name = os.path.join("invoicing", "service_invoice",
         'detail.html')
+    page_length = 16
+
+    def get_multipage_queryset(self):
+        return ServiceInvoiceLine.objects.filter(invoice=ServiceInvoice.objects.get(pk=self.kwargs['pk']))
 
 class ServiceInvoiceUpdateView( 
                                 InvoiceCreateMixin, 
@@ -198,10 +202,15 @@ class ServiceInvoicePaymentDetailView(ListView):
         return context
 
 
-class ServiceInvoicePDFView(ConfigMixin, PDFTemplateView):
+class ServiceInvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = os.path.join("invoicing", "service_invoice",
         'pdf.html')
     file_name = 'service_invoice.pdf'
+    page_length = 16
+
+    def get_multipage_queryset(self):
+        return ServiceInvoiceLine.objects.filter(invoice=ServiceInvoice.objects.get(pk=self.kwargs['pk']))
+
     def get_context_data(self, *args, **kwargs):
         context = super(ServiceInvoicePDFView, self).get_context_data(*args, **kwargs)
         context['object'] = ServiceInvoice.objects.get(pk=self.kwargs['pk'])
@@ -212,7 +221,7 @@ class ServiceInvoiceEmailSendView(EmailPlusPDFView):
     pdf_template_name = os.path.join("invoicing", "service_invoice",
             'pdf.html')
     success_url = reverse_lazy('invoicing:sales-invoice-list')
-
+    
 class ServiceInvoiceDraftDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = reverse_lazy('invoicing:home')

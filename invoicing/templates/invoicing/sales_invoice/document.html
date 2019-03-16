@@ -17,7 +17,7 @@
                 {% include "common_data/common/customer_data.html" %}  
             </td>
             <td id="details">
-                <table>
+                <table >
                     <tbody>
                         <tr>
                             <td>Date:</td>
@@ -54,8 +54,9 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" id="invoice-table">
-                <table height="400" width="100%" class="{{style}}-content" z>
+            <td colspan="2">
+                {% for page in pages %}
+                <table height="400" width="100%" id='item-table'>
                     <thead>
                         <tr>
                             <td style="width:10%;">Qty</td>
@@ -68,7 +69,7 @@
                         </tr>
                     </thead>
                     <tbody class="item-table">
-                        {% for item in object.salesinvoiceline_set.all %}
+                        {% for item in page %}
                         <tr>
                             <td>{{item.quantity}}</td>
                             <td>{{item.product.name}}</td>
@@ -89,8 +90,15 @@
                             {% endif %}
                         </tr>
                     </tbody>
+                    {% if not page.has_next %}
                     {% include "common_data/common/invoice_footer.html" %}
-                </table>
+                    {% endif %}
+                    </table>
+                    <p>{{page}}</p>
+                    {% if page.has_next %}
+                    <p style="page-break-before:always"></p>
+                    {% endif %}
+                    {% endfor %}
             </td>
         </tr>
     </tbody>

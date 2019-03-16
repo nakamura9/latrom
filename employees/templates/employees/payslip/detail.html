@@ -2,4 +2,11 @@
 
 {% block page_contents %}
     {% include "employees/payslip/document.html" %}
+
+    {% if pdf_link %}
+        <hr style="padding:1cm;">
+        <a class="btn btn-danger" href="{% url 'employees:pay-slip-pdf' pk=object.pk %}">
+            <i class="fas fa-file-pdf"></i> Generate PDF
+        </a>
+    {% endif %}
 {% endblock page_contents %}

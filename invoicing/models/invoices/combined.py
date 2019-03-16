@@ -138,14 +138,14 @@ class CombinedInvoiceLine(models.Model):
 
     def __str__(self):
         if self.line_type == 1:
-            return '[ITEM] {} x {} @ ${}{}'.format(
+            return '[ITEM] {} x {} @ ${:0.2f}{}'.format(
                 self.quantity_or_hours,
                 str(self.product).split('-')[1],
                 self.product.unit_sales_price,
                 self.product.unit
             )
         elif self.line_type == 2:
-            return '[SERVICE] {} Flat fee: ${} + {}Hrs @ ${}/Hr'.format(
+            return '[SERVICE] {} Flat fee: ${:0.2f} + {}Hrs @ ${:0.2f}/Hr'.format(
                 self.service.name,
                 self.service.flat_fee,
                 self.quantity_or_hours,

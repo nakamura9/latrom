@@ -6,11 +6,18 @@ it includes the python install - it will make sure that all the requirements.txt
 
 with time this build script will target multiple os's
 
-the installer exe will add wkhtml2pdf to the path as well as python
-it will create a windows service that starts with windows and runs the server
+THE BUILD COUNTER
+Major.minor.patch
+the build counter is incremented by each build if the build completes successfully 
 
+each build must exist on the master branch with all changes committed.
+Each build is linked to this hash value
+each build must have an argument specifying if the build is major minor or a 
+patch
+versions will not be recorded for quick builds
 '''
 import time
+import datetime
 import json
 import logging
 
@@ -19,57 +26,29 @@ import shutil
 import sys
 import os
 from distutils.dir_util import copy_tree
-
-QUICK = '--quick' in sys.argv
+import git 
+from build.build_logger import create_logger
+from build.consts import *
+from build.util import (increment_build_counter, 
+                       repo_checks,
+                       run_tests)
 
 START = time.time()
 BASE_DIR = os.getcwd()
-SYS_PATH = os.environ['path']
-APPS = [
-    'accounting',
-    'common_data',
-    'employees',
-    'inventory',
-    'invoicing',
-    'messaging',
-    'manufacturing',
-    'planner',
-    'services',
-    'latrom'
-]
 
-TREE = [
-    'dist',
-    'dist/app',
-    'dist/app/server',
-    'dist/app/database',
-    'dist/app/bin',
-    'dist/app/python' 
-]
+QUICK = '--quick' == sys.argv[1]
+BUILD_TYPE = None
 
-def remove_python_from_path():
-    paths = os.environ['path'].split(";")
-    new_path = [path for path in paths if not "Python" in path]
-    return ";".join(new_path)       
+if not QUICK:
+    BUILD_TYPE = sys.argv[1]
+
+REPO = git.Repo(BASE_DIR)
 
 
-log_file = os.path.join(BASE_DIR, "build.log")
-if os.path.exists(log_file):
-    os.remove(log_file)
+logger = create_logger('build')
 
-logger = logging.getLogger('build_process')
-logger.setLevel(logging.DEBUG)
-
-log_format = logging.Formatter("%(asctime)s [%(levelname)-5.5s ] %(message)s")
-
-file_handler = logging.FileHandler('build.log')
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(log_format)
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setFormatter(log_format)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
+if not quick:
+    repo_checks(REPO, logger)
 
 logger.info("Checking react bundles")
 stats_file_path = os.path.join(BASE_DIR, 'assets', 'webpack-stats.json')
@@ -80,11 +59,7 @@ if json.load(stats_file).get("status", "") != "done":
     raise Exception("There are errors in the webpack bundles")
 
 if not QUICK:
-    logger.info("running unit tests")
-    result = subprocess.run(['python', 'manage.py', 'test'])
-    if result.returncode != 0:
-        logger.info("failed unit tests preventing application from building")
-        raise Exception('The build cannot continue because of a failed unit test.')
+    run_tests(logger)
 
 
     result = subprocess.run(['python', 'manage.py', 'collectstatic', '--noinput'])
@@ -104,6 +79,9 @@ for app in APPS:
     logger.info(app)
     copy_tree(app, os.path.join('dist', 'app', 'server', app))
 
+#compile_app(os.path.join('dist', 'app', 'server'))
+
+# set up production settings TODO improve
 os.remove(os.path.join('dist', 'app', 'server', 'latrom', '__init__.py'))
 shutil.copy(os.path.join('build', 'app', 'server', 'latrom', '__init__.py'),
     os.path.join('dist', 'app', 'server', 'latrom', 'settings'))
@@ -140,7 +118,6 @@ os.chdir(os.path.join(BASE_DIR, 'build', 'app', 'python'))
 
 requirements_path = os.path.join(BASE_DIR, 'requirements.txt')
 
-os.environ['path'] = remove_python_from_path()
 
 if not QUICK:
     result = subprocess.run(['./python', '-m', 'pip', 'install', '-r', 
@@ -149,7 +126,6 @@ if not QUICK:
     if result.returncode != 0:
         raise Exception("Failed to install some modules to python")
 
-os.environ['path'] = SYS_PATH
 os.chdir(BASE_DIR)
 
 logger.info('copying python')
@@ -158,7 +134,7 @@ copy_tree(os.path.join('build', 'app', 'python'), os.path.join('dist', 'app', 'p
 
 logger.info("Creating setup executable")
 result = subprocess.run(['pyinstaller', os.path.join(
-                    BASE_DIR, "build", "app", 'install.py'), '--onefile', '--noconsole'])
+                    BASE_DIR, "build", 'install.py'), '--onefile', '--noconsole'])
 if result.returncode != 0:
     logger.critical("The executable for the setup failed to be created")
     raise Exception("The executable for the setup failed to be created")
@@ -166,7 +142,7 @@ if result.returncode != 0:
 
 logger.info("create running executable")
 result = subprocess.run(['pyinstaller', os.path.join(
-                    BASE_DIR, "build", "app", 'run.py'), '--onefile'])
+                    BASE_DIR, "build", 'run.py'), '--onefile'])
 if result.returncode != 0:
     logger.critical("The executable for the application runner failed to be created")
     raise Exception("The executable for the application runner failed to be created")
@@ -189,16 +165,7 @@ shutil.rmtree(os.path.join(BASE_DIR, "build", "run"))
 logger.info("Compressing the application")
 shutil.make_archive(os.path.join('dist', 'archive'), 'zip', os.path.abspath('dist'))
 
+if not QUICK:
+    increment_build_counter(REPO, BUILD_TYPE)
+
 logger.info("Completed the build process successfully in {0:.2f} seconds".format(time.time() - START))
-
-#create a secret key
-
-# create temp license with key
-# ship it with software
-# add to os environment
-# delete key
-# store key in database on server
-# all license signatures for the specific customer must use the same secret key 
-# to generate
-# the license check module must retrieve the secret key from the environment
-# build the zip file for every deployment

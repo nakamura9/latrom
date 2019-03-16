@@ -8,6 +8,8 @@ media/*.*
 media/
 wkhtmltopdf/
 build/app/*/
+build/build/
+build/dist/
 !build/app/server/
 dist/
 global_config.json

@@ -64,8 +64,7 @@ class CommonViewTests(TestCase):
             kwargs={'pk': 1}),
             data={
                 'inventory_valuation_method': 1,
-                'product_sales_pricing_method': 1,
-                'order_template_theme': 1,
+                'default_product_sales_pricing_method': 1,
                 'inventory_check_frequency': 1,
                 'inventory_check_date': 1,
                 'use_warehousing_model': True,
@@ -547,7 +546,7 @@ class OrderViewTests(TestCase):
             data={
                 'returned-items': urllib.parse.quote(json.dumps([{
                     'item': '1 -item',
-                    'returned_quantity': 1   
+                    'quantity': 1   
                 }])),
                 'date': datetime.date.today(),
                 'order': 1,

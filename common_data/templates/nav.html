@@ -3,6 +3,21 @@
         background-color: "#07f"
     }
 </style>
+<script>
+function inIFrame(){
+    return window.top !== window.self;       
+}
+
+$(document).ready(function(){
+    if(inIFrame()){
+        $("#navbar").hide();
+        $("#footer").hide();
+        $(".jumbotron").attr({
+            'max-height': '75px',
+            'height': '75px'});
+    }
+})
+</script>
 
 <nav class="navbar navbar-expand-sm bg-light" id="navbar" >
         <ul class="navbar-nav">

@@ -1,4 +1,5 @@
 <tfoot>
+    {% if object.tax %}
     <tr>
         <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
             <b>SubTotal:</b>
@@ -11,7 +12,7 @@
         </td>
         <td>{{object.tax_amount | floatformat:2 }}</td>
     </tr>
-
+    {% endif %}
     <tr>
         <td colspan="{% if include_units_in_sales_invoice %}4{% else %}3{% endif %}">
             <b>Total:</b>

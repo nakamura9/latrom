@@ -13,23 +13,13 @@ from distutils.dir_util import copy_tree
 import shutil
 import time
 import copy
+import build_logger
 #the install app should collect a default username and password
 # the server should have a name 
 # the install script should do some dns and configure the pdf
 
-logger = logging.getLogger('setup')
-logger.setLevel(logging.DEBUG)
-log_format = logging.Formatter("%(asctime)s [%(levelname)-5.5s ] %(message)s")
 
-file_handler = logging.FileHandler('install.log')
-file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler(sys.stdout)
-file_handler.setFormatter(log_format)
-console_handler.setFormatter(log_format)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
-
+logger = build_logger.create_logger('install')
 SYS_PATH = os.environ['path']
 BASE_DIR = os.getcwd()
 INSTALL_CONFIG = {}
@@ -332,7 +322,6 @@ class InstallApplicationPage(ttk.Frame):
                                                         'wkhtmltopdf', 
                                                         'bin')])
 
-        print(ENVIRONMENT['PATH'])
         logger.info(TARGET_DIR)
         if TARGET_DIR != os.getcwd():
             self.push_message("Copying application files")
@@ -383,6 +372,15 @@ class InstallApplicationPage(ttk.Frame):
         os.remove(nginx_path)
         with open(nginx_path, 'w') as conf:
             conf.write(NGINX_CONFIG.format(os.path.join(TARGET_DIR, 'server', 'media')))
+
+        self.push_message("setting application environment variables")
+        
+        #! never change 'SBT_PATH' this variable so not to break future updates 
+        result = subprocess.run(["setx", "SBT_PATH", TARGET_DIR ])
+        
+        if result.returncode() != 0:
+            self.push_message("Failed To set application Path")
+            raise Exception("Failed To set application Path")
 
         self.push_message("Installed Application successfully.")
         self.progress_var.set(100)

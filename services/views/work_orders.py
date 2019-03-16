@@ -138,7 +138,6 @@ class WorkOrderViewSet(ModelViewSet):
 
 def work_order_authorize(request, pk=None):
     worder = get_object_or_404(models.ServiceWorkOrder, pk=pk)
-    print(request.POST)
     form = forms.ServiceWorkOrderAuthorizationForm(request.POST)
     if form.is_valid():
         worder.status = form.cleaned_data['status']

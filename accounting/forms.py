@@ -95,6 +95,8 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
             Column('memo', css_class="col-sm-6")
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:

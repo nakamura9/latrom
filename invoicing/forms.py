@@ -1,7 +1,10 @@
 
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+from crispy_forms.layout import (HTML, 
+                                Fieldset, 
+                                Layout, 
+                                Submit)
 from django import forms
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
 
@@ -44,6 +47,7 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 )
         ))
 
+        self.helper.add_input(Submit('submit', "Submit"))
         
 class OrganizationCustomerForm(forms.ModelForm, BootstrapMixin):
     class Meta:

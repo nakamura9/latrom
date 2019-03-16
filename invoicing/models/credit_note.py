@@ -24,12 +24,13 @@ class CreditNote(models.Model):
         are to be written off."""
     
     date = models.DateField()
-    invoice = models.ForeignKey('invoicing.SalesInvoice', on_delete=models.SET_NULL, null=True)
+    invoice = models.ForeignKey('invoicing.SalesInvoice', 
+            on_delete=models.SET_NULL, null=True)
     comments = models.TextField()#never allow blank comments
 
     @property
     def returned_products(self):
-        return self.invoice.salesinvoiceline_set.filter(returned=True)
+        return self.creditnoteline_set.all()
         
     @property
     def returned_total(self):
@@ -45,6 +46,18 @@ class CreditNote(models.Model):
     def returned_total_with_tax(self):
         return self.returned_total + self.tax_credit
 
+    @property
+    def total(self):
+        return self.returned_total_with_tax
+
+    @property
+    def subtotal(self):
+        return self.returned_total
+
+    @property
+    def tax_amount(self):
+        return self.tax_credit
+
     def create_entry(self):
         j = JournalEntry.objects.create(
             memo="Auto generated journal entry from credit note",
@@ -58,4 +71,17 @@ class CreditNote(models.Model):
             self.invoice.customer.account,
             Account.objects.get(pk=4002))# sales returns 
 
-        
+#TODO test
+class CreditNoteLine(models.Model):
+    note = models.ForeignKey('invoicing.CreditNote', null=True, 
+            on_delete=models.SET_NULL)
+    line = models.ForeignKey('invoicing.SalesInvoiceLine', null=True,
+            on_delete=models.SET_NULL)
+    quantity = models.FloatField()
+
+    def __str__(self):
+        return "{}".format((str(self.line)))
+
+    @property
+    def returned_value(self):
+        return D(self.quantity) * self.line.price

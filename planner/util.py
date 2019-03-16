@@ -8,3 +8,4 @@ class PlannerService(object):
         # check for all incomplete events that have need a reminder or have passed
         # those that need a reminder create a notification
         # those that have passed a different notification
+        pass

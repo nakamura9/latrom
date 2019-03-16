@@ -1,2 +1,0 @@
-use the website to serve the files 
-hide behind login page

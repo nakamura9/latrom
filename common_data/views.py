@@ -18,12 +18,16 @@ from accounting.models import Journal
 from common_data import filters, models
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ContextMixin, apply_style
+from common_data.utilities import (ContextMixin, 
+                                    apply_style, 
+                                    MultiPageDocument, 
+                                    MultiPagePDFDocument)
 from invoicing.models import SalesConfig
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from common_data import serializers 
 from django.contrib.auth.models import User
 from . import forms
+
 
 
 class PaginationMixin(object):
@@ -208,7 +212,8 @@ class SendEmail(ContextMixin,  LoginRequiredMixin, FormView):
             return resp
         return resp
 
-class EmailPlusPDFView(ContextMixin, FormView):
+class EmailPlusPDFView(ContextMixin, FormView, MultiPagePDFDocument):
+    '''THe pagination is optional, it will be ignored '''
     form_class = SendMailForm
     template_name = os.path.join('common_data', 'create_template.html')
     success_url = None
@@ -246,8 +251,10 @@ class EmailPlusPDFView(ContextMixin, FormView):
 
         out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
     
+        #use the context for pagination and the object
+        obj = self.inv_class.objects.get(pk=self.kwargs['pk'])
         context = {
-            'object': self.inv_class.objects.get(pk=self.kwargs['pk'])
+            'object': obj,
         }
         context.update(SalesConfig.objects.first().__dict__)
         options = {

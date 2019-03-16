@@ -16,7 +16,7 @@ from wkhtmltopdf.views import PDFTemplateView
 
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
-from common_data.utilities import ConfigMixin, ContextMixin, apply_style
+from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument
 from common_data.views import EmailPlusPDFView, PaginationMixin
 from inventory.models import Product
 from invoicing import filters, forms, serializers
@@ -48,10 +48,14 @@ class CombinedInvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CombinedInvoiceSerializer
     queryset = CombinedInvoice.objects.all()
 
-class CombinedInvoiceDetailView( ConfigMixin, DetailView):
+class CombinedInvoiceDetailView( ConfigMixin, MultiPageDocument, DetailView):
     model = CombinedInvoice
     template_name = os.path.join("invoicing", "combined_invoice",
         'detail.html')
+    page_length = 16
+    
+    def get_multipage_queryset(self):
+        return CombinedInvoiceLine.objects.filter(invoice=CombinedInvoice.objects.get(pk=self.kwargs['pk']))
 
         
 class CombinedInvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
@@ -161,10 +165,15 @@ class CombinedInvoicePaymentDetailView(ListView):
         return context
 
 
-class CombinedInvoicePDFView(ConfigMixin, PDFTemplateView):
+class CombinedInvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = os.path.join("invoicing", "combined_invoice",
         'pdf.html')
     file_name = 'combined_invoice.pdf'
+    page_length = 16
+    
+    def get_multipage_queryset(self):
+        return CombinedInvoiceLine.objects.filter(invoice=CombinedInvoice.objects.get(pk=self.kwargs['pk']))
+
     def get_context_data(self, *args, **kwargs):
         context = super(CombinedInvoicePDFView, self).get_context_data(*args, **kwargs)
         context['object'] = CombinedInvoice.objects.get(pk=self.kwargs['pk'])
