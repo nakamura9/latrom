@@ -46,7 +46,26 @@ class PlannerConfigUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('planner:dashboard')
     model = models.PlannerConfig
 
-class EventParticipantMixin(object):
+class EventParticipantMixin():
+    def get_initial(self):
+        initial = super().get_initial()
+        
+        if isinstance(self, UpdateView):
+            participant_mapping = {
+                0: 'employee',
+                1: 'customer',
+                2: 'supplier'
+            }
+            initial['json_participants'] = urllib.parse.quote(
+                json.dumps([{
+                    'type': participant_mapping[i.participant_type], 
+                    'pk': i.participant_pk, 
+                    'name': str(i)
+                    } for i in self.object.participants.all()])
+            )
+            
+
+        return initial 
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args,**kwargs)
 
@@ -54,7 +73,7 @@ class EventParticipantMixin(object):
             return resp
         
         try:
-            participants = json.loads(urllib.parse.unquote(request.POST['participants']))
+            participants = json.loads(urllib.parse.unquote(request.POST['json_participants']))
         except json.JSONDecodeError:
             messages.info(request, 'This event has no participants, please provide at least one')
             return resp

@@ -2,6 +2,7 @@ import React from 'react';
 import Event from '../Event';
 
 const day = (props) => {
+    //calculate the dimensions of the day
     let dayWrapper = null;
     let dayLabel = 
         <span style={{
@@ -11,15 +12,9 @@ const day = (props) => {
                     {props.data.day}</a> 
             </h4>
         </span>;
-    if (props.view === 'month'){
+    if (props.view === 'week'){
         dayWrapper={
-            minWidth: "150px",
-            minHeight: "150px",
-            padding:"5px"
-        }
-    }else if (props.view === 'week'){
-        dayWrapper={
-            minWidth: "200px",
+            minWidth: `${props.width}px`,
             minHeight: "400px",
             padding:"10px"
         }
@@ -34,14 +29,14 @@ const day = (props) => {
             width: "720px"        
         }}>{props.data.date}</h1>
         dayWrapper={
-            minWidth: "400px",
-            minHeight: "150px",
-            padding:"5px",
-            border: '1px solid #0cf'
+            minWidth: "740px",
+            minHeight: "500px",
+            padding:"10px",
+            border: '2px solid  #007bff',
+            borderRadius: '5px',
+            overflowY: 'auto',
         }
     }
-
-    
 
     let eventList = null;
     const nEvents = props.data.events.length;    
@@ -53,27 +48,31 @@ const day = (props) => {
         '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00',
         '21:00', '22:00', '23:00'  
     ]
+    // only week and day views have an hourly breakdown therefore only two 
+    // options
     const hourByHour = 
         <table style={{
-            width: props.view === "day" ? "720px" : "200px",
+            width: props.view === "day" ? "720px" : `${props.width}px`,
             position: "absolute",
-            top: "90px"
+            top: props.view === "day" ? "90px" : "0px"
         }}>
-            {intervals.map((time, i) =>(
-                <tr 
-                    height={20}
-                    key={i} 
-                    style={{
-                    borderTop: "1px solid black",
-                    minHeight: "20px",
-                    
-                }}>
-                    <td style={{width: "20%"}}>{time}</td>
-                    <td style={{
-                        width: "80%",
-                    }}>&nbsp;</td>
-                </tr>
-            ))}
+            <tbody>
+                {intervals.map((time, i) =>(
+                    <tr 
+                        height={20}
+                        key={i} 
+                        style={{
+                        borderTop: "1px solid black",
+                        minHeight: "20px",
+                        
+                    }}>
+                        <td style={{width: "20%"}}>{time}</td>
+                        <td style={{
+                            width: "80%",
+                        }}>&nbsp;</td>
+                    </tr>
+                ))}
+            </tbody>
         </table>
     return(
         <div style={dayWrapper}>
@@ -81,20 +80,20 @@ const day = (props) => {
             <div style={{
                 clear:'both',
                 width:'100%',
-                height:'30px'
+                height:'30px',
                 }}>
                 {dayLabel}
             </div>
             <div 
-                id="day content"
                 style={{
                     position: "relative",
-                    width: props.view === "day" ? "720px" : "200px",
-                    height: props.view === "month" ? "100px" : "640px",
+                    width: props.view === "day" ? "720px" : `${props.width}px`,//here
+                    height:  "640px",
                 }}>
-            {props.view === "month" ? null : hourByHour}
-            {eventList.map((event, i) =>(
+            {hourByHour}
+            { eventList.map((event, i) =>(
                 <Event 
+                    width={props.width}
                     key={i} 
                     data={event}
                     view={props.view}/>
@@ -103,4 +102,6 @@ const day = (props) => {
         </div>
     )
 }
+
+
 export default day;

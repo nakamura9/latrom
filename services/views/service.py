@@ -15,9 +15,6 @@ from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
 
 
-class Dashboard( TemplateView):
-    template_name = os.path.join('services', 'dashboard.html')
-
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 #####################################################

@@ -7,12 +7,14 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
+from django.contrib.auth.models import User
 from common_data.utilities import ContextMixin
 
 from employees import forms, models
 from .employee import *
 from .leave import *
 from .payroll import *
+from accounting.models import Account
 from .timesheets import *
 
 #constants
@@ -26,10 +28,23 @@ class DashBoard( ContextMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-
+        TODAY = datetime.date.today()
         context['calendar_url'] = '/employees/leave-calendar/month/{}'.format(
             datetime.date.today().strftime('%Y/%m'))
-        
+        context['employees'] = models.Employee.objects.filter(
+            active=True).count()
+        context['users'] = User.objects.all().count()
+        context['leaves'] = sum([i.duration for i in  
+            models.Leave.objects.filter(
+                Q(start_date__gte=TODAY) &
+                Q(status=1))])
+        context['slips'] = models.Payslip.objects.filter(Q(status="draft") | Q(
+            status="verified")).count()
+        context['unpaid_wages'] = sum([i.gross_pay for i in \
+            models.Payslip.objects.filter(Q(status="verified"))])
+
+
+        context['tax'] = Account.objects.get(pk=5010).balance
         return context
 
 

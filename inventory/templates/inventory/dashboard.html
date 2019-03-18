@@ -13,225 +13,275 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" href="#actions" data-toggle="tab">Actions</a></li>
+                <li class="nav-item"><a class="nav-link" href="#dashboard" data-toggle="tab">Dashboard</a></li>
+            </ul>
+            <div class="tab-content panel-body">
+                <div id="actions" class="tab-pane active">
+                    <div class="card-deck">            
+                        {% if use_warehousing_model %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouse Management</h4>
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:warehouse-create' %}">Add Warehouse</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:warehouse-list' %}"> Manage Warehouses</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <h4 class="card-title"><i class="fas fa-puzzle-piece"></i> Inventory Management</h4>
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:warehouse-detail' pk=1 %}">View Inventory</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:create-inventory-check' pk=1 %}"> Check Inventory</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:scrap-inventory' pk=1 %}"> Scrap Inventory</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-file-invoice"></i> Orders</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:order-create' %}">Create New Purchase Order</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:order-list' %}">Manage Orders</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-shipping-fast"></i> Vendors</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+
+                                    <li class="list-group-item">
+                                        <a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a>
+                                    </li><!--
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:individual-supplier-list'%} ">Manage Individual Suppliers</a>
+                                    </li>-->
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:organization-supplier-list'%} ">Manage Vendors</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="card-deck">
+                        {% if use_product_inventory %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Products</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:product-create' %}">Create New Product</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:product-list' %}">Manage Product Inventory</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if use_equipment_inventory %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-tools"></i> Equipment</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:equipment-create' %}">Add New Equipment</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:equipment-list' %}">Manage Equipment Inventory</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if use_consumables_inventory %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-hand-holding"></i> Consumables</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:consumable-create' %}">Create New Consumable</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:consumable-list' %}">Manage Consumable Inventory</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="card-deck">
+                        {% if use_raw_materials_inventory %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-tree"></i> Raw Materials</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:raw-material-create' %}">Create New Raw Material</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:raw-material-list' %}">Manage Raw Materials</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    {% if use_equipment_inventory or use_consumables_inventory %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:equipment-requisition-list' %}">Manage Equipment Requisitions</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables Requisitions</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
+                                </div>
+                                <ul class="list-group">
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                    <div class="card-deck">
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-sliders-h"></i> Configuration</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:config' pk=1 %}">Settings</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:category-list' %}">Manage Inventory Categories</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:unit-list' %}">Manage Units Of Measure</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="dashboard" class="tab-pane">
+                        <div class="dash-container">
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Orders Yet to Be Delivered: <br>{{undelivered_orders}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3>Money Owed to Vendors: <br>${{money_owed}}</h3>
+                            </div>
+                        </div>
+                    <hr class="my-4">
+                        <div class="dash-container">
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Active Vendors: <br>{{vendors}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Warehouses: <br>{{warehouses}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Open Requisitions: <br>{{open_requisitions}}</h3>
+                            </div>
+                        </div>
+                    <hr class="my-4">
+                        <div class="dash-container">
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Pending Inventory Transfers: <br>{{pending_transfers}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Equipment Items: <br>{{equipment}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Unique Consumable Items: <br>{{consumables}}</h3>
+                            </div>
+                        </div>
+                    <hr class="my-4">
+                    <div class="dash-container">
+                        <div class="bg-primary text-white dashbox">
+                        <h3># Unique Products: <br>{{products}}</h3>
+                    </div>
+                    </div>
+                </div>
+            </div>
             
-            <div class="card-deck">
-                            
-                {% if use_warehousing_model %}
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouse Management</h4>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:warehouse-create' %}">Add Warehouse</a>
-                            </li>
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:warehouse-list' %}"> Manage Warehouses</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% else %}
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title"><i class="fas fa-puzzle-piece"></i> Inventory Management</h4>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:warehouse-detail' pk=1 %}">View Inventory</a>
-                            </li>
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:create-inventory-check' pk=1 %}"> Check Inventory</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:scrap-inventory' pk=1 %}"> Scrap Inventory</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-file-invoice"></i> Orders</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:order-create' %}">Create New Purchase Order</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:order-list' %}">Manage Orders</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-shipping-fast"></i> Vendors</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-
-                            <li class="list-group-item">
-                                <a class="card-link" href="{% url 'base:organization-list' %}">Manage Organizations</a>
-                            </li>
-
-                            <li class="list-group-item">
-                                <a class="card-link" href="{% url 'base:individual-list' %}">Manage Individuals</a>
-                            </li><!--
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:individual-supplier-list'%} ">Manage Individual Suppliers</a>
-                            </li>-->
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:organization-supplier-list'%} ">Manage Vendors</a>
-                            </li>
-
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="my-4" />
-
-            <div class="card-deck">
-                {% if use_product_inventory %}
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Products</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:product-create' %}">Create New Product</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:product-list' %}">Manage Product Inventory</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% endif %}
-                {% if use_equipment_inventory %}
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-tools"></i> Equipment</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:equipment-create' %}">Add New Equipment</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:equipment-list' %}">Manage Equipment Inventory</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% endif %}
-                {% if use_consumables_inventory %}
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-hand-holding"></i> Consumables</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:consumable-create' %}">Create New Consumable</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:consumable-list' %}">Manage Consumable Inventory</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-
-            <hr class="my-4" />
-
-            <div class="card-deck">
-            {% if use_raw_materials_inventory %}
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-tree"></i> Raw Materials</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:raw-material-create' %}">Create New Raw Material</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:raw-material-list' %}">Manage Raw Materials</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% endif %}
-
-            {% if use_equipment_inventory or use_consumables_inventory %}
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-
-                            <li class="list-group-item">
-                                <a href="{% url 'services:equipment-requisition-list' %}">Manage Equipment Requisitions</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables Requisitions</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            {% endif %}
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
-                        </div>
-                        <ul class="list-group">
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
-                            </li>
-
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <hr class="my-4" />
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-sliders-h"></i> Configuration</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:config' pk=1 %}">Settings</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:category-list' %}">Manage Inventory Categories</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:unit-list' %}">Manage Units Of Measure</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

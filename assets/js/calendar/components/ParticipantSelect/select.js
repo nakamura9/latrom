@@ -50,13 +50,6 @@ class ParticipantSelectWidget extends Component{
                 this.setState({items: items});
             })
         }
-
-        $('<input>').attr({
-            type: 'hidden',
-            name: 'participants',
-            id: 'id_participants',
-            value: ""
-        }).appendTo('form');
     }
 
     addHandler = (data) =>{
@@ -72,7 +65,7 @@ class ParticipantSelectWidget extends Component{
     }
 
     updateForm = () => {
-        $('#id_participants').val(
+        $('#id_json_participants').val(
             encodeURIComponent(
                 JSON.stringify(this.state.items)));
     } 

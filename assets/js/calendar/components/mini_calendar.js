@@ -41,7 +41,6 @@ class  MiniCalendar extends Component{
                         <th>F</th>
                         <th>S</th>
                         <th>S</th>
-                        
                     </tr>
                     {this.state.weeks.length === 0
                         ? <tr>
@@ -52,7 +51,7 @@ class  MiniCalendar extends Component{
                     {this.state.weeks.map((week, i) =>(
                         <tr key={i}>
                             {week.map((day, i) =>(
-                                <td style={{padding:'3px'}}>
+                                <td key={i} style={{padding:'3px'}}>
                                     <a 
                                         href={`/calendar/day/${day.date}`}
                                         style={{

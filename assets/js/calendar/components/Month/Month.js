@@ -54,6 +54,8 @@ class Month extends Component{
                 <tbody>
                 {this.state.weeks.map((week, i)=>(
                     <Week 
+                        width={this.props.width}
+                        height={this.props.height}
                         key={i} 
                         days={week}/>
                 ))}

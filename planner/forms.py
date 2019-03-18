@@ -16,6 +16,9 @@ class EventForm(forms.ModelForm, BootstrapMixin):
         User.objects.all(), 
         widget=forms.HiddenInput
         )
+    json_participants = forms.CharField(
+        widget=forms.HiddenInput
+        )
     class Meta:
         model = models.Event
         exclude = ["participants", 'completed', 'completion_time']

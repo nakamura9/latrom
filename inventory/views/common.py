@@ -24,6 +24,7 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from inventory.views.util import InventoryService
 from invoicing.models import SalesConfig
+from services.models import EquipmentRequisition, ConsumablesRequisition
 
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
@@ -76,6 +77,31 @@ class InventoryDashboard(
         resp = super().get(*args, **kwargs)
         InventoryService().run()
         return resp 
+
+    def get_context_data(self, *args, **kwargs):
+        context =  super().get_context_data(*args, **kwargs)
+
+        context['undelivered_orders'] = models.Order.objects.filter(stockreceipt__isnull=True).count()
+
+        context['outstanding_orders'] = len([ i for i in models.Order.objects.filter(status="order") if i.payment_status != "paid"])
+
+        context['money_owed'] = sum([i.total_due for i in models.Order.objects.filter(status="order")])
+
+        context['vendors'] = models.Supplier.objects.filter(active=True).count()
+        context['warehouses'] = models.WareHouse.objects.all().count()
+        context['open_requisitions'] = EquipmentRequisition.objects.filter(
+                released_by__isnull=True).count()  +  \
+            ConsumablesRequisition.objects.filter(
+                released_by__isnull=True).count()
+
+        context['pending_transfers'] = models.TransferOrder.objects.filter(
+            completed=False).count()
+
+        context['products'] = models.Product.objects.all().count()
+        context['equipment'] = models.Equipment.objects.all().count()
+        context['consumables'] = models.Consumable.objects.all().count()
+
+        return context
 
 #######################################################
 #                       Units                         #

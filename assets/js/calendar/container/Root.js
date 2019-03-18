@@ -4,7 +4,7 @@ import WeekView from '../components/Week/WeekView';
 import DayView from '../components/Day/DayView';
 import axios from 'axios';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
-import MiniCalendar from '../components/mini_calendar';
+import Sidebar from '../components/sidebar';
 
 export default class CalendarRouter extends Component{
     state = {
@@ -12,7 +12,9 @@ export default class CalendarRouter extends Component{
         month: 1,
         day: 1,
         nextLink: "",
-        prevLink: ""
+        prevLink: "",
+        windowWidth: 135,
+        windowHeight: 95
     }
 
     nextHandler = () =>{
@@ -26,6 +28,15 @@ export default class CalendarRouter extends Component{
 
     componentDidMount(){
         this.setLinks();
+        // calculate the cell width
+        // get the screen width
+        // subtract the sidebar width
+        // divide by 7
+        // subtract the padding and border widths 
+        this.setState({windowWidth: Math.floor(
+            ((window.screen.width -250) / 7) - 12)});
+        this.setState({windowHeight: 58});
+
     }
 
     setLinks = () =>{
@@ -108,61 +119,27 @@ export default class CalendarRouter extends Component{
     render(){
         return(
             <Router>
-                <div className="container">
-                <div className="row">
-                <div className="col-sm-2" style={{
-                    backgroundColor: "#07f"
-                }}>
-                {/*Side bar */}            
-                    <div className="btn-group">            
-                        <Link className="btn btn-primary" 
-                            to={`/calendar/month/${this.state.year}/${this.state.month}`}><i className="fa fas-calendar"></i> Month</Link>
-                        <Link className="btn btn-primary" 
-                            to={`/calendar/week/${this.state.year}/${this.state.month}/${this.state.day}`}>Week</Link>
-                        <Link className="btn btn-primary" 
-                            to={`/calendar/day/${this.state.year}/${this.state.month}/${this.state.day}`}>Day</Link>
+                <div >
+                    <Sidebar calendarState={{...this.state}}
+                            nextHandler={this.nextHandler}
+                            prevHandler={this.prevHandler}/>
+                    <div style={{display:'inline-block', float: 'left', 'width':'500px',clear: 'right'}}>
+                        {/*App */}
+                        <Route 
+                            path="/calendar/month/:year/:month" 
+                            render={(props) => 
+                                <Month width={this.state.windowWidth} 
+                                        height={this.state.windowHeight}
+                                        {...props} 
+                                        linkUpdater={this.setLinks}/>} />
+                        <Route 
+                            path="/calendar/week/:year/:month/:day" 
+                            render={(props) => <WeekView width={this.state.windowWidth} {...props} linkUpdater={this.setLinks}/>}/>
+                        <Route 
+                            path="/calendar/day/:year/:month/:day" 
+                            render={(props) => <DayView {...props} linkUpdater={this.setLinks}/>}/>
                     </div>
-                    <div 
-                        className="btn-group"
-                        style={{
-                            "display": "block",
-                            "marginTop": "5px"
-                        }}>
-                        <button
-                            className="btn btn-primary"
-                            onClick={this.prevHandler}>
-                                <i className="fas fa-arrow-left"></i>
-                        </button>    
-                        <button
-                            className="btn btn-primary"
-                            onClick={this.nextHandler}>
-                                <i className="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <MiniCalendar 
-                            year={this.state.year}
-                            month={this.state.month} />
-                    </div>   
-                    <a 
-                        href="/planner/event-create/"
-                        className="btn btn-primary">Create New Event</a>    
                 </div>
-                <div className="col-sm-10" >
-                    {/*App */}
-                    <Route 
-                        path="/calendar/month/:year/:month" 
-                        render={(props) => <Month {...props} linkUpdater={this.setLinks}/>} />
-                    <Route 
-                        path="/calendar/week/:year/:month/:day" 
-                        render={(props) => <WeekView {...props} linkUpdater={this.setLinks}/>}/>
-                    <Route 
-                        path="/calendar/day/:year/:month/:day" 
-                        render={(props) => <DayView {...props} linkUpdater={this.setLinks}/>}/>
-                </div>
-            </div>
-                </div>
-                
             </Router>
         )
     }

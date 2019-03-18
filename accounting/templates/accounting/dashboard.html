@@ -1,11 +1,13 @@
 {% extends 'window.html' %} {% block content %}
 <div class="jumbotron">
     <div class="container">
-        <h1 class="display-3"><i class=" fas fa-dollar-sign" style="color:#07f; font-size:128;"></i> Accounting Dashboard</h1>
+        <h1 class="display-3"><i class=" fas fa-dollar-sign" style="color:#07f; font-size:128;"></i> Accounting
+            Dashboard</h1>
         <p>Manage accounts, generate reports, and initiate Journal Entries</p>
         <hr class="my-2">
         <p class="lead">
-            <a class="btn btn-primary btn-lg" role="button" href="{% url 'accounting:compound-entry' %}">Create New Journal Entry</a>
+            <a class="btn btn-primary btn-lg" role="button" href="{% url 'accounting:compound-entry' %}">Create New
+                Journal Entry</a>
         </p>
     </div>
 </div>
@@ -13,96 +15,105 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class=" fas fa-book" style=" font-size:28;"></i> Journal</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:create-journal' %}">Create Journal</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:compound-entry' %}">Create Journal Entry</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:journal-list' %}">Manage Journals</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i> Expenses</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:direct-payment-list' %}">Manage Direct Payments</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:recurring-expense-list' %}">Manage Recurring Expenses</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:expense-list' %}">Manage Expenses</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" href="#actions" data-toggle="tab">Actions</a></li>
+                <li class="nav-item"><a class="nav-link" href="#dashboard" data-toggle="tab">Dashboard</a></li>
+            </ul>
+            <div class="tab-content panel-body">
+                <div id="actions" class="tab-pane active">
+                    <div class="card-deck">
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-book" style=" font-size:28;"></i> Journal</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:create-journal' %}">Create Journal</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:compound-entry' %}">Create Journal Entry</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:journal-list' %}">Manage Journals</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i> Expenses</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:direct-payment-list' %}">Manage Direct Payments</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:recurring-expense-list' %}">Manage Recurring
+                                            Expenses</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:expense-list' %}">Manage Expenses</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class=" fas fa-handshake" style=" font-size:28;"></i> Interactions </h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'invoicing:organization-customers-list' %}"> Customers</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'inventory:organization-supplier-list' %} ">Vendors </a>
-                            </li>
-                            
-                            <li class="list-group-item">
-                                    <a href="{% url 'accounting:asset-list' %}">Manage Assets</a>
-                                </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-handshake" style=" font-size:28;"></i>
+                                    Interactions </h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'invoicing:organization-customers-list' %}"> Customers</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:organization-supplier-list' %} ">Vendors </a>
+                                    </li>
 
-            <hr />
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:asset-list' %}">Manage Assets</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class=" fas fa-chart-bar" style=" font-size:28;"></i> Reports</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:balance-sheet' %}">Balance Sheet</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:profit-and-loss-form' %}">Income Statement</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:trial-balance' %}">Trial Balance</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class=" fas fa-balance-scale" style=" font-size:28;"></i> Accounts</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
-                            </li>
-                            <!--
+                    <hr />
+
+                    <div class="card-deck">
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-chart-bar" style=" font-size:28;"></i> Reports</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:balance-sheet' %}">Balance Sheet</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:profit-and-loss-form' %}">Income Statement</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:trial-balance' %}">Trial Balance</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-balance-scale" style=" font-size:28;"></i>
+                                    Accounts</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                                    </li>
+                                    <!--
                             <li class="list-group-item">
                                 <a onclick="return false" style="color:grey;" href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
                             </li>
@@ -110,29 +121,45 @@
                                 <a href="" onclick="return false" style="color:grey;">
                                     Manage Interest bearing Accounts</a>
                             </li> -->
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
-                            </li>
-                            
-                        </ul>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-sliders-h" style=" font-size:28;"></i>
+                                    Configuration</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:config' pk=1 %}">Settings</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:tax-list' %}">Manage Global Taxes</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:currency-converter' %}">Manage Currencies</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class=" fas fa-sliders-h" style=" font-size:28;"></i> Configuration</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:config' pk=1 %}">Settings</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:tax-list' %}">Manage Global Taxes</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'accounting:currency-converter' %}">Manage Currencies</a>
-                            </li>
-                        </ul>
+                <div id="dashboard" class="tab-pane">
+                    <div class="dash-container">
+                        <div class="bg-success text-white dashbox">
+                            <h3>Assets: <br>${{assets}}</h3>
+                        </div>
+                        <div class="bg-danger text-white dashbox">
+                            <h3>Liabilities: <br>${{liabilities}}</h3>
+                        </div>
+                        <div class="bg-warning text-white dashbox">
+                            <h3>Equity: <br>${{equity}}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -141,4 +168,4 @@
 </div>
 
 
-    {% endblock %}
+{% endblock %}

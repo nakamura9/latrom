@@ -2,7 +2,6 @@ import calendar
 import datetime
 import time
 
-from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 from django.http import JsonResponse
 
@@ -63,6 +62,20 @@ def get_month_data(array, user):
         'date': e.date,
         'id': e.pk
     } for e in event_objs]
+
+    active_recurring = Event.objects.filter(
+        Q(repeat_active=True) & Q(owner=user))
+    
+    for evt in active_recurring:
+        for date in flat:
+            if evt.repeat_on_date(date):
+                events.append({
+                    'label': evt.label,
+                    'icon': evt.icon,
+                    'date': date,
+                    'id': evt.pk 
+                })
+    
     events = sorted(events, key=lambda x: x['date'])
     res = [{
         'date': i.strftime("%Y/%m/%d"),
@@ -134,6 +147,16 @@ def _get_day(date, user):
         'end': e.end_time.strftime('%H:%M'),
         'id': e.pk 
     } for e in Event.objects.filter(Q(date=date) & Q(owner=user))]
+
+    events += [{
+        'label': e.label,
+        'icon': e.icon,
+        'date': e.date,
+        'start': e.start_time.strftime('%H:%M'),
+        'end': e.end_time.strftime('%H:%M'),
+        'id': e.pk 
+    } for e in Event.objects.filter(Q(repeat_active=True) & Q(owner=user)) \
+        if e.repeat_on_date(date)]
 
     return {
         'day': date.day,

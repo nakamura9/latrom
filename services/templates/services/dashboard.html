@@ -8,113 +8,132 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-toolbox"></i> Listed Services</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item ">
-                                <a href="{% url 'services:create-service' %}">Create Service</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'services:list-services' %}">Manage Services</a>
-                            </li>
-                        </ul>
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" href="#actions" data-toggle="tab">Actions</a></li>
+                <li class="nav-item"><a class="nav-link" href="#dashboard" data-toggle="tab">Dashboard</a></li>
+            </ul>
+            <div class="tab-content panel-body">
+                <div id="actions" class="tab-pane active">
+                    <div class="card-deck">
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-toolbox"></i> Listed Services</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item ">
+                                        <a href="{% url 'services:create-service' %}">Create Service</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:list-services' %}">Manage Services</a>
+                                    </li>
+                                </ul>
 
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-user-tie"></i> WorkOrders</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:work-order-request-list' %}">
+                                            Manage Work Order Requests
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:work-order-list' %}">
+                                            List and Manage Work Orders
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:equipment-requisition-create' %}">Create Equipment Requistion</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:consumable-requisition-create' %}">Create Consumable Requistion</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <hr class="my-2">
+                    <div class="card-deck">
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-tasks"></i> Service Procedures</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item ">
+                                        <a href="{% url 'services:create-procedure' %}">Create New Service Procedure</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:list-procedures' %}">Manage Service Procedures</a>
+                                    </li>
+                                </ul>
+        
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-users"></i> Groupings</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:category-list' %}">
+                                            List and Manage Service Categories
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:team-list' %}">
+                                                List and Manage Service Teams
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
+                                <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="" style="color:grey;">Services History</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'services:reports-service-person-utilization-form' %}" >Service Personnel utilization report</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-user-tie"></i> WorkOrders</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'services:work-order-request-list' %}">
-                                    Manage Work Order Requests
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'services:work-order-list' %}">
-                                    List and Manage Work Orders
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'services:equipment-requisition-create' %}">Create Equipment Requistion</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'services:consumable-requisition-create' %}">Create Consumable Requistion</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                
-            </div>
-            <hr class="my-2">
-            <div class="card-deck">
-                    <div class="card bg-primary text-white">
-                        <div class="card-header">
-                            <h4 class="card-title"><i class="fas fa-tasks"></i> Service Procedures</h4>
+                <div id="dashboard" class="tab-pane">
+                    <div class="dash-container">
+                        <div class="bg-primary text-white dashbox">
+                            <h3># Offered Services: {{services}}</h3>
                         </div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <li class="list-group-item ">
-                                    <a href="{% url 'services:create-procedure' %}">Create New Service Procedure</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{% url 'services:list-procedures' %}">Manage Service Procedures</a>
-                                </li>
-                            </ul>
-    
+                        <div class="bg-primary text-white dashbox">
+                            <h3># Open Work Orders: {{wo_open}}</h3>
                         </div>
-                    </div>
-                    <div class="card bg-primary text-white">
-                        <div class="card-header">
-                            <h4 class="card-title"><i class="fas fa-users"></i> Groupings</h4>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a href="{% url 'services:category-list' %}">
-                                        List and Manage Service Categories
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{% url 'services:team-list' %}">
-                                            List and Manage Service Teams
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card bg-primary text-white">
-                        <div class="card-header">
-                            <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a href="" style="color:grey;">Services History</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{% url 'services:reports-service-person-utilization-form' %}" >Service Personnel utilization report</a>
-                                </li>
-                            </ul>
+                        <div class="bg-primary text-white dashbox">
+                            <h3># Work Orders Completed: {{wo_closed}}</h3>
                         </div>
                     </div>
                 </div>
-        </div>
     </div>
 </div>
 {% endblock content %}

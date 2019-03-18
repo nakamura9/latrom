@@ -26,12 +26,13 @@ class WeekView extends Component{
     render(){
         const cellStyle = {
             borderCollapse:"collapse",
-            border:"1px solid black"
+            border:"1px solid black",
+            
         };
         const headStyle = {
             ...cellStyle,
             color: "white",
-            backgroundColor: "#07f",
+            backgroundColor: "#007bff",
             padding: "10px"
             
         };
@@ -42,37 +43,40 @@ class WeekView extends Component{
             <Aux>
                 <h3 style={{
                     color: "white",
-                    backgroundColor: "#07f",
-                    padding: "20px"
+                    backgroundColor: "#007BfF",
                }}>Week: {this.state.week}</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th style={headStyle}>Monday</th>
-                            <th style={headStyle}>Tuesday</th>
-                            <th style={headStyle}>Wednesday</th>
-                            <th style={headStyle}>Thursday</th>
-                            <th style={headStyle}>Friday</th>
-                            <th style={headStyle}>Saturday</th>
-                            <th style={headStyle}>Sunday</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        <tr>
-                            {this.state.days.map((day, i) =>(
-                                <td key={i}
-                                    style={cellStyle}>
-                                    <div style={{
-                                        maxHeight: "500px",
-                                        overflowY: "auto"
-                                    }}>
-                                        <Day data={day} view={'week'}/>
-                                    </div>                                
-                                </td>
-                            ))}
-                        </tr>    
-                    </tbody>
-                </table>
+               <div style={{
+                maxHeight: "500px",
+                overflowY: "auto",
+                minWidth: `${window.screen.width -250}px`
+                }}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style={headStyle}>Monday</th>
+                                <th style={headStyle}>Tuesday</th>
+                                <th style={headStyle}>Wednesday</th>
+                                <th style={headStyle}>Thursday</th>
+                                <th style={headStyle}>Friday</th>
+                                <th style={headStyle}>Saturday</th>
+                                <th style={headStyle}>Sunday</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr>
+                                {this.state.days.map((day, i) =>(
+                                    <td key={i}
+                                        style={{...cellStyle, height: '640px'}}>
+                                        <div >
+                                            <Day data={day} view={'week'} width={this.props.width}/>
+                                        </div>                                
+                                    </td>
+                                ))}
+                            </tr>    
+                        </tbody>
+                    </table>
+               </div> 
+               
             </Aux>
         )
     }

@@ -127,8 +127,13 @@ class Order(SoftDeletionModel):
     
     @property
     def payments(self):
-        return OrderPayment.objects.filter(order=self)
+        return inventory.models.item_management.OrderPayment.objects.filter(order=self)
     
+    @property
+    def total_due(self):
+        total_paid = sum([i.amount for i in self.payments])
+        return self.total - total_paid
+
     @property
     def payment_status(self):
         total_paid = sum([i.amount for i in self.payments])

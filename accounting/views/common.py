@@ -24,13 +24,23 @@ from inventory.models import Product
 from invoicing.models import Customer
 from accounting.util import AccountingTaskService
 from accounting import filters, forms, models, serializers
-
+from accounting.views.reports.balance_sheet import BalanceSheet
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 class Dashboard( TemplateView):
     template_name = os.path.join('accounting', 'dashboard.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        bsheet = BalanceSheet.common_context({})
+        context['assets'] = bsheet['total_assets']
+        context['liabilities'] = bsheet['current_liabilities_total'] + \
+            bsheet['long_term_liabilities_total']
+        context['equity'] = bsheet['equity_total']
+        return context
 
 
     def get(self, *args, **kwargs):

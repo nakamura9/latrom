@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import datetime
+from dateutil.relativedelta import relativedelta
 
 from django.db import models
 
@@ -46,6 +47,14 @@ class Event(models.Model):
         ('book', 'Training'),
         ('calendar', 'Event')
     ]
+    REPEAT_CHOICES = [
+        (0, 'Never'),
+        (1, 'Daily'),
+        (2, 'Weekly'),
+        (3, 'Monthly'),
+        (4, 'Annually'),
+
+    ]
 
     date = models.DateField()
     reminder = models.DurationField(choices=REMINDER_CHOICES, 
@@ -57,6 +66,8 @@ class Event(models.Model):
     priority = models.CharField(max_length=8, choices=PRIORITY_CHOICES, 
         default='normal')
     description = models.TextField(blank=True)
+    repeat = models.PositiveSmallIntegerField(default=0, choices=REPEAT_CHOICES)
+    repeat_active = models.BooleanField(default=False, blank=True)
     label = models.CharField(max_length=32, blank=True) 
     icon = models.CharField(max_length=32, blank=True, choices=ICON_CHOICES)
     owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
@@ -93,10 +104,44 @@ class Event(models.Model):
         else:
             raise Exception('no type was specified')
 
+    
     def complete(self):
         self.completed = True
         self.completion_time = datetime.datetime.now()
         self.save()
+
+    @property
+    def repeat_string(self):
+        mapping = dict(self.REPEAT_CHOICES)
+        return mapping[self.repeat]
+
+    def repeat_on_date(self, date):
+        # eliminate past dates at the begining
+        if self.date > date:
+            return False 
+
+        if self.repeat == 0:
+            return False
+
+        elif self.repeat == 1:
+            return True
+
+        elif self.repeat == 2:
+            if self.date.weekday() == date.weekday():
+                return True
+            return False
+
+        elif self.repeat == 3:
+            if self.date.day == date.day:
+                return True
+            return False
+
+        elif self.repeat == 4:
+            if self.date.day == date.day and self.date.month == date.month:
+                return True
+            return False
+
+        return False
 
     def __str__(self):
         return self.label
@@ -128,3 +173,12 @@ class EventParticipant(models.Model):
             return str(self.customer)
         if self.participant_type == 2:
             return str(self.supplier)
+
+    @property
+    def participant_pk(self):
+        if self.participant_type == 0:
+            return self.employee.pk
+        if self.participant_type == 1:
+            return self.customer.pk
+        if self.participant_type == 2:
+            return self.supplier.pk
