@@ -21,4 +21,4 @@ class EventForm(forms.ModelForm, BootstrapMixin):
         )
     class Meta:
         model = models.Event
-        exclude = ["participants", 'completed', 'completion_time']
+        exclude = ["participants", 'completed', 'completion_time', 'reminder_notification']

@@ -28,9 +28,6 @@
                 <li class="nav-item">
                     <a href="#archived-messages" data-toggle="tab" class="nav-link">Archived Threads</a>
                 </li>
-                <li class="nav-item">
-                    <a href="#notifications" data-toggle="tab" class="nav-link">Notifications <span class="badge badge-primary">{{object.unread_notifications}}</span></a>
-                </li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="messages" role="tabpanel" >
@@ -77,21 +74,6 @@
                             </div>
                         </a>
                     {% endfor %}
-                </div>
-                <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="profile-tab">
-                    {% if object.notifications.count == 0 %}
-                        <h5>No notifications to display</h5>
-                    {% else %}
-                    {% for notification in object.notifications %}
-                        <a href="{% url 'messaging:notification' pk=notification.pk %}" style="text-decoration:none;">
-                        <div class="bg-primary text-white" style=" padding:10px; border-top: 2px solid white;">
-                            <h4>{{notification.title}}</h4>
-                            <hr />
-                            <p>{{notification.message | truncatechars:80}}</p>
-                        </div>
-                        </a>
-                    {% endfor %}
-                    {% endif %}
                 </div>
               </div>
         </div>

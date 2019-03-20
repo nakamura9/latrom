@@ -4,6 +4,7 @@ import hashlib
 import hmac 
 import time
 
+
 class UserTrackerException(Exception):
     pass
 

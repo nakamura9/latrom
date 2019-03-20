@@ -7,7 +7,7 @@ const event = (props) =>{
     
     if(props.view === "month"){
         startY = 0;
-        height = 30;
+        height = 58;
     }else{
         if(props.data.start){
             const start = parseInt(props.data.start.split(":")[0]);
@@ -47,18 +47,20 @@ const event = (props) =>{
                 position: "absolute",
                 left: props.view === "month" ? "0px" :`${40 + startX}px`,
                 top: `${startY}px`,
+                padding:'5px',
                 border: '1px solid white',
                 height: `${height}px`,
                 textDecoration: 'none',
                 width: props.view === "day" 
-                        ? "250px" : `${props.width - 40}px` ,
+                        ? "250px" : props.view === "week" ?
+                         `${props.width - 40}px` : `${props.width}px` ,
                 
             }} 
             href={"/planner/event-detail/" + props.data.id}>
             <div style={style}>
                 <div>
                     <i className={"fas fa-" + props.data.icon}></i>
-                    <span style={{marginLeft: '2px'}}>{props.data.label}</span>
+                    <span  >{props.data.label}</span>
                 </div>
                 {description}
                 

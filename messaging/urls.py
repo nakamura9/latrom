@@ -22,4 +22,8 @@ urlpatterns = [
         name='api-mark-as-read'),
     path('api/close-thread/<int:pk>', views.close_thread,
         name='api-close-thread'),
+    path('api/notifications', views.notification_service,
+        name='api-notifications'),
+    path('api/notifications/mark-read/<int:pk>', views.mark_notification_read,
+        name='api-notifications-mark-read'),
 ]

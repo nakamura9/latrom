@@ -4,8 +4,9 @@ from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from rest_framework.generics import RetrieveAPIView
 import datetime 
 from messaging import models, forms, serializers
@@ -108,3 +109,35 @@ def close_thread(request, pk=None):
     thread.closed = True
     thread.save()
     return HttpResponseRedirect('/messaging/inbox')
+
+
+def notification_service(request):
+    try:
+        unread = models.Notification.objects.filter(read=False, user=request.user)
+    except:
+        return JsonResponse({'latest': {}, 'unread': 0})
+
+    if unread.count() == 0:
+        return JsonResponse({'latest': {}, 'unread': 0})
+    
+    latest = unread.latest('timestamp')
+    data = {
+        'latest': {
+            'title': latest.title,
+            'message': latest.message,
+            'action': latest.action,
+            'id': latest.pk,
+            'stamp': latest.timestamp.strftime("%d, %B, %Y")
+        },
+        'unread': unread.count()
+    }
+    #latest.read = True
+    latest.save()
+
+    return JsonResponse(data)
+
+def mark_notification_read(request, pk=None):
+    notification = get_object_or_404(models.Notification, pk=pk)
+    notification.read = True
+    notification.save()
+    return JsonResponse({'status': 'ok'})

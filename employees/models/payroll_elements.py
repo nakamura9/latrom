@@ -133,3 +133,10 @@ class TaxBracket(models.Model):
     rate = models.DecimalField(max_digits=5, decimal_places=2)
     deduction = models.DecimalField(max_digits=9, decimal_places=2)
 
+class PayrollSchedule(models.Model):
+    name = models.CharField(max_length=255)
+
+
+class PayrollDate(models.Model):
+    date = models.PositiveSmallIntegerField()
+    employees = models.ManyToManyField('employees.employee')
