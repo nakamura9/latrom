@@ -125,11 +125,13 @@ class SalesInvoiceLine(models.Model):
     product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, 
         null=True)
     quantity = models.FloatField(default=0.0)
+    #what it is sold for
     price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
     returned = models.BooleanField(default=False)
     # value is calculated once when the invoice is generated to prevent 
     # distortions as prices change
+    #what it is worth to the business
     value = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     
     @property
