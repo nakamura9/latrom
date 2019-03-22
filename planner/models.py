@@ -71,7 +71,8 @@ class Event(models.Model):
     label = models.CharField(max_length=32, blank=True) 
     icon = models.CharField(max_length=32, blank=True, choices=ICON_CHOICES)
     owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
-    reminder_notification = models.ForeignKey('messaging.notification', blank=True, null=True, on_delete=models.SET_NULL)
+    reminder_notification = models.ForeignKey('messaging.notification', 
+        blank=True, null=True, on_delete=models.SET_NULL)
 
     @property
     def participants(self):

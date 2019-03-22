@@ -56,6 +56,9 @@ class InventoryService(object):
                                     start_time="08:00:00",
                                     end_time="17:00:00",
                                     label="INVENTORY_CHECK",
+                                    repeat=3,
+                                    repeat_active=True,
+                                    icon="file-chart-line",
                                     description=f"Event automatically generated"
                                     f"by the system. Warehouse location " 
                                     f"{warehouse.name} is scheduled to have"

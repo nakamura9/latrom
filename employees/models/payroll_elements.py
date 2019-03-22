@@ -133,10 +133,40 @@ class TaxBracket(models.Model):
     rate = models.DecimalField(max_digits=5, decimal_places=2)
     deduction = models.DecimalField(max_digits=9, decimal_places=2)
 
-class PayrollSchedule(models.Model):
+class PayrollSchedule(SingletonModel):
     name = models.CharField(max_length=255)
 
 
 class PayrollDate(models.Model):
-    date = models.PositiveSmallIntegerField()
+    PAYROLL_DATE_CHOICES = [(i, i) for i in range(1, 29)]
+    date = models.PositiveSmallIntegerField(choices = PAYROLL_DATE_CHOICES)
     employees = models.ManyToManyField('employees.employee')
+    departments = models.ManyToManyField('employees.department')
+    pay_grades = models.ManyToManyField('employees.paygrade')
+    schedule = models.ForeignKey('employees.payrollschedule', default=1, on_delete=models.SET_DEFAULT)
+
+    def __str__(self):
+        return f"{self.schedule.name}: {self.date}"
+
+    @property 
+    def number_of_employees(self):
+        return len(self.all_employees)
+
+    @property
+    def all_employees(self):
+        employees = list(self.employees.all())
+
+        for department in self.departments.all():
+            employees += [employee for employee in department.employees \
+                if employee not in employees]
+
+        for grade in self.pay_grades.all():
+            employees += [employee for employee in grade.employee_set.all() \
+                if employee not in employees]
+
+        return employees
+
+    @property
+    def date_suffix(self):
+        suffices = ['st', 'nd', 'rd'] + ['th' for i in range(3, 29)]
+        return suffices[self.date -1]

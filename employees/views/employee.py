@@ -155,3 +155,30 @@ def remove_employee_user(request, pk=None):
         obj.save()
     return HttpResponseRedirect(reverse_lazy('employees:dashboard'))
 
+class DepartmentCreateView(ContextMixin, CreateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.DepartmentForm
+    success_url = "/employees/"
+    extra_context = {
+        'title': 'Create New Department'
+    }
+
+class DepartmentUpdateView(ContextMixin, UpdateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.DepartmentForm
+    model = models.Department
+    success_url = "/employees/"
+    extra_context = {
+        'title': 'Update Department Details'
+    }
+
+class DepartmentDetailView(ContextMixin, DetailView):
+    model = models.Department
+    template_name = os.path.join('employees', 'department', 'detail.html')
+
+class DepartmentListView(TemplateView):
+    template_name = os.path.join('employees', 'department', 'list.html')
+
+class DepartmentAPIView(viewsets.ModelViewSet):
+    queryset = models.Department.objects.all()
+    serializer_class = serializers.DepartmentSerializer

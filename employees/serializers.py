@@ -28,3 +28,14 @@ class TimeSheetSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.EmployeeTimeSheet
         fields = '__all__'
+
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    children = RecursiveField(many=True)
+    class Meta:
+        model = models.Department
+        fields = "__all__"

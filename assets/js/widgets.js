@@ -19,7 +19,7 @@ const storageMediaView = document.getElementById('storage-media-tree-view');
 const threadView = document.getElementById('thread-widget');
 const testView = document.getElementById('test');
 const pricing = document.getElementById('pricing-widget');
-
+const depts = document.getElementById('department-list');
 const dataMapper = (node, i) =>{
     
     return({
@@ -107,4 +107,12 @@ if(storageMedia){
         ]}/>, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
+}else if(depts){
+    ReactDOM.render(<TreeSelectWidget 
+        isListView={true}
+        updateUrlRoot='/employees/department/update/'
+        detailUrlRoot='/employees/department/detail/'
+        url='/employees/api/department'
+        externalFormFieldName='parent_department'//not important
+        dataMapper={dataMapper}/>, depts);
 }

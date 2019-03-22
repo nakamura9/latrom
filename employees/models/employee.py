@@ -123,3 +123,19 @@ class Employee(Person, SoftDeletionModel):
         return planner.models.Event.objects.filter(
             Q(Q(completed=False) & Q(date__lt=datetime.date.today())) & 
             filter).count()
+
+
+class Department(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    manager = models.ForeignKey('employees.employee', on_delete=models.SET_NULL, related_name="manager", null=True)
+    employees = models.ManyToManyField('employees.employee',
+        related_name="employees")
+    parent_department = models.ForeignKey('employees.department', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def children(self):
+        return Department.objects.filter(parent_department=self)

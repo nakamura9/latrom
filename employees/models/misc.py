@@ -10,33 +10,7 @@ class PayrollOfficer(models.Model):
 
 
 class EmployeesSettings(SingletonModel):
-    PAYROLL_DATE_CHOICES = [(i, i) for i in range(1, 29)]
-    PAYROLL_CYCLE_CHOICES = [
-        ('weekly', 'Weekly'), 
-        ('bi-monthly', 'Bi-monthly'), 
-        ('monthly', 'Monthly')
-        ]
-    payroll_date_one = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES
-        )
-    payroll_date_two = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES,
-        blank=True, null=True
-    )
-    payroll_date_three = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES,
-        blank=True, null=True
-    )
-    payroll_date_four = models.PositiveSmallIntegerField(
-        choices = PAYROLL_DATE_CHOICES,
-        blank=True, null=True
-    )
     last_payroll_date = models.DateField(blank=True, null=True)
-    payroll_cycle = models.CharField(
-        max_length=12, 
-        choices = PAYROLL_CYCLE_CHOICES
-        )
-    automate_payroll_for = models.ManyToManyField('employees.Employee', blank=True)
     require_verification_before_posting_payslips = models.BooleanField(
         default=True
         )

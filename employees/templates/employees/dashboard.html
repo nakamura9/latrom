@@ -51,7 +51,15 @@
                                         <a href="{% url 'employees:list-pay-slips' %}">Manage Pay Slips</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="{% url 'employees:timesheet-list' %}">Create and Manage Time Sheets</a>
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link" style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item " href="{% url 'employees:timesheet-list' %}">Manage Time Sheets</a>
+                                                <a class="dropdown-item " href="{% url 'employees:department-list' %}">Manage Departments</a>
+                                                <a class="dropdown-item " href="{% url 'employees:manual-config' %}">Run Manual Payroll</a>
+                                            </div>
+                                        </div>
+                                        
                                     </li>
                                 </ul>
                             </div>
@@ -67,6 +75,9 @@
                                     </li>
                                     <li class="list-group-item">
                                         <a href="" style="color:grey;">Payroll Tax Report</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="" style="color:grey;">Leave Schedule Report</a>
                                     </li>
                                 </ul>
                             </div>
@@ -129,11 +140,10 @@
                             <div class="card-body">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a href="{% url 'employees:config' pk=1 %}">Automated Payroll Configuration</a>
+                                        <a href="{% url 'employees:config' pk=1 %}">Settings</a>
                                     </li>
-
                                     <li class="list-group-item">
-                                        <a href="{% url 'employees:manual-config' %}">Manual Payroll Config</a>
+                                        <a href="{% url 'employees:payroll-date-list' %}">Manage Payroll Schedule</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="{% url 'employees:execute-payroll' %}">Execute Payroll</a>

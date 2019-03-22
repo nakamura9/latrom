@@ -1,5 +1,4 @@
-[
-    {
+[{
         "model": "auth.User",
         "pk": 1,
         "fields": {
@@ -11,11 +10,6 @@
         "model": "employees.EmployeesSettings",
         "pk": 1,
         "fields": {
-            "payroll_date_one": 1,
-            "payroll_date_two": 1,
-            "payroll_date_three": 1,
-            "payroll_date_four": 1,
-            "payroll_cycle": "monthly",
             "require_verification_before_posting_payslips": true,
             "last_payroll_date": "2018-01-01"
         }
@@ -37,6 +31,13 @@
             "title": "Employee",
             "pay_grade": 1,
             "user": 1
+        }
+    },
+    {
+        "model": "employees.PayrollSchedule",
+        "pk": 1,
+        "fields": {
+            "name": "Default Schedule"
         }
     }
 ]

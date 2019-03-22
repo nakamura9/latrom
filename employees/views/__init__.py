@@ -67,33 +67,11 @@ class AutomatedPayrollService(object):
     def __init__(self):
         self.settings = models.EmployeesSettings.objects.first()
         self.TODAY  = datetime.date.today()
-        self.pay_dates = [
-            self.settings.payroll_date_one,
-            self.settings.payroll_date_two,
-            self.settings.payroll_date_three,
-            self.settings.payroll_date_four
-        ]
-
-        self.start = None
-        if self.settings.last_payroll_date:
-            self.start = self.settings.last_payroll_date
-        else:
-            if self.settings.payroll_cycle == "monthly":
-                self.start = self.TODAY - relativedelta.relativedelta(months=1)
-            if self.settings.payroll_cycle == "bi-monthly":
-                self.start = self.TODAY - datetime.timedelta(days=14)
-            else:
-                self.start = self.TODAY - datetime.timedelta(days=7)
 
     def run(self):
         print("running payroll service")
-        if self.TODAY.day in self.pay_dates and \
-                self.TODAY != self.settings.last_payroll_date:
+        if False:
             payroll_id = self.settings.payroll_counter + 1
-            
-            self.run_salaries_payroll(payroll_id)
-            self.run_wages_payroll(payroll_id)
-            
             self.settings.last_payroll_date = self.TODAY
             self.settings.payroll_counter = payroll_id
             self.settings.save()

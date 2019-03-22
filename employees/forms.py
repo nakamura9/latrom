@@ -3,7 +3,11 @@ import datetime
 
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit
+from crispy_forms.layout import (Fieldset, 
+                                Layout, 
+                                Submit, 
+                                Row, 
+                                Column)
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -16,11 +20,6 @@ from django.db.models import Q
 from . import models
 
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
-    automate_payroll_for = forms.ModelMultipleChoiceField(
-        models.Employee.objects.all(), 
-        widget = forms.CheckboxSelectMultiple,
-        required=False
-    )
     #when running payroll - a message must be raised that the hours of 
     #hourly workers must be calculated first
     class Meta:
@@ -132,7 +131,7 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
         model = models.Employee
 
     def __init__(self, *args, **kwargs):
-        super(EmployeeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -276,3 +275,43 @@ class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
             raise forms.ValidationError('You entered an incorrect password for this form')
 
         return cleaned_data
+
+class PayrollDateForm(forms.ModelForm, BootstrapMixin):
+    schedule = forms.ModelChoiceField(models.PayrollSchedule.objects.all(), widget=forms.HiddenInput)
+    employees = forms.ModelMultipleChoiceField(
+        models.Employee.objects.all(), 
+        widget = forms.CheckboxSelectMultiple,
+        required=False
+    )
+    departments = forms.ModelMultipleChoiceField(
+        models.Department.objects.all(), 
+        widget = forms.CheckboxSelectMultiple,
+        required=False
+    )
+    pay_grades = forms.ModelMultipleChoiceField(
+        models.PayGrade.objects.all(), 
+        widget = forms.CheckboxSelectMultiple,
+        required=False
+    )
+    class Meta:
+        fields = "__all__"
+        model = models.PayrollDate
+
+    '''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+
+        )
+
+        self.helper.add_input(Submit('submit', 'Submit'))'''
+
+
+class DepartmentForm(forms.ModelForm, BootstrapMixin):
+    employees = forms.ModelMultipleChoiceField(models.Employee.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
+    class Meta:
+        fields = "__all__"
+        model = models.Department

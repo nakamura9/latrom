@@ -19,7 +19,8 @@ class PayslipFilter(django_filters.FilterSet):
             'pay_roll_id': ['icontains'],
             'employee': ['exact'],
             'start_period': ['gt'],
-            'end_period': ['lt']
+            'end_period': ['lt'],
+            'status': ['exact']
         }
 
 class TimeSheetFilter(django_filters.FilterSet):
@@ -63,4 +64,12 @@ class LeaveRequestFilter(django_filters.FilterSet):
             'start_date': ['exact'],
             'employee': ['exact'],
             'status': ['exact']
+        }
+
+
+class PayrollDateFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.PayrollDate
+        fields = {
+            'date': ['exact']
         }

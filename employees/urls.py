@@ -1,10 +1,13 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from rest_framework import routers
 
 from . import views
 
 employee_router = routers.DefaultRouter()
 employee_router.register(r'^api/employee', views.EmployeeViewSet)
+
+department_router = routers.DefaultRouter()
+department_router.register(r'^api/department', views.DepartmentAPIView)
 
 timesheet_router = routers.DefaultRouter()
 timesheet_router.register(r'^api/timesheet', views.TimeSheetViewset)
@@ -113,6 +116,11 @@ other_urls = [
     re_path(r'^config/(?P<pk>[\d]+)/?$', views.PayrollConfig.as_view(), 
         name='config'),
     re_path(r'^manual-config/?$', views.ManualPayrollConfig.as_view(), name='manual-config'),
+    re_path(r'^payroll-date/create/?$', views.CreatePayrollDateView.as_view(), name='payroll-date-create'),
+    re_path(r'^payroll-date/update/(?P<pk>[\d]+)/?$', views.PayrollDateUpdateView.as_view(), name='payroll-date-update'),
+    re_path(r'^payroll-date/detail/(?P<pk>[\d]+)/?$', views.PayrollDateDetailView.as_view(), name='payroll-date-detail'),
+    re_path(r'^payroll-date/delete/(?P<pk>[\d]+)/?$', views.PayrollDateDeleteView.as_view(), name='payroll-date-delete'),
+    re_path(r'^payroll-date/list/?$', views.PayrollDateListView.as_view(), name='payroll-date-list'),
     
 ]
 
@@ -136,9 +144,17 @@ leave_urls = [
     
 ]
 
+department_urls = [
+    path('department/list', views.DepartmentListView.as_view(), name="department-list"),
+    path('department/create', views.DepartmentCreateView.as_view(), name="department-create"),
+    path('department/detail/<int:pk>', views.DepartmentDetailView.as_view(), name="department-detail"),
+    path('department/update/<int:pk>', views.DepartmentUpdateView.as_view(), name="department-update")
+
+]
+
 urlpatterns = [
     re_path(r'^$', views.DashBoard.as_view(), name='dashboard')
 ] + other_urls + employee_urls + pay_urls + \
     employee_router.urls + payslip_router.urls + \
     timesheet_urls + timesheet_router.urls + pay_officer_urls + \
-    leave_urls
+    leave_urls + department_urls + department_router.urls

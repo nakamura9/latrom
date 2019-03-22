@@ -21,10 +21,11 @@ from django.db.models import Q
 from accounting.models import Tax
 from common_data.utilities import ContextMixin, ConfigMixin, apply_style
 from common_data.views import PaginationMixin, PDFDetailView
-
+from accounting.views import ProfitAndLossReport
 
 from employees import filters, forms, models, serializers
 from messaging.models import Notification
+from planner.models import Event
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
@@ -201,7 +202,18 @@ def verify_payslip(request, pk=None):
     return HttpResponseRedirect('/employees/list-pay-slips')
 
 def execute_payroll(request):
+    # last thirty days
+    today = datetime.date.today()
+    settings = models.EmployeesSettings.objects.first()
+    p_and_l = ProfitAndLossReport.common_context({}, today - datetime.timedelta(days=30), today)
+
+    print(p_and_l['net_profit'])
+    if p_and_l['net_profit'] < 0 and settings.salary_follows_profits:
+        messages.info(request, 'Payroll settings prevent payslips from being paid out')
+        return HttpResponseRedirect('/employees/')    
+    
     slips = models.Payslip.objects.filter(status='verified')
+
     for slip in slips:
         slip.create_entry()
 
@@ -405,3 +417,75 @@ class PayslipPDFView(ConfigMixin, PDFDetailView):
     template_name = os.path.join('employees', 'payslip', 'detail.html')
     file_name="payslip.pdf"
     model = models.Payslip
+
+class PayrollDateListView(ContextMixin, PaginationMixin, FilterView):
+    template_name = os.path.join('employees', 'payroll_date_list.html')
+    filterset_class = filters.PayrollDateFilter
+    queryset = models.PayrollDate.objects.all()
+    paginate_by = 10
+
+    extra_context = {
+        'title': 'List of Payroll Dates',
+        'new_link': '/employees/payroll-date/create'
+    }
+
+    def get_context_data(self, **kwargs):
+        print(super().get_context_data(**kwargs))
+        return super().get_context_data(**kwargs)
+
+class PayrollDateUpdateView(ContextMixin, UpdateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.PayrollDateForm
+    model = models.PayrollDate
+    success_url = "/employees/"
+    extra_context = {
+        'title': 'Update Payroll Date Features'
+    }
+
+class PayrollDateDeleteView(DeleteView):
+    model = models.PayrollDate
+    template_name = os.path.join('common_data', 'delete_template.html')
+    success_url = "/employees"
+
+class PayrollDateDetailView(DetailView):
+    model = models.PayrollDate
+    template_name = os.path.join('employees', 'payroll_date_detail.html')
+
+class CreatePayrollDateView(ContextMixin, CreateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.PayrollDateForm
+    success_url = "/employees/"
+    extra_context = {
+        'title': 'Create Payroll Date'
+    }
+
+    def post(self, request, *args, **kwargs):
+        resp = super().post(self, request, *args, **kwargs)
+
+        if not self.object:
+            return resp
+
+        today = datetime.date.today()
+        
+        Event.objects.create(
+            date = datetime.date(today.year, today.month, self.object.date),
+            reminder = datetime.timedelta(days=1),
+            start_time = datetime.time(8,0),
+            description= f"Payroll Schedule date {self.object.date}"
+            f"{self.object.date_suffix} of this month for employees in "
+            f"{', '.join([str(i) for i in self.object.departments.all()])}" f"departments. And employees with"
+            f" {', '.join([str(i) for i in self.object.pay_grades.all()])} ."
+            f"Total Employees Included:{self.object.number_of_employees}",
+            repeat=3,#monthly
+            repeat_active=True,
+            label="Payroll Date",
+            icon="calendar",
+            owner=models.EmployeesSettings.objects.first().payroll_officer.user
+        )
+        
+        return resp
+
+    def get_initial(self):
+        return {
+            'schedule': 1
+        }
