@@ -1,0 +1,35 @@
+{% extends "window.html" %}
+{% block content %}
+{% load render_bundle from webpack_loader %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Create New Credit Note</h1>
+    <p class="lead">Credit Notes are documents sent to customers to acknowledge receipt of returns and to inform them of the crediting of their account with your business</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+                <div class="card text-white bg-primary">
+                        <div class="card-body">
+                          <h4 class="card-title">Credit Note Form</h4>
+                          <form action="" method="POST">
+                                {% csrf_token %}
+                                {{form.as_p}}
+                                <button class="btn" type="submit">Submit</button>
+                          </form>
+                          
+                        </div>
+                      </div>
+        </div>
+        <div class="col-sm-8">
+                <div id="credit-note-table">
+
+                    </div>
+        </div>    
+    </div>
+    
+</div>
+
+{% render_bundle "invoicing" %}
+{% endblock content %}

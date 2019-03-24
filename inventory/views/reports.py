@@ -13,9 +13,10 @@ class InventoryReport( ConfigMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(InventoryReport, self).get_context_data(*args, **kwargs)
-        context['items'] = models.WareHouseItem.objects.all()
+        context['items'] = models.WareHouseItem.objects.filter(item__type=0)
         context['date'] = datetime.date.today()
         context['pdf_link'] = True
+
 
         #insert config
         return context

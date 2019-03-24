@@ -22,9 +22,11 @@ class ServiceProcedure(models.Model):
     author = models.ForeignKey('auth.user', null=True,  
         on_delete=models.SET_NULL)
     description = models.TextField(blank=True)
-    required_equipment = models.ManyToManyField('inventory.Equipment', 
+    required_equipment = models.ManyToManyField('inventory.InventoryItem',
+        related_name="equipment", 
         blank=True)
-    required_consumables = models.ManyToManyField('inventory.Consumable', 
+    required_consumables = models.ManyToManyField('inventory.InventoryItem', 
+        related_name="consumables", 
         blank=True)
 
 

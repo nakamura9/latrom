@@ -231,39 +231,20 @@ class OrderItem(models.Model):
         ]
     order = models.ForeignKey('inventory.Order', 
         on_delete=models.SET_NULL, null=True)
-    item_type = models.PositiveSmallIntegerField(default=1, 
-        choices=ITEM_TYPE_CHOICES)
-    product = models.ForeignKey('inventory.product', 
-        on_delete=models.SET_NULL, null=True)
-    consumable = models.ForeignKey('inventory.consumable', 
-        on_delete=models.SET_NULL, null=True)
-    equipment = models.ForeignKey('inventory.equipment', 
-        on_delete=models.SET_NULL, null=True)
-    raw_material = models.ForeignKey('inventory.rawmaterial', 
-        on_delete=models.SET_NULL, null=True)
+    item = models.ForeignKey('inventory.inventoryitem', 
+        null=True,
+        on_delete=models.SET_NULL)
     quantity = models.FloatField()
     unit = models.ForeignKey('inventory.UnitOfMeasure', 
         on_delete=models.SET_NULL, null=True, default=1)
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
     received = models.FloatField(default=0.0)
 
-    def __init__(self, *args,**kwargs):
-        super(OrderItem, self).__init__(*args, **kwargs)
-        self.mapping = {
-            1: self.product,
-            2: self.consumable,
-            3: self.equipment,
-            4: self.raw_material
-        }
-
     @property
     def returned_quantity(self):
         return sum([dn.quantity \
             for dn in inventory.models.debit_note.DebitNoteLine.objects.filter(item=self)])
 
-    @property
-    def item(self):
-        return self.mapping[self.item_type]
 
     @property
     def fully_received(self):

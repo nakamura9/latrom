@@ -42,7 +42,7 @@ class EquipmentRequisitionLine(models.Model):
         ('poor', 'Poor'),
         ('broken', 'Not Functioning')
     ]
-    equipment = models.ForeignKey('inventory.Equipment', 
+    equipment = models.ForeignKey('inventory.InventoryItem', 
         on_delete=models.SET_NULL, null=True,) 
     quantity = models.FloatField()
     quantity_returned = models.FloatField(default=0)
@@ -65,7 +65,7 @@ class ConsumablesRequisition(BaseRequisition):
         related_name='consumable_released_by',on_delete=models.SET_NULL, null=True)
 
 class ConsumablesRequisitionLine(models.Model):
-    consumable = models.ForeignKey('inventory.Consumable', on_delete=models.SET_NULL, null=True)
+    consumable = models.ForeignKey('inventory.InventoryItem', on_delete=models.SET_NULL, null=True)
     unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
     returned = models.FloatField(default=0.0)

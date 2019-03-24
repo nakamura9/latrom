@@ -3,3 +3,4 @@ from .sales import SalesInvoice, SalesInvoiceLine
 from .combined import CombinedInvoice, CombinedInvoiceLine
 from .service import ServiceInvoice, ServiceInvoiceLine
 from .abstract import AbstractSale
+from .invoice import *

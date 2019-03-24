@@ -19,8 +19,6 @@ from rest_framework import generics, viewsets
 from accounting.forms import TaxForm
 from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument
 from common_data.views import PaginationMixin, PDFDetailView
-from inventory.forms import QuickProductForm
-from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import CreditNote, SalesConfig, SalesInvoiceLine
 from invoicing.models.credit_note import CreditNoteLine

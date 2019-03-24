@@ -5,51 +5,6 @@ from django.db import models
 from .models import *
 
 
-class ProductFilter(django_filters.FilterSet):
-    
-    class Meta:
-        model = Product
-        fields = {
-            'name': ['icontains'],
-            'unit': ['exact'],
-            'supplier': ['exact'],
-            'category': ['exact'],
-            }
-
-
-class RawMaterialFilter(django_filters.FilterSet):
-    
-    class Meta:
-        model = RawMaterial
-        fields = {
-            'name': ['icontains'],
-            'unit': ['exact'],
-            'supplier': ['exact'],
-            'category': ['exact'],
-            }
-
-class EquipmentFilter(django_filters.FilterSet):
-    
-    class Meta:
-        model = Equipment
-        fields = {
-            'name': ['icontains'],
-            'unit': ['exact'],
-            'supplier': ['exact'],
-            'category': ['exact'],
-            }
-        
-class ConsumableFilter(django_filters.FilterSet):
-    
-    class Meta:
-        model = Consumable
-        fields = {
-            'name': ['icontains'],
-            'unit': ['exact'],
-            'supplier': ['exact'],
-            'category': ['exact'],
-            }
-
 class OrderFilter(django_filters.FilterSet):
     class Meta:
         model = Order
@@ -103,3 +58,17 @@ class ControllerFilter(django_filters.FilterSet):
         fields = {
             'employee': ['exact'],
         }
+
+
+class InventoryItemFilter(django_filters.FilterSet):
+    
+    class Meta:
+        model = InventoryItem
+        fields = {
+            'name': ['icontains'],
+            'unit': ['exact'],
+            'supplier': ['exact'],
+            'category': ['exact'],
+            }
+
+

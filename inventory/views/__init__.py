@@ -7,3 +7,4 @@ from .warehouse_views import *
 from .scrapping_views import *
 from .storage_media_views import *
 from .reports import *
+from .item import *

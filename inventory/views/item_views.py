@@ -29,35 +29,32 @@ from .common import CREATE_TEMPLATE
 
 
 class ProductAPIView(ModelViewSet):
-    queryset = models.Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+    queryset = models.InventoryItem.objects.filter(type=0)
+    serializer_class = serializers.InventoryItemSerializer
 
 
 class ProductDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    model = models.Product
+    model = models.InventoryItem
     success_url = reverse_lazy('inventory:product-list')
 
 
 class ProductUpdateView( ContextMixin, UpdateView):
-    form_class = forms.ProductUpdateForm
-    model = models.Product
+    form_class = forms.ProductForm
+    model = models.InventoryItem
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Product"}
     
-    def post(self, request, *args, **kwargs):
-        resp = super().post(request, *args, **kwargs)
-        return resp
 
 class ProductDetailView( DetailView):
-    model = models.Product
+    model = models.InventoryItem
     template_name = os.path.join("inventory", "item", "product", "detail.html")
 
 
 class ProductListView( ContextMixin, PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.ProductFilter
+    filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
     extra_context = {
         'title': 'Product List',
@@ -65,7 +62,7 @@ class ProductListView( ContextMixin, PaginationMixin, FilterView):
     }
 
     def get_queryset(self):
-        return models.Product.objects.all().order_by('pk')
+        return models.InventoryItem.objects.filter(type=0).order_by('pk')
 
 
 class ProductCreateView( ContextMixin, 
@@ -88,34 +85,38 @@ class ProductCreateView( ContextMixin,
         },]
         }
 
+    def get_initial(self):
+        return {
+            'type': 0 #for product
+        }
 
 ################################################
 #               Consumable                     #
 ################################################
 
 class ConsumableAPIView(ModelViewSet):
-    queryset = models.Consumable.objects.all()
-    serializer_class = serializers.ConsumableSerializer
+    queryset = models.InventoryItem.objects.filter(type=2)
+    serializer_class = serializers.InventoryItemSerializer
 
 
 class ConsumableUpdateView( ContextMixin,
         UpdateView):
     form_class = forms.ConsumableForm
-    model = models.Consumable
+    model = models.InventoryItem
     success_url = reverse_lazy('inventory:home')
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Consumable Inventory"}
 
 
 class ConsumableDetailView( DetailView):
-    model = models.Consumable
+    model = models.InventoryItem
     template_name = os.path.join("inventory", "item", 'consumable',"detail.html")
 
 
 class ConsumableListView( ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.ConsumableFilter
+    filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', 'consumable','list.html')
     extra_context = {
         'title': 'Consumable List',
@@ -123,7 +124,7 @@ class ConsumableListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.Consumable.objects.all().order_by('pk')
+        return models.InventoryItem.objects.filter(type=2).order_by('pk')
 
 
 class ConsumableCreateView( ContextMixin, 
@@ -145,6 +146,11 @@ class ConsumableCreateView( ContextMixin,
             'url': '/inventory/category-create/'
         }],
         }
+    
+    def get_initial(self):
+        return {
+            'type': 2 #for consumables
+        }
 
 ####################################################
 #                   Equipment Views                #
@@ -152,28 +158,33 @@ class ConsumableCreateView( ContextMixin,
 
 
 class EquipmentAPIView(ModelViewSet):
-    queryset = models.Equipment.objects.all()
-    serializer_class = serializers.EquipmentSerializer
+    queryset = models.InventoryItem.objects.filter(type=1)
+    serializer_class = serializers.InventoryItemSerializer
 
 
 class EquipmentUpdateView( ContextMixin, 
         UpdateView):
     form_class = forms.EquipmentForm
-    model = models.Equipment
+    model = models.InventoryItem
     success_url = reverse_lazy('inventory:home')
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Equipment Details"}
 
-
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['asset_data'] = models.InventoryItem.objects.get(
+            pk=self.kwargs['pk']).equipment_component.asset_data.pk
+        return initial
+        
 class EquipmentDetailView( DetailView):
-    model = models.Equipment
+    model = models.InventoryItem
     template_name = os.path.join("inventory", "item", 'equipment', "detail.html")
 
 
 class EquipmentListView( ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.EquipmentFilter
+    filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', 'equipment', 'list.html')
     extra_context = {
         'title': 'Equipment List',
@@ -181,7 +192,7 @@ class EquipmentListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.Equipment.objects.all().order_by('pk')
+        return models.InventoryItem.objects.filter(type=1).order_by('pk')
 
 
 class EquipmentCreateView( ContextMixin, 
@@ -204,6 +215,10 @@ class EquipmentCreateView( ContextMixin,
         }],
         }
 
+    def get_initial(self):
+        return {
+            'type': 1# for equipment
+        }
 
 ####################################################
 #                Raw Material Views                #
@@ -211,28 +226,28 @@ class EquipmentCreateView( ContextMixin,
 
 
 class RawMaterialAPIView(ModelViewSet):
-    queryset = models.RawMaterial.objects.all()
-    serializer_class = serializers.RawMaterialSerializer
+    queryset = models.InventoryItem.objects.all()
+    serializer_class = serializers.InventoryItemSerializer
 
 
 class RawMaterialUpdateView( ContextMixin, 
         UpdateView):
-    form_class = forms.RawMaterialForm
-    model = models.RawMaterial
+    form_class = forms.ConsumableForm# TODO make a raw material form
+    model = models.InventoryItem
     success_url = reverse_lazy('inventory:home')
     template_name = CREATE_TEMPLATE
     extra_context = {"title": "Update Existing Raw Materials Details"}
 
 
 class RawMaterialDetailView( DetailView):
-    model = models.RawMaterial
+    model = models.InventoryItem
     template_name = os.path.join("inventory", "item", 'raw_material', "detail.html")
 
 
 class RawMaterialListView( ContextMixin, 
         PaginationMixin, FilterView):
     paginate_by = 10
-    filterset_class = filters.RawMaterialFilter
+    filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', 'raw_material', 'list.html')
     extra_context = {
         'title': 'RawMaterial List',
@@ -240,12 +255,12 @@ class RawMaterialListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.RawMaterial.objects.all().order_by('pk')
+        return models.InventoryItem.objects.all().order_by('pk')
 
 
 class RawMaterialCreateView( ContextMixin, 
         CreateView):
-    form_class = forms.RawMaterialForm
+    form_class = forms.ConsumableForm
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {

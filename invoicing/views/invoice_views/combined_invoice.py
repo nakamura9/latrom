@@ -18,7 +18,6 @@ from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig
 from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument
 from common_data.views import EmailPlusPDFView, PaginationMixin
-from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.invoice_views.util import InvoiceCreateMixin

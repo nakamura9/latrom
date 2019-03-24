@@ -19,8 +19,6 @@ from rest_framework import generics, viewsets
 
 from accounting.forms import TaxForm
 from common_data.utilities import ContextMixin, ConfigMixin
-from inventory.forms import QuickProductForm
-from inventory.models import Product
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 

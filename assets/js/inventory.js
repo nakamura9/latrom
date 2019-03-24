@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import InventorySelectWidget from './inventory/combined_inventory_select';
 import GenericTable from './src/generic_list/containers/root';
 import MutableTable from './src/mutable_table/container/root';
 import SearchableWidget from './src/components/searchable_widget';
@@ -23,20 +22,8 @@ if(inventoryCheck){
         headings={["Item", "Recorded Quantity", "Measured Quantity"]}
         resProcessor={(res) =>{
             return res.data.results.map((item) =>{
-                let itemType;
-                switch(item.item_type){
-                    case 1:
-                        itemType="product";
-                        break;
-                    case 2:
-                        itemType="consumable";
-                        break;
-                    case 3:
-                        itemType="equipment";
-                        break;
-                }
                 return {
-                    item: item.id + "-" +item[itemType].name,
+                    item: item.id + "-" +item.item.name,
                     quantity: item.quantity,
                     measured: 0
                 }
@@ -49,7 +36,6 @@ if(inventoryCheck){
         ]}
         />, inventoryCheck);
 }else if(order){
-    
     const isUpdate = tail !== "order-create";
 
     const calculateTotalFunc =(data) => {
@@ -63,17 +49,11 @@ if(inventoryCheck){
 
     const resProcessor = (res) =>{
         return res.data.orderitem_set.map((item, i) =>{
-            let orderItem;
-            if(item.product){
-                orderItem = 'P' + item.product.id + '-' + item.product.name;
-            }else if(item.equipment){
-                orderItem = 'E' + item.equipment.id + '-' + item.equipment.name;
-            }else{//consumable
-                orderItem = 'C' + item.consumable.id + '-' + item.consumable.name;
-            }
+            
             return({
-                item: orderItem,
+                item: item.item.id + '-' + item.item.name,
                 quantity: item.quantity,
+                unit: item.unit.id + '-' + item.unit.name,
                 order_price: item.order_price,
                 lineTotal: item.order_price * item.quantity
             })
@@ -95,26 +75,12 @@ if(inventoryCheck){
             [
                 {
                     name: 'item',
-                    type: 'widget',
+                    type: 'search',
                     width: 35,
-                    widgetCreator: (comp) =>{
-                        return <InventorySelectWidget
-                                    list={comp.props.lines}
-                                    onSelect={(val) => {
-                                        let newData = {...comp.state.data};
-                                        newData['item'] = val;
-                                        comp.setState({
-                                            data: newData 
-                                        })
-                                    }}
-                                    onClear={() =>{
-                                        let newData = {...comp.state.data};
-                                        newData['item'] = "";
-                                        comp.setState({
-                                            data: newData 
-                                        })
-                                    }} />;
-                    }
+                    url: '/inventory/api/inventory-item/', 
+                    idField: 'id',
+                    displayField: 'name',
+                    required: true,
                 },
                 {
                     'name': 'unit',
@@ -151,20 +117,9 @@ if(inventoryCheck){
                 item.quantity > item.received
             ))
             return itemset.map((item)=>{
-                let itemType;
-                switch(item.item_type){
-                    case 1:
-                        itemType="product";
-                        break;
-                    case 2:
-                        itemType="consumable";
-                        break;
-                    case 3:
-                        itemType="equipment";
-                        break;
-                }
-
-                return {'item': item.id + '-' + item[itemType].name.replace('-', '_'),
+               
+                console.log(item)
+                return {'item': item.id + '-' + item.item.name.replace('-', '_'),
                 'quantity': item.quantity, 
                 'moved_quantity': item.received,
                 'quantity_to_move': 0,
@@ -202,7 +157,7 @@ if(inventoryCheck){
                 name: 'item',
                 type: 'search',
                 width: 45,
-                url: '/inventory/api/product/', //will get all inventory soon
+                url: '/inventory/api/inventory-item/', 
                 idField: 'id',
                 displayField: 'name',
                 required: true,
@@ -225,7 +180,7 @@ if(inventoryCheck){
                 name: 'item',
                 type: 'search',
                 width: 25,
-                url: '/inventory/api/product/', //will get all inventory soon
+                url: '/inventory/api/inventory-item/', //will get all inventory soon
                 idField: 'id',
                 displayField: 'name',
                 required: true,
@@ -249,20 +204,9 @@ if(inventoryCheck){
         headings={["Item", "Orderd Quantity", "Unit Price", "Returned Quantity"]}
         resProcessor={(res)=>{
             return res.data.orderitem_set.map((line, i) =>{
-                let itemType;
-                switch(line.item_type){
-                    case 1:
-                        itemType="product";
-                        break;
-                    case 2:
-                        itemType="consumable";
-                        break;
-                    case 3:
-                        itemType="equipment";
-                        break;
-                }
+                
                 return {
-                    'item': line.id + '-' + line[itemType].name.replace('-', '_'),
+                    'item': line.id + '-' + line.item.name.replace('-', '_'),
                     'quantity': line.quantity,
                     'order_price': line.order_price,
                     'returned_quantity': line.returned_quantity,
@@ -282,8 +226,9 @@ if(inventoryCheck){
             dataURL={"/inventory/api/transfer-order/" + tail}
             headings={["Item", "Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
             resProcessor={(res) =>{
+                console.log(res.data);
                 return res.data.transferorderline_set.map((item)=>({
-                    'item': item.id + ' - ' + item.product.name,
+                    'item': item.id + ' - ' + item.item.name,
                     'quantity': item.quantity, 
                     'moved_quantity': item.moved_quantity,
                     'quantity_to_move': 0,

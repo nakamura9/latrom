@@ -13,7 +13,7 @@ from common_data.utilities import ContextMixin
 from manufacturing import serializers
 from manufacturing import filters
 from rest_framework.viewsets import ModelViewSet
-from inventory.models import UnitOfMeasure, RawMaterial
+from inventory.models import UnitOfMeasure
 from common_data.views import PaginationMixin
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')

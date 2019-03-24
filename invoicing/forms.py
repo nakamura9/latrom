@@ -203,3 +203,27 @@ class CustomerStatementReportForm(PeriodReportForm):
 class SalesReportForm(PeriodReportForm):
     '''method = forms.ChoiceField(widget=forms.RadioSelect, choices=[("invoice", "Invoice Count"), ("amount", "Sales Value")])'''
     pass
+
+
+class InvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
+    status = forms.CharField(widget=forms.HiddenInput)
+    apply_payment = forms.BooleanField(required=False)
+
+    class Meta:
+        exclude = "active", 'invoice_number', 'quotation_number', 'discount', 'entry', 'shipping_expenses'
+        model = models.Invoice
+
+class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude = "active", 'discount', 'invoice_number', 'quotation_number', 'status', 'entry'
+        model = models.Invoice
+
+class InvoicePaymentForm(forms.ModelForm, BootstrapMixin):
+    combined_invoice = forms.ModelChoiceField(
+        models.Invoice.objects.all(), widget=forms.HiddenInput
+        )
+    
+    payment_for = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = ['service_invoice', 'bill', 'sales_invoice']
+        model = models.Payment

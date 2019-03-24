@@ -11,7 +11,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
-from accounting.models import Account, Expense, Tax
+from accounting.models import Account, Expense, Tax, Asset
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 
@@ -87,6 +87,11 @@ class ItemInitialMixin(forms.Form):
         return obj
 
 class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
+    pricing_method = forms.CharField(widget=forms.NumberInput)
+    margin = forms.CharField(widget=forms.NumberInput, required=False)
+    markup = forms.CharField(widget=forms.NumberInput, required=False)
+    direct_price = forms.CharField(widget=forms.NumberInput, required=False)
+    type=forms.CharField(widget=forms.HiddenInput)
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -96,6 +101,7 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                     'name',
                     'unit_purchase_price',
                     'description',
+                    'type',
                     ),
                 Tab('Pricing', 
                     'unit',
@@ -121,12 +127,41 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
-        exclude = 'quantity',
-        model = models.Product
+        exclude = 'quantity', 'product_component', 'equipment_component'
+        model = models.InventoryItem
 
+
+    def save(self, *args, **kwargs):
+        instance = super().save(*args, **kwargs)
+
+        if instance.product_component:
+            instance.product_component.pricing_method= \
+                self.cleaned_data['pricing_method']
+            instance.product_component.direct_price= \
+                self.cleaned_data['direct_price']
+            instance.product_component.margin=self.cleaned_data['margin']
+            instance.product_component.markup=self.cleaned_data['markup']
+            
+            instance.product_component.save()
+
+            return instance 
+
+        component = models.ProductComponent.objects.create(
+            pricing_method=self.cleaned_data['pricing_method'],
+            direct_price=self.cleaned_data['direct_price'],
+            margin=self.cleaned_data['margin'],
+            markup=self.cleaned_data['markup'],
+        )
+
+        instance.product_component = component
+        instance.save()
+
+        return instance
     
 
 class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
+    type=forms.CharField(widget=forms.HiddenInput)
+    asset_data = forms.ModelChoiceField(Asset.objects.all())
     def __init__(self, *args, **kwargs):
         super(EquipmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -137,6 +172,7 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                     'description',
                     'condition',
                     'unit_purchase_price',
+                    'type'
                     ),
                 Tab('Ordering Information',
                     'supplier'),
@@ -159,12 +195,32 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
-        fields = "__all__"
-        model = models.Equipment
+        exclude = "maximum_stock_level", "minimum_order_level", "product_component", "equipment_component", 
+        model = models.InventoryItem
+
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+
+        if instance.equipment_component:
+            instance.equipment_component.asset_data = \
+                self.cleaned_data['asset_data']
+            instance.equipment_component.save()
+      
+        else:
+            instance.equipment_component = \
+                models.EquipmentComponent.objects.create(
+                    asset_data=self.cleaned_data['asset_data']
+                )
+
+        instance.save()
+        return instance
+        
 
 class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
+    type=forms.CharField(widget=forms.HiddenInput, )
+
     def __init__(self, *args, **kwargs):
-        super(ConsumableForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
@@ -175,7 +231,8 @@ class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                 Tab('Ordering Information',
                     'minimum_order_level',
                     'maximum_stock_level',
-                    'supplier'),
+                    'supplier',
+                    'type'),
                 Tab('Purchase Information', 
                     'unit',
                     ),
@@ -195,43 +252,10 @@ class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
-        exclude = 'quantity',
-        model = models.Consumable
+        exclude = 'quantity', 'product_component', 'equipment_component',
+        model = models.InventoryItem
 
-class ProductUpdateForm(forms.ModelForm, BootstrapMixin):
-    '''identical to the other form except for not allowing quantity to be changed'''
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            TabHolder(
-                Tab('Description', 
-                    'name',
-                    'unit_purchase_price',
-                    'description',
-                    ),
-                Tab('Pricing', 
-                    'unit',
-                    HTML("<div id='pricing-widget'></div>")
-                ),
-                Tab('Stock Info',
-                    'minimum_order_level',
-                    'maximum_stock_level',
-                    'supplier'),
-                Tab('Dimensions', 
-                    'length', 
-                    'width',
-                    'height'),
-                Tab('Categories', 
-                    'category'),
-                Tab('Image', 'image'),
-            )
-            )
-        self.helper.add_input(Submit('submit', 'Submit'))
-    
-    class Meta:
-        fields = '__all__'
-        model = models.Product
+
 
 class OrderForm(forms.ModelForm, BootstrapMixin):
     tax=forms.ModelChoiceField(
@@ -339,10 +363,6 @@ class UnitForm(forms.ModelForm, BootstrapMixin):
         model = models. UnitOfMeasure
 
 
-class QuickProductForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields =  ['name', 'direct_price', 'pricing_method','unit_purchase_price', 'unit']
-        model = models.Product
 
 class CategoryForm(forms.ModelForm, BootstrapMixin):
     parent = forms.ModelChoiceField(models.Category.objects.all(), widget=forms.HiddenInput, required=False)
@@ -483,42 +503,6 @@ class ShippingAndHandlingForm(BootstrapMixin, forms.Form):
     reference = forms.CharField(widget=forms.HiddenInput)
 
 
-class RawMaterialForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            TabHolder(
-                Tab('Description', 
-                    'name',
-                    'description'),
-                Tab('Stocking Information',
-                    'minimum_order_level',
-                    'maximum_stock_level',
-                    'supplier'),
-                Tab('Pricing', 
-                    'unit',
-                    'unit_purchase_price'),
-                Tab('Categories', 
-                    'category'),
-                Tab('Dimensions', 
-                    'length', 
-                    'width',
-                    'height'),
-                Tab('Image', 'image'),
-                Tab('Initial Inventory', 
-                    'initial_quantity', 
-                    'warehouse',
-                    )
-            )
-            )
-        self.helper.add_input(Submit('submit', 'Submit'))
-
-    class Meta:
-        exclude =  'active',
-        model = models.RawMaterial
-
 
 class DebitNoteForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -527,4 +511,3 @@ class DebitNoteForm(forms.ModelForm, BootstrapMixin):
 
     order = forms.ModelChoiceField(models.Order.objects.all(),
         widget=forms.HiddenInput)
-

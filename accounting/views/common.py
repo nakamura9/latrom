@@ -20,7 +20,6 @@ from django.shortcuts import get_object_or_404
 
 from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
-from inventory.models import Product
 from invoicing.models import Customer
 from accounting.util import AccountingTaskService
 from accounting import filters, forms, models, serializers

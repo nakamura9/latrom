@@ -10,7 +10,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
-from inventory.models import Consumable, Equipment
 from services import filters, forms, models
 from services.serializers import ProcedureSerializer
 

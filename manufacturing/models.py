@@ -64,7 +64,7 @@ class ProductionOrder(models.Model):
     due = models.DateField()
     customer = models.ForeignKey('invoicing.Customer', on_delete=models.SET_NULL, 
         blank=True, null=True)
-    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey('inventory.InventoryItem', on_delete=models.SET_NULL, null=True)
     process = models.ForeignKey('manufacturing.Process', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
@@ -152,7 +152,7 @@ class ProcessProduct(models.Model):
     type = models.PositiveSmallIntegerField(choices=PRODUCT_TYPES)# main product, byproduct, waste,  wip
     unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True)
     finished_goods= models.BooleanField(default=False)
-    inventory_product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
+    inventory_product = models.ForeignKey('inventory.InventoryItem', on_delete=models.SET_NULL, null=True)
     product_list = models.ForeignKey('manufacturing.ProductList', on_delete=models.SET_NULL, 
         blank=True, 
         null=True)
@@ -186,7 +186,7 @@ class BillOfMaterialsLine(models.Model):
         (0, 'Raw Material'),
         (1, 'Process Product')
     ]) # integer 
-    raw_material = models.ForeignKey('inventory.RawMaterial', on_delete=models.SET_NULL, null=True, blank=True)
+    raw_material = models.ForeignKey('inventory.InventoryItem', on_delete=models.SET_NULL, null=True, blank=True)
     product = models.ForeignKey('manufacturing.ProcessProduct', on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.FloatField()
     unit =  models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True)

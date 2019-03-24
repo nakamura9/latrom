@@ -15,25 +15,47 @@ import invoicing
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel, SoftDeletionModel
 
-class BaseItem(SoftDeletionModel):
-    class Meta:
-        abstract = True
+
+class InventoryItem(SoftDeletionModel):
+    INVENTORY_TYPES = [
+        (0, 'Product'),
+        (1, 'Equipment'),
+        (2, 'Consumables'),
+        (3, 'Raw Material'),]
 
     name = models.CharField(max_length = 64)
-    category = models.ForeignKey('inventory.Category', on_delete=models.SET_NULL, null=True,default=1)
+    type = models.PositiveSmallIntegerField(choices=INVENTORY_TYPES)
+    category = models.ForeignKey('inventory.Category', 
+        on_delete=models.SET_NULL, null=True,default=1)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
     image = models.FileField(blank=True, null=True, 
         upload_to=settings.MEDIA_ROOT)
     description = models.TextField(blank=True, default="")
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True,
-        blank=True, default=1)
-    unit_purchase_price = models.DecimalField(max_digits=9, decimal_places=2, 
+    unit = models.ForeignKey('inventory.UnitOfMeasure', 
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True, 
+        default=1)
+    unit_purchase_price = models.DecimalField(max_digits=9, 
+        decimal_places=2, 
         default=0.0)
-    supplier = models.ForeignKey("inventory.Supplier", on_delete=models.SET_NULL,
-        blank=True, null=True)
-    
+    supplier = models.ForeignKey("inventory.Supplier", 
+        on_delete=models.SET_NULL,
+        blank=True, 
+        null=True)
+    minimum_order_level = models.IntegerField( default=0)
+    maximum_stock_level = models.IntegerField(default=0)
+    #components
+    equipment_component = models.ForeignKey('inventory.EquipmentComponent', 
+        on_delete=models.SET_NULL,
+        null=True)
+    product_component = models.ForeignKey('inventory.ProductComponent',
+        on_delete=models.SET_NULL,
+        null=True)
+
+
     def __str__(self):
         return str(self.id) + " - " + self.name
 
@@ -44,41 +66,18 @@ class BaseItem(SoftDeletionModel):
     @property
     def quantity(self):
         #returns quantity from all warehouses
-        if isinstance(self, Product):
-            items = inventory.models.WareHouseItem.objects.filter(product=self)
-        if isinstance(self, Consumable):
-            items = inventory.models.WareHouseItem.objects.filter(consumable=self)
-        if isinstance(self, Equipment):
-            items = inventory.models.WareHouseItem.objects.filter(equipment=self)
-        if isinstance(self, RawMaterial):
-            items = inventory.models.WareHouseItem.objects.filter(raw_material=self)
+        items = inventory.models.WareHouseItem.objects.filter(item=self)
         return sum([i.quantity for i in items])
 
-    
-
     @property
-    def stock_value(self):
-        raise NotImplementedError()
+    def locations(self):
+        return inventory.models.WareHouseItem.objects.filter(
+            Q(item=self),
+            Q(quantity__gt=0)
+            )
 
-class Product(BaseItem):
-    '''Represents tangible products that are sold.
-    this model tracks details concerning sale and receipt of products as well as their 
-    value and pricing.
-    
-    methods
-    ----------
-    increment - increases the stock of the item.
-    decrement - decreases the stock of the item.
 
-    properties
-    -----------
-    stock_value - returns the value of the stock on hand in the inventory
-        based on a valuation rule.
-    events - returns representations of all the inventory movements by date and 
-    description in the last 30 days
-    
-    '''
-    
+class ProductComponent(models.Model):
     PRICING_CHOICES = [
     (0, 'Manual'),
     (1, 'Margin'),
@@ -89,12 +88,10 @@ class Product(BaseItem):
     margin = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     markup = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     sku = models.CharField(max_length=16, blank=True)
-    minimum_order_level = models.IntegerField(default=0)
-    maximum_stock_level = models.IntegerField(default=0)
 
     @staticmethod
     def total_inventory_value():
-        return sum([p.stock_value for p in Product.objects.all()])
+        return sum([p.stock_value for p in InventoryItem.objects.filter(type=0)])
 
 
     def quantity_on_date(self, date):
@@ -103,7 +100,7 @@ class Product(BaseItem):
         total_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
             Q(order__date__lte=datetime.date.today()) &
-            Q(product=self)
+            Q(item=self)
         )
 
         ordered_quantity = sum([i.received for i in total_orders])
@@ -111,7 +108,7 @@ class Product(BaseItem):
         total_sales = invoicing.models.SalesInvoiceLine.objects.filter(
             Q(invoice__date__gte=date) &
             Q(invoice__date__lte=datetime.date.today()) &
-            Q(product=self)
+            Q(item=self)
         )
 
         sold_quantity = sum([(i.quantity - i.returned_quantity) \
@@ -126,7 +123,7 @@ class Product(BaseItem):
         takes todays inventory 
         starting = todays + sold - ordered'''
         current_total_product_quantity = sum([i.quantity \
-                for i in Product.objects.all()])
+                for i in InventoryItem.objects.all()])
 
         total_product_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
@@ -146,15 +143,18 @@ class Product(BaseItem):
 
         return current_total_product_quantity + sold_quantity - ordered_quantity
     
+    @property
+    def parent(self):
+        return InventoryItem.objects.get(product_component=self)
 
     @property
     def unit_sales_price(self):
         if self.pricing_method == 0:
             return self.direct_price
         elif self.pricing_method == 1:
-            return D(self.unit_purchase_price / (1 - self.margin))
+            return D(self.parent.unit_purchase_price / (1 - self.margin))
         else:
-            return D(self.unit_purchase_price * (1 + self.markup))
+            return D(self.parent.unit_purchase_price * (1 + self.markup))
 
 
     @property 
@@ -171,7 +171,7 @@ class Product(BaseItem):
         the values for the quantity in stock.
         '''  
 
-        current_quantity = self.quantity #optimized 
+        current_quantity = self.parent.quantity
         cummulative_quantity = 0
         orders_with_items_in_stock = []
         partial_orders = False
@@ -181,7 +181,7 @@ class Product(BaseItem):
 
         #getting the latest orderitems in order of date ordered
         order_items = inventory.models.OrderItem.objects.filter(
-            product=self).order_by("order__date").reverse()
+            item=self.parent).order_by("order__date").reverse()
 
         #iterate over items
         for item in order_items:
@@ -253,15 +253,9 @@ class Product(BaseItem):
         events = items + orders 
         return sorted(events)
 
-    @property
-    def locations(self):
-        return inventory.models.WareHouseItem.objects.filter(
-            Q(product=self),
-            Q(quantity__gt=0)
-            )
+    
 
-class Equipment(BaseItem):
-    """Equipment refers to items used in running the business. Are registered in the accounting system as assets."""
+class EquipmentComponent(models.Model):
     CONDITION_CHOICES = [
         ('excellent', 'Excellent'),
         ('good', 'Good'),
@@ -270,45 +264,6 @@ class Equipment(BaseItem):
     ]
     condition = models.CharField(max_length=16, 
         choices=CONDITION_CHOICES, default='excellent')
-    asset_data = models.ForeignKey('accounting.Asset', on_delete=models.SET_NULL,
+    asset_data = models.ForeignKey('accounting.Asset', 
+        on_delete=models.SET_NULL,
         null=True, blank=True)
-
-    @property
-    def locations(self):
-        return inventory.models.WareHouseItem.objects.filter(
-            Q(equipment=self),
-            Q(quantity__gt=0)
-            )
-
-class Consumable(BaseItem):
-    """Consumables are items which are purchased  for use within a business that are not for resale nor contribute directly to products. These purchases are recorded in the accounts as expenses."""
-    minimum_order_level = models.IntegerField( default=0)
-    maximum_stock_level = models.IntegerField(default=0)
-
-    @property
-    def locations(self):
-        return inventory.models.WareHouseItem.objects.filter(
-            Q(consumable=self),
-            Q(quantity__gt=0)
-            )
-
-class RawMaterial(BaseItem):
-    minimum_order_level = models.IntegerField( default=0)
-    maximum_stock_level = models.IntegerField(default=0)
-
-    @property 
-    def stock_value(self):
-        return 0
-"""
-#not inherited because some parent fields do not carry over
-class WorkInProgress(models.Model):
-    name = models.CharField(max_length = 64)
-    width = models.FloatField(default=0.0)
-    height = models.FloatField(default=0.0)
-    image = models.FileField(blank=True, null=True, 
-        upload_to=settings.MEDIA_ROOT)
-    description = models.TextField(blank=True, default="")
-    unit = models.ForeignKey('inventory.UnitOfMeasure', on_delete=models.SET_NULL, null=True,
-        blank=True, default=1)
-    
-"""

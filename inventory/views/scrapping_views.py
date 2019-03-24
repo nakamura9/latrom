@@ -32,14 +32,15 @@ class ScrappingRecordCreateView(CreateView):
 
         for line in item_list:
             pk = line['item'].split('-')[0]
-            item = models.Product.objects.get(pk=pk)
+            item = models.InventoryItem.objects.get(pk=pk)
             models.InventoryScrappingRecordLine.objects.create(
-                product=item,
+                item=item,
                 scrapping_record = self.object,
                 quantity=line['quantity'],
                 note= line['note']
             )
         
+        self.object.scrap()
         return resp
 
 class ScrappingReportListView(ContextMixin, ListView):

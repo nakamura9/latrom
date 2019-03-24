@@ -97,9 +97,12 @@ class InventoryDashboard(
         context['pending_transfers'] = models.TransferOrder.objects.filter(
             completed=False).count()
 
-        context['products'] = models.Product.objects.all().count()
-        context['equipment'] = models.Equipment.objects.all().count()
-        context['consumables'] = models.Consumable.objects.all().count()
+        context['products'] = models.InventoryItem.objects.filter(
+            type=0).count()
+        context['equipment'] = models.InventoryItem.objects.filter(
+            type=1).count()
+        context['consumables'] = models.InventoryItem.objects.filter(
+            type=2).count()
 
         return context
 

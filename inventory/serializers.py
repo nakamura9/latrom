@@ -2,60 +2,35 @@ from rest_framework import serializers
 
 from .models import *
 
-
-class ProductSerializer(serializers.ModelSerializer):
+class ProductComponentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
-        fields = ['unit_sales_price', 'unit_purchase_price', 'quantity',
-            'id', 'name', 'description', "pricing_method", "margin", "markup", "direct_price"]
+        model = ProductComponent
+        fields = "__all__"
 
-class RawMaterialSerializer(serializers.ModelSerializer):
+class EquipmentComponentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RawMaterial
-        fields = [ 'unit_purchase_price','unit', 'quantity',
-            'id', 'name', 'description']
+        model = EquipmentComponent
+        fields = "__all__"
 
-class ConsumableSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Consumable
-        fields = ['unit_purchase_price', 'quantity',
-            'id', 'name', 'description']
-
-class EquipmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Equipment
-        fields = ['unit_purchase_price', 'quantity',
-            'id', 'name', 'description']
-
-class WareHouseItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=False)
-    consumable = ConsumableSerializer(many=False)
-    equipment = EquipmentSerializer(many=False)
+class InventoryItemSerializer(serializers.ModelSerializer):
+    product_component = ProductComponentSerializer(many=False)
+    equipment_component = EquipmentComponentSerializer(many=False)
     
     class Meta:
+        model = InventoryItem
+        fields = "__all__"
+
+class WareHouseItemSerializer(serializers.ModelSerializer):
+    item = InventoryItemSerializer(many=False)
+    class Meta:
         model = WareHouseItem
-        fields = ['product', 'consumable','equipment','item_type','name', 'id', 'quantity', 'warehouse', 'location']
+        fields = ['item', 'name', 'id', 'quantity', 'warehouse', 'location']
 
 
 class WareHouseSerializer(serializers.ModelSerializer):
     warehouseitem_set = WareHouseItemSerializer(many=True)
     class Meta:
         model = WareHouse
-        fields = "__all__"
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=False)
-    consumable = ConsumableSerializer(many=False)
-    equipment = EquipmentSerializer(many=False)
-    
-    class Meta:
-        fields = "__all__"
-        model = OrderItem
-
-class OrderSerializer(serializers.ModelSerializer):
-    orderitem_set = OrderItemSerializer(many=True)
-    class Meta:
-        model = Order
         fields = "__all__"
 
 class StockAdjustmentSerializer(serializers.ModelSerializer):
@@ -95,8 +70,26 @@ class UnitSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    item = InventoryItemSerializer(many=False)
+    unit = UnitSerializer(many=False)
+    class Meta:
+        fields = "__all__"
+        model = OrderItem
+
+class OrderSerializer(serializers.ModelSerializer):
+    orderitem_set = OrderItemSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = "__all__"
+
 class TransferOrderLineSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=False)
+    item = InventoryItemSerializer(many=False)
     class Meta:
         model = TransferOrderLine
         fields ="__all__"

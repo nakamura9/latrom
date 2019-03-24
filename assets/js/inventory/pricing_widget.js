@@ -16,14 +16,14 @@ class PricingWidget extends Component{
         if(tail !== "product-create"){
             axios({
                 "method": "GET",
-                "url": "/inventory/api/product/" + tail
+                "url": "/inventory/api/inventory-item/" + tail
             }).then(res =>{
-                console.log(res.data.pricing_method)
+                console.log(res.data.product_component.pricing_method.toString());
                 this.setState({
-                    selected: toString(res.data.pricing_method),
-                    marginValue: res.data.margin,
-                    markupValue: res.data.markup,
-                    directValue: res.data.direct_price
+                    selected: res.data.product_component.pricing_method.toString(),
+                    marginValue: res.data.product_component.margin,
+                    markupValue: res.data.product_component.markup,
+                    directValue: res.data.product_component.direct_price
                 })
             })
         }

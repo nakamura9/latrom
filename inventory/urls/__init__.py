@@ -7,6 +7,7 @@ from .order_urls import order_urls
 from .report_urls import report_urls 
 from .supplier_urls import supplier_urls
 from .transfer_urls import transfer_urls
+from .item import inventory_item_urls
 from rest_framework.routers import DefaultRouter
 
 unit_router = DefaultRouter()
@@ -47,3 +48,4 @@ urlpatterns += report_urls
 urlpatterns += transfer_urls
 urlpatterns += supplier_urls
 urlpatterns += unit_router.urls
+urlpatterns += inventory_item_urls

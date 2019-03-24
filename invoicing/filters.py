@@ -65,3 +65,13 @@ class CreditNoteFilter(django_filters.FilterSet):
         fields = {
             'date': ['exact'],
         }
+
+
+class InvoiceFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Invoice
+        fields = {
+            'date': ['icontains'],
+            'customer': ['exact'],
+            'salesperson': ['exact'],
+        }

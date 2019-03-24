@@ -118,16 +118,16 @@ class TransferOrderCreateView(CreateView):
         data = json.loads(urllib.parse.unquote(request.POST['items'])) 
         for i in data:
             pk, _ = i['item'].split('-')[0]
-            product = models.Product.objects.get(pk=pk)
-            wh_item = self.object.source_warehouse.get_item(product)
+            item = models.InventoryItem.objects.get(pk=pk)
+            wh_item = self.object.source_warehouse.get_item(item)
             if wh_item and wh_item.quantity >= float(i['quantity']):
                 models.TransferOrderLine.objects.create(
-                    product = product,
+                    item = item,
                     quantity = i['quantity'],
                     transfer_order = self.object
                 )
             else:
-                messages.info(request, 'The selected source warehouse has insufficient quantity of item %s to make the transfer' % product)
+                messages.info(request, 'The selected source warehouse has insufficient quantity of item %s to make the transfer' % item)
         return resp
 
 class TransferOrderListView(ContextMixin, PaginationMixin, FilterView):
@@ -167,7 +167,7 @@ class TransferOrderReceiveView(ContextMixin, UpdateView):
 
 
     def post(self, request, *args, **kwargs):
-        resp = super(TransferOrderReceiveView, self).post(request, *args, **kwargs)
+        resp = super().post(request, *args, **kwargs)
 
         for item in json.loads(urllib.parse.unquote(
                 request.POST['received-items'])):

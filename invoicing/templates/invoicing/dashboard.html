@@ -18,17 +18,17 @@
                         {% if use_sales_invoice %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-cash-register"></i> Sales Invoices</h4>
+                                <h4 class="card-title"><i class="fas fa-cash-register"></i> Invoices</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a class="card-link" href="{% url 'invoicing:create-sales-invoice' %}">
-                                            Create Sales Invoice
+                                        <a class="card-link" href="{% url 'invoicing:create-invoice' %}">
+                                            Create  Invoice
                                         </a>
                                     </li>
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:sales-invoice-list' %}">Manage
-                                            Sales Invoices</a></li>
+                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoice-list' %}">Manage
+                                             Invoices</a></li>
                                 </ul>
                             </div>
                         </div>

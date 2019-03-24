@@ -13,7 +13,6 @@ from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel, SoftDeletionModel
 
 
-from .item_models import Product, Equipment, Consumable
 
 class InventorySettings(SingletonModel):
     INVENTORY_VALUATION_PERIOD=[

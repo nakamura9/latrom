@@ -1,0 +1,14 @@
+{% extends "invoicing/invoice_templates/common.html" %} {% block page_contents %}
+<style>
+    #page-layout {
+        width: 100%;
+        height: 100%;
+    }
+
+    #title {
+        text-align: center;
+    }
+</style>
+
+{% include "invoicing/combined_invoice/document.html" %}
+{% endblock %}

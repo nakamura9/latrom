@@ -18,7 +18,7 @@ from rest_framework.viewsets import ModelViewSet
 from common_data.forms import AuthenticateForm
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
-from inventory.models import Consumable, Equipment, UnitOfMeasure
+from inventory.models import  UnitOfMeasure, InventoryItem
 from services import filters, forms, models, serializers
 
 class EquipmentRequisitionMixin(object):
@@ -31,7 +31,7 @@ class EquipmentRequisitionMixin(object):
         
         for equ in equipment:
             equ_pk = equ['item'].split('-')[0]
-            equ_item = Equipment.objects.get(pk=equ_pk)
+            equ_item = InventoryItem.objects.get(pk=equ_pk)
             line = models.EquipmentRequisitionLine.objects.create(
                 requisition=self.object,
                 equipment= equ_item,
@@ -145,7 +145,7 @@ class ConsumableRequisitionMixin():
         
         for con in consumables:
             con_pk = con['item'].split('-')[0]
-            con_item = Consumable.objects.get(pk=con_pk)
+            con_item = InventoryItem.objects.get(pk=con_pk)
             unit_pk = con['unit'].split('-')[0]
             unit = UnitOfMeasure.objects.get(pk=unit_pk)
             line = models.ConsumablesRequisitionLine.objects.create(
@@ -268,7 +268,7 @@ class EquipmentReturnView( FormView):
         if not usr or not hasattr(usr, 'employee'):
             messages.info(request, 
                 '''The username or password provided were incorrect.''')
-            return HttpResponseRedirect('/services/equipment/{}'.format(
+            return HttpResponseRedirect('/services/equipment-return/{}'.format(
                 self.kwargs['pk']))
 
         requisition = get_object_or_404(models.EquipmentRequisition, 

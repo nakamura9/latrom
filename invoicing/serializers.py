@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from accounting.serializers import ExpenseSerializer, TaxSerializer
-from inventory.serializers import ProductSerializer
 from services.serializers import ServiceSerializer
 
 from .models import *
@@ -28,7 +27,6 @@ class ConfigSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class SalesInvoiceLineSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=False)
     class Meta:
         model = SalesInvoiceLine
         fields = ['product', 'quantity', 'id', 'returned_quantity']
@@ -69,7 +67,6 @@ class BillSerializer(serializers.ModelSerializer):
 
 class CombinedInvoiceLineSerializer(serializers.ModelSerializer):
     expense = ExpenseSerializer(many=False)
-    product = ProductSerializer(many=False)
     service = ServiceSerializer(many=False)
     class Meta:
         model = CombinedInvoiceLine
@@ -81,3 +78,37 @@ class CombinedInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CombinedInvoice
         fields = ['combinedinvoiceline_set', 'customer', 'id']
+
+
+class ExpenseLineComponentSerializer(serializers.ModelSerializer):
+    expense = ExpenseSerializer(many=False)
+    class Meta:
+        model = ExpenseLineComponent
+        fields = "__all__"
+
+class ProductLineComponentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductLineComponent
+        fields = "__all__"
+
+
+class ServiceLineComponentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceLineComponent
+        fields = "__all__"
+
+class InvoiceLineSerializer(serializers.ModelSerializer):
+    expense = ExpenseLineComponentSerializer(many=False)
+    product = ProductLineComponentSerializer(many=False)
+    service = ServiceLineComponentSerializer(many=False)
+    
+    class Meta:
+        model = InvoiceLine
+        fields = "__all__"
+
+class InvoiceSerializer(serializers.ModelSerializer):
+    invoiceline_set = InvoiceLineSerializer(many=True)
+    class Meta:
+        model = Invoice
+        fields = ['invoiceline_set', 'customer', 'id']
+

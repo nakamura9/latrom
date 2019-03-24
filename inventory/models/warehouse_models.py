@@ -12,8 +12,6 @@ from django.db.models import Q
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel
 
-from .item_models import Consumable, Equipment, Product
-
 
 class WarehouseExeption(Exception):
     pass
@@ -57,24 +55,12 @@ class WareHouse(models.Model):
 
     def get_item(self, item):
         '''can accept product consumable or equipment as an arg'''
-        if isinstance(item, Product) and \
-                WareHouseItem.objects.filter(
-                    product=item, warehouse=self).exists():
+        if WareHouseItem.objects.filter(
+            item=item, warehouse=self).exists():
                     
-            return WareHouseItem.objects.get(product=item, warehouse=self)
-        elif isinstance(item, Consumable) and \
-                WareHouseItem.objects.filter(
-                    consumable=item, warehouse=self).exists():
-
-            return WareHouseItem.objects.get(consumable=item, 
-                warehouse=self)
-        elif isinstance(item, Equipment) and \
-                WareHouseItem.objects.filter(
-                    equipment=item, warehouse=self).exists():
-
-            return WareHouseItem.objects.get(equipment=item, warehouse=self)
-        else:
-            return None # next code is dead for now
+            return WareHouseItem.objects.get(item=item, warehouse=self)
+        
+        return None # next code is dead for now
         
     def has_item(self, item):
         return self.get_item(item) is not None
@@ -93,15 +79,8 @@ class WareHouse(models.Model):
             self.get_item(item).increment(quantity)
             
         else:
-            if isinstance(item, Product):
-                return self.warehouseitem_set.create(product=item, 
-                    quantity=quantity, item_type=1, location=location)
-            elif isinstance(item, Consumable):
-                return self.warehouseitem_set.create(consumable=item, 
-                    quantity=quantity, item_type=2, location=location)
-            elif isinstance(item, Equipment):
-                return self.warehouseitem_set.create(equipment=item, 
-                    quantity=quantity, item_type=3, location=location)
+            self.warehouseitem_set.create(item=item, 
+                    quantity=quantity, location=location)
             
         return self.get_item(item)
 
@@ -134,15 +113,9 @@ class WareHouseItem(models.Model):
     # NB for now the software will require all items of the same type to be 
     # stored in the same location for the same warehouse.
     
-    item_type = models.PositiveSmallIntegerField()
-    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, 
-        null=True)
-    consumable = models.ForeignKey('inventory.Consumable', 
-        on_delete=models.SET_NULL, null=True)
-    equipment = models.ForeignKey('inventory.Equipment', 
-        on_delete=models.SET_NULL, null=True)
-    raw_material = models.ForeignKey('inventory.rawmaterial', 
-        on_delete=models.SET_NULL, null=True)
+    item = models.ForeignKey('inventory.inventoryitem',
+        null=True,
+        on_delete=models.SET_NULL)
     quantity = models.FloatField()
     warehouse = models.ForeignKey('inventory.Warehouse', 
         on_delete=models.SET_NULL, null=True, default=1)
@@ -152,13 +125,6 @@ class WareHouseItem(models.Model):
     verified = models.BooleanField(default=False)
     #verification expires after the next inventory check date
 
-    def __init__(self, *args, **kwargs):
-        super(WareHouseItem, self).__init__(*args, **kwargs)
-        self.mapping = {
-            1: self.product,
-            2: self.consumable, 
-            3: self.equipment
-        }
 
     def increment(self, amt):
         amount = float(amt)
@@ -178,19 +144,18 @@ class WareHouseItem(models.Model):
     @property
     def name(self):
         #for the api
+
         return self.item.name
 
+    
     def __str__(self):
         return self.name
-
+    
     @property
     def stock_value(self):
         # TODO test ensure items have stock value implemented
         return D(self.quantity) * self.item.stock_value
 
-    @property
-    def item(self):
-        return self.mapping[self.item_type]
 
     def save(self, *args, **kwargs):
         if self.warehouse.has_item(self.item) and self.pk is None:

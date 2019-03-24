@@ -6,6 +6,7 @@ from .combined_urls import combined_urls
 from .service_urls import service_urls
 from .sales_urls import sales_urls
 from .report_urls import report_urls
+from .invoice import urls as invoice_urls
 
 customer_router = DefaultRouter()
 customer_router.register(r'api/customer', views.CustomerAPIViewSet, base_name='customer')
@@ -44,5 +45,4 @@ urlpatterns = [
     re_path(r'^$', views.Home.as_view(), name="home"),
     re_path(r'^config/(?P<pk>[\d]+)/?$', views.ConfigView.as_view(), name="config"),
     re_path(r'^api/config/(?P<pk>[\d]+)/?$', views.ConfigAPIView.as_view(), name='api-config')
-] + report_urls + customer_urls + sales_rep_urls + combined_urls + sales_urls + service_urls + \
-    bill_urls
+] + report_urls + customer_urls + sales_rep_urls + combined_urls + sales_urls + service_urls + bill_urls + invoice_urls

@@ -61,10 +61,10 @@ class OrderPOSTMixin(object):
             for i in self.object.orderitem_set.all():
                 i.delete()
 
+        print(items)
         for data in items:
             id= data['item'].split('-')[0] 
-            item_type = id[0] # one of P, C or E
-            pk = id.strip(item_type) # removes letter from pk
+            pk = id
             
             unit_id = 1 # default value
             if data['unit'] != "":
@@ -72,31 +72,13 @@ class OrderPOSTMixin(object):
             
             unit = models.UnitOfMeasure.objects.get(
                         pk=unit_id)
-            if item_type == 'P':
-                product = models.Product.objects.get(pk=pk)
-                order.orderitem_set.create(
-                    product=product,
-                    item_type=1,
-                    quantity=data['quantity'],
-                    unit=unit,
-                    order_price=data['order_price'])
-            elif item_type == 'E':
-                equipment = models.Equipment.objects.get(pk=pk)
-                order.orderitem_set.create(
-                    equipment=equipment,
-                    item_type=3,
-                    quantity=data['quantity'],
-                    unit=unit,
-                    order_price=data['order_price'])
-            elif item_type == 'C':
-                consumable = models.Consumable.objects.get(pk=pk)
-                order.orderitem_set.create(
-                    consumable=consumable,
-                    item_type=2,
-                    quantity=data['quantity'],
-                    unit=unit,
-                    order_price=data['order_price'])   
-        
+            item = models.InventoryItem.objects.get(pk=pk)
+            order.orderitem_set.create(
+                item=item,
+                quantity=data['quantity'],
+                unit=unit,
+                order_price=data['order_price'])
+            
         #create transaction after loading all the items
         #vary based on order status
         
@@ -199,6 +181,7 @@ class OrderDetailView( ContextMixin,
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['pdf_link'] =True
         if self.object.status == "draft":
             context['actions'] = [
                 {

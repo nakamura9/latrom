@@ -37,6 +37,7 @@
     
         {% if pdf_link %}
         {% include "nav.html" %}
+        {% block pre_page %}{% endblock %}
         {% endif %}
         <div class="page-container"> 
             <div class="custom-page">

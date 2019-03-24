@@ -1,4 +1,22 @@
 {% extends "common_data/page/pdf_page.html" %}
+{% block pre_page %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Purchase Order Details</h1>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <ul>
+            {% for action in actions %}
+            <li style="list-style-type:none;">
+                <a href="{{action.url}}" class="btn btn-primary">{{action.name}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </p>
+</div>
+
+{% endblock pre_page %}
 {% block page_contents %}
 
 {% include "inventory/order/document.html" %}

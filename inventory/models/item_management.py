@@ -167,8 +167,8 @@ class TransferOrder(models.Model):
         self.save()
 
 class TransferOrderLine(models.Model):
-    # TODO add support later for consumables and equipment
-    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, 
+    item = models.ForeignKey('inventory.inventoryitem', 
+        on_delete=models.SET_NULL, 
         null=True)
     quantity = models.FloatField()
     transfer_order = models.ForeignKey('inventory.TransferOrder', 
@@ -178,9 +178,9 @@ class TransferOrderLine(models.Model):
     def move(self, quantity, location=None):
         '''performs the actual transfer of the item between warehouses'''
         self.transfer_order.source_warehouse.decrement_item(
-            self.product, quantity)
+            self.item, quantity)
         self.transfer_order.receiving_warehouse.add_item(
-            self.product, quantity, location=location)
+            self.item, quantity, location=location)
         self.moved=quantity
         self.save()
         self.transfer_order.update_completed_status()
@@ -207,14 +207,12 @@ class InventoryScrappingRecord(models.Model):
     def scrap(self):
         #must be called after all the lines are created
         for item in self.scrapped_items:
-            self.warehouse.decrement_item(item.product, item.quantity)
-
-
-
+            self.warehouse.decrement_item(item.item, item.quantity)
 
 class InventoryScrappingRecordLine(models.Model):
-    #add support for equipment and consumables
-    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, null=True)
+    item = models.ForeignKey('inventory.inventoryitem', 
+        on_delete=models.SET_NULL, 
+        null=True)
     quantity = models.FloatField()
     note = models.TextField(blank=True)
     scrapping_record = models.ForeignKey('inventory.InventoryScrappingRecord', on_delete=models.SET_NULL, null=True)

@@ -122,7 +122,7 @@ class SalesInvoice(AbstractSale):
 class SalesInvoiceLine(models.Model):
     invoice = models.ForeignKey('invoicing.SalesInvoice',
         on_delete=models.CASCADE,)
-    product = models.ForeignKey("inventory.Product", on_delete=models.SET_NULL, 
+    product = models.ForeignKey("inventory.InventoryItem", on_delete=models.SET_NULL, 
         null=True)
     quantity = models.FloatField(default=0.0)
     #what it is sold for

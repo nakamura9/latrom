@@ -1,0 +1,45 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Select an Inventory Category</h1>
+    <p class="lead">Jumbo helper text</p>
+    <hr class="my-2">
+    <p>More info</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="Jumbo action link" role="button">Jumbo action name</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fas fa-shopping-basket" style="font-size:168px;color:#007bff"></i>
+                        <h4 class="card-title">Product</h4>
+                        <p class="card-text">These are items kept in inventory for resale</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fas fa-tools" style="font-size:168px;color:#007bff"></i>
+                        <h4 class="card-title">Equipment</h4>
+                        <p class="card-text">These are items that are kept to perform business related functions such as tools.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fas fa-hand-holding" style="font-size:168px;color:#007bff"></i>
+                        <h4 class="card-title">Consumable</h4>
+                        <p class="card-text">Consumables are inventory used within the business but are not suitable for reuse</p>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
