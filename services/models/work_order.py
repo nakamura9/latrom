@@ -9,14 +9,10 @@ from functools import reduce
 from decimal import Decimal as D
 
 class WorkOrderRequest(models.Model):
-    invoice_type = models.PositiveSmallIntegerField(choices=[
-        (0, 'Service Invoice'),
-        (1, 'Combined Invoice')
-    ])
-    service_invoice = models.ForeignKey('invoicing.serviceinvoice', 
-        blank=True, null=True, on_delete=models.SET_NULL)
-    combined_invoice = models.OneToOneField('invoicing.combinedinvoice',
-        blank=True, null=True, on_delete=models.SET_NULL)
+    invoice = models.ForeignKey('invoicing.invoice', 
+        blank=True, 
+        null=True, 
+        on_delete=models.SET_NULL)
     service = models.OneToOneField('services.service', null=True, 
         on_delete=models.SET_NULL)
     status = models.CharField(max_length=16, choices=[

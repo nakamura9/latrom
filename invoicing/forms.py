@@ -207,7 +207,6 @@ class SalesReportForm(PeriodReportForm):
 
 class InvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
-    apply_payment = forms.BooleanField(required=False)
 
     class Meta:
         exclude = "active", 'invoice_number', 'quotation_number', 'discount', 'entry', 'shipping_expenses'

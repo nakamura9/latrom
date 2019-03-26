@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from accounting.serializers import ExpenseSerializer, TaxSerializer
 from services.serializers import ServiceSerializer
+from inventory.serializers import InventoryItemSerializer
 
 from .models import *
 
@@ -87,12 +88,14 @@ class ExpenseLineComponentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class ProductLineComponentSerializer(serializers.ModelSerializer):
+    product = InventoryItemSerializer(many=False)
     class Meta:
         model = ProductLineComponent
         fields = "__all__"
 
 
 class ServiceLineComponentSerializer(serializers.ModelSerializer):
+    service = ServiceSerializer(many=False)
     class Meta:
         model = ServiceLineComponent
         fields = "__all__"

@@ -24,7 +24,7 @@ class CreditNote(models.Model):
         are to be written off."""
     
     date = models.DateField()
-    invoice = models.ForeignKey('invoicing.SalesInvoice', 
+    invoice = models.ForeignKey('invoicing.Invoice', 
             on_delete=models.SET_NULL, null=True)
     comments = models.TextField()#never allow blank comments
 
@@ -75,7 +75,7 @@ class CreditNote(models.Model):
 class CreditNoteLine(models.Model):
     note = models.ForeignKey('invoicing.CreditNote', null=True, 
             on_delete=models.SET_NULL)
-    line = models.ForeignKey('invoicing.SalesInvoiceLine', null=True,
+    line = models.ForeignKey('invoicing.InvoiceLine', null=True,
             on_delete=models.SET_NULL)
     quantity = models.FloatField()
 

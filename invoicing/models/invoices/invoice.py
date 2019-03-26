@@ -14,24 +14,33 @@ from services.models import Service
 from common_data.models import SoftDeletionModel
 import inventory
 from services.models import WorkOrderRequest
+from invoicing.models.credit_note import CreditNoteLine
 
 class Invoice(SoftDeletionModel):
+    '''An invoice is a document that represents a sale. Because of the complexity of the object, both a quotation and an invoice are represented by the same model. The document starts as a quotation and then can move to a proforma invoice culminating in the creation of an invoice.
+    In each stage the document can be considered a draft in which case no journal entries are made and no fiscalization takes place. Only non draft invoices can be sent'''
     DEFAULT_TAX = 1
     DEFAULT_WAREHOUSE = 1 #make fixture
     DEFAULT_SALES_REP = 1
     DEFAULT_CUSTOMER = 1
     SALE_STATUS = [
         ('quotation', 'Quotation'),
-        ('draft', 'Draft'),
         ('proforma', 'Proforma Invoice'),
         ('invoice', 'Invoice'),
         ('paid', 'Paid In Full'),
         ('paid-partially', 'Paid Partially'),
-        ('reversed', 'Reversed'),
-    ]
+    ]# reversal is handled in credit notes
+
     status = models.CharField(max_length=16, choices=SALE_STATUS)
     invoice_number = models.PositiveIntegerField(null=True)
     quotation_number = models.PositiveIntegerField(null=True)
+    quotation_date = models.DateField(blank=True, null=True)
+    quotation_valid= models.DateField(blank=True, null=True)
+    invoice_validated_by = models.ForeignKey('auth.user', 
+        blank=True, 
+        null=True, 
+        on_delete=models.SET_NULL)
+    draft = models.BooleanField(blank=True, default=True)
     customer = models.ForeignKey("invoicing.Customer", 
         on_delete=models.SET_NULL, 
         null=True,
@@ -65,22 +74,28 @@ class Invoice(SoftDeletionModel):
         on_delete=models.SET_NULL,  blank=True, null=True)
     
     def add_line(self, data):
-        if data['lineType'] == 'sale':
-            pk = data['data']['item'].split('-')[0]
-            product = inventory.models.Product.objects.get(pk=pk)
-            self.invoiceline_set.create(
-                line_type=1,#product
-                quantity= data['data']['quantity'],
-                product=product
+        if data['type'] == 'product':
+            pk = data['selected'].split('-')[0]
+            product = inventory.models.InventoryItem.objects.get(pk=pk)
+            component = ProductLineComponent.objects.create(
+                product=product,
+                quantity=data['quantity']
             )
-        
-        elif data['lineType'] == 'service':
-            pk = data['data']['service'].split('-')[0]
+            line = self.invoiceline_set.create(
+                line_type=1,#product 
+                product=component
+            )
+            
+        elif data['type'] == 'service':
+            pk = data['selected'].split('-')[0]
             service = Service.objects.get(pk=pk)
+            component = ServiceLineComponent.objects.create(
+                service=service,
+                hours=data['hours']
+            )
             self.invoiceline_set.create(
                 line_type=2,#service
-                quantity= data['data']['hours'],
-                service=service
+                service=component
             )
 
             if not self.status in ['quotation', 'draft']:
@@ -89,16 +104,18 @@ class Invoice(SoftDeletionModel):
                     WorkOrderRequest.objects.create(
                         invoice=self, 
                         service=service,
-                        invoice_type=1,
                         status="request"
                     )
 
-        elif data['lineType'] == 'billable':
-            pk = data['data']['billable'].split('-')[0]
+        elif data['type'] == 'expense':
+            pk = data['selected'].split('-')[0]
             expense = Expense.objects.get(pk=pk)
+            component = ExpenseLineComponent.objects.create(
+                expense=expense
+            )
             self.invoiceline_set.create(
                 line_type=3,#expense
-                expense=expense
+                expense=component
             )
 
     @property
@@ -264,56 +281,63 @@ class InvoiceLine(models.Model):
         on_delete=models.SET_NULL, 
         null=True, 
         default=1)
-    product = models.ForeignKey('invoicing.ProductLineComponent',
+    product = models.OneToOneField('invoicing.ProductLineComponent',
         on_delete=models.SET_NULL, 
         null=True, )
-    service = models.ForeignKey('invoicing.ServiceLineComponent',
+    service = models.OneToOneField('invoicing.ServiceLineComponent',
         on_delete=models.SET_NULL, 
         null=True,)
-    expense = models.ForeignKey("invoicing.ExpenseLineComponent", 
+    expense = models.OneToOneField("invoicing.ExpenseLineComponent", 
         on_delete=models.SET_NULL, 
         null=True,)
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
     #what it is sold for
-    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
     
+    @property 
+    def component(self):
+        mapping = {
+            1: self.product,
+            2: self.service,
+            3: self.expense
+        }
+
+        return mapping[self.line_type]
     
     def __str__(self):
+        if not self.component:
+            return "<INVALID INVOICE LINE>"
         if self.line_type == 1:
             return '[PRODUCT] {} x {} @ ${:0.2f}{}'.format(
-                self.quantity,
-                str(self.product).split('-')[1],
-                self.product.unit_sales_price,
-                self.product.unit
+                self.component.quantity,
+                str(self.component.product).split('-')[1],
+                self.component.price,
+                self.component.product.unit
             )
         elif self.line_type == 2:
             return '[SERVICE] {} Flat fee: ${:0.2f} + {}Hrs @ ${:0.2f}/Hr'.format(
-                self.service.name,
-                self.service.flat_fee,
-                self.quantity,
-                self.service.hourly_rate
+                self.component.service.name,
+                self.component.service.flat_fee,
+                self.component.hours,
+                self.component.service.hourly_rate
             )
         elif self.line_type ==3:
-            return '[BILLABE EXPENSE] %s' % self.expense.description
+            return '[BILLABE EXPENSE] %s' % self.expense.expense.description
 
     
     @property
     def subtotal(self):
-        if self.line_type == 1:
-            return self.price * self.quantity
-        elif self.line_type == 2:
-            return self.service.flat_fee + \
-                 (self.service.hourly_rate * self.quantity)
-        elif self.line_type ==3:
-            return self.expense.amount if self.expense else 0
-
-        return 0
+        if not self.component:
+            return 0
+        return self.component.subtotal
+        
 
 
 class ProductLineComponent(models.Model):
     product = models.ForeignKey('inventory.InventoryItem', null=True, 
         on_delete=models.SET_NULL)
     returned = models.BooleanField(default=False)
+    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
+
     # value is calculated once when the invoice is generated to prevent 
     # distortions as prices change
     #what it is worth to the business
@@ -323,11 +347,18 @@ class ProductLineComponent(models.Model):
         decimal_places=2, 
         default=0.0)  
 
+    @property 
+    def line(self):
+        if InvoiceLine.objects.filter(product=self).exists():
+            return InvoiceLine.objects.get(product=self)
+        return None
+
     @property
     def returned_quantity(self):
-        
-        return sum([ item.quantity \
-            for item in CreditNoteLine.objects.filter(line=self)])
+        if self.line:
+            return sum([ item.quantity \
+                for item in CreditNoteLine.objects.filter(line=self.line)])
+        return 0
 
     def __str__(self):
         return str(self.product)
@@ -380,12 +411,13 @@ class ProductLineComponent(models.Model):
         super().save(*args, **kwargs)
         if self.returned_quantity > 0:
             self.returned = True
-            
+        
         if self.price == 0.0 and self.product.unit_sales_price != D(0.0):
             self.price = self.product.unit_sales_price
             self.save()
 
-        if self.value == D(0.0) and self.product.stock_value > D(0.0):
+        if self.value == D(0.0) and \
+                self.product.product_component.stock_value > D(0.0):
             self.set_value()  
 
 class ServiceLineComponent(models.Model):
@@ -395,12 +427,47 @@ class ServiceLineComponent(models.Model):
         max_digits=9, 
         decimal_places=2, 
         default=0.0)
+    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
 
     @property
-    def total(self):
-        return self.service.flat_fee + (self.service.hourly_rate * self.hours)
+    def line(self):
+        if InvoiceLine.objects.filter(service=self).exists():
+            return InvoiceLine.objects.get(service=self)
+
+        return None
+
+    @property
+    def subtotal(self):
+        product = float(self.hours) * float(self.service.hourly_rate)
+        return D(float(self.service.flat_fee) + product)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.price == 0.0 and self.subtotal > 0:
+            self.price = self.subtotal
+            self.save()
+
+        
 
 class ExpenseLineComponent(models.Model):
     expense = models.ForeignKey('accounting.Expense', 
         on_delete=models.SET_NULL, 
         null=True)
+    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
+
+    @property
+    def line(self):
+        if InvoiceLine.objects.filter(expense=self).exists():
+            return InvoiceLine.objects.get(expense=self)
+
+        return None
+
+    @property
+    def subtotal(self):
+        return self.price
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.price == 0.0 and self.expense and self.expense.amount > 0:
+            self.price = self.expense.amount
+            self.save()

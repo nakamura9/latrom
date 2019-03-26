@@ -76,6 +76,13 @@ class InventoryItem(SoftDeletionModel):
             Q(quantity__gt=0)
             )
 
+    @property
+    def unit_sales_price(self):
+        if self.product_component:
+            return self.product_component.unit_sales_price
+
+        return D(0)
+
 
 class ProductComponent(models.Model):
     PRICING_CHOICES = [

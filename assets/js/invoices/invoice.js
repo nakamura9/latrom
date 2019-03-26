@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {DeleteButton, SearchableWidget, Totals} from '../src/common';
-import EntryWidget from './combinedInvoice/entry_widget';
+import {DeleteButton, Totals} from '../src/common';
+import EntryWidget from './invoice_entry';
 
 
-export default class CombinedTable extends Component{
+export default class InvoiceTable extends Component{
     state = {
         taxObj: null,
         tax: 0.0,
@@ -26,23 +26,23 @@ export default class CombinedTable extends Component{
          let decomposed = URL.split('/');
          let tail = decomposed[decomposed.length - 1];
          
-         if(tail !== 'create-combined-invoice'){
+         if(tail !== 'create-invoice'){
              axios({
-                 url: '/invoicing/api/combined-invoice/' + tail,
+                 url: '/invoicing/api/invoice/' + tail,
                  method: 'GET',
              }).then(res =>{
-                 let itemList = res.data.combinedinvoiceline_set.map((line) =>{
+                 let itemList = res.data.invoiceline_set.map((line) =>{
                     let lineMappings = {
-                        1: 'sale',
+                        1: 'product',
                         2: 'service',
-                        3: 'billable'
+                        3: 'expense'
                     };
                     let data;
                     if(line.line_type === 1){
                         data = {
-                            item: line.product.id + '-' + line.product.name,
-                            quantity: line.quantity_or_hours,
-                            price: line.product.unit_sales_price
+                            selected: line.product.product.id + '-' + line.product.product.name,
+                            quantity: parseFloat(line.product.quantity),
+                            unitPrice: parseFloat(line.product.price)
                         };
                     }else if (line.line_type === 2){
                         data = {
@@ -53,14 +53,14 @@ export default class CombinedTable extends Component{
                         }
                     }else if (line.line_type === 3){
                         data = {
-                            billable: line.expense.id + '-' +line.expense.description,
+                            expense: line.expense.id + '-' +line.expense.description,
                             description: line.expense.description,
                             amount: line.expense.amount 
                         }
                     }
                     return {
-                        lineType: lineMappings[line.line_type],
-                        data: data
+                        type: lineMappings[line.line_type],
+                        ...data
                      }
                  })
                  this.setState({items: itemList}, this.updateForm);
@@ -88,17 +88,16 @@ export default class CombinedTable extends Component{
     }
 
     subtotalReducer(x, y){
-        if(y.lineType === 'sale'){
-            let total = y.data.price * parseFloat(y.data.quantity);
-            
+        if(y.type === 'product'){
+            let total = y.unitPrice * parseFloat(y.quantity);
             return (x + total);
-        }else if(y.lineType === 'service'){
-            let total = parseFloat((y.data.rate) * parseFloat(y.data.hours)) + 
-                parseFloat(y.data.flatFee);
+        }else if(y.type === 'service'){
+            let total = parseFloat((y.rate) * parseFloat(y.hours)) + 
+                parseFloat(y.fee);
             return (x + total);
         }else{
             //billable
-            return (x + parseFloat(y.data.amount));
+            return (x + parseFloat(y.amount));
         }
     }
 
@@ -120,21 +119,21 @@ export default class CombinedTable extends Component{
                 <tbody>
                     {this.state.items.map((item, i) =>{
                         let line;
-                        if(item.lineType === "sale"){
+                        if(item.type === "product"){
                             line = <SaleLine 
-                                        {...item.data}
+                                        {...item}
                                         key={i}
                                         index={i}
                                         handler={this.deleteHandler}/>
-                        }else if(item.lineType === "service"){
+                        }else if(item.type === "service"){
                             line = <ServiceLine  
-                                        {...item.data}
+                                        {...item}
                                         key={i}
                                         index={i}
                                         handler={this.deleteHandler}/>
                         }else{
                             line = <BillableLine  
-                                        {...item.data}
+                                        {...item}
                                         key={i}
                                         index={i}
                                         handler={this.deleteHandler}/>
@@ -142,9 +141,14 @@ export default class CombinedTable extends Component{
                         return(line);
                     }
                     )}
-                <EntryWidget
-                    itemList={this.state.items}
-                    insertHandler={this.insertHandler}/>
+                <tr>
+                    <td colSpan={3} style={{padding: '0px'}}>
+                        <EntryWidget
+                            itemList={this.state.items}
+                            insertHandler={this.insertHandler}/>
+                    </td>
+                </tr>
+                
                 </tbody>
                 <Totals 
                     span={3}
@@ -156,7 +160,7 @@ export default class CombinedTable extends Component{
 }
 
 const SaleLine = (props) =>{
-    let total = props.price * parseFloat(props.quantity);
+    let total = props.unitPrice * parseFloat(props.quantity);
     return(
         <tr>
             <td>
@@ -166,8 +170,8 @@ const SaleLine = (props) =>{
             </td>
             <td>
                 {props.quantity} x {
-                    props.item.split('-')[1]
-                } @ ${props.price.toFixed(2)} each.
+                    props.selected.split('-')[1]
+                } @ ${props.unitPrice.toFixed(2)} each.
             </td>
             <td>{total.toFixed(2)}</td>
         </tr>
@@ -176,7 +180,7 @@ const SaleLine = (props) =>{
 
 const ServiceLine = (props) =>{
     let total = (parseFloat(props.hours) * parseFloat(props.rate)) +
-         parseFloat(props.flatFee);
+         parseFloat(props.fee);
     return(
         <tr>
             <td>
@@ -185,8 +189,8 @@ const ServiceLine = (props) =>{
                     handler={props.handler}/>
             </td>
             <td>{
-                props.service.split('-')[1]
-            } - Flat Fee: ${props.flatFee} + {props.hours}Hrs x @ ${props.rate} /Hr</td>
+                props.selected.split('-')[1]
+            } - Flat Fee: ${props.fee} + {props.hours}Hrs x @ ${props.rate} /Hr</td>
             <td>{total.toFixed(2)}</td>
         </tr>
     )

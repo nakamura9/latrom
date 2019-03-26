@@ -15,7 +15,7 @@ class EquipmentComponentSerializer(serializers.ModelSerializer):
 class InventoryItemSerializer(serializers.ModelSerializer):
     product_component = ProductComponentSerializer(many=False)
     equipment_component = EquipmentComponentSerializer(many=False)
-    
+    unit_sales_price = serializers.ReadOnlyField()
     class Meta:
         model = InventoryItem
         fields = "__all__"

@@ -15,7 +15,6 @@
             <div class="tab-content panel-body">
                 <div id="actions" class="tab-pane active">
                     <div class="card-deck">
-                        {% if use_sales_invoice %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
                                 <h4 class="card-title"><i class="fas fa-cash-register"></i> Invoices</h4>
@@ -27,62 +26,11 @@
                                             Create  Invoice
                                         </a>
                                     </li>
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoice-list' %}">Manage
+                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoices-list' %}">Manage
                                              Invoices</a></li>
                                 </ul>
                             </div>
                         </div>
-                        {% endif %}
-                        {% if use_service_invoice %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-toolbox"></i> Service Invoices</h4>
-                            </div>
-                            <div class="card-body">
-                                <li class="list-group-item">
-                                    <a class="card-link" href="{% url 'invoicing:create-service-invoice' %}">
-                                        Create Service Invoice
-                                    </a>
-                                </li>
-                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:service-invoice-list' %}">Manage
-                                        Service Invoices</a></li>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if use_combined_invoice %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-file-alt"></i> Combined Invoices</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:create-combined-invoice' %}">Create
-                                            Combined Invoice</a></li>
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:combined-invoice-list' %}">Manage
-                                            Combined Invoices </a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <hr class="my-4" />
-                    <div class="card-deck">
-                        {% if use_bill_invoice %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-file-invoice-dollar"></i> Bill Customers</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bill-create' %}">Create
-                                            Bill</a></li>
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:bills-list' %}">Managed
-                                            Bills to customers</a></li>
-
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
                                 <h4 class="card-title"><i class="fas fa-shopping-cart"></i> Customers</h4>
@@ -121,6 +69,7 @@
                             </div>
                         </div>
                     </div>
+                        
                     <hr class="my-4" />
                     <div class="card-deck">
                         <div class="card bg-primary text-white">
