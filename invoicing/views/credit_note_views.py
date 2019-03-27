@@ -20,8 +20,10 @@ from accounting.forms import TaxForm
 from common_data.utilities import ConfigMixin, ContextMixin, MultiPageDocument
 from common_data.views import PaginationMixin, PDFDetailView
 from invoicing import filters, forms, serializers
-from invoicing.models import CreditNote, SalesConfig, SalesInvoiceLine
+from invoicing.models import CreditNote, SalesConfig
 from invoicing.models.credit_note import CreditNoteLine
+from invoicing.models.invoice import InvoiceLine, Invoice 
+
 #########################################
 #           Credit Note Views           #
 #########################################
@@ -36,11 +38,11 @@ class CreditNoteCreateView( ContextMixin, CreateView):
     database side of things.
     '''
     extra_context = {"title": "Create New Credit Note"}
-    template_name = os.path.join("invoicing", "sales_invoice", 
+    template_name = os.path.join("invoicing", "invoice", 
         "credit_note", "create.html")
     model = CreditNote
     form_class = forms.CreditNoteForm
-    success_url = reverse_lazy("invoicing:sales-invoice-list")
+    success_url = reverse_lazy("invoicing:invoices-list")
 
     def get_initial(self):
         return {
@@ -58,7 +60,7 @@ class CreditNoteCreateView( ContextMixin, CreateView):
         
         for line in data:
             pk = line['product'].split('-')[0]
-            inv_line = SalesInvoiceLine.objects.get(pk=pk)
+            inv_line = InvoiceLine.objects.get(pk=pk)
             # to ensure duplicate returns are not made
             CreditNoteLine.objects.create(
                 line=inv_line,
@@ -66,7 +68,7 @@ class CreditNoteCreateView( ContextMixin, CreateView):
                 quantity=float(line["returned_quantity"])
             )
             
-            inv_line._return(float(line["returned_quantity"]))
+            inv_line.product._return(float(line["returned_quantity"]))
 
         if self.object:
             self.object.create_entry()
@@ -83,7 +85,7 @@ class CreditNoteUpdateView( ContextMixin, UpdateView):
 
 
 class CreditNoteDetailView( ConfigMixin, MultiPageDocument, DetailView):
-    template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'detail.html')
+    template_name = os.path.join('invoicing', 'invoice', 'credit_note', 'detail.html')
     model = CreditNote
     
     page_length=16
@@ -93,7 +95,7 @@ class CreditNoteDetailView( ConfigMixin, MultiPageDocument, DetailView):
             pk=self.kwargs['pk']))
 
     def get_context_data(self, *args, **kwargs):
-        context = super(CreditNoteDetailView, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         context['title'] = 'Credit Note'
         context['pdf_link'] = True
         return context
@@ -102,7 +104,7 @@ class CreditNoteDetailView( ConfigMixin, MultiPageDocument, DetailView):
 #credit notes now accessed on an invoice by invoice basis
 class CreditNoteListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Credit Notes"}
-    template_name = os.path.join("invoicing", "sales_invoice", "credit_note", "list.html")
+    template_name = os.path.join("invoicing", "invoice", "credit_note", "list.html")
     filterset_class = filters.CreditNoteFilter
     paginate_by = 10
 
@@ -112,7 +114,7 @@ class CreditNoteListView( ContextMixin, PaginationMixin, FilterView):
 
 class CreditNotePDFView(ConfigMixin, MultiPageDocument, PDFDetailView):
     model = CreditNote
-    template_name = os.path.join('invoicing', 'sales_invoice', 'credit_note', 'pdf.html')
+    template_name = os.path.join('invoicing', 'invoice', 'credit_note', 'pdf.html')
     file_name = "credit note.pdf"
     page_length=16
 

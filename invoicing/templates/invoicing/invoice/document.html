@@ -2,7 +2,7 @@
     <tbody>
         <tr>
             <td colspan="2" id="title">
-                <h1>{% if object.status == 'quotation' %}Quotation{% else %} Invoice {% endif %}{% if object.status == 'draft' %}(Draft){% endif %}</h1>
+                <h1>{% if object.status == 'proforma' %}Proforma{% else %} Invoice {% endif %}{% if object.draft %}(Draft){% endif %}</h1>
             </td>
         </tr>
         <tr>
@@ -25,17 +25,10 @@
                         <tr>
                             
                             <td>
-                            {% if object.status == "quotation" %}
-                            Quotation Number:
-                            {% else %}
                             Invoice Number:
-                            {% endif %}</td>
+                            </td>
                             <td>
-                            {% if object.status == "quotation" %}
-                            QUOT{{object.quotation_number | stringformat:"06d"}}
-                            {% else %}
                             INV{{object.invoice_number | stringformat:"06d"}}
-                            {% endif %}
                             </td>
                         </tr>
                         {% endif %}

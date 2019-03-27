@@ -1,69 +1,53 @@
-{% extends "invoicing/invoice_templates/create.html" %}
+{% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 
-{% block prepage %}
-<div class="jumbotron">
-    <h1 class="display-3">Sales Invoice</h1>
-    <p class="lead">Create Invoices for the sale of finished products</p>
-    <hr class="my-2">
-</div>
-{% endblock prepage %}
 
-{% block page_contents %}
-<div>
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
     {{form.errors}}
-</div>
-<table class="table">
-    <form action="" method="POST" id="invoice-form">
-        {% csrf_token %}
-        {{form.tax}}
-        <input type="hidden" name="item_list" value="" id="id-item-list" />
+    <table class="table">
+            <form action="" method="POST">
+                {% csrf_token %}
         <tbody>
             <tr>
-                <td colspan="2">
-                    <center>
-                        <h1>Sales Invoice</h1>
-                    </center>
-                </td>
+                <td colspan="2"><center><h1>Quotation</h1></center></td>
             </tr>
             <tr>
                 <td valign="top">
                     <p>Customer</p>
                     <p>{{form.customer}}</p>
-                    <p>Ship From</p>
-                    <p>{{form.ship_from}}</p>
                     <!--
                     <p>Discount</p>
                     <p>{{form.discount}}</p>
-                    
                     -->
-
-                    <p>Create Invoice and Apply Payment?</p>
-                    <p>{{form.apply_payment}}</p>
-
+                    <p>Tax</p>
+                    <p>{{form.tax}}</p>
+                    <p>Quoted By.</p>
+                    <p>{{form.salesperson}}</p>
                 </td>
                 <td>
-                    <p>Date</p>
-                    <p>{{form.date}}</p>
-                    <p>Due</p>
-                    <p>{{form.due}}</p>
-                    <p>Sales Representative</p>
-                    <p>{{form.salesperson}}</p>
-                    <p>Customer PO #</p>
-                    <p>{{form.purchase_order_number}}</p>
+                    <p>Quotation Date</p>
+                    <p>{{form.quotation_date}}</p>
+                    <p>Quotation Valid Until</p>
+                    <p>{{form.quotation_valid}}</p>
+                    
+                    <input  type="hidden" name="status" value="quotation">
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <ul class="nav nav-tabs">
                         <li class="nav-item"><a class="nav-link active" href="#lines" data-toggle="tab">Invoice Lines</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#comments-terms" data-toggle="tab">Ts & Cs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#comments-terms" data-toggle="tab">T's & C's</a></li>
                     </ul>
                     <div class="tab-content panel-body">
                         <div id="lines" class="tab-pane active">
                             <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                    Invoice Lines</label>
-                                <div id="sales-invoice-contents"></div>
+                                    Quotation Lines</label>
+                                <div id="invoice-table"></div>
                             </div>
                         </div>
                         <div id="comments-terms" class="tab-pane">
@@ -88,20 +72,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="dropdown open">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown">
-                            Submit as...
+                        <button class="btn btn-info " type="submit">
+                            Submit
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="triggerId">
-                            <input class="dropdown-item" type="submit" name="status" value="draft">
-                            <input class="dropdown-item" type="submit" name="status" value="quotation">
-                            <input class="dropdown-item" type="submit" name="status" value="invoice">
-                        </div>
-                    </div>
+                        
                 </td>
             </tr>
+            <tr>
+            </tr>
         </tbody>
-    </form>
-</table>
+        </form>
+    </table>
+
 {% render_bundle 'invoicing' %}
-{% endblock page_contents %}
+</div>
+        </div>
+    </div>
+
+{% endblock  %}
+    

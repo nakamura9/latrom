@@ -1,10 +1,42 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from rest_framework import routers
 
 from invoicing import views
 
 invoice_router = routers.DefaultRouter()
 invoice_router.register('api/invoice', views.InvoiceAPIViewSet)
+
+credit_note_urls = [
+    re_path(r'^credit-note-create/(?P<pk>[\w]+)/?$', 
+        views.CreditNoteCreateView.as_view(), name='credit-note-create'),
+    re_path(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), 
+        name='credit-note-list'),
+    re_path(r'^credit-note-detail/(?P<pk>[\w]+)/?$', 
+        views.CreditNoteDetailView.as_view(), name='credit-note-detail'),
+    re_path(r'^credit-note-pdf/(?P<pk>[\w]+)/?$', 
+        views.CreditNotePDFView.as_view(), name='credit-note-pdf'),
+]
+
+quotation_urls = [
+    re_path(r'^create-quotation/?$', views.QuotationCreateView.as_view(), 
+        name='create-quotation'),
+    re_path(r'^quotation-detail/(?P<pk>[\d]+)/?$', 
+            views.QuotaionDetailView.as_view(), name='quotation-details'),
+    re_path(r'^quotation-update/(?P<pk>[\d]+)/?$', 
+        views.QuotationUpdateView.as_view(), 
+        name='quotation-update'),
+    re_path(r'^quotation-pdf/(?P<pk>[\d]+)/?$', 
+        views.QuotationPDFView.as_view(), 
+        name='quotation-pdf'),
+    re_path(r'^quotation-email/(?P<pk>[\d]+)/?$', 
+        views.QuotationEmailSendView.as_view(), 
+        name='quotation-email'),
+    path('make-invoice/<int:pk>', views.make_invoice_from_quotation, 
+        name='make-invoice'),
+    path('make-proforma/<int:pk>', views.make_proforma_from_quotation, 
+        name='make-proforma'),
+
+]
 
 urls = [
     re_path(r'^create-invoice/?$', views.InvoiceCreateView.as_view(), 
@@ -32,14 +64,12 @@ urls = [
     re_path(r'^invoice-payment-detail/(?P<pk>[\d]+)/?$', 
         views.InvoicePaymentDetailView.as_view(), 
         name='invoice-payment-detail'),
-    re_path(r'^draft-update/(?P<pk>[\d]+)/?$', 
-        views.InvoiceDraftUpdateView.as_view(), name='draft-update'),
     re_path(r'^draft-delete/(?P<pk>[\d]+)/?$', 
         views.InvoiceDraftDeleteView.as_view(), name='draft-delete'),
     re_path(r'^invoice-returns/(?P<pk>[\d]+)/?$', 
         views.InvoiceReturnsDetailView.as_view(), 
         name='invoice-returns'),
-    re_path(r'^invoice/(?P<pk>[\d]+)/verify/(?P<status>[a-z]+)/?$', 
+    re_path(r'^invoice/verify/(?P<pk>[\d]+)/?$', 
         views.verify_invoice, 
         name='invoice-verify'),
     re_path(r'^invoice/shipping-costs/(?P<pk>[\d]+)/?$', 
@@ -48,4 +78,4 @@ urls = [
     re_path(r'^invoice/shipping-costs/list/(?P<pk>[\d]+)/?$', 
         views.ShippingExpenseListView.as_view(), 
         name='invoice-shipping-costs-list'),
-] + invoice_router.urls 
+] + invoice_router.urls + credit_note_urls + quotation_urls

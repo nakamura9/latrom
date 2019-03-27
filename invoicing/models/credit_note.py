@@ -84,4 +84,4 @@ class CreditNoteLine(models.Model):
 
     @property
     def returned_value(self):
-        return D(self.quantity) * self.line.price
+        return D(self.quantity) * self.line.product.price

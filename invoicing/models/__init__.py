@@ -1,7 +1,7 @@
 from django.db import models
 from common_data.models import SingletonModel
 
-from .invoices import *
+from .invoice import *
 from .customer import Customer
 from .payment import Payment
 from .sales_rep import SalesRepresentative

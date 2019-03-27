@@ -1,16 +1,13 @@
-{% extends "invoicing/invoice_templates/create.html" %}
+{% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 
-{% block prepage %}
-<div class="jumbotron">
-    <h1 class="display-3">Invoice</h1>
-    <p class="lead">Invoice that combines the features of product sales, services and billables</p>
-    <hr class="my-2">
-</div>
-{% endblock prepage %}
 
-{% block page_contents %}
-    {{form.errors}}
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                {{form.errors}}
     <table class="table">
             <form action="" method="POST">
                 {% csrf_token %}
@@ -40,6 +37,7 @@
                     <p>{{form.due}}</p>
                     <p>Sales Representative</p>
                     <p>{{form.salesperson}}</p>
+                    {{form.status}}
                 </td>
             </tr>
             <tr>
@@ -77,16 +75,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="dropdown open">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown">
-                            Submit as...
+                        <button class="btn btn-info " type="submit">
+                            Submit
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="triggerId">
-                            <input class="dropdown-item" type="submit" name="status" value="draft">
-                            <input class="dropdown-item" type="submit" name="status" value="quotation">
-                            <input class="dropdown-item" type="submit" name="status" value="invoice">
-                        </div>
-                    </div>
+                        
                 </td>
             </tr>
             <tr>
@@ -96,4 +88,9 @@
     </table>
 
 {% render_bundle 'invoicing' %}
-{% endblock page_contents %}
+            </div>
+        </div>
+    </div>
+
+{% endblock  %}
+    

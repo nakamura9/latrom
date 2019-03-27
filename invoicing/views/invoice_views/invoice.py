@@ -23,6 +23,9 @@ from invoicing.models import *
 from invoicing.views.invoice_views.util import InvoiceCreateMixin
 from common_data.views import CREATE_TEMPLATE
 from inventory.forms import ShippingAndHandlingForm
+from common_data.forms import AuthenticateForm
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
 
 def process_data(items, inv):
     if items:
@@ -33,7 +36,7 @@ def process_data(items, inv):
     
 
 class InvoiceListView( ContextMixin, PaginationMixin, FilterView):
-    extra_context = {"title": "Invoice List",
+    extra_context = {"title": "Quotation + Invoice List",
                     "new_link": reverse_lazy("invoicing:create-invoice")}
     template_name = os.path.join("invoicing", "invoice","list.html")
     filterset_class = filters.InvoiceFilter
@@ -47,11 +50,15 @@ class InvoiceAPIViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.InvoiceSerializer
     queryset = Invoice.objects.all()
 
-class InvoiceDetailView( ConfigMixin, MultiPageDocument, DetailView):
+class InvoiceDetailView(ContextMixin, ConfigMixin, MultiPageDocument, DetailView):
     model = Invoice
-    template_name = os.path.join("invoicing", "combined_invoice",
+    template_name = os.path.join("invoicing", "invoice",
         'detail.html')
     page_length = 16
+    extra_context = {
+        'pdf_link': True,
+        'validate_form': AuthenticateForm()
+    }
     
     def get_multipage_queryset(self):
         return InvoiceLine.objects.filter(invoice=Invoice.objects.get(pk=self.kwargs['pk']))
@@ -68,6 +75,11 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
     form_class = forms.InvoiceForm
     success_url = reverse_lazy("invoicing:invoices-list")
 
+    def get_initial(self):
+        return {
+            status: "invoice"
+        }
+
     def post(self, request, *args, **kwargs):
         resp = super(InvoiceCreateView, self).post(request, *args, **kwargs)
         
@@ -76,10 +88,7 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
             
         inv = self.object
         items = request.POST.get("item_list", None)
-        process_data(items, inv)
-        self.set_payment_amount()
-
-        
+        process_data(items, inv)        
         return resp
 
 class InvoiceUpdateView(ContextMixin, UpdateView):
@@ -127,15 +136,14 @@ class InvoicePaymentView(ContextMixin, CreateView):
     model = Payment
     template_name = os.path.join('common_data', 'create_template.html')
     form_class = forms.InvoicePaymentForm
-    success_url = reverse_lazy('invoicing:combined-invoice-list')
+    success_url = reverse_lazy('invoicing:invoices-list')
     extra_context= {
         'title': 'Apply Payment to  Invoice'
     }
 
     def get_initial(self):
         return {
-            'combined_invoice': self.kwargs['pk'],
-            'payment_for': 3
+            'invoice': self.kwargs['pk'],
             }
 
     def post(self, *args, **kwargs):
@@ -147,16 +155,16 @@ class InvoicePaymentView(ContextMixin, CreateView):
 
 
 class InvoicePaymentDetailView(ListView):
-    template_name = os.path.join('invoicing', 'combined_invoice', 
+    template_name = os.path.join('invoicing', 'invoice', 
         'payment', 'detail.html')
 
     def get_queryset(self):
-        return Payment.objects.filter(combined_invoice=Invoice.objects.get(
+        return Payment.objects.filter(invoice=Invoice.objects.get(
             pk=self.kwargs['pk']
         ))
 
     def get_context_data(self, *args, **kwargs):
-        context = super(InvoicePaymentDetailView, self).get_context_data(
+        context = super().get_context_data(
             *args, **kwargs
         )
         context['invoice'] = Invoice.objects.get(pk=self.kwargs['pk'])
@@ -164,9 +172,9 @@ class InvoicePaymentDetailView(ListView):
 
 
 class InvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
-    template_name = os.path.join("invoicing", "combined_invoice",
+    template_name = os.path.join("invoicing", "invoice",
         'pdf.html')
-    file_name = 'combined_invoice.pdf'
+    file_name = 'invoice.pdf'
     page_length = 16
     
     def get_multipage_queryset(self):
@@ -179,8 +187,8 @@ class InvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
 
 class InvoiceEmailSendView(EmailPlusPDFView):
     inv_class = Invoice
-    success_url = reverse_lazy('invoicing:combined-invoice-list')
-    pdf_template_name = os.path.join("invoicing", "combined_invoice",
+    success_url = reverse_lazy('invoicing:invoice-list')
+    pdf_template_name = os.path.join("invoicing", "invoice",
             'pdf.html')
 
 class InvoiceDraftDeleteView( DeleteView):
@@ -190,7 +198,7 @@ class InvoiceDraftDeleteView( DeleteView):
 
 
 class InvoiceReturnsDetailView( ListView):
-    template_name = os.path.join('invoicing', 'sales_invoice', 
+    template_name = os.path.join('invoicing', 'invoice', 
         'credit_note', 'detail_list.html')
 
     def get_queryset(self):
@@ -202,7 +210,7 @@ class InvoiceReturnsDetailView( ListView):
         context = super().get_context_data(
             *args, **kwargs
         )
-        context['invoice'] = SalesInvoice.objects.get(pk=self.kwargs['pk'])
+        context['invoice'] = Invoice.objects.get(pk=self.kwargs['pk'])
         return context
 
 class InvoiceDraftDeleteView( DeleteView):
@@ -210,15 +218,25 @@ class InvoiceDraftDeleteView( DeleteView):
     success_url = reverse_lazy('invoicing:home')
     model = Invoice
 
-def verify_invoice(request, pk=None, status=None):
+def verify_invoice(request, pk=None):
     inv = get_object_or_404(Invoice, pk=pk)
-    inv.status = status
-    inv.save()
+    if inv.status == "quotation":
+        inv.draft = False
+        inv.save()
+        return HttpResponseRedirect('/invoicing/quotation-detail/{}'.format(pk))
 
-    if inv.status == "invoice":
-        inv.create_entry()
+    form = AuthenticateForm(request.POST)
+    
+    if form.is_valid():
+        inv.draft = False
+        inv.save()
 
-    return HttpResponseRedirect('/invoicing/sales-invoice-detail/{}'.format(pk))
+        if inv.status == "invoice":
+            inv.create_entry()
+            inv.invoice_validated_by = form.cleaned_data['user']
+            inv.save()
+
+    return HttpResponseRedirect('/invoicing/invoice-detail/{}'.format(pk))
 
 
 # TODO test
@@ -226,7 +244,7 @@ class ShippingAndHandlingView(
         ContextMixin, FormView):
     template_name = CREATE_TEMPLATE
     form_class = ShippingAndHandlingForm
-    success_url = reverse_lazy("invoicing:sales-invoice-list")
+    success_url = reverse_lazy("invoicing:invoices-list")
     extra_context = {
         'title': 'Record Shipping and handling'
     }
@@ -259,5 +277,5 @@ class ShippingAndHandlingView(
 
 class ShippingExpenseListView(DetailView):
     model = Invoice
-    template_name = os.path.join("invoicing", "sales_invoice", 
+    template_name = os.path.join("invoicing", "invoice", 
         "shipping_list.html")

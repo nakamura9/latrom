@@ -22,12 +22,17 @@
                             <div class="card-body">
                                 <ul class="list-group">
                                     <li class="list-group-item">
+                                        <a class="card-link" href="{% url 'invoicing:create-quotation' %}">
+                                            Create  Quotation
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
                                         <a class="card-link" href="{% url 'invoicing:create-invoice' %}">
                                             Create  Invoice
                                         </a>
                                     </li>
                                     <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:invoices-list' %}">Manage
-                                             Invoices</a></li>
+                                             Quotations + Invoices</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -37,15 +42,8 @@
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Manage
-                                            Organizations</a></li>
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'base:individual-list' %}">Manage
-                                            Individuals</a></li>
-                                    <!--
-                                <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:individual-customers-list' %}">Manage Individual Customers</a></li>
-                                -->
-                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:organization-customers-list' %}">Manage
-                                            Organizational Customers</a></li>
+                                    <li class="list-group-item"><a class="card-link" href="{% url 'base:organization-list' %}">Create Customer</a></li>
+                                    <li class="list-group-item"><a class="card-link" href="{% url 'invoicing:organization-customers-list' %}">Manage Customers</a></li>
                                 </ul>
                             </div>
                         </div>

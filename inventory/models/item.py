@@ -48,10 +48,10 @@ class InventoryItem(SoftDeletionModel):
     minimum_order_level = models.IntegerField( default=0)
     maximum_stock_level = models.IntegerField(default=0)
     #components
-    equipment_component = models.ForeignKey('inventory.EquipmentComponent', 
+    equipment_component = models.OneToOneField('inventory.EquipmentComponent', 
         on_delete=models.SET_NULL,
         null=True)
-    product_component = models.ForeignKey('inventory.ProductComponent',
+    product_component = models.OneToOneField('inventory.ProductComponent',
         on_delete=models.SET_NULL,
         null=True)
 
@@ -83,6 +83,39 @@ class InventoryItem(SoftDeletionModel):
 
         return D(0)
 
+    @staticmethod
+    def total_inventory_value():
+        return sum([p.product_component.stock_value for p in InventoryItem.objects.filter(product_component__isnull=False)])
+
+    @staticmethod
+    def total_inventory_quantity_on_date(date):
+        # TODO test
+        '''Takes a date and returns the inventory quantity on that date
+        takes todays inventory 
+        starting = todays + sold - ordered'''
+        current_total_product_quantity = sum([i.quantity \
+                for i in InventoryItem.objects.filter(type=0)])
+
+        total_product_orders = inventory.models.order.OrderItem.objects.filter(
+            Q(order__date__gte=date) &
+            Q(order__date__lte=datetime.date.today()) &
+            Q(item_type=1)
+        )
+
+        ordered_quantity = sum([i.received for i in total_product_orders])
+
+        total_product_sales = invoicing.models.InvoiceLine.objects.filter(
+            Q(product__isnull=False) &
+            Q(invoice__date__gte=date) &
+            Q(invoice__date__lte=datetime.date.today())
+        )
+
+        sold_quantity = sum(
+            [(i.product.quantity - i.product.returned_quantity) \
+                for i in total_product_sales])
+
+        return current_total_product_quantity + sold_quantity - ordered_quantity
+
 
 class ProductComponent(models.Model):
     PRICING_CHOICES = [
@@ -96,59 +129,31 @@ class ProductComponent(models.Model):
     markup = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     sku = models.CharField(max_length=16, blank=True)
 
-    @staticmethod
-    def total_inventory_value():
-        return sum([p.stock_value for p in InventoryItem.objects.filter(type=0)])
+    
 
 
     def quantity_on_date(self, date):
-        current_quantity = self.quantity
+        current_quantity = self.inventoryitem.quantity
 
         total_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
             Q(order__date__lte=datetime.date.today()) &
-            Q(item=self)
+            Q(item=self.inventoryitem)
         )
 
         ordered_quantity = sum([i.received for i in total_orders])
 
-        total_sales = invoicing.models.SalesInvoiceLine.objects.filter(
+        total_sales = invoicing.models.InvoiceLine.objects.filter(
             Q(invoice__date__gte=date) &
             Q(invoice__date__lte=datetime.date.today()) &
-            Q(item=self)
+            Q(product__product=self.inventoryitem)
         )
 
-        sold_quantity = sum([(i.quantity - i.returned_quantity) \
+        sold_quantity = sum(
+            [(i.product.quantity - D(i.product.returned_quantity)) \
                 for i in total_sales])
 
-        return current_quantity + sold_quantity - ordered_quantity
-
-    @staticmethod
-    def total_inventory_quantity_on_date(date):
-        # TODO test
-        '''Takes a date and returns the inventory quantity on that date
-        takes todays inventory 
-        starting = todays + sold - ordered'''
-        current_total_product_quantity = sum([i.quantity \
-                for i in InventoryItem.objects.all()])
-
-        total_product_orders = inventory.models.order.OrderItem.objects.filter(
-            Q(order__date__gte=date) &
-            Q(order__date__lte=datetime.date.today()) &
-            Q(item_type=1)
-        )
-
-        ordered_quantity = sum([i.received for i in total_product_orders])
-
-        total_product_sales = invoicing.models.SalesInvoiceLine.objects.filter(
-            Q(invoice__date__gte=date) &
-            Q(invoice__date__lte=datetime.date.today())
-        )
-
-        sold_quantity = sum([(i.quantity - i.returned_quantity) \
-                for i in total_product_sales])
-
-        return current_total_product_quantity + sold_quantity - ordered_quantity
+        return D(current_quantity) + sold_quantity - D(ordered_quantity)
     
     @property
     def parent(self):
@@ -167,9 +172,9 @@ class ProductComponent(models.Model):
     @property 
     def unit_value(self):
         '''the value of inventory on a per item basis'''
-        if self.quantity  == 0:
+        if self.inventoryitem.quantity  == 0:
             return 0
-        return self.stock_value / D(self.quantity)
+        return self.stock_value / D(self.inventoryitem.quantity)
 
     @property
     def stock_value(self):

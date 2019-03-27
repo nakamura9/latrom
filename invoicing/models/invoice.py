@@ -118,6 +118,7 @@ class Invoice(SoftDeletionModel):
                 expense=component
             )
 
+
     @property
     def overdue(self):
         '''returns boolean'''
@@ -258,7 +259,8 @@ class Invoice(SoftDeletionModel):
     @property
     def returned_total(self):
         return sum(
-            [i.returned_value for i in self.invoiceline_set.all()])
+            [i.product.returned_value for i in self.invoiceline_set.all() \
+                if i.product ])
 
 
     def save(self, *args, **kwargs):
@@ -369,7 +371,9 @@ class ProductLineComponent(models.Model):
 
     def _return(self, quantity):
         self.returned = True
-        # TODO should i increase inventory quantity here?
+        # increment inventory here. Can be scrapped later or just kept in 
+        # inventory if ok
+        self.invoiceline.invoice.ship_from.add_item(self.product, quantity)
         self.save()
 
     def set_value(self):

@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 from inventory.models import InventoryCheck
-from invoicing.models import AbstractSale
+from invoicing.models.invoice import Invoice
 
 from .l2d import List2D
 from .models import Event

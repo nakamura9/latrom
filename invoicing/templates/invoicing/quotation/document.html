@@ -1,10 +1,8 @@
-<table id="page-layout" style="width:100%;">
+<table id="page-layout">
     <tbody>
         <tr>
             <td colspan="2" id="title">
-                <h1>
-                    Bill{% if object.status == "draft" %}(Draft){% endif %}
-                </h1>
+                <h1>Quotation {% if object.draft %}(Draft){% endif %}</h1>
             </td>
         </tr>
         <tr>
@@ -20,34 +18,24 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td>Date:</td>
-                            <td>{{object.date}}</td>
+                            <td>Quotation Date:</td>
+                            <td>{{object.quotation_date}}</td>
                         </tr>
-                        {% if object.status != "draft" %}
                         <tr>
                             <td>
-                            {% if object.status == "quotation" %}
                             Quotation Number:
-                            {% else %}
-                            Bill Number:
-                            {% endif %}</td>
+                            </td>
                             <td>
-                            {% if object.status == "quotation" %}
                             QUOT{{object.quotation_number | stringformat:"06d"}}
-                            {% else %}
-                            SALES{{object.invoice_number | stringformat:"06d"}}
-                            {% endif %}
                             </td>
                         </tr>
-                        {% endif %}
-                        
                         <tr>
-                            <td>Due Date:</td>
-                            <td>{{object.due}}</td>
+                            <td>Quotation Valid Till:</td>
+                            <td>{{object.quotation_valid}}</td>
                         </tr>
                         <tr>
-                            <td>Customer Reference No:</td>
-                            <td>{{object.customer_reference_number}}</td>
+                            <td>Quoted By:</td>
+                            <td>{{object.salesperson}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -59,22 +47,19 @@
                 <table class="{{style}}-content" height="500" width="100%">
                     <thead>
                         <tr>
-                            <td style="width:10%;">Expense ID</td>
-                            <td style="width:50%;">Description</td>
-                            <td style="width:15%;">Amount</td>
+                            <td style="width:85%;">Description</td>
+                            <td style="width:15%;">Line Total</td>
                         </tr>
                     </thead>
                     <tbody class="item-table">
                         {% for item in page %}
                         <tr>
-                            <td>{{item.pk}}</td>
-                            <td>{{item.expense.description}}</td>
-                            <td>{{item.expense.amount | floatformat:2 }}</td>
-                            
+                            <td>{{item}}</td>
+                            <td>{{item.subtotal | floatformat:2 }}</td>
+
                         </tr>
                         {% endfor %}
                         <tr style="height:100%">
-                            <td></td>
                             <td></td>
                             <td></td>
                         </tr>
@@ -82,19 +67,32 @@
                     {% if not page.has_next %}
                     <tfoot>
                         <tr>
-                            <td colspan="2">
+                            <td>
+                                <b>SubTotal:</b>
+                            </td>
+                            <td>{{object.subtotal | floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td >
+                                <b>Tax Due @{{object.tax.rate}}%:</b>
+                            </td>
+                            <td>{{object.tax_amount | floatformat:2 }}</td>
+                        </tr>
+
+                        <tr>
+                            <td >
                                 <b>Total:</b>
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>
                         </tr>
                     </tfoot>
                     {% endif %}
-                    </table>
-                    <p>{{page}}</p>
-                    {% if page.has_next %}
-                    <p style="page-break-before:always"></p>
-                    {% endif %}
-                    {% endfor %}
+                </table>
+                <p>{{page}}</p>
+                {% if page.has_next %}
+                <p style="page-break-before:always"></p>
+                {% endif %}
+                {% endfor %}
             </td>
         </tr>
         <tr>

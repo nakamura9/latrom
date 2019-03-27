@@ -7,7 +7,7 @@ from django.db.models import Q
 import inventory
 from accounting.models import Account
 
-from .invoices import AbstractSale
+from invoicing.models.invoice import Invoice
 from common_data.models import  SoftDeletionModel
 
 class Customer(SoftDeletionModel):
@@ -27,7 +27,7 @@ class Customer(SoftDeletionModel):
 
     @property
     def invoices(self):
-        return AbstractSale.abstract_filter(Q(customer=self))
+        return Invoice.objects.filter(Q(customer=self))
     
     @property
     def name(self):

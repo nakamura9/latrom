@@ -3,7 +3,7 @@ from functools import reduce
 from django.db import models
 from django.db.models import Q
 
-from .invoices.abstract import AbstractSale
+from invoicing.models.invoice import Invoice
 from common_data.models import SoftDeletionModel
 
 class SalesRepresentative(SoftDeletionModel):

@@ -54,7 +54,7 @@ class BalanceSheet(ConfigMixin,TemplateView):
                     ) | 
                 Q(parent_account=models.Account.objects.get(pk=1003)))
 
-        inventory = inventory_models.Product.total_inventory_value()
+        inventory = inventory_models.InventoryItem.total_inventory_value()
         
         current_assets_total = sum(
             [i.control_balance for i in current_assets] 

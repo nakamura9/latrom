@@ -3,7 +3,7 @@ mpl.use("svg")
 from matplotlib import pyplot as plt
 from common_data.plot_utility import svgString
 import datetime
-from invoicing.models import SalesInvoice
+from invoicing.models.invoice import Invoice
 from dateutil import relativedelta
 
 # TODO test

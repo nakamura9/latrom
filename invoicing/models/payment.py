@@ -16,28 +16,13 @@ class Payment(SoftDeletionModel):
     ---------
     create_entry - returns the journal entry that debits the customer account
         and credits the sales account. Should also impact tax accounts'''
-    PAYMENT_FOR_CHOICES = [
-        (0, 'Sales'),
-        (1, 'Service'),
-        (2, 'Bill'),
-        (3, 'Combined')
-    ]
     PAYMENT_METHODS = [("cash", "Cash" ),
                         ("transfer", "Transfer"),
                         ("debit card", "Debit Card"),
                         ("ecocash", "EcoCash")]
-    payment_for = models.PositiveSmallIntegerField(
-        choices = PAYMENT_FOR_CHOICES
-        )
-    #only one of the four is selected
-    sales_invoice = models.ForeignKey("invoicing.SalesInvoice", 
-        on_delete=models.CASCADE, null=True)
-    service_invoice = models.ForeignKey("invoicing.ServiceInvoice", 
-        on_delete=models.CASCADE,null=True)
-    bill = models.ForeignKey("invoicing.Bill", on_delete=models.CASCADE,
+    invoice = models.ForeignKey("invoicing.Invoice", 
+        on_delete=models.SET_NULL, 
         null=True)
-    combined_invoice = models.ForeignKey("invoicing.CombinedInvoice", 
-        on_delete=models.CASCADE,null=True)
     amount = models.DecimalField(max_digits=6,decimal_places=2)
     date = models.DateField()
     method = models.CharField(
@@ -55,17 +40,6 @@ class Payment(SoftDeletionModel):
     @property
     def due(self):
         return self.invoice.total - self.amount
-
-    
-    @property
-    def invoice(self):
-        options = {
-            0: self.sales_invoice,
-            1: self.service_invoice,
-            2: self.bill,
-            3: self.combined_invoice
-        }
-        return options[self.payment_for]
 
     def create_entry(self):
         '''payment entries credit the customer account and debits the cash book'''

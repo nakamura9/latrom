@@ -7,9 +7,7 @@
 
 <div style="margin:0px auto;width:320px;padding:10px" >
     <form action="{% url 'invoicing:invoice-verify' pk=object.pk %}" method="POST">
-    <h5>Validate Document</h5>
     {% csrf_token %}
-    {{validate_form.as_p}}
     <button class="btn btn-primary">Validate</button>
     </form>
 </div>
@@ -35,5 +33,5 @@
     }
 </style>
 
-{% include "invoicing/invoice/document.html" %}
+{% include "invoicing/quotation/document.html" %}
 {% endblock %}

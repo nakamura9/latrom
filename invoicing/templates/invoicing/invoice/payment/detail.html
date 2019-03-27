@@ -7,7 +7,9 @@
         <hr class="my-2">
         <p>Actions</p>
         <p class="lead">
-            <a class="btn btn-primary btn-lg" href="{% url 'invoicing:combined-invoice-payment' pk=invoice.pk %}" >Add Payment</a>
+            {% if object.invoice.status != "paid" %}
+            <a class="btn btn-primary btn-lg" href="{% url 'invoicing:invoice-payment' pk=invoice.pk %}" >Add Payment</a>
+            {% endif %}
         </p>
     </div>
     

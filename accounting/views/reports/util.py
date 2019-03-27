@@ -18,9 +18,12 @@ def net_profit_calculator(start, end):
     purchases = purchases_acc.balance_over_period(start, end)
     
     opening_inventory = sum(
-        [D(i.quantity_on_date(start)) * i.unit_value for i in inventory_models.Product.objects.all()])
+        [D(i.product_component.quantity_on_date(start)) * \
+            i.product_component.unit_value \
+                for i in inventory_models.InventoryItem.objects.filter(
+                    product_component__isnull=False)])
     
-    closing_inventory = inventory_models.Product.total_inventory_value()
+    closing_inventory = inventory_models.InventoryItem.total_inventory_value()
     cogs = opening_inventory +  purchases - closing_inventory
 
     other_income = models.Account.objects.filter(type="income").exclude(

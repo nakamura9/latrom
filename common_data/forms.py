@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-
+from django.contrib.auth import authenticate
+from django.forms import ValidationError
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (HTML, 
@@ -93,3 +94,15 @@ class SendMailForm(BootstrapMixin, forms.Form):
 class AuthenticateForm(BootstrapMixin, forms.Form):
     user = forms.ModelChoiceField(User.objects.all())
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        user = authenticate(username=cleaned_data['user'].username,
+                            password=cleaned_data['password'])
+        
+        if not user:
+            raise ValidationError('The user did not authenticate properly')
+
+
+        return cleaned_data

@@ -17,15 +17,16 @@ if(sales){
     let decomposedURL = window.location.href.split('/');
     let pk = decomposedURL[decomposedURL.length - 1];
     ReactDOM.render(<MutableTable 
-        dataURL={'/invoicing/api/sales-invoice/' + pk}
+        dataURL={'/invoicing/api/invoice/' + pk}
         headings={["Product", "Invoiced Quantity", "Unit Price", "Returned Quantity"]}
         resProcessor={(res) =>{
+            console.log(res.data)
             // filter by lines which have a returned value less than 1
-            return res.data.salesinvoiceline_set.map((line, i)=>({
-                product: line.id + " - " +line.product.name,
-                quantity: line.quantity,
-                unit_price: line.product.unit_sales_price,
-                returned_quantity: line.returned_quantity
+            return res.data.invoiceline_set.map((line, i)=>({
+                product: line.id + " - " +line.product.product.name,
+                quantity: line.product.quantity,
+                unit_price: line.product.price,
+                returned_quantity: line.product.returned_quantity
             }))
         }}
         fields={[
