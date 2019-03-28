@@ -16,7 +16,7 @@ from common_data.forms import BootstrapMixin
 from inventory.models import Supplier
 from accounting.models import Account
 from django.db.models import Q
-
+from django.forms import ValidationError
 from . import models
 
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
@@ -153,6 +153,11 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
 
+class EmployeePortalForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields=['first_name', 'last_name', 'address', 'email', 'phone']
+        model = models.Employee
+
 
 class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -230,6 +235,11 @@ class TimeLoggerForm(BootstrapMixin, forms.Form):
         else:
             curr_line.time_out = NOW
             curr_line.save()
+
+
+class TimeLoggerFormWithEmployee(TimeLoggerForm):
+    employee_number = forms.IntegerField(widget=forms.HiddenInput)
+
 
 
 class PayrollForm(BootstrapMixin, forms.Form):
@@ -315,3 +325,15 @@ class DepartmentForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Department
+
+
+class EmployeeAuthenticateForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all())
+    pin = forms.CharField(widget = forms.NumberInput)
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+        if int(cleaned_data['pin']) != cleaned_data['employee'].pin:
+            raise ValidationError('The Pin supplied is incorrect')
+
+        return cleaned_data

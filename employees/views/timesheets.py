@@ -120,3 +120,48 @@ class TimeLoggerView(ContextMixin, FormView):
             form.cleaned_data['employee_number'], datetime.datetime.now().time()
         ))
         return resp
+
+
+class TimeLoggerView(ContextMixin, FormView):
+    template_name = CREATE_TEMPLATE
+    extra_context = {
+        'title': 'Log Time In/Out',
+        'icon': 'hourglass-half'
+    }
+    form_class = forms.TimeLoggerForm
+    success_url = reverse_lazy('employees:time-logger')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        messages.info(self.request, '{} logged in successfully at {}'.format(
+            form.cleaned_data['employee_number'], datetime.datetime.now().time()
+        ))
+        return resp
+
+class TimeLoggerWithEmployeeView(ContextMixin, FormView):
+    template_name = CREATE_TEMPLATE
+    extra_context = {
+        'title': 'Log Time In/Out',
+        'icon': 'hourglass-half'
+    }
+    form_class = forms.TimeLoggerFormWithEmployee
+    
+    def get_success_url(self):
+        return f"/employees/time-logger-success/{self.kwargs['pk']}"
+
+    def get_initial(self):
+        employee = models.Employee.objects.get(pk=self.kwargs['pk'])
+        return {
+            'employee_number': employee.employee_number
+        }
+
+class TimeLoggerSuccessView(TemplateView):
+    template_name = os.path.join('employees', 'portal', 'timesheet_success.html')
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        employee = models.Employee.objects.get(pk=self.kwargs['pk'])
+        context['name']  = employee.full_name
+        context['time'] = datetime.datetime.now().time().strftime('%H:%M:%S')
+
+        return context

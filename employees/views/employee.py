@@ -58,6 +58,18 @@ class EmployeeUpdateView( ContextMixin, UpdateView):
         'title': 'Edit Employee data on payroll system'
     }
 
+
+class EmployeePortalUpdateView( ContextMixin, UpdateView):
+    template_name = CREATE_TEMPLATE
+    form_class = forms.EmployeePortalForm
+    model = models.Employee
+    extra_context = {
+        'title': 'Edit Your Personal Information on record'
+    }
+
+    def get_success_url(self):
+        return f'/employees/portal/dashboard/{self.object.pk}'
+
 class EmployeeListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'employee_list.html')
     filterset_class = filters.EmployeeFilter

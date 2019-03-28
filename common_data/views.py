@@ -78,6 +78,7 @@ class OrganizationCreateView(ContextMixin, LoginRequiredMixin, CreateView):
         'title': 'Add Organization'
     }
 
+
 class OrganizationUpdateView(ContextMixin, LoginRequiredMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.OrganizationForm
@@ -93,8 +94,10 @@ class OrganizationDetailView(ContextMixin, LoginRequiredMixin, DetailView):
     model = models.Organization
     
 
-class OrganizationListView(ContextMixin, PaginationMixin,  LoginRequiredMixin, 
-        FilterView):
+class OrganizationListView(ContextMixin, 
+                            PaginationMixin,  
+                            LoginRequiredMixin, 
+                            FilterView):
     template_name = os.path.join('common_data', 'organization', 'list.html')
     queryset = models.Organization.objects.all()
     filterset_class = filters.OrganizationFilter

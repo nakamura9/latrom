@@ -35,8 +35,11 @@ class LeaveDayRequestView(ContextMixin,  CreateView):
         'title': 'Vacation Application Form',
         'description': 'Use this form to apply for vacation or to request leave of absence for the reasons under the category list.'
     }
-    success_url = '/employees/leave-list/'
-    #links available to anyone
+    def get_success_url(self):
+        if self.request.user.is_superuser or self.request.user.employee and self.request.user.employee.is_payroll_officer:
+            return '/employees/leave-list/'
+
+        return f"/employees/portal/dashboard/{self.request.user.employee.pk}"
 
 class LeaveDayDetailView( DetailView):
     template_name = os.path.join('employees', 'leave', 'detail.html')

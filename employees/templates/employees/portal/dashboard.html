@@ -1,0 +1,80 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Employee Portal</h1>
+    <p class="lead">Welcome <b>{{object.full_name}}!</b></p>
+    <hr class="my-2">
+    <p>Use this page to manage your interactions with the company</p>
+    <a  onclick="linkClickHandler('/employees/time-logger/{{object.pk}}')" target="popup" class="text-white btn btn-primary">Login/Logout Timesheet</a>
+</div>
+<script>
+    function linkClickHandler(link){
+        /*window.open(link ,'popup','width=900,height=480');
+        $('#refresher-button').css('display', 'block');
+        return false;
+        */
+        $('#popup-frame').attr('src', link);
+        var modal = document.getElementById('id-my-modal');
+        modal.style.display = 'block';
+    }   
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <center>
+                            <i class="fa fa-calendar-alt" aria-hidden="true" style="font-size:168px;color:#007bff;"></i>
+                        </center>
+                        <h4 class="card-title">Vacation Time</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:leave-request' %}">Apply for Leave</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{calendar_url}}">View Leave Calendar</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <center>
+                            <i class="fa fa-id-card" aria-hidden="true" style="font-size:168px;color:#007bff;margin:0px auto;"></i>
+                        </center>
+                        <h4 class="card-title">Personal Information</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:employee-detail' pk=object.pk %}">View Personal Information</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:employee-portal-update' pk=object.pk %}">Update Personal Information</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <center>
+                            <i class="fa fa-envelope-open-text" aria-hidden="true" style="font-size:168px;color:#007bff;margin:0px auto;"></i>
+                        </center>
+                        
+                        
+                        <h4 class="card-title"> Payslips</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'employees:list-pay-slips-employee' pk=object.pk %}">View Payslips</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -16,6 +16,7 @@ from .leave import *
 from .payroll import *
 from accounting.models import Account
 from .timesheets import *
+from .employee_portal import *
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')

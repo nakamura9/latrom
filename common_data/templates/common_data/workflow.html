@@ -148,9 +148,8 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="{% url 'invoicing:organization-customers-list' %}">Manage Business Customers</a>
-                                    <a class="dropdown-item" href="{% url 'invoicing:create-combined-invoice' %}">Create General Purpose Invoice</a>
-                                    <a class="dropdown-item" href="{% url 'invoicing:create-service-invoice' %}">Create Service Invoice</a>
-                                    <a class="dropdown-item" href="{% url 'invoicing:create-sales-invoice' %}">Create Product Sales Invoice</a>
+                                    <a class="dropdown-item" href="{% url 'invoicing:create-invoice' %}">Create  Invoice</a>
+                                    <a class="dropdown-item" href="{% url 'invoicing:create-quotation' %}">Create Quotation</a>
                                     <a class="dropdown-item" href="{% url 'invoicing:config' pk=1 %}">Sales Configuration</a>
                                 </div>
                         </span></h6>
@@ -212,6 +211,8 @@
                                     <i class="fas fa-ellipsis-h"></i>
                                 </button>
                                 <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'employees:portal-login' %}">Employee Portal</a>
+                                    
                                     <a class="dropdown-item" href="{% url 'employees:list-employees' %}">View Employees List</a>
                                 </div>
                 </span></h6>

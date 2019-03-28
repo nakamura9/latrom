@@ -10,6 +10,26 @@ class UserTestMiddleware(object):
 
         redirect = request.META.get('HTTP_REFERER', None)
 
+        exempted_urls = [
+            '/employees/portal/login',
+            '/employees/leave-request',
+            
+
+        ]
+
+        exempted_base_urls = [
+            '/employees/portal/dashboard/',
+            '/employees/leave-calendar/',
+            '/employees/employee-detail/',
+            '/employees/employee-portal-update/',
+            '/employees/list-pay-slips/',
+            '/employees/pay-slip-detail/',
+            '/employees/pay-slip-pdf/',
+            '/employees/time-logger/',
+            '/employees/time-logger-success/'
+
+        ]
+
         # TODO add manufacturing
         if request.user.is_superuser or \
                 request.path.startswith("/login") or \
@@ -18,7 +38,8 @@ class UserTestMiddleware(object):
                 request.path.startswith("/planner") or \
                 request.path.startswith("/media") or \
                 request.path.startswith("/calendar") or \
-                'api' in request.path:
+                'api' in request.path or \
+                request.path in exempted_urls:
             return self.get_response(request)
         
         elif hasattr(request.user, 'employee'):
@@ -34,9 +55,17 @@ class UserTestMiddleware(object):
                     request.user.employee.is_bookkeeper:
                 return self.get_response(request)
 
-            elif request.path.startswith("/employees") and \
-                    request.user.employee.is_payroll_officer:
-                return self.get_response(request)
+            elif request.path.startswith("/employees"):
+                if request.user.employee.is_payroll_officer:
+                    return self.get_response(request)
+                elif any([request.path.startswith(path) \
+                    for path in exempted_base_urls]):
+                        return self.get_response(request)
+
+                else:
+                    messages.info(request, "The currently logged in user does not have the appropriate permissions to access this feature")
+                    return HttpResponseRedirect(
+                        "/login/?next={}".format(redirect) if redirect else "/login/")
 
             elif request.path.startswith("/services") and \
                     request.user.employee.is_serviceperson:

@@ -77,7 +77,7 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
 
     def get_initial(self):
         return {
-            status: "invoice"
+            "status": "invoice"
         }
 
     def post(self, request, *args, **kwargs):

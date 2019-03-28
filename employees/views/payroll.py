@@ -181,6 +181,22 @@ class PayslipListView(
 
     def get_queryset(self):
         return models.Payslip.objects.all().order_by('start_period').reverse()
+
+
+class EmployeePayslipListView( 
+        ContextMixin, 
+        PaginationMixin, 
+        FilterView):
+    filterset_class = filters.PayslipFilter
+    template_name = os.path.join('employees', 'portal', 'payslip_list.html')
+    paginate_by = 10
+    extra_context = {
+        'title': 'List of Payslips',
+    }
+
+    def get_queryset(self):
+        employee = models.Employee.objects.get(pk=self.kwargs['pk'])
+        return models.Payslip.objects.filter(employee=employee).order_by('start_period').reverse()
   
 class PayslipVerificationView( 
         ConfigMixin,
