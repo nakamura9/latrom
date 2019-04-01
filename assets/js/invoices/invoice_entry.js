@@ -9,8 +9,8 @@ class EntryWidget extends Component{
     state ={
         focused: "product",
         billables: [],
-        inputs: {
-            }
+        inputs: {},
+        
     }
 
     componentDidMount =() =>{
@@ -27,57 +27,24 @@ class EntryWidget extends Component{
     clickHandler = (evt) =>{
         this.setState({'focused': evt.target.id})
     }
-
-    //sale methods 
-    handleProductSelect = (data) =>{
-        this.setState({inputs: data});
-    }
-    handleProductClear = () =>{
-        this.setState({inputs: {}});
+    entryChangeHandler = (data) =>{
+        this.setState({inputs: data})
     }
 
-    handleProductQuantity = (evt) =>{
-        let newInputs = {...this.state.inputs};
-        newInputs['quantity'] = evt.target.value;
-        this.setState({inputs: newInputs});
-    }
-
-    //service methods 
-
-    handleServiceSelect = (data) =>{
-        this.setState({inputs: data});
-    }
-    handleServiceClear = () =>{
-        this.setState({inputs: {}});
-    }
-
-    handleServiceHours = (evt) =>{
-        let newInputs = {...this.state.inputs};
-        newInputs['hours'] = evt.target.value;
-        this.setState({inputs: newInputs});
-    }
-
-    //billables
-    handleBillable = (value) =>{
-        const pk = value.split('-')[0];
-        axios({
-            method: 'get',
-            url: '/accounting/api/expense/' + pk 
-        }).then(res =>{
-            this.setState({inputs: {
-                selected: value,
-                amount: res.data.amount,
-                description: res.data.description
-            }})
-        })
-    }
 
     insertHandler = () =>{
-        const data = {
-            type: this.state.focused,
-            ...this.state.inputs
+        if(!this.state.inputs.tax){
+            alert('tax is required')
+        }else if(!this.state.inputs.selected){
+            alert('a valid choice must be selected')
+        }else{
+            const data = {
+                type: this.state.focused,
+                ...this.state.inputs
+            }
+            this.props.insertHandler(data)
         }
-        this.props.insertHandler(data)
+        
     }
 
     render(){
@@ -85,7 +52,7 @@ class EntryWidget extends Component{
             listStyleType: 'none',
             display: 'inline-block',
             borderRadius: '5px 5px 0px 0px',
-            padding: '5px 10px',
+            padding: '5px',
             borderStyle: 'solid',
             borderColor: 'white'
 
@@ -93,14 +60,14 @@ class EntryWidget extends Component{
 
         const windowStyle = {
             width: '100%',
-            padding: '10px',
+            padding: '5px',
             border: '0px 1px 1px 1px solid white',
         }
         return(
             <div style={{
                 color: 'white',
                 backgroundColor: '#007bff',
-                padding: '10px'
+                padding: '5px'
             }}>
                 <ul style={{listStylePosition: 'inside', paddingLeft: '0px'}}>
                     <li 
@@ -125,26 +92,23 @@ class EntryWidget extends Component{
                             : '0px 0px 1px 0px ',}}
                         onClick={this.clickHandler}>Expense</li>
                 </ul>
-                <div>
+                <div className="entry-style">
                     <div style={{...windowStyle,
                         'display': this.state.focused === "product"
                             ?'block' 
                             :'none'
                         }}><ProductEntry
-                                    itemList={this.props.itemList} 
-                                    onSelect={this.handleProductSelect}
-                                    onClear={this.handleProductClear}
-                                    onChangeQuantity={this.handleProductQuantity}
-                                    /></div>
+                                itemList={this.props.itemList} 
+                                changeHandler={this.entryChangeHandler}     insertHandler={this.insertHandler}/></div>
                     <div style={{...windowStyle,
                         'display': this.state.focused === "service"
                             ?'block' 
                             :'none'
                         }}><ServiceEntry 
-                                    itemList={this.props.itemList}
-                                    onSelect={this.handleServiceSelect}
-                                    onClear={this.handleServiceClear}
-                                    onChangeHours={this.handleServiceHours} /></div>
+                                itemList={this.props.itemList}
+                                changeHandler={this.entryChangeHandler}
+                                insertHandler={this.insertHandler}/>
+                                    </div>
                     <div style={{...windowStyle,
                         'display': this.state.focused === "expense"
                             ?'block' 
@@ -152,9 +116,10 @@ class EntryWidget extends Component{
                         }}><ExpenseEntry
                                 itemList={this.props.itemList} 
                                 billables={this.state.billables}
-                                handler={this.handleBillable}/></div>
-                </div>
-                <button onClick={this.insertHandler} className="btn" style={{float:'right'}}>Insert</button>
+                                changeHandler={this.entryChangeHandler}
+                                insertHandler={this.insertHandler}/></div>
+                                </div>
+                
             </div>
         )
     }

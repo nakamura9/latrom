@@ -68,7 +68,7 @@ class Organization(models.Model):
     legal_name = models.CharField(max_length=255)
     business_address = models.TextField(blank=True)
     website = models.CharField(max_length=255, blank=True)
-    tax_clearance = models.CharField(max_length=64, blank=True)
+    bp_number = models.CharField(max_length=64, blank=True)
     email=models.CharField(max_length=128, blank=True)
     phone = models.CharField(max_length=32, blank=True)
     logo = models.ImageField(null=True, blank=True)

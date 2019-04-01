@@ -55,8 +55,16 @@ class QuotationCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
         items = request.POST.get("item_list", None)
         process_data(items, inv)
 
-        
         return resp
+
+    def get_initial(self):
+        initial = {}
+        if self.kwargs.get('customer', None):
+            initial['customer'] = self.kwargs['customer']
+        initial.update({
+            "status": "quotation"
+        })
+        return initial
 
 class QuotationUpdateView(UpdateView):
     template_name = os.path.join('invoicing', 'quotation', 'create.html')

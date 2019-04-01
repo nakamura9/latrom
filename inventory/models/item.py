@@ -55,6 +55,19 @@ class InventoryItem(SoftDeletionModel):
         on_delete=models.SET_NULL,
         null=True)
 
+    def __getattr__(self, name):
+        try:
+            return super().__getattr__(name)
+        except AttributeError:
+            if self.equipment_component and hasattr(self.equipment_component, 
+                    name):
+                return getattr(self.equipment_component, name)
+            elif self.product_component and hasattr(self.product_component, 
+                    name):
+                return getattr(self.product_component, name)
+
+
+        raise AttributeError()
 
     def __str__(self):
         return str(self.id) + " - " + self.name
@@ -128,7 +141,10 @@ class ProductComponent(models.Model):
     margin = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     markup = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     sku = models.CharField(max_length=16, blank=True)
-
+    tax = models.ForeignKey('accounting.tax', 
+        blank=True, 
+        null=True, 
+        on_delete=models.SET_NULL)
     
 
 
@@ -182,7 +198,6 @@ class ProductComponent(models.Model):
         averaging- calculating the overall stock value on the average of all
         the values for the quantity in stock.
         '''  
-
         current_quantity = self.parent.quantity
         cummulative_quantity = 0
         orders_with_items_in_stock = []

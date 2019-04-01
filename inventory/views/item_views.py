@@ -46,6 +46,10 @@ class ProductUpdateView( ContextMixin, UpdateView):
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Product"}
     
+    def get_initial(self):
+        return {
+            'tax': self.object.tax
+        }
 
 class ProductDetailView( DetailView):
     model = models.InventoryItem

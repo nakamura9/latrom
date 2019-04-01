@@ -97,13 +97,14 @@ class SearchableWidget extends Component {
     render(){
         
         return(
-            <div style={{
+            <div id={this.props.widgetID} style={this.props.widgetID ? {} :{
                 width:"100%",
                 margin: "2px",
                 position:"relative",
                 display: "inline-block"
                 }}>
                 <TextBoxWidget 
+                    idRoot={this.props.widgetID}
                     currValue={this.state.currValue}
                     validChoice={this.state.selectedValue}
                     handleChange={this.handleChange}
@@ -128,7 +129,12 @@ class TextBoxWidget extends Component{
         }else{
             icon = "fa-times"
         }
-        return(<div style={{padding: "3px", backgroundColor: "white", borderRadius: "2px"}}>
+        return(<div 
+                id={this.props.idRoot ?  `${this.props.idRoot}-text-box` : '' } 
+                style={this.props.idRoot ? {} :{
+            padding: "3px", 
+            backgroundColor: "white", 
+            borderRadius: "2px"}}>
         <input 
             type="text"
             value={this.props.currValue}

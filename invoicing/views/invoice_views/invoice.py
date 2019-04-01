@@ -32,8 +32,7 @@ def process_data(items, inv):
         items = json.loads(urllib.parse.unquote(items))
         for item in items:
             inv.add_line(item)
-            
-    
+
 
 class InvoiceListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "Quotation + Invoice List",
@@ -76,9 +75,14 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
     success_url = reverse_lazy("invoicing:invoices-list")
 
     def get_initial(self):
-        return {
+        initial = {}
+        if self.kwargs.get('customer', None):
+            print(self.kwargs['customer'])
+            initial['customer'] = self.kwargs['customer']
+        initial.update({
             "status": "invoice"
-        }
+        })
+        return initial
 
     def post(self, request, *args, **kwargs):
         resp = super(InvoiceCreateView, self).post(request, *args, **kwargs)
@@ -100,24 +104,15 @@ class InvoiceUpdateView(ContextMixin, UpdateView):
         'title': 'Update  Invoice'
     }
 
-class InvoiceDraftUpdateView( ConfigMixin, UpdateView):
-    '''Quotes and Invoices are created with React.js help.
-    data is shared between the static form and django by means
-    of a json urlencoded string stored in a list of hidden input 
-    fields called 'items[]'. '''
-
-            
-    template_name = os.path.join("invoicing","invoice", "create.html")
-    form_class = forms.InvoiceForm
-    success_url = reverse_lazy("invoicing:invoices-list")
-    model = Invoice
 
     def post(self, request, *args, **kwargs):
-        resp = super(InvoiceDraftUpdateView, self).post(request, *args, **kwargs)
+        resp = super().post(request, *args, **kwargs)
         
         if not self.object:
             return resp
 
+        if not self.object.draft:
+            return resp
         #remove existing items
         for line in self.object.invoiceline_set.all():
             line.delete()

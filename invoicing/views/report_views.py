@@ -38,8 +38,10 @@ class CustomerStatement(ConfigMixin, TemplateView):
 
     @staticmethod 
     def common_context(context, customer, start, end):
-        invoices = AbstractSale.abstract_filter(Q(Q(status='invoice') | Q(status='paid')) &
-            Q(Q(date__gte=start) & Q(date__lte = end)))
+        invoices = Invoice.objects.filter(Q(Q(status='invoice') | 
+            Q(status='paid')) &
+            Q(Q(date__gte=start) & 
+            Q(date__lte = end)))
         
         payments = models.Payment.objects.filter( Q(date__gte=start)
             & Q(date__lte = end)
@@ -86,7 +88,7 @@ class InvoiceAgingReport(ConfigMixin, TemplateView):
 
     @staticmethod 
     def common_context(context):
-        outstanding_invoices = AbstractSale.abstract_filter(Q(status='invoice'))
+        outstanding_invoices = Invoice.objects.filter(Q(status='invoice'))
         context.update({
             'customers': models.Customer.objects.all(),
             'outstanding_invoices': len([i for i in outstanding_invoices])
@@ -121,7 +123,7 @@ class SalesReportView(ConfigMixin, TemplateView):
     @staticmethod
     def common_context(context, start, end):
 
-        total_sales = sum([i.subtotal for i in SalesInvoice.objects.filter(Q(date__gte=start) & Q(date__lte=end))])
+        total_sales = sum([i.subtotal for i in Invoice.objects.filter(Q(date__gte=start) & Q(date__lte=end))])
         average_sales  = total_sales / D(abs((end - start).days))
 
         context["total_sales"] = total_sales

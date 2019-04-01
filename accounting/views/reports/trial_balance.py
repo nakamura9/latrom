@@ -39,7 +39,7 @@ class TrialBalance(ConfigMixin, MultiPageDocument, TemplateView):
 
         context['total_debit'] = models.Account.total_debit()
         context['total_credit'] = models.Account.total_credit()
-        context["inventory_value"] = inventory_models.Product.total_inventory_value()
+        context["inventory_value"] = inventory_models.InventoryItem.total_inventory_value()
         
         return context
 

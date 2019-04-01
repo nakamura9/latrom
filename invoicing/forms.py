@@ -3,16 +3,18 @@ from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (HTML, 
                                 Fieldset, 
-                                Layout, 
+                                Layout,
+                                Row,
+                                Column, 
                                 Submit)
 from django import forms
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
 
 from accounting.models import Account, Journal,Tax
 from common_data.forms import BootstrapMixin, PeriodReportForm
-
+from common_data.models import Organization
 from . import models
-
+from django.forms import ValidationError
 
 class SalesConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -49,20 +51,66 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
 
         self.helper.add_input(Submit('submit', "Submit"))
         
-class OrganizationCustomerForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'account', 'individual']
-        model = models.Customer
+class CustomerForm(BootstrapMixin, forms.Form):
+    customer_type = forms.ChoiceField(widget=forms.RadioSelect, choices=[
+        ('individual', 'Individual'),
+        ('organization', 'Organization')
+        ])
+    name=forms.CharField()
+    address=forms.CharField(widget=forms.Textarea, 
+                            required=False)
+    billing_address=forms.CharField(widget=forms.Textarea, 
+                            required=False)
+    banking_details=forms.CharField(widget=forms.Textarea, 
+                            required=False)
+    email= forms.EmailField(required=False)
+    organization=forms.ModelChoiceField(Organization.objects.all(), 
+        required=False)
+    phone_1=forms.CharField(required=False)
+    phone_2=forms.CharField(required=False)
+    image=forms.ImageField(required=False)
+    website=forms.CharField(required=False)
+    business_partner_number=forms.CharField(required=False)
 
-class IndividualCustomerForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'account', 'organization']
-        model = models.Customer
-        
-class CustomerUpdateForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'account', 'individual', 'organization']
-        model = models.Customer
+    other_details=forms.CharField(widget=forms.Textarea, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout= Layout(
+            Row(
+                Column('customer_type', css_class='col-sm-12')
+            ),
+            Row(
+                Column('name', css_class='col-sm-12')
+            ),
+            Row(
+                Column('address',
+                        'billing_address', css_class='col-sm-6'),
+                Column( 'banking_details',
+                        'email',
+                        'website',
+                        'phone_1',
+                        'phone_2', css_class='col-sm-6')
+            ),
+            Row(
+                Column('image', 
+                        'organization',
+                        'business_partner_number',
+                        'other_details', css_class='col-sm-12')
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+
+        if cleaned_data['customer_type'] == "individual":
+            if " " not in cleaned_data['name']:
+                raise ValidationError('The customer name must have both a first and last name separated by a space.')
+
+        return cleaned_data
+
 
 class SalesRepForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -111,20 +159,20 @@ class InvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
-        fields = ["status", 'customer', 'tax', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson']
+        fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson']
         model = models.Invoice
 
 class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        fields = ["status", 'customer', 'tax', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson',  'terms', 'comments']
+        fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson',  'terms', 'comments']
         model = models.Invoice
 
 class QuotationForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
-        fields = ["status", 'customer', 'tax', 'quotation_date', 'quotation_valid', 'salesperson', 'terms', 'comments']
+        fields = ["status", 'customer', 'quotation_date', 'quotation_valid', 'salesperson', 'terms', 'comments']
         model = models.Invoice
 
 class InvoicePaymentForm(forms.ModelForm, BootstrapMixin):

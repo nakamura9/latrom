@@ -62,7 +62,7 @@
                         <tbody>
                             <tr>
                                 <td style="border-bottom: 1px solid black;" class="cell" colspan="5">Balance Brought Forward: </td>
-                                <td style="border-bottom: 1px solid black;" class="cell">{{balance_brought_forward}}</td>
+                                <td style="border-bottom: 1px solid black;" class="cell">{{balance_brought_forward | accounting }}</td>
                             </tr>
                             {% for inv in invoices %}
                             <tr>

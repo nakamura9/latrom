@@ -8,6 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('inventory', '0031_auto_20190324_1417'),
+
     ]
 
     operations = [

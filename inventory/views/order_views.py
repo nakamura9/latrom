@@ -61,7 +61,6 @@ class OrderPOSTMixin(object):
             for i in self.object.orderitem_set.all():
                 i.delete()
 
-        print(items)
         for data in items:
             id= data['item'].split('-')[0] 
             pk = id

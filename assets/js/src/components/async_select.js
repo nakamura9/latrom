@@ -5,7 +5,7 @@ import axios from 'axios';
  * props 
  * dataURL - string with the data that populates the form
  * name - string that sets the name attribute in the select 
- * resProcessor - a function that takes the axios data and returns an array of 
+ * resProcessor - a function that takes the axios res and returns an array of 
  *                  value name objects
  * onPopulated - optional attr that provides an initial value of the form
  * handler - the function that is called when the select is changed.
@@ -34,8 +34,9 @@ class AsyncSelect extends Component{
     render(){
         return(
             <select 
+                id={this.props.ID}
                 onChange={(evt) => this.props.handler(evt.target.value)}
-                className="form-control"
+                className={this.props.noCSS ? "" : "form-control"}
                 name={this.props.name}
                 >
                 <option value="">-------</option>

@@ -39,3 +39,39 @@ input:required {
     display:inline-block;
     text-align:center;
 }
+
+.entry-style td{
+    padding: 0px;
+    border: 0px;
+}
+
+.entry-style thead th{
+    padding: 0px;
+    border: 0px;
+}
+.entry-style input[type="number"]{
+    padding: 2px;
+    width: 100%
+}
+.entry-style select{
+    padding: 3px;
+}
+#product-widget, #service-widget, #expense-widget{
+    margin: 0px;
+}
+
+#product-widget-text-box, #service-widget-text-box, #expense-widget-text-box {
+    padding: 1px;
+    background-color: white;
+}
+.entry-style select{
+    width: 100%;
+}
+
+.invoice-btn {
+    width: 100%;
+    padding: 3px;
+    background-color: #007bff;
+    color: white;
+    border: 1px solid white;
+}

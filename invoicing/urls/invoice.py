@@ -20,6 +20,8 @@ credit_note_urls = [
 quotation_urls = [
     re_path(r'^create-quotation/?$', views.QuotationCreateView.as_view(), 
         name='create-quotation'),
+    re_path(r'^(?P<customer>[\d]+)/create-quotation/?$', 
+            views.QuotationCreateView.as_view(), name='create-quotation'),
     re_path(r'^quotation-detail/(?P<pk>[\d]+)/?$', 
             views.QuotaionDetailView.as_view(), name='quotation-details'),
     re_path(r'^quotation-update/(?P<pk>[\d]+)/?$', 

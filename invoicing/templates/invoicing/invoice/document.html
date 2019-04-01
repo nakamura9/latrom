@@ -2,7 +2,7 @@
     <tbody>
         <tr>
             <td colspan="2" id="title">
-                <h1>{% if object.status == 'proforma' %}Proforma{% else %} Invoice {% endif %}{% if object.draft %}(Draft){% endif %}</h1>
+                <h1> {% if object.status == 'proforma' %}Proforma{% endif %} {% if object.tax_amount > 0 %} Tax {% endif %} Invoice {% if object.draft %}(Draft){% endif %}</h1>
             </td>
         </tr>
         <tr>
@@ -51,19 +51,59 @@
                 <table class="{{style}}-content" height="500" width="100%">
                     <thead>
                         <tr>
-                            <td style="width:85%;">Description</td>
-                            <td style="width:15%;">Line Total</td>
+                            <!--This template is rendered conditionally based on the contents of the invoice -->
+                            {% if object.sales_only %}
+                            <td style="width:40%;">Product</td>
+                            <td style="width:15%;">Unit Price</td>
+                            <td style="width:10%;">Quantity</td>
+                            {% elif object.service_only %}
+                            <td style="width:35%;">Service</td>
+                            <td style="width:10%;">Fee</td>
+                            <td style="width:10%;">Hourly Rate</td>
+                            <td style="width:10%;">Hours</td>
+                            {% else %}
+                            <td style="width:65%;">Description</td>
+                            {% endif %}
+                            <td style="width:10%;">Discount</td>
+                            <td style="width:15%;">Tax</td>
+                            <td style="width:10%;">Subtotal</td>
                         </tr>
                     </thead>
                     <tbody class="item-table">
                         {% for item in page %}
                         <tr>
+                            {% if object.sales_only %}
+                            <td>{{item.product}}</td>
+                            <td>{{item.product.unit_price}}</td>
+                            <td>{{item.product.quantity}}</td>
+                            {% elif object.service_only %}
+                            <td>{{item.service}}</td>
+                            <td>{{item.service.flat_fee}}</td>
+                            <td>{{item.service.hourly_rate}}</td>
+                            <td>{{item.service.hours}}</td>
+                            {% else %}
                             <td>{{item}}</td>
+                            {% endif %}
+                            <td>{{item.discount}}</td>
+                            <td>{{item.tax}}@{{item.tax.rate}}%</td>
                             <td>{{item.subtotal | floatformat:2 }}</td>
 
                         </tr>
                         {% endfor %}
                         <tr style="height:100%">
+                            {% if object.sales_only %}
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            {% elif object.service_only %}
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            <td></td>
                             <td></td>
                             <td></td>
                         </tr>
@@ -71,20 +111,20 @@
                     {% if not page.has_next %}
                     <tfoot>
                         <tr>
-                            <td>
+                            <td colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
                                 <b>SubTotal:</b>
                             </td>
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
                         <tr>
-                            <td >
-                                <b>Tax Due @{{object.tax.rate}}%:</b>
+                            <td colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
+                                <b>Tax Due :</b>
                             </td>
-                            <td>{{object.tax_amount | floatformat:2 }}</td>
+                            <td >{{object.tax_amount | floatformat:2 }}</td>
                         </tr>
 
                         <tr>
-                            <td >
+                            <td colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
                                 <b>Total:</b>
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>

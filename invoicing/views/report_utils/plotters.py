@@ -65,7 +65,7 @@ def get_queryset_list(start, end, delta):
 
     while curr_date < end:
         curr_date  = curr_date + datetime.timedelta(days=delta)
-        query_list.append(SalesInvoice.objects.filter(
+        query_list.append(Invoice.objects.filter(
             date__gt=prev_date, date__lte=curr_date
         ))
         prev_date = curr_date

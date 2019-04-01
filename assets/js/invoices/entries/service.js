@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
 import SearchableWidget from '../../src/components/searchable_widget';
 import axios from 'axios';
+import AsyncSelect from '../../src/components/async_select';
+
 
 class ServiceEntry extends Component{
     state = {
         hours: 0,
         rate: 0,
         fee: 0,
+        tax: 0,
+        discount: 0,
         selected: ''
     }
     componentDidUpdate(prevProps, prevState){
@@ -14,18 +18,34 @@ class ServiceEntry extends Component{
             this.setState({
                 hours: 0,
                 rate: 0,
-                fee: 0
+                fee: 0,
+                discount: 0,
+                tax: 1,
             })
-            //remove selected choice from list of choices 
+            let tax = document.getElementById('product-tax');
+            tax.value = 1;
         }
+
     }
 
     handler = (evt) =>{
         const name = evt.target.name;
         let newState = {...this.state};
         newState[name] = evt.target.value;
-        this.setState(newState);
-        this.props.onChangeHours(evt);
+        this.setState(newState, () => this.props.changeHandler(this.state));
+    }
+
+    taxHandler = (value) =>{
+        axios({
+            method: 'get',
+            url: '/accounting/api/tax/' + value
+        }).then(res =>{
+            this.setState({tax: res.data.id + ' - ' 
+                                + res.data.name  + '@' 
+                                + res.data.rate}, 
+                () => this.props.changeHandler(this.state))
+
+        })
     }
 
     selectHandler = (value) =>{
@@ -39,7 +59,7 @@ class ServiceEntry extends Component{
                 selected: value,
                 rate: res.data.hourly_rate,
                 fee: res.data.flat_fee
-            }, () => this.props.onSelect(this.state))
+            }, () => this.props.changeHandler(this.state))
         })
         
     }
@@ -50,8 +70,8 @@ class ServiceEntry extends Component{
             hours: 0,
             fee: 0,
             selected: ""
-        });
-        this.props.onClear()
+        }, () => this.props.changeHandler(this.state));
+        
     }
 
     
@@ -67,16 +87,20 @@ class ServiceEntry extends Component{
                 <table style={{width:"100%"}}>
                     <thead>
                         <tr>
-                            <th style={{...headStyle, width:'50%'}}>Service</th>
-                            <th style={headStyle}>Flat Fee</th>
-                            <th style={headStyle}>Hourly Rate</th>
-                            <th style={headStyle}>Hours</th>
+                            <th style={{width:'25%'}}>Service</th>
+                            <th style={{width: '10%'}}>Flat Fee</th>
+                            <th style={{width: '10%'}}>Hourly Rate</th>
+                            <th style={{width: '10%'}}>Hours</th>
+                            <th style={{width: '15%'}}>Discount</th>
+                            <th style={{width: '15%'}}>Tax</th>
+                            <th style={{width: '15%'}}></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td >
                                 <SearchableWidget
+                                    widgetID="service-widget"
                                     list={this.props.itemList}
                                     dataURL="/services/api/service/"
                                     displayField="name"
@@ -89,7 +113,6 @@ class ServiceEntry extends Component{
                             <td>
                                 <input 
                                     type="number"
-                                    className="form-control"
                                     name="fee"
                                     value={this.state.fee}
                                     onChange={this.handler}/>
@@ -97,7 +120,6 @@ class ServiceEntry extends Component{
                             <td>
                                 <input 
                                     type="number"
-                                    className="form-control"
                                     name="rate"
                                     value={this.state.rate}
                                     onChange={this.handler}/>
@@ -105,10 +127,36 @@ class ServiceEntry extends Component{
                             <td>
                                 <input 
                                     type="number"
-                                    className="form-control"
                                     name="hours"
                                     value={this.state.hours}
                                     onChange={this.handler}/>
+                            </td>
+                            <td>
+                                <input 
+                                    type="number"
+                                    name="discount"
+                                    value={this.state.discount}
+                                    onChange={this.handler}/>
+                            </td>
+                            <td>
+                                {/*Use a tax choice field */}
+                                <AsyncSelect 
+                                    noCSS
+                                    ID='service-tax'
+                                    dataURL="/accounting/api/tax"
+                                    name="tax"
+                                    resProcessor={(res) =>{
+                                        return res.data.map((tax) =>({
+                                            name: tax.name,
+                                            value: tax.id
+                                        }))
+                                    }}
+                                    handler={this.taxHandler}/>
+                            </td>
+                            <td>
+                                <button 
+                                    onClick={this.props.insertHandler} 
+                                    className="invoice-btn" >Insert</button>
                             </td>
                         </tr>
                     </tbody>

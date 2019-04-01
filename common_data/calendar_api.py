@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 from inventory.models import InventoryCheck
-from invoicing.models import AbstractSale
+from invoicing.models import Invoice
 from l2d import List2D
 
 
@@ -52,7 +52,7 @@ def get_month_data(array):
     shape = l2D.shape
     events = []
     filters = get_filters(flat[0], flat[len(flat)- 1])
-    invoices = AbstractSale.abstract_filter(filters)
+    invoices = Invoice.objects.filter(filters)
     checks = InventoryCheck.objects.filter(filters)
     events += [{
         'label': 'Invoice Due',
@@ -144,7 +144,7 @@ def get_inventory_events(date):
     pass
 
 def get_sales_events(date):
-    invoices = AbstractSale.abstract_filter(Q(due=date))
+    invoices = Invoice.objects.filter(Q(due=date))
     return [{
         'label': 'Invoice Due',
         'icon': 'receipt'

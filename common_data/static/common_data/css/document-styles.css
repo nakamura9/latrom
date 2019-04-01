@@ -59,6 +59,10 @@ table {
     padding: 10px;
 }
 
+.simple-content tbody{
+    border: 1px solid black;
+}
+
 .simple-content tfoot td {
     text-align: right;
 }

@@ -223,7 +223,6 @@ def execute_payroll(request):
     settings = models.EmployeesSettings.objects.first()
     p_and_l = ProfitAndLossReport.common_context({}, today - datetime.timedelta(days=30), today)
 
-    print(p_and_l['net_profit'])
     if p_and_l['net_profit'] < 0 and settings.salary_follows_profits:
         messages.info(request, 'Payroll settings prevent payslips from being paid out')
         return HttpResponseRedirect('/employees/')    
@@ -446,7 +445,6 @@ class PayrollDateListView(ContextMixin, PaginationMixin, FilterView):
     }
 
     def get_context_data(self, **kwargs):
-        print(super().get_context_data(**kwargs))
         return super().get_context_data(**kwargs)
 
 class PayrollDateUpdateView(ContextMixin, UpdateView):

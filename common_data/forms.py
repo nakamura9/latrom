@@ -22,7 +22,7 @@ class BootstrapMixin(forms.Form):
         super(BootstrapMixin, self).__init__(*args, **kwargs)
         for field in self.fields:
             field = self.fields.get(field)
-            field.widget.attrs['class'] ="form-control"
+            field.widget.attrs['class'] ="form-control input-sm"
 
             if isinstance(field.widget, forms.widgets.DateInput):
                 field.widget.attrs['class'] += " ui-date-picker"

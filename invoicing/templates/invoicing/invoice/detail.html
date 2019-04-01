@@ -4,13 +4,19 @@
 
 {% if object.draft %}
 <div class="jumbotron">
-
-<div style="margin:0px auto;width:320px;padding:10px" >
+<script>
+    function toggleValidateForm(){
+        $('#validate-form').toggle();
+    }
+</script>
+<h4>Actions:</h4>
+<button class="btn" onclick="toggleValidateForm()">Validate Invoice</button>
+<div id="validate-form" style="margin:0px auto;width:320px;padding:10px;display:none" >
     <form action="{% url 'invoicing:invoice-verify' pk=object.pk %}" method="POST">
     <h5>Validate Document</h5>
     {% csrf_token %}
     {{validate_form.as_p}}
-    <button class="btn btn-primary">Validate</button>
+    <button class="btn btn-primary">Submit</button>
     </form>
 </div>
 

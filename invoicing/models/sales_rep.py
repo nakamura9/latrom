@@ -25,8 +25,9 @@ class SalesRepresentative(SoftDeletionModel):
         return self.employee.first_name + ' ' + self.employee.last_name
 
     def sales(self, start, end):
-        invoices = AbstractSale.abstract_filter(Q(status="paid") & Q(salesperson=self) \
-            & (Q(due__lt=end) \
+        invoices = Invoice.objects.filter(Q(status="paid") & 
+            Q(salesperson=self) 
+            & (Q(due__lt=end) 
             | Q(due__gte=start)))
         #should i filter for paid invoices?
 

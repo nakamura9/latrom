@@ -13,7 +13,7 @@ class WorkOrderRequest(models.Model):
         blank=True, 
         null=True, 
         on_delete=models.SET_NULL)
-    service = models.OneToOneField('services.service', null=True, 
+    service = models.ForeignKey('services.service', null=True, 
         on_delete=models.SET_NULL)
     status = models.CharField(max_length=16, choices=[
         ('request', 'Requested'),
@@ -36,11 +36,6 @@ class WorkOrderRequest(models.Model):
         
         self.save()
 
-
-    @property
-    def invoice(self):
-        return self.service_invoice if self.invoice_type == 0 else \
-            self.combined_invoice
 
     @property
     def work_orders(self):

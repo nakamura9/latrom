@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
 from .models import *
-
+from accounting.serializers import TaxSerializer
 class ProductComponentSerializer(serializers.ModelSerializer):
+    tax = TaxSerializer(many=False)
     class Meta:
         model = ProductComponent
         fields = "__all__"

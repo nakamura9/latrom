@@ -92,6 +92,7 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     markup = forms.CharField(widget=forms.NumberInput, required=False)
     direct_price = forms.CharField(widget=forms.NumberInput, required=False)
     type=forms.CharField(widget=forms.HiddenInput)
+    tax=forms.ModelChoiceField(Tax.objects.all())
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -105,6 +106,7 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                     ),
                 Tab('Pricing', 
                     'unit',
+                    'tax',
                     HTML("<div id='pricing-widget'></div>")
                     ),
                 Tab('Stocking Information',
@@ -135,25 +137,27 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         instance = super().save(*args, **kwargs)
 
         if instance.product_component:
-            instance.product_component.pricing_method= \
-                self.cleaned_data['pricing_method']
-            instance.product_component.direct_price= \
-                self.cleaned_data['direct_price']
-            instance.product_component.margin=self.cleaned_data['margin']
-            instance.product_component.markup=self.cleaned_data['markup']
+            print(self.cleaned_data['tax'])
+            component = instance.product_component
+            component.pricing_method= self.cleaned_data['pricing_method']
+            component.direct_price= self.cleaned_data['direct_price']
+            component.margin=self.cleaned_data['margin']
+            component.markup=self.cleaned_data['markup']
+            component.tax=self.cleaned_data['tax']
             
             instance.product_component.save()
 
-            return instance 
+        else:
+            component = models.ProductComponent.objects.create(
+                pricing_method=self.cleaned_data['pricing_method'],
+                direct_price=self.cleaned_data['direct_price'],
+                margin=self.cleaned_data['margin'],
+                markup=self.cleaned_data['markup'],
+                tax=self.cleaned_data['tax']
+            )
 
-        component = models.ProductComponent.objects.create(
-            pricing_method=self.cleaned_data['pricing_method'],
-            direct_price=self.cleaned_data['direct_price'],
-            margin=self.cleaned_data['margin'],
-            markup=self.cleaned_data['markup'],
-        )
-
-        instance.product_component = component
+            instance.product_component = component
+    
         instance.save()
 
         return instance

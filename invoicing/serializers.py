@@ -52,6 +52,7 @@ class InvoiceLineSerializer(serializers.ModelSerializer):
     expense = ExpenseLineComponentSerializer(many=False)
     product = ProductLineComponentSerializer(many=False)
     service = ServiceLineComponentSerializer(many=False)
+    tax = TaxSerializer(many=False)
     
     class Meta:
         model = InvoiceLine
