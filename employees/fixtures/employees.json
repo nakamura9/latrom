@@ -1,6 +1,6 @@
 [{
         "model": "auth.User",
-        "pk": 1,
+        "pk": 2,
         "fields": {
             "username": "default_employee_user",
             "password": "123"
@@ -30,7 +30,7 @@
             "hire_date": "2018-01-01",
             "title": "Employee",
             "pay_grade": 1,
-            "user": 1
+            "user": 2
         }
     },
     {

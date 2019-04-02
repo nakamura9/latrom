@@ -223,12 +223,7 @@ class OrderItem(models.Model):
     received_total - returns the cash value of the items received
     subtotal - returns the cash value of the items ordered
     '''
-    ITEM_TYPE_CHOICES =[
-        (1, 'Product'),
-        (2, 'Consumable'),
-        (3, 'Equipment'),
-        (4, 'Raw Material')
-        ]
+    
     order = models.ForeignKey('inventory.Order', 
         on_delete=models.SET_NULL, null=True)
     item = models.ForeignKey('inventory.inventoryitem', 

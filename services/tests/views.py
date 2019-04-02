@@ -277,7 +277,6 @@ class RequisitionViewTests(TestCase):
         cls.wr = WorkOrderRequest.objects.create(
             service = cls.service,
             status="request",
-            invoice_type=0
         )
         cls.wo = ServiceWorkOrder.objects.create(
             date=str(TODAY),
@@ -535,7 +534,6 @@ class WorkOrderViewTests(TestCase):
         cls.wr = WorkOrderRequest.objects.create(
             service = cls.service,
             status="request",
-            invoice_type=0
         )
         cls.wo = ServiceWorkOrder.objects.create(
             date=str(TODAY),

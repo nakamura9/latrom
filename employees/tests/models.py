@@ -13,10 +13,11 @@ from employees.models import *
 from latrom import settings
 from accounting.models import Account, JournalEntry
 from invoicing.models import (SalesRepresentative, 
-                              SalesInvoice, 
-                              SalesInvoiceLine
+                              Invoice, 
+                              InvoiceLine,
+                              ProductLineComponent
                               )
-from inventory.models import Product, UnitOfMeasure
+from inventory.models import InventoryItem, UnitOfMeasure, ProductComponent
 TODAY = datetime.date.today()
 
 def create_test_employees_models(cls):
@@ -95,11 +96,6 @@ class CommonModelTests(TestCase):
 
     def test_create_employee_settings(self):
         obj = EmployeesSettings.objects.create(
-            payroll_date_one = 1,
-            payroll_date_two = 14,
-            payroll_date_three = 21,
-            payroll_date_four = 28,
-            payroll_cycle = 'weekly',
             require_verification_before_posting_payslips = True,
             salary_follows_profits = True
             #automate_payroll_for
@@ -306,17 +302,20 @@ class PaySlipModelTests(TestCase):
                 'admin@test.com', '123')
             cls.user.save()
 
-        cls.product = Product.objects.create(
+        cls.product = InventoryItem.objects.create(
             name='test name',
             unit=UnitOfMeasure.objects.first(),
-            pricing_method=0, #KISS direct pricing
-            direct_price=10,
-            margin=0.5,
             unit_purchase_price=10,
             description='Test Description',
             minimum_order_level = 0,
             maximum_stock_level = 20,
+            type=0
         )
+        pc = ProductComponent.objects.create(
+            pricing_method=0, #KISS direct pricing
+            direct_price=10,
+            margin=0.5,
+        ) 
 
 
     def test_create_pay_slip(self):
@@ -367,14 +366,19 @@ class PaySlipModelTests(TestCase):
         )
         
         # create invoice with sales of 10 dollars
-        inv = SalesInvoice.objects.create(
+        inv = Invoice.objects.create(
             status="paid",
             salesperson = rep
         )
-        line = SalesInvoiceLine.objects.create(
-            invoice= inv,
+        plc = ProductLineComponent.objects.create(
             product=self.product,
-            quantity=1   
+            quantity=1,
+
+        )
+        line = InvoiceLine.objects.create(
+            invoice=inv,
+            product = plc,
+            line_type=1
         )
         self.assertEqual(self.slip.commission_pay, 1.5)
 

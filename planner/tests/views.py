@@ -124,7 +124,8 @@ class PlannerViewTests(TestCase):
                 'end_time': '06:00:00',
                 'priority': 'normal',
                 'description': 'Desc',
-                'participants': urllib.parse.quote(json.dumps([{
+                'repeat': 0,
+                'json_participants': urllib.parse.quote(json.dumps([{
                     'type': 'employee',
                     'pk': '1'
                 }]))
@@ -145,10 +146,11 @@ class PlannerViewTests(TestCase):
                 'end_time': '06:00:00',
                 'priority': 'normal',
                 'description': 'Desc',
-                'participants': urllib.parse.quote(json.dumps([{
+                'json_participants': urllib.parse.quote(json.dumps([{
                     'type': 'employee',
                     'pk': '1'
-                }]))
+                }])),
+                'repeat': 0
             })
         self.assertEqual(resp.status_code, 302)
 

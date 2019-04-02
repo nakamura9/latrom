@@ -19,7 +19,6 @@ class EventReminderMiddleware(object):
             Q(completed=False) &
             Q(reminder_notification__isnull=True))
         
-        print(events)
         #there is a threshold for the reminder
         # if it has passed and no notification exists create the notification
         for event in events:

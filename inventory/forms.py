@@ -137,7 +137,6 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         instance = super().save(*args, **kwargs)
 
         if instance.product_component:
-            print(self.cleaned_data['tax'])
             component = instance.product_component
             component.pricing_method= self.cleaned_data['pricing_method']
             component.direct_price= self.cleaned_data['direct_price']

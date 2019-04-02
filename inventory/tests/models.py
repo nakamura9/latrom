@@ -12,7 +12,7 @@ from common_data.models import Organization, Individual
 
 from common_data.tests import create_account_models, create_test_user
 from inventory import models
-from invoicing.models import SalesInvoiceLine, SalesInvoice, Customer
+from invoicing.models import InvoiceLine, Invoice, Customer
 from employees.models import Employee
 
 
@@ -39,45 +39,47 @@ def create_test_inventory_models(cls):
             description='Test description'
         )
 
-    cls.product = models.Product.objects.create(
-            name='test name',
-            unit=cls.unit,
-            pricing_method=0, #KISS direct pricing
+    pc = models.ProductComponent.objects.create(
+        pricing_method=0, #KISS direct pricing
             direct_price=10,
             margin=0.5,
+    )
+    
+    cls.product = models.InventoryItem.objects.create(
+            name='test name',
+            unit=cls.unit,
+            type=0,
             unit_purchase_price=10,
             description='Test Description',
             supplier = cls.supplier,
             minimum_order_level = 0,
             maximum_stock_level = 20,
-            category = cls.category
+            category = cls.category,
+            product_component = pc
         )
 
-    cls.equipment = models.Equipment.objects.create(
+    ec = models.EquipmentComponent.objects.create(
+        condition = "excellent",
+        asset_data = cls.asset
+    )    
+
+    cls.equipment = models.InventoryItem.objects.create(
         name='test equipment',
             unit=cls.unit,
+            type=1,
             unit_purchase_price=10,
             description='Test Description',
             supplier = cls.supplier,
             category = cls.category,
-            condition = "excellent",
-            asset_data = cls.asset
-            
+            equipment_component=ec            
     )
-    cls.consumable = models.Consumable.objects.create(
+
+
+    cls.consumable = models.InventoryItem.objects.create(
         name='test comsumable',
             unit=cls.unit,
             unit_purchase_price=10,
-            description='Test Description',
-            supplier = cls.supplier,
-            minimum_order_level = 0,
-            maximum_stock_level = 20,
-            category = cls.category
-    )
-    cls.raw_material = models.RawMaterial.objects.create(
-        name='test raw material',
-            unit=cls.unit,
-            unit_purchase_price=10,
+            type=2,
             description='Test Description',
             supplier = cls.supplier,
             minimum_order_level = 0,
@@ -95,8 +97,7 @@ def create_test_inventory_models(cls):
             description="shelves",
         )
     cls.warehouse_item = models.WareHouseItem.objects.create(
-        product = cls.product,
-        item_type=1,
+        item = cls.product,
         quantity =10,
         warehouse = cls.warehouse,
         location=cls.medium
@@ -114,7 +115,7 @@ def create_test_inventory_models(cls):
         )
     cls.order_item = models.OrderItem.objects.create(
             order=cls.order,
-            product=cls.product,
+            item=cls.product,
             quantity=1,
             order_price=10,
         )
@@ -149,7 +150,7 @@ def create_test_inventory_models(cls):
         receiving_warehouse = cls.warehouse,
     )
     cls.transfer_line = models.TransferOrderLine.objects.create(
-        product=cls.product,
+        item=cls.product,
         quantity=1,
         transfer_order=cls.transfer
     )
@@ -159,7 +160,7 @@ def create_test_inventory_models(cls):
         warehouse=cls.warehouse
     )
     cls.scrap_line = models.InventoryScrappingRecordLine.objects.create(
-        product=cls.product,
+        item=cls.product,
         quantity=1,
         scrapping_record=cls.scrap
     )
@@ -360,7 +361,7 @@ class ItemManagementModelTests(TestCase):
         obj.delete()
 
     def test_order_item_get_item(self):
-        self.assertIsInstance(self.order_item.item, models.Product)
+        self.assertIsInstance(self.order_item.item, models.INventoryItem)
 
     def test_order_item_fully_received(self):
         self.assertFalse(self.order_item.fully_received)
@@ -560,7 +561,7 @@ class ItemModelTests(TestCase):
         )
     
     def test_create_product(self):
-        obj = models.Product.objects.create(
+        obj = models.InventoryItem.objects.create(
             name='other test name',
             unit=self.unit,
             pricing_method=1,
@@ -573,7 +574,7 @@ class ItemModelTests(TestCase):
             maximum_stock_level = 20,
             category = self.category
         ) 
-        self.assertIsInstance(obj, models.Product)
+        self.assertIsInstance(obj, models.InventoryItem)
         obj.delete()
         #and associated functions
 
@@ -607,20 +608,7 @@ class ItemModelTests(TestCase):
         self.assertIsInstance(obj, models.Equipment)
         obj.delete()
 
-    def test_create_raw_material(self):
-        obj = models.RawMaterial.objects.create(
-            name='test raw material',
-            unit=self.unit,
-            unit_purchase_price=10,
-            description='Test Description',
-            supplier = self.supplier,
-            minimum_order_level = 0,
-            maximum_stock_level = 20,
-            category = self.category
-        )
-        self.assertIsInstance(obj, models.RawMaterial)
-        obj.delete()
-
+ 
 
     def test_create_consumable(self):
         obj = models.Consumable.objects.create(
@@ -736,7 +724,7 @@ class WarehouseModelTests(TestCase):
             prev_quantity - 1)
     
     def test_warehouse_item_item(self):
-        self.assertIsInstance(self.warehouse_item.item, models.Product)
+        self.assertIsInstance(self.warehouse_item.item, models.InventoryItem)
 
     def test_warehouse_item_name(self):
         self.assertEqual(self.warehouse_item.name, 'test name')

@@ -104,12 +104,6 @@ class WareHouse(models.Model):
         return self.name
 
 class WareHouseItem(models.Model):
-    ITEM_TYPE_CHOICES = [
-        (1, 'Product'),
-        (2, 'Consumable'),
-        (3, 'Equipment'),
-        (4, 'Raw Material')
-    ]
     # NB for now the software will require all items of the same type to be 
     # stored in the same location for the same warehouse.
     

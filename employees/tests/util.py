@@ -14,11 +14,8 @@ class AutomatedServiceTests(TestCase):
     def setUpTestData(cls):
         create_test_employees_models(cls)
         cls.settings = EmployeesSettings.objects.create(
-            payroll_date_one=datetime.date.today().day,
-            payroll_cycle="monthly",
             payroll_officer=cls.employee
         )
-        cls.settings.automate_payroll_for.set(Employee.objects.all())
         cls.service = AutomatedPayrollService()
 
     def test_create_service(self):
@@ -64,8 +61,6 @@ class AutomatedServiceTests(TestCase):
             time_in = datetime.datetime(2018, 1, 1, 8, 0).time(),
             time_out = datetime.datetime(2018, 1, 1, 17, 0).time(),
         )
-
-        self.settings.automate_payroll_for.set(Employee.objects.all())
 
         self.service.run_wages_payroll(1)
 
@@ -114,11 +109,9 @@ class ManualServiceTests(TestCase):
     def setUpTestData(cls):
         create_test_employees_models(cls)
         cls.settings = EmployeesSettings.objects.create(
-            payroll_date_one=datetime.date.today().day,
-            payroll_cycle="monthly",
+            
             payroll_officer=cls.employee
         )
-        cls.settings.automate_payroll_for.set(Employee.objects.all())
         
         cls.usr = User.objects.create_superuser(
             'Testuser', 'admin@test.com', '123')

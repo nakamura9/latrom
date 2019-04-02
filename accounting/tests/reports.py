@@ -7,22 +7,20 @@ from inventory.tests import create_test_inventory_models
 from invoicing.tests.models import create_test_invoicing_models
 from employees.tests import create_test_employees_models
 from employees.models import EmployeesSettings
-from invoicing.models import (SalesInvoice, 
-                            SalesInvoiceLine,
-                            ServiceInvoice,
-                            ServiceInvoiceLine,
-                            Bill,
-                            BillLine,
-                            CombinedInvoice,
-                            CombinedInvoiceLine,
+from invoicing.models import (Invoice,
+                            InvoiceLine,
                             SalesRepresentative, 
                             Payment,
+                            ProductLineComponent,
+                            ServiceLineComponent,
+                            ExpenseLineComponent,
                             CreditNote)
 from inventory.models import (WareHouse,
                                 UnitOfMeasure,
                                 Supplier,
                                 Category,
-                                Product,
+                                InventoryItem,
+                                ProductComponent,
                                 Order,
                                 OrderItem,
                                 DebitNote)
@@ -48,6 +46,8 @@ class ReportTests(TestCase):
         create_test_invoicing_models(cls)
         create_test_employees_models(cls)
         #common
+        cls.usr = User.objects.create_user(username="tstusr")
+
         cls.warehouse = WareHouse.objects.create(
             name='Test Location',
             address='Test Address'
@@ -67,18 +67,23 @@ class ReportTests(TestCase):
             description='Test description'
         )
         
-        cls.product = Product.objects.create(
-            name='test name',
-            unit=cls.unit,
+        pc = ProductComponent.objects.create(
             pricing_method=0, #KISS direct pricing
             direct_price=10,
             margin=0.5,
+            
+        )
+        cls.product = InventoryItem.objects.create(
+            name='test name',
+            unit=cls.unit,
             unit_purchase_price=10,
             description='Test Description',
             supplier = cls.supplier,
             minimum_order_level = 0,
             maximum_stock_level = 20,
-            category = cls.category
+            category = cls.category,
+            type=0,
+            product_component = pc
         )
 
         
@@ -87,25 +92,36 @@ class ReportTests(TestCase):
             billable=True,
             customer=cls.customer_org,
             amount=10,
+            recorded_by=cls.usr,
             description="test description",
             category=0,
             debit_account=Account.objects.first()
         )
         #sales invoice 
         
-        cls.sales_inv = SalesInvoice.objects.create(
+        cls.sales_inv = Invoice.objects.create(
             status='invoice',
             customer=cls.customer_org,
             ship_from=cls.warehouse,
             )
-        cls.line = SalesInvoiceLine.objects.create(
+        plc = ProductLineComponent.objects.create(
             product=cls.product,
             quantity=1,
+
+        )
+        plc2 = ProductLineComponent.objects.create(
+            product=cls.product,
+            quantity=1,
+        )
+
+        cls.line = InvoiceLine.objects.create(
             invoice=cls.sales_inv,
+            product = plc,
+            line_type=1
         )
 
         #service invoice
-        cls.service_inv = ServiceInvoice.objects.create(
+        cls.service_inv = Invoice.objects.create(
             status='invoice',
             customer=cls.customer_org,
         )
@@ -121,47 +137,68 @@ class ReportTests(TestCase):
             category=cat
         )
 
-        cls.service_line = ServiceInvoiceLine.objects.create(
-            invoice=cls.service_inv,
+        slc = ServiceLineComponent.objects.create(
             service=cls.service,
-            hours=0
+            hours=0,
+            flat_fee=100,
+            hourly_rate=10
+        )
+        slc2 = ServiceLineComponent.objects.create(
+            service=cls.service,
+            hours=0,
+            flat_fee=100,
+            hourly_rate=10
+        )
+
+        cls.service_line = InvoiceLine.objects.create(
+            invoice=cls.service_inv,
+            service = slc,
+            line_type = 2
         )
 
         #bill
-        cls.bill_inv = Bill.objects.create(
-            customer_reference="100",
+        cls.bill_inv = Invoice.objects.create(
             status='invoice',
             customer=cls.customer_org,
+            
         )
-        cls.bil_line = BillLine.objects.create(
-            bill=cls.bill_inv,
-            expense=cls.exp
+        elc = ExpenseLineComponent.objects.create(
+            expense=cls.exp,
+            price=cls.exp.amount
+        )
+        elc2 = ExpenseLineComponent.objects.create(
+            expense=cls.exp,
+            price=cls.exp.amount
+        )
+
+        cls.bil_line = InvoiceLine.objects.create(
+            invoice=cls.bill_inv,
+            expense=elc,
+            line_type=3
             )
 
         #combined
-        cls.combined_inv = CombinedInvoice.objects.create(
+        cls.combined_inv = Invoice.objects.create(
             status='invoice',
             customer=cls.customer_org,
         )
 
-        cls.line_sale = CombinedInvoiceLine.objects.create(
+        cls.line_sale =  InvoiceLine.objects.create(
             invoice=cls.combined_inv,
-            product=cls.product,
-            line_type=1,
-            quantity_or_hours=1
+            product = plc2,
+            line_type=1
         )
-        cls.line_service = CombinedInvoiceLine.objects.create(
+        cls.line_service = InvoiceLine.objects.create(
             invoice=cls.combined_inv,
-            service=cls.service,
-            line_type=2,
-            quantity_or_hours=0
+            service = slc2,
+            line_type = 2
         )
-        cls.line_bill = CombinedInvoiceLine.objects.create(
+
+        cls.line_bill = InvoiceLine.objects.create(
             invoice=cls.combined_inv,
-            expense=cls.exp,
-            line_type=3,
-            quantity_or_hours=0
-        )
+            expense=elc2,
+            line_type=3
+            )
 
         cls.order = Order.objects.create(
             expected_receipt_date = TODAY,
@@ -172,17 +209,19 @@ class ReportTests(TestCase):
             ship_to = cls.warehouse,
             tracking_number = '34234',
             notes = 'Test Note',
-            status = 'draft'
+            status = 'draft',
+            issuing_inventory_controller=User.objects.first(),
         )
         cls.order_item = OrderItem.objects.create(
             order=cls.order,
-            product=cls.product,
+            item=cls.product,
             quantity=1,
             order_price=10,
         )
 
         cls.asset = Asset.objects.create(
             name='Test Asset',
+            created_by=cls.usr,
             description='Test description',
             category = 0,
             initial_value = 100,
@@ -194,14 +233,13 @@ class ReportTests(TestCase):
         )
 
         cls.payment = Payment.objects.create(
-            payment_for=0,
-            sales_invoice=cls.sales_inv,
+            invoice=cls.sales_inv,
             amount=10,
             date=TODAY,
             sales_rep=SalesRepresentative.objects.first()
         )
 
-        cls.employee.user = User.objects.create_user(username="tstusr")
+        cls.employee.user = cls.usr 
         cls.employee.save()
         es = EmployeesSettings.objects.first()
         es.payroll_officer = cls.employee

@@ -60,9 +60,6 @@ class AbstractAccount(SoftDeletionModel):
 
     
     def balance_on_date(self, date):
-        print(self.balance)
-        print(self.balance_over_period(
-            date, datetime.date.today()) )
         return self.balance - self.balance_over_period(
             date, datetime.date.today())
 

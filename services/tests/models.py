@@ -5,10 +5,13 @@ from decimal import Decimal as D
 
 from employees.tests.models import create_test_employees_models
 from employees.models import Employee
-from inventory.models import Equipment, Consumable, UnitOfMeasure
+from inventory.models import InventoryItem, UnitOfMeasure
 from inventory.tests.models import create_test_inventory_models
 from accounting.models import Expense, Account
-from invoicing.models import ServiceInvoice, ServiceInvoiceLine, Customer
+from invoicing.models import (Invoice, 
+                                InvoiceLine, 
+                                Customer, 
+                                ServiceLineComponent)
 from services.models import Service, ServiceCategory, TimeLog
 from employees.models import Employee
 
@@ -44,17 +47,25 @@ class ServiceModelTests(TestCase):
             is_listed=True
         )
 
-        cls.inv = ServiceInvoice.objects.create(
+        cls.inv = Invoice.objects.create(
             status='invoice',
             customer=Customer.objects.first(),
         )
         cls.cat = ServiceCategory.objects.create(
             name="name"
         )
-        cls.line = ServiceInvoiceLine.objects.create(
-            invoice=cls.inv,
+
+        slc = ServiceLineComponent.objects.create(
             service=cls.service,
-            hours=0
+            hours=0,
+            flat_fee=100,
+            hourly_rate=10
+        )
+
+        cls.line = InvoiceLine.objects.create(
+            invoice=cls.inv,
+            service = slc,
+            line_type = 2
         )
 
         cls.service_person = ServicePerson.objects.create(
@@ -134,7 +145,7 @@ class ServiceModelTests(TestCase):
         
 
         obj_2 = EquipmentRequisitionLine.objects.create(
-            equipment=Equipment.objects.first(),
+            equipment=InventoryItem.objects.filter(type=1).first(),
             quantity=1,
             quantity_returned=10,
             requesting_condition='good',
@@ -155,7 +166,7 @@ class ServiceModelTests(TestCase):
         self.assertIsInstance(obj, ConsumablesRequisition)
 
         obj_2 = ConsumablesRequisitionLine.objects.create(
-            consumable=Consumable.objects.first(),
+            consumable=InventoryItem.objects.filter(type=2).first(),
             unit=UnitOfMeasure.objects.first(),
             quantity=0,
             returned=0,
@@ -225,17 +236,25 @@ class WorkOrderModelTests(TestCase):
             is_listed=True
         )
 
-        cls.inv = ServiceInvoice.objects.create(
+        cls.inv = Invoice.objects.create(
             status='invoice',
             customer=Customer.objects.first(),
         )
         cls.cat = ServiceCategory.objects.create(
             name="name"
         )
-        cls.line = ServiceInvoiceLine.objects.create(
-            invoice=cls.inv,
+        
+        slc = ServiceLineComponent.objects.create(
             service=cls.service,
-            hours=0
+            hours=0,
+            flat_fee=100,
+            hourly_rate=10
+        )
+
+        cls.line = InvoiceLine.objects.create(
+            invoice=cls.inv,
+            service = slc,
+            line_type = 2
         )
 
         cls.service_person = ServicePerson.objects.create(
@@ -247,9 +266,8 @@ class WorkOrderModelTests(TestCase):
 
         cls.wr = WorkOrderRequest.objects.create(
             status="request",
-            invoice_type=0,
             service=cls.service,
-            service_invoice=cls.inv
+            invoice=cls.inv
         )
         cls.wo = ServiceWorkOrder.objects.create(
             date=str(TODAY),
@@ -318,10 +336,9 @@ class WorkOrderModelTests(TestCase):
             is_listed=True
         )
         obj = WorkOrderRequest.objects.create(
-            invoice_type=0,
             status="request",
             service=service,
-            service_invoice=self.inv
+            invoice=self.inv
         )
         self.assertIsInstance(obj, WorkOrderRequest)
 
@@ -345,7 +362,7 @@ class WorkOrderModelTests(TestCase):
 
 
     def test_work_order_request_invoice(self):
-        self.assertIsInstance(self.wr.invoice, ServiceInvoice)
+        self.assertIsInstance(self.wr.invoice, Invoice)
 
     def test_work_order_request_work_orders(self):
         self.assertEqual(self.wr.work_orders.count(), 1)

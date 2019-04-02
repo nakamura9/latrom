@@ -12,7 +12,7 @@ from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models
 from services.serializers import ProcedureSerializer
-
+from inventory.models import InventoryItem
 
 class ProcedureCRUDMixin(object):
     def post(self, request, *args, **kwargs):
@@ -39,13 +39,13 @@ class ProcedureCRUDMixin(object):
         equipment = json.loads(urllib.parse.unquote(request.POST['equipment']))
         for item in equipment:
             pk = item.split('-')[0]
-            self.object.required_equipment.add(Equipment.objects.get(pk=pk))
+            self.object.required_equipment.add(InventoryItem.objects.get(pk=pk))
 
         #consumables
         consumables = json.loads(urllib.parse.unquote(request.POST['consumables']))
         for item in consumables:
             pk = item.split('-')[0]
-            self.object.required_consumables.add(Consumable.objects.get(pk=pk))
+            self.object.required_consumables.add(InventoryItem.objects.get(pk=pk))
 
 
         return resp

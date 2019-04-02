@@ -77,7 +77,6 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
     def get_initial(self):
         initial = {}
         if self.kwargs.get('customer', None):
-            print(self.kwargs['customer'])
             initial['customer'] = self.kwargs['customer']
         initial.update({
             "status": "invoice"
