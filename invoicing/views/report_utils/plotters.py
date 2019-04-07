@@ -31,8 +31,6 @@ def plot_sales(start, end):
     y = [get_sales_totals(q) for q in y_query]
 
 
-    fig.autofmt_xdate()
-
     chart = pygal.Bar(x_title="Periods", x_label_rotation=15)
     chart.title = 'Sales Report'
     chart.x_labels = pygal_date_formatter(start, end)

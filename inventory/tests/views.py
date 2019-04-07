@@ -592,23 +592,24 @@ class SupplierViewTests(TestCase):
         create_test_inventory_models(cls)
 
         cls.SUPPLIER_DATA = {
-            'individual': 1,
+            'vendor_type': 'individual',
+            'name': 'test supplier'
         }
 
     def setUp(self):
         self.client.login(username='Testuser', password='123')
 
     def test_get_supplier_create(self):
-        resp = self.client.get('/inventory/supplier-create/individual')
+        resp = self.client.get('/inventory/supplier/create')
         self.assertEqual(resp.status_code,  200)
 
     def test_post_supplier_create(self):
-        resp = self.client.post('/inventory/supplier-create/individual',
+        resp = self.client.post('/inventory/supplier/create',
             data=self.SUPPLIER_DATA)
         self.assertEqual(resp.status_code,  302)
 
     def test_get_supplier_list(self):
-        resp = self.client.get('/inventory/supplier-list/individual')
+        resp = self.client.get('/inventory/supplier/list/')
         self.assertEqual(resp.status_code,  200)
 
     def test_get_supplier_update(self):
