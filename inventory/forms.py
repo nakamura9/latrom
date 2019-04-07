@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from accounting.models import Account, Expense, Tax, Asset
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
+from common_data.models import Individual, Organization
 
 from . import models
 
@@ -56,21 +57,65 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
     
 
 
-class IndividualSupplierForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'account', 'organization']
-        model = models.Supplier
+class SupplierForm(BootstrapMixin, forms.Form):
+    vendor_type = forms.ChoiceField(widget=forms.RadioSelect, choices=[
+        ('individual', 'Individual'),
+        ('organization', 'Organization')
+        ])
+    name=forms.CharField()
+    address=forms.CharField(widget=forms.Textarea, 
+                            required=False)
+    billing_address=forms.CharField(widget=forms.Textarea, 
+                            required=False)
+    banking_details=forms.CharField(widget=forms.Textarea, 
+                            required=False)
+    email= forms.EmailField(required=False)
+    organization=forms.ModelChoiceField(Organization.objects.all(), 
+        required=False)
+    phone_1=forms.CharField(required=False)
+    phone_2=forms.CharField(required=False)
+    image=forms.ImageField(required=False)
+    website=forms.CharField(required=False)
+    business_partner_number=forms.CharField(required=False)
 
-class OrganizationSupplierForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'account', 'individual']
-        model = models.Supplier
+    other_details=forms.CharField(widget=forms.Textarea, required=False)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout= Layout(
+            Row(
+                Column('vendor_type', css_class='col-sm-12')
+            ),
+            Row(
+                Column('name', css_class='col-sm-12')
+            ),
+            Row(
+                Column('address',
+                        'billing_address', css_class='col-sm-6'),
+                Column( 'banking_details',
+                        'email',
+                        'website',
+                        'phone_1',
+                        'phone_2', css_class='col-sm-6')
+            ),
+            Row(
+                Column('image', 
+                        'organization',
+                        'business_partner_number',
+                        'other_details', css_class='col-sm-12')
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
-class SupplierUpdateForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude = ['active', 'account']
-        model = models.Supplier
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+
+        if cleaned_data['vendor_type'] == "individual":
+            if " " not in cleaned_data['name']:
+                raise forms.ValidationError('The vendor name must have both a first and last name separated by a space.')
+
+        return cleaned_data
 
 class ItemInitialMixin(forms.Form):
     initial_quantity = forms.CharField(widget=forms.NumberInput, initial=0)

@@ -3,7 +3,6 @@ import random
 import datetime
 from decimal import Decimal as D
 from functools import reduce
-import reversion
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -134,11 +133,14 @@ class TaxBracket(models.Model):
     deduction = models.DecimalField(max_digits=9, decimal_places=2)
 
 class PayrollSchedule(SingletonModel):
+    '''A container for payroll dates'''
     name = models.CharField(max_length=255)
 
 
 class PayrollDate(models.Model):
+    '''Represents a date in the month when payroll is run. On each such date all employees in the relevant grades, departments or employee list have paychecks created.'''
     PAYROLL_DATE_CHOICES = [(i, i) for i in range(1, 29)]
+    
     date = models.PositiveSmallIntegerField(choices = PAYROLL_DATE_CHOICES)
     employees = models.ManyToManyField('employees.employee')
     departments = models.ManyToManyField('employees.department')

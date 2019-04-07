@@ -158,19 +158,40 @@ class Invoice(SoftDeletionModel):
                 discount=discount
             )
 
+    def update_inventory(self):
+        #called in views.py
+        for line in self.invoiceline_set.filter(product__isnull=False):
+            #check if ship_from has the product in sufficient quantity
+            self.ship_from.decrement_item(line.product.product, line.quantity)
+
+    def verify_inventory(self):
+        '''Iterates over all the invoice lines and appends checks that indicate 
+            shortages. returns a list of these checks'''
+        shortages = []
+        for line in self.invoiceline_set.filter(product__isnull=False):
+            shortage = line.product.check_inventory()
+            if shortage['quantity'] > 0:
+                shortages.append(shortage)
+
+        return shortages
+
+    @property 
+    def cost_of_goods_sold(self):
+        print([line.product.value for line in self.invoiceline_set.filter(product__isnull=False)])
+        return sum([line.product.value for line in self.invoiceline_set.filter(
+            product__isnull=False)], D(0.0))
 
     @property
     def overdue(self):
         '''returns boolean'''
-        return self.overdue_days < 0
+        return self.overdue_days > 0
 
     @property
     def overdue_days(self):
         '''returns days due'''
         TODAY = timezone.now().date()
-
-        if self.due < TODAY:
-            return (self.due - TODAY).days
+        if TODAY > self.due:
+            return (TODAY - self.due).days
         return 0
         
     @property
@@ -186,9 +207,8 @@ class Invoice(SoftDeletionModel):
     @property
     def on_credit(self):
         '''Checks if the invoice is on credit returns bool'''
-        # might need to improve the logic
         return self.status in ['invoice', 'paid-partially'] and not self.draft \
-            and self.due < self.date and self.total_due > 0
+            and self.due > self.date 
 
     @property
     def total_paid(self):
@@ -208,6 +228,7 @@ class Invoice(SoftDeletionModel):
     @property
     def subtotal(self):
         '''The total of the invoice minus tax including discounts'''
+        
         return sum([i.subtotal for i in self.invoiceline_set.all()])
 
     def __str__(self):
@@ -412,12 +433,16 @@ class InvoiceLine(models.Model):
 
     
     @property
-    def subtotal(self):
+    def total(self):
         if not self.component:
             return 0
 
         
         price_with_discount = self.price - self.discount
+        
+        if not self.tax:
+            return price_with_discount
+
         price_after_tax = price_with_discount + \
             (price_with_discount * D(D(self.tax.rate) / D(100.0)))
 
@@ -454,7 +479,9 @@ class ProductLineComponent(models.Model):
     product = models.ForeignKey('inventory.InventoryItem', null=True, 
         on_delete=models.SET_NULL)
     returned = models.BooleanField(default=False)
-    unit_price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
+    unit_price = models.DecimalField(max_digits=9, 
+        decimal_places=2, 
+        default=0.0)
 
     # value is calculated once when the invoice is generated to prevent 
     # distortions as prices change
@@ -487,7 +514,7 @@ class ProductLineComponent(models.Model):
 
     @property
     def subtotal(self):
-        return D(self.quantity) * self.price
+        return D(self.quantity) * D(self.price)
 
     def _return(self, quantity):
         self.returned = True
@@ -512,8 +539,8 @@ class ProductLineComponent(models.Model):
         shortage.
         checks also if pending orders will meet demand in time for the invoices 
         '''
-        if self.invoice.ship_from.has_item(self.product):
-            wh_item = self.invoice.ship_from.get_item(self.product)
+        if self.invoiceline.invoice.ship_from.has_item(self.product):
+            wh_item = self.invoiceline.invoice.ship_from.get_item(self.product)
             if wh_item.quantity >= self.quantity:
                 return {
                     'product': self.product,
@@ -539,6 +566,10 @@ class ProductLineComponent(models.Model):
         if self.value == D(0.0) and \
                 self.product.product_component.stock_value > D(0.0):
             self.set_value()  
+        if self.unit_price == D(0.0):
+            self.unit_price = self.product.product_component.unit_sales_price
+            self.save()
+        
 
 class ServiceLineComponent(models.Model):
     service = models.ForeignKey('services.service',
@@ -556,7 +587,7 @@ class ServiceLineComponent(models.Model):
 
     @property
     def price(self):
-        return self.flat_fee  + (self.hours * self.hourly_rate)
+        return self.flat_fee  + (D(self.hours) * D(self.hourly_rate))
 
     @property
     def line(self):

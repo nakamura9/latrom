@@ -11,7 +11,7 @@ from django.db.models import Q
 
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel, SoftDeletionModel
-
+from inventory.models.item import InventoryItem
 
 
 class InventorySettings(SingletonModel):
@@ -84,6 +84,8 @@ class Supplier(SoftDeletionModel):
     account = models.ForeignKey('accounting.Account', 
         on_delete=models.SET_NULL, 
         blank=True, null=True)
+    banking_details=models.TextField(blank=True, default="")
+    billing_address=models.TextField(blank=True, default="")
 
     @property
     def name(self):
@@ -184,7 +186,7 @@ class Category(models.Model):
     @property
     def items(self):
         #deprecating
-        return Product.objects.filter(category=self)
+        return InventoryItem.objects.filter(category=self)
 
     @property
     def children(self):

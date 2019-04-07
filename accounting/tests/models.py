@@ -21,6 +21,7 @@ from django.contrib.auth.models import User
 
 TODAY = datetime.date.today()
 
+
 class SimpleModelTests(TestCase):
     # use fixtures later
     fixtures = ['accounts.json', 'journals.json']

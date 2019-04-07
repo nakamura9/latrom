@@ -16,6 +16,8 @@ from invoicing import forms, models
 from invoicing.models.invoice import Invoice
 from .report_utils.plotters import plot_sales
 
+import pygal
+
 
 class CustomerReportFormView(ContextMixin, FormView):
     extra_context = {

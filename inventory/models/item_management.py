@@ -219,4 +219,9 @@ class InventoryScrappingRecordLine(models.Model):
 
     @property
     def scrapped_value(self):
-        return self.product.unit_sales_price * D(self.quantity)
+        #TODO fix 
+        if self.item.product_component:
+            return self.item.product_component.unit_sales_price * \
+                D(self.quantity)
+
+        return 0

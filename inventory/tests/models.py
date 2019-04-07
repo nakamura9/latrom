@@ -12,14 +12,20 @@ from common_data.models import Organization, Individual
 
 from common_data.tests import create_account_models, create_test_user
 from inventory import models
-from invoicing.models import InvoiceLine, Invoice, Customer
+from invoicing.models import (InvoiceLine, 
+                              Invoice, 
+                              Customer, 
+                              ProductLineComponent)
 from employees.models import Employee
-
-
+from django.contrib.auth.models import User
 TODAY = datetime.date.today()
+
 
 def create_test_inventory_models(cls):
     create_account_models(cls)
+    if User.objects.all().count() ==0:
+        User.objects.create_user(username='some_user')
+
     if not hasattr(cls, 'organization'):
         cls.organization = Organization.objects.create(
             legal_name = 'test business'
@@ -111,7 +117,8 @@ def create_test_inventory_models(cls):
             ship_to = cls.warehouse,
             tracking_number = '34234',
             notes = 'Test Note',
-            status = 'draft'
+            status = 'draft',
+            issuing_inventory_controller=User.objects.first()
         )
     cls.order_item = models.OrderItem.objects.create(
             order=cls.order,
@@ -170,7 +177,7 @@ def create_test_inventory_models(cls):
             order=cls.order,
             comments= "comment"
         )
-
+    
 
 class CommonModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json']
@@ -251,7 +258,7 @@ class CommonModelTests(TestCase):
         obj.delete()
 
     def test_category_items(self):
-        self.assertEqual(self.category.items.count(), 1)
+        self.assertEqual(self.category.items.count(), 3)
 
     def test_category_relationships(self):
         parent_one = models.Category.objects.create(
@@ -353,7 +360,7 @@ class ItemManagementModelTests(TestCase):
     def test_create_order_item(self):
         obj = models.OrderItem.objects.create(
             order=self.order,
-            product=self.product,
+            item=self.product,
             quantity=10,
             order_price=10
         )
@@ -361,7 +368,7 @@ class ItemManagementModelTests(TestCase):
         obj.delete()
 
     def test_order_item_get_item(self):
-        self.assertIsInstance(self.order_item.item, models.INventoryItem)
+        self.assertIsInstance(self.order_item.item, models.InventoryItem)
 
     def test_order_item_fully_received(self):
         self.assertFalse(self.order_item.fully_received)
@@ -502,7 +509,7 @@ class ItemManagementModelTests(TestCase):
 
     def test_create_transfer_record_line(self):
         obj = models.TransferOrderLine.objects.create(
-            product=self.product,
+            item=self.product,
             quantity=1,
             transfer_order=self.transfer
         )
@@ -523,7 +530,7 @@ class ItemManagementModelTests(TestCase):
 
     def test_create_scrapping_record_line(self):
         obj = models.InventoryScrappingRecordLine.objects.create(
-            product=self.product,
+            item=self.product,
             quantity=1,
             scrapping_record=self.scrap
         )
@@ -550,23 +557,27 @@ class ItemModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_inventory_models(cls)
-        cls.inv = SalesInvoice.objects.create(
+        cls.inv = Invoice.objects.create(
             status='sent',
             customer=Customer.objects.first(),
             )
-        cls.line = SalesInvoiceLine.objects.create(
+
+        plc = ProductLineComponent.objects.create(
             product=cls.product,
             quantity=1,
+        )
+
+        cls.line = InvoiceLine.objects.create(
+            product=plc,
             invoice=cls.inv,
+            line_type=1
         )
     
     def test_create_product(self):
         obj = models.InventoryItem.objects.create(
             name='other test name',
             unit=self.unit,
-            pricing_method=1,
-            direct_price=10,
-            margin=0.25,
+            type=0,
             unit_purchase_price=8,
             description='Test Description',
             supplier = self.supplier,
@@ -588,32 +599,28 @@ class ItemModelTests(TestCase):
         self.assertEqual(self.product.stock_value, 10)
 
     def test_sales_to_date(self):
-        self.assertEqual(self.product.sales_to_date, 10)
-
-
-    def test_product_events(self):
-        self.assertEqual(len(self.product.events), 1)
+        self.assertEqual(self.product.product_component.sales_to_date, D(10.0))
 
     def test_create_equipment(self):
-        obj = models.Equipment.objects.create(
+        obj = models.InventoryItem.objects.create(
             name='test equipment',
+            type=1,
             unit=self.unit,
             unit_purchase_price=10,
             description='Test Description',
             supplier = self.supplier,
             category = self.category,
-            condition = "excellent",
-            asset_data = self.asset
         )
-        self.assertIsInstance(obj, models.Equipment)
+        self.assertIsInstance(obj, models.InventoryItem)
         obj.delete()
 
  
 
     def test_create_consumable(self):
-        obj = models.Consumable.objects.create(
+        obj = models.InventoryItem.objects.create(
             name='test comsumable',
             unit=self.unit,
+            type=2,
             unit_purchase_price=10,
             description='Test Description',
             supplier = self.supplier,
@@ -621,7 +628,7 @@ class ItemModelTests(TestCase):
             maximum_stock_level = 20,
             category = self.category
         )
-        self.assertIsInstance(obj, models.Consumable)
+        self.assertIsInstance(obj, models.InventoryItem)
         obj.delete()
 
     def test_inventory_on_date(self):
@@ -665,10 +672,10 @@ class WarehouseModelTests(TestCase):
 
     def test_warehouse_decrement_item(self):
         prev_quantity =  models.WareHouseItem.objects.get(
-            product=self.product).quantity
+            item=self.product).quantity
         self.warehouse.decrement_item(self.product, 1)
         self.assertEqual(models.WareHouseItem.objects.get(
-            product=self.product).quantity,
+            item=self.product).quantity,
             prev_quantity - 1)
         
         
@@ -679,7 +686,7 @@ class WarehouseModelTests(TestCase):
 
     def test_warehouse_add_item(self):
         self.warehouse.add_item(self.equipment, 1)
-        obj = models.WareHouseItem.objects.get(equipment=self.equipment)
+        obj = models.WareHouseItem.objects.get(item=self.equipment)
         self.assertIsInstance(obj, models.WareHouseItem)
         
         obj.delete()
@@ -691,7 +698,7 @@ class WarehouseModelTests(TestCase):
         )
         self.warehouse.transfer(dest, self.product, 1)
         obj = models.WareHouseItem.objects.get(warehouse=dest, 
-            product=self.product)
+            item=self.product)
         self.assertIsInstance(obj, models.WareHouseItem)
 
         
@@ -703,8 +710,7 @@ class WarehouseModelTests(TestCase):
             address='Test Address'
         )
         obj = models.WareHouseItem.objects.create(
-            item_type=1,
-            product=self.product,
+            item=self.product,
             quantity=10,
             warehouse=warehouse_2,
         )

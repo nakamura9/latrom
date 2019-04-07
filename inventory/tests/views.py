@@ -7,10 +7,11 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from accounting.models import Account, JournalEntry
+from accounting.models import Account, JournalEntry, Tax
 from common_data.models import Organization
 from common_data.tests import create_account_models, create_test_user
 from inventory import models
+from django.contrib.auth.models import User
 
 from .models import create_test_inventory_models
 
@@ -284,14 +285,17 @@ class ItemViewTests(TestCase):
             'pricing_method': 2,
             'minimum_order_level' : 0,
             'maximum_stock_level' : 20,
+            'type': 0,
+            'tax': Tax.objects.create(name='tax', rate=15).pk
         }
         cls.EQUIPMENT_DATA = {
-            'condition': 'good',
-            'asset_data': 1
+            'asset_data': 1,
+            'type': 1
         }
         cls.CONSUMABLE_DATA = {
             'minimum_order_level' : 0,
             'maximum_stock_level' : 20,
+            'type': 2
         }
 
         cls.EQUIPMENT_DATA.update(cls.COMMON_DATA)
@@ -314,6 +318,7 @@ class ItemViewTests(TestCase):
     def test_post_product_form(self):
         resp = self.client.post(reverse('inventory:product-create'),
             data=self.PRODUCT_DATA)
+        
         self.assertEqual(resp.status_code,  302)
 
     def test_get_product_list(self):
@@ -344,7 +349,7 @@ class ItemViewTests(TestCase):
     def test_post_product_delete_form(self):
         resp = self.client.post(reverse('inventory:product-delete',
             kwargs={
-                'pk': models.Product.objects.latest('pk').pk
+                'pk': models.InventoryItem.objects.latest('pk').pk
             }))
         self.assertEqual(resp.status_code,  302)
     
@@ -364,6 +369,7 @@ class ItemViewTests(TestCase):
     def test_post_equipment_form(self):
         resp = self.client.post(reverse('inventory:equipment-create'),
             data=self.EQUIPMENT_DATA)        
+        
         self.assertEqual(resp.status_code,  302)
 
     def test_get_equipment_list(self):
@@ -381,7 +387,8 @@ class ItemViewTests(TestCase):
         resp = self.client.post(reverse('inventory:equipment-update',
             kwargs={
                 'pk': self.equipment.pk
-            }), data=self.EQUIPMENT_DATA)        
+            }), data=self.EQUIPMENT_DATA)
+                
         self.assertEqual(resp.status_code,  302)
     
     def test_get_equipment_detail(self):
@@ -395,6 +402,7 @@ class ItemViewTests(TestCase):
 
     def test_get_consumable_form(self):
         resp = self.client.get(reverse('inventory:consumable-create'))
+
         self.assertEqual(resp.status_code,  200)
 
     def test_post_consumable_form(self):
@@ -417,7 +425,7 @@ class ItemViewTests(TestCase):
         resp = self.client.post(reverse('inventory:consumable-update',
             kwargs={
                 'pk': self.consumable.pk
-            }), data=self.CONSUMABLE_DATA)        
+            }), data=self.CONSUMABLE_DATA)
         self.assertEqual(resp.status_code,  302)
 
 
@@ -429,6 +437,7 @@ class OrderViewTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client
+
         cls.ORDER_DATA = {
             'expected_receipt_date' : TODAY,
             'date' : TODAY,
@@ -441,12 +450,12 @@ class OrderViewTests(TestCase):
             'notes' : 'Test Note',
             'status' : 'draft',
             'items': urllib.parse.quote(json.dumps([{
-                'item': 'P' + str(cls.product.pk) + ' - Name',
+                'item': str(cls.product.pk) + ' - Name',
                 'quantity': 10,
                 'unit': "1 - unit",
                 'order_price': 10
                 }])),
-            'issuing_inventory_controller': 1
+            'issuing_inventory_controller': User.objects.create_user(username="someone").pk
         }
 
     @classmethod
@@ -465,6 +474,7 @@ class OrderViewTests(TestCase):
     def test_post_order_form(self):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
+
         self.assertEqual(resp.status_code,  302)
 
     
@@ -531,7 +541,7 @@ class OrderViewTests(TestCase):
         resp = self.client.post("/inventory/order-expense/1", data={
             'date': datetime.date.today(),
             'description': 'Some description',
-            'recorded_by': 1,
+            'recorded_by': 2,
             'amount': 10,
             'reference': "123"
         })

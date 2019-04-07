@@ -13,10 +13,7 @@ from common_data.forms import PeriodReportForm
 from functools import reduce
 from wkhtmltopdf.views import PDFTemplateView
 
-import matplotlib as mpl
-mpl.use("svg")
-from matplotlib import pyplot as plt
-from common_data.plot_utility import svgString
+import pygal
 
 class ServicePersonUtilizationFormView(ContextMixin, FormView):
     template_name = os.path.join('common_data', 'reports', 
@@ -41,13 +38,13 @@ class ServicePersonUtilizationReport(TemplateView):
         x = histogram.keys()
         y = [reduce(lambda x, y: x + y, histogram[key], datetime.timedelta(seconds=0)).seconds / 3600  for key in x]
         
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.set_xlabel("Employees")
-        ax.set_ylabel("Service Hours")
+        chart = pygal.Bar()
+        chart.title = 'Service Person Utilization'
+        chart.x_labels = x
+        chart.add('Hours', y)
 
-        ax.bar(x, y)
-        context['graph'] = svgString(fig)
+
+        context['graph'] = chart.render(is_unicode=True)
         context.update({
             'start': start.strftime("%d %B %Y"),
             'end': end.strftime("%d %B %Y"),

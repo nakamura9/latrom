@@ -1,6 +1,7 @@
 
 import random
 import datetime
+from dateutil.relativedelta import relativedelta
 from decimal import Decimal as D
 from functools import reduce
 import reversion
@@ -12,6 +13,7 @@ from common_data.models import Person, SingletonModel, SoftDeletionModel
 import planner
 import accounting
 import invoicing
+from employees.models.payroll_elements import PayrollDate
 
 @reversion.register()    
 class PayGrade(models.Model):
@@ -33,7 +35,12 @@ class PayGrade(models.Model):
 
     ]
     name = models.CharField(max_length=16)
-    monthly_salary = models.FloatField(default=0)
+    salary = models.FloatField(default=0)
+    pay_frequency = models.PositiveSmallIntegerField(default=2, choices=[
+        (0, 'Weekly'),
+        (1, 'Bi-Monthly'),
+        (2, 'Monthly')
+    ])
     monthly_leave_days = models.FloatField(default=0)
     hourly_rate = models.FloatField(default=0)
     overtime_rate = models.FloatField(default=0)
@@ -51,5 +58,4 @@ class PayGrade(models.Model):
 
     def __str__(self):
         return self.name
-
-        
+    

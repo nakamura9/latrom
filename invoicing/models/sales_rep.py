@@ -29,7 +29,6 @@ class SalesRepresentative(SoftDeletionModel):
             Q(salesperson=self) 
             & (Q(due__lt=end) 
             | Q(due__gte=start)))
-        #should i filter for paid invoices?
 
         #exclude tax in the calculation
         return sum([i.subtotal for i in invoices])

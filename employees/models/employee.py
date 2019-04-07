@@ -47,6 +47,14 @@ class Employee(Person, SoftDeletionModel):
          on_delete=models.CASCADE)#not all are users
     pin = models.PositiveSmallIntegerField(default=1000)
     
+    def increment_leave_days(self, days):
+        self.leave_days += days
+        self.last_leave_day_increment = datetime.date.today()
+        self.save()
+
+    def deduct_leave_days(self, days):
+        self.leave_days -= days
+        self.save()
 
     def __str__(self):
         return self.first_name + " " + self.last_name

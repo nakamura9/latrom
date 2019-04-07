@@ -337,19 +337,14 @@ class ManualPayrollService(object):
             self.adjust_leave_days(employee)
 
     def check_existing_payslip(self, employee):
-        slips = models.Payslip.objects.filter(Q(employee=employee) & Q(Q(
+        return models.Payslip.objects.filter(Q(employee=employee) & Q(Q(
             Q(start_period__lte=self.start) & 
             Q(end_period__gte=self.start)   
         ) | Q(
             Q(start_period__lte=self.end) & 
             Q(end_period__gte=self.end) 
-        )))
+        ))).exists()
         
-        if slips.count() > 0:
-            return True
-
-        return False
-
 
     def generate_salaried_payslip(self, employee):
         return models.Payslip.objects.create(

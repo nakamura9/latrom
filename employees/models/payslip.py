@@ -3,9 +3,9 @@ import random
 import datetime
 from decimal import Decimal as D
 from functools import reduce
-import reversion
 from django.db import models
 from django.db.models import Q
+import reversion
 from django.utils import timezone
 
 from common_data.models import Person, SingletonModel, SoftDeletionModel
@@ -61,12 +61,13 @@ class Payslip(models.Model):
 
     @property 
     def paygrade_(self):
-        all_versions = reversion.models.Version.objects.get_for_object(
-            self.pay_grade)
-        version =len(all_versions) -self.pay_grade_version
+        '''versions of the model are stored in a queryset with the most recent first. e.g. [version 3, version 2, version 1]. On the other hand each payslip is assigned to a version number which is the number of versions of the. reversion returns a version queryset with limited slicing functionality that is why it is converted to a list first. '''
+
+        all_versions = list(reversion.models.Version.objects.get_for_object(
+            self.pay_grade))
         
-        return all_versions[version].field_dict
-    
+        return all_versions[-self.pay_grade_version].field_dict
+        
     def __str__(self):
         return str(self.employee) 
     
@@ -79,11 +80,14 @@ class Payslip(models.Model):
             pk=self.paygrade_['commission_id'])
         
         
-        if not hasattr(self.employee, 'salesrepresentative'):
+        if not invoicing.models.SalesRepresentative.objects.filter(
+                employee=self.employee).exists():
             return 0
         
         else:
-            total_sales = self.employee.salesrepresentative.sales(
+            rep = invoicing.models.SalesRepresentative.objects.get(
+                employee=self.employee)
+            total_sales = rep.sales(
                 self.start_period, 
                 self.end_period)
             if total_sales < commission.min_sales:
@@ -131,7 +135,7 @@ class Payslip(models.Model):
 
     @property
     def gross_pay(self):
-        gross = self.paygrade_['monthly_salary']
+        gross = self.paygrade_['salary']
         gross += self.normal_pay
         gross += self.overtime_one_pay
         gross += self.overtime_two_pay
@@ -208,10 +212,20 @@ class Payslip(models.Model):
         if self.pay_grade != self.employee.pay_grade \
                 or is_new:
             self.pay_grade = self.employee.pay_grade
-            revision_count = len(
-                reversion.models.Version.objects.get_for_object(
-                    self.pay_grade)
-                    )
+            
+            #make sure not paygrade is created without a revision
+            revision_count = 0
+            while True:
+                revision_count = len(
+                    reversion.models.Version.objects.get_for_object(
+                        self.pay_grade)
+                        )
+                if revision_count < 1:
+                    with reversion.create_revision():
+                        self.pay_grade.save()
+                else:
+                    break 
+            
             self.pay_grade_version = revision_count
             self.save()
 

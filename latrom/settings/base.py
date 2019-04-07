@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'autofixture',
     'wkhtmltopdf',
     'reversion',
+    'django_q',
 ] + USER_APPS
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
@@ -81,6 +82,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'latrom.urls'
+
+Q_CLUSTER = {
+    'name': 'sbs',
+    'orm': 'default',
+    'timeout': 60,
+    'queue_limit': 50,
+    'workers': 2
+}
 
 TEMPLATES = [
     {

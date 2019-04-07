@@ -9,13 +9,12 @@ from django.contrib.auth.models import User
 TODAY = datetime.date.today() 
 
 class AutomatedServiceTests(TestCase):
-    fixtures = ['accounts.json']
+    fixtures = ['accounts.json', 'employees.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        cls.settings = EmployeesSettings.objects.create(
-            payroll_officer=cls.employee
-        )
+        cls.settings = EmployeesSettings.objects.first()
+        cls.settings.payroll_officer=cls.employee
         cls.service = AutomatedPayrollService()
 
     def test_create_service(self):
@@ -28,44 +27,6 @@ class AutomatedServiceTests(TestCase):
         self.assertEqual(Payslip.objects.count(), 2)
         Payslip.objects.latest('pk').delete()
 
-    def test_run_salaries_payroll(self):
-        self.service.run_salaries_payroll(1)
-        
-        self.assertEqual(Payslip.objects.count(), 2)
-        Payslip.objects.latest('pk').delete()
-
-    def test_run_wages_payroll(self):
-        wage_employee = Employee.objects.create(
-            first_name = 'Second',
-            last_name = 'Last',
-            address = 'Model test address',
-            email = 'test@mail.com',
-            phone = '1234535234',
-            hire_date=TODAY,
-            title='test role',
-            pay_grade = self.grade,
-            uses_timesheet=True
-        )
-
-        sheet = EmployeeTimeSheet.objects.create(
-            employee=wage_employee,
-            month=TODAY.month,
-            year=TODAY.year,
-            recorded_by=self.employee,
-            complete=True
-        )
-
-        line = AttendanceLine.objects.create(
-            timesheet=sheet,
-            date= TODAY, 
-            time_in = datetime.datetime(2018, 1, 1, 8, 0).time(),
-            time_out = datetime.datetime(2018, 1, 1, 17, 0).time(),
-        )
-
-        self.service.run_wages_payroll(1)
-
-        self.assertEqual(Payslip.objects.count(), 2)
-        Payslip.objects.latest('pk').delete()
 
     def test_get_employees_timesheet(self):
         sheet = EmployeeTimeSheet.objects.create(
@@ -77,16 +38,14 @@ class AutomatedServiceTests(TestCase):
         )
         res = self.service.get_employee_timesheet(self.employee)
         self.assertIsInstance(res, EmployeeTimeSheet)
-
+    
     def test_adjust_employee_leave_days(self):
         prev_days = self.employee.leave_days
         self.employee.last_leave_day_increment = None
         self.employee.save()
-        
         self.service.adjust_leave_days()
 
-
-        self.assertEqual(Employee.objects.first().leave_days,
+        self.assertEqual(Employee.objects.get(pk=self.employee.pk).leave_days,
             prev_days + self.employee.pay_grade.monthly_leave_days)
 
         Leave.objects.create(
@@ -97,21 +56,20 @@ class AutomatedServiceTests(TestCase):
             status=1,
         )
 
-        prev_days = Employee.objects.first().leave_days
+        prev_days = Employee.objects.get(pk=self.employee.pk).leave_days
 
         self.service.adjust_leave_days()
-        self.assertTrue(prev_days != Employee.objects.first().leave_days)
-
+        self.assertTrue(prev_days != Employee.objects.get(pk=self.employee.pk).leave_days)
+    
 
 class ManualServiceTests(TestCase):
-    fixtures = ['accounts.json']
+    fixtures = ['accounts.json', 'employees.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        cls.settings = EmployeesSettings.objects.create(
-            
-            payroll_officer=cls.employee
-        )
+        cls.settings = EmployeesSettings.objects.first()
+        cls.settings.payroll_officer =cls.employee
+        cls.settings.save()
         
         cls.usr = User.objects.create_superuser(
             'Testuser', 'admin@test.com', '123')
@@ -146,8 +104,10 @@ class ManualServiceTests(TestCase):
         self.assertIsInstance(obj, ManualPayrollService)
 
     def test_manual_payroll_service_run(self):
+        Payslip.objects.all().delete()
         self.service.run()
-        self.assertEqual(Payslip.objects.count(), 1)
+        self.assertEqual(Payslip.objects.all().count(), 
+            Employee.objects.all().count())
 
     def test_existing_payslip(self):
         self.assertTrue(self.service.check_existing_payslip(self.employee))

@@ -134,7 +134,7 @@ class CustomerUpdateView( ContextMixin, FormView):
         
         if customer.organization and \
                 form.cleaned_data['customer_type'] == "individual":
-            customer.individual.delete()
+            customer.organization.delete()
             org = Organization.objects.create(
                 legal_name=form.cleaned_data['name'],
                 business_address=form.cleaned_data['address'],
@@ -149,7 +149,7 @@ class CustomerUpdateView( ContextMixin, FormView):
         
         elif customer.individual and \
                 form.cleaned_data['customer_type'] == "organization":
-            customer.organization.delete()
+            customer.individual.delete()
             names = form.cleaned_data['name'].split(' ')
 
             individual = Individual.objects.create(
@@ -221,4 +221,4 @@ class CustomerListView( ContextMixin, PaginationMixin, FilterView):
 class CustomerDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     model = Customer
-    success_url = reverse_lazy('invoicing:organization-customers-list')
+    success_url = reverse_lazy('invoicing:customers-list')

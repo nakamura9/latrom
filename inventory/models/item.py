@@ -55,9 +55,9 @@ class InventoryItem(SoftDeletionModel):
         on_delete=models.SET_NULL,
         null=True)
 
-    def __getattr__(self, name):
+    def __getattribute__(self, name):
         try:
-            return super().__getattr__(name)
+            return super().__getattribute__(name)
         except AttributeError:
             if self.equipment_component and hasattr(self.equipment_component, 
                     name):
@@ -246,40 +246,11 @@ class ProductComponent(models.Model):
 
     @property
     def sales_to_date(self):
-        items = invoicing.models.SalesInvoiceLine.objects.filter(
-            product=self)
+        items = invoicing.models.ProductLineComponent.objects.filter(
+            product=self.inventoryitem)
         total_sales = sum(
-            [D(item.quantity) * item.price for item in items])
+            [(item.invoiceline.subtotal - item.invoiceline.tax_) for item in items])
         return total_sales
-    
-
-    @property
-    def events(self):
-        class Event:
-            def __init__(self, date, description):
-                self.date = date
-                self.description= description
-
-            def __lt__(self, other):
-                return other.date < self.date
-        # 30 day limit on event retrieval.
-        epoch = datetime.date.today() - datetime.timedelta(days=30)
-
-        #from invoices
-        items= [Event(inv.invoice.date, 
-            'sold %d items as part of sales invoice %d ' % (
-                inv.quantity, inv.invoice.pk)) \
-                    for inv in invoicing.models.SalesInvoiceLine.objects.filter(
-                        Q(product=self) & Q(invoice__date__gte=epoch))]
-        # from orders
-        orders = [Event(o.order.date, 
-            "added %d items to inventory from purchase order #%d." % (o.received, o.order.pk)) \
-                for o in inventory.models.OrderItem.objects.filter(Q(product=self) 
-                    & Q(order__date__gte= epoch)) if o.received > 0]
-
-        events = items + orders 
-        return sorted(events)
-
     
 
 class EquipmentComponent(models.Model):

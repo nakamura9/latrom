@@ -63,8 +63,8 @@
     </div>
     
 </div><script>
-function dynamicFormRenderer(){
-                var input = $("#id_id_customer_type_0_1") //individual 
+            function dynamicFormRenderer(){
+                var input = $("#id_id_vendor_type_0_1") //individual 
                 if(input[0].checked){
                     $('#div_id_business_partner_number').hide();
                     $('#div_id_organization').show();
@@ -75,7 +75,7 @@ function dynamicFormRenderer(){
                 
             }
             $(document).ready(dynamicFormRenderer);
-            $("input[name='customer_type']").on('change', function(evt){
+            $("input[name='vendor_type']").on('change', function(evt){
                 var value = evt.target.value;
                 if(value === "individual"){
                     $('#div_id_business_partner_number').hide();

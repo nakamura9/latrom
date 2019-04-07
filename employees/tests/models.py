@@ -19,7 +19,7 @@ from invoicing.models import (SalesRepresentative,
                               )
 from inventory.models import InventoryItem, UnitOfMeasure, ProductComponent
 TODAY = datetime.date.today()
-
+        
 def create_test_employees_models(cls):
     
     cls.allowance = Allowance.objects.create(
@@ -38,7 +38,7 @@ def create_test_employees_models(cls):
         )
     cls.grade = PayGrade.objects.create(
             name='Model Test Paygrade',
-            monthly_salary=300,
+            salary=300,
             monthly_leave_days=1.5,
             hourly_rate=2,
             overtime_rate=3,
@@ -86,23 +86,31 @@ def create_test_employees_models(cls):
             pay_grade = cls.employee.pay_grade,
             status="verified"
     )
+    
+    cls.schedule = PayrollSchedule.objects.first()
+    if not cls.schedule:
+        cls.schedule  =PayrollSchedule.objects.create(
+            name='schedule'
+        )
 
+    cls.pay_date = PayrollDate.objects.create(
+        date = TODAY.day,
+        schedule=cls.schedule
+    )
+    cls.pay_date.employees.add(cls.employee)
+    cls.pay_date.save()
 
 class CommonModelTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_employees_models(cls)
-
-
     def test_create_employee_settings(self):
         obj = EmployeesSettings.objects.create(
             require_verification_before_posting_payslips = True,
             salary_follows_profits = True
-            #automate_payroll_for
         )
         self.assertIsInstance(obj, EmployeesSettings)
 
 class TimesheetTests(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -163,6 +171,8 @@ class TimesheetTests(TestCase):
         self.assertEqual(self.line.overtime, datetime.timedelta(0))
 
 class EmployeeModelTests(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -201,6 +211,8 @@ class EmployeeModelTests(TestCase):
         
 
 class AllowanceModelTest(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     def test_create_allowance(self):
         allowance = Allowance.objects.create(
             name='Model Test Allowance',
@@ -209,6 +221,8 @@ class AllowanceModelTest(TestCase):
         self.assertIsInstance(allowance, Allowance)
 
 class DeductionModelTest(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -262,6 +276,8 @@ class DeductionModelTest(TestCase):
 
 
 class CommissionRuleModelTest(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     def test_create_commission_rule(self):
         obj = CommissionRule.objects.create(
             name='Test Rule',
@@ -272,6 +288,7 @@ class CommissionRuleModelTest(TestCase):
 
 
 class PayGradeModelTests(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -279,7 +296,7 @@ class PayGradeModelTests(TestCase):
     def test_create_pay_grade(self):
         obj = PayGrade.objects.create(
             name='Test Paygrade',
-            monthly_salary=300,
+            salary=300,
             monthly_leave_days=1.5,
             hourly_rate=2,
             overtime_rate=3,
@@ -302,6 +319,12 @@ class PaySlipModelTests(TestCase):
                 'admin@test.com', '123')
             cls.user.save()
 
+        pc = ProductComponent.objects.create(
+            pricing_method=0, #KISS direct pricing
+            direct_price=10,
+            margin=0.5,
+        ) 
+        
         cls.product = InventoryItem.objects.create(
             name='test name',
             unit=UnitOfMeasure.objects.first(),
@@ -309,13 +332,10 @@ class PaySlipModelTests(TestCase):
             description='Test Description',
             minimum_order_level = 0,
             maximum_stock_level = 20,
-            type=0
+            type=0,
+            product_component=pc
         )
-        pc = ProductComponent.objects.create(
-            pricing_method=0, #KISS direct pricing
-            direct_price=10,
-            margin=0.5,
-        ) 
+        
 
 
     def test_create_pay_slip(self):
@@ -373,15 +393,15 @@ class PaySlipModelTests(TestCase):
         plc = ProductLineComponent.objects.create(
             product=self.product,
             quantity=1,
-
+            unit_price=10
         )
         line = InvoiceLine.objects.create(
             invoice=inv,
             product = plc,
-            line_type=1
+            line_type=1,
+
         )
         self.assertEqual(self.slip.commission_pay, 1.5)
-
 
     def test_pay_schemes(self):
         self.slip.normal_hours = 100
@@ -437,6 +457,8 @@ class PaySlipModelTests(TestCase):
         self.assertIsInstance(self.slip.entry, JournalEntry)
 
 class TaxBracketModelTests(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -472,6 +494,8 @@ class TaxBracketModelTests(TestCase):
         TaxBracket.objects.latest('pk').delete()
         
 class LeaveModelTests(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)

@@ -18,9 +18,10 @@ label > input[type="checkbox"] {
     display: inline;
 }
 
-input:required {
-    background-color: #5ab3e2
+input:required, textarea:required, select:required {
+    background-color: #b0e0e6
 }
+
 
 .dash-container {
     display: flex;

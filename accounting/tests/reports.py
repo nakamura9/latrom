@@ -3,8 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from accounting.views.reports.balance_sheet import BalanceSheet
 from accounting.views.reports.trial_balance import TrialBalance
-from inventory.tests import create_test_inventory_models
-from invoicing.tests.models import create_test_invoicing_models
+from inventory.tests.models import create_test_inventory_models
 from employees.tests import create_test_employees_models
 from employees.models import EmployeesSettings
 from invoicing.models import (Invoice,
@@ -34,6 +33,9 @@ from accounting.models import (Account,
                                 Journal,
                                 JournalEntry)
 
+from common_data.tests.model_util import CommonModelCreator
+from invoicing.tests.model_util import InvoicingModelCreator
+
 import datetime
 
 TODAY = datetime.date.today()
@@ -43,7 +45,6 @@ class ReportTests(TestCase):
     
     @classmethod
     def setUpTestData(cls):
-        create_test_invoicing_models(cls)
         create_test_employees_models(cls)
         #common
         cls.usr = User.objects.create_user(username="tstusr")
@@ -52,6 +53,9 @@ class ReportTests(TestCase):
             name='Test Location',
             address='Test Address'
         )
+
+        CommonModelCreator(cls).create_organization()
+        InvoicingModelCreator(cls).create_customer_org()
 
         cls.supplier = Supplier.objects.create(
             organization=cls.organization,
@@ -71,7 +75,6 @@ class ReportTests(TestCase):
             pricing_method=0, #KISS direct pricing
             direct_price=10,
             margin=0.5,
-            
         )
         cls.product = InventoryItem.objects.create(
             name='test name',
@@ -107,7 +110,6 @@ class ReportTests(TestCase):
         plc = ProductLineComponent.objects.create(
             product=cls.product,
             quantity=1,
-
         )
         plc2 = ProductLineComponent.objects.create(
             product=cls.product,

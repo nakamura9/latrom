@@ -38,7 +38,7 @@ class PayGradeFilter(django_filters.FilterSet):
         model = models.PayGrade
         fields = {
             'name': ['icontains'],
-            'monthly_salary': ['exact'],
+            'salary': ['exact'],
         }
 
 
