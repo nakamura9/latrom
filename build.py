@@ -50,7 +50,8 @@ from build.build_logger import create_logger
 from build.consts import *
 from build.util import (increment_build_counter, 
                        repo_checks,
-                       run_tests)
+                       run_tests,
+                       compile_app)
 
 if len(sys.argv) < 2:
     raise Exception("""
@@ -106,12 +107,13 @@ for app in APPS:
     logger.info(app)
     copy_tree(app, os.path.join('dist', 'app', 'server', app))
 
-#compile_app(os.path.join('dist', 'app', 'server'))
-
 # set up production settings TODO improve
+
 os.remove(os.path.join('dist', 'app', 'server', 'latrom', '__init__.py'))
 shutil.copy(os.path.join('build', 'app', 'server', 'latrom', '__init__.py'),
     os.path.join('dist', 'app', 'server', 'latrom', 'settings'))
+
+compile_app(os.path.join('dist', 'app', 'server'), APPS)
 
 os.chdir(os.path.join(BASE_DIR, 'build', 'app', 'server'))
 

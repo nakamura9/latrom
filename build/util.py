@@ -30,8 +30,11 @@ def rename_file(file_name):
     '''renames a file with the cypython-*.pyc to a simple .pyc file'''
     if file_name.endswith('.pyc'):
         new_name = file_name[:file_name.find('.')] + '.pyc'
-        os.rename(file_name, new_name)
-        
+        try:
+            os.rename(file_name, new_name)
+        except FileExistsError:
+            os.remove(new_name)
+            os.rename(file_name, new_name)    
 
 def move_compiled(path):
     parent_dir = os.path.dirname(path)
