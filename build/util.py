@@ -1,5 +1,6 @@
 import compileall
 import os
+import shutil
 import datetime
 import json
 import copy
@@ -17,9 +18,27 @@ def remove_source_files(source_dir):
 def compile_app(root_dir, APPS):
     '''Compiles all the files listed as apps for the project'''
     for app in APPS:
-        compileall.compile_dir(os.path.join(root_dir, app), force=True)
+        app_path = os.path.join(root_dir, app)
+        compileall.compile_dir(app_path, force=True)
+        for dir, _, __ in os.walk(app_path):
+            if dir.endswith('__pycache__'):
+                move_compiled(dir)
+        remove_source_files(app_path)
 
-    remove_source_files(root_dir)
+
+def rename_file(file_name):
+    '''renames a file with the cypython-*.pyc to a simple .pyc file'''
+    if file_name.endswith('.pyc'):
+        new_name = file_name[:file_name.find('.')] + '.pyc'
+        os.rename(file_name, new_name)
+        
+
+def move_compiled(path):
+    parent_dir = os.path.dirname(path)
+    for _, __, files in os.walk(path):
+        for file in files:
+            shutil.move(os.path.join(path, file), parent_dir)
+            rename_file(os.path.join(parent_dir, file))
 
 
 def increment_build_counter(REPO, BUILD_TYPE):

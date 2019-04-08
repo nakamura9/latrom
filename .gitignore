@@ -24,3 +24,4 @@ common_data/static/admin/
 *.log
 *.spec
 build/app/hashed_password.txt
+build_counter.json
