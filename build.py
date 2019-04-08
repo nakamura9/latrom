@@ -74,7 +74,7 @@ REPO = git.Repo(BASE_DIR)
 
 logger = create_logger('build')
 
-if not quick:
+if not QUICK:
     repo_checks(REPO, logger)
 
 logger.info("Checking react bundles")
