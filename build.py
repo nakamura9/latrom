@@ -15,6 +15,25 @@ Each build is linked to this hash value
 each build must have an argument specifying if the build is major minor or a 
 patch
 versions will not be recorded for quick builds
+
+
+Steps:
+1.  check if the repository is on master branch and changes have been committed
+2.  check that the react js bundles are all properly compiled
+3.  runs unit test
+4.  collect static files
+5.  copy source code
+6.  generate trial license
+7.  copy install binaries
+8.  install python modules based on requirements.txt
+9.  copy the updated python package
+10. create setup executable and run executable
+11. move executable and utility files
+12. remove temp files and compress the application
+13. increment build counter
+
+
+Need to add a way to obfuscate mission critical code
 '''
 import time
 import datetime
@@ -33,8 +52,16 @@ from build.util import (increment_build_counter,
                        repo_checks,
                        run_tests)
 
+if len(sys.argv) < 2:
+    raise Exception("""
+    The application requires an argument, 
+    --quick for quick builds or an acceptable build type of:
+        -M for major revisions, -m for minor revisions and -p for patches """)
+
 START = time.time()
 BASE_DIR = os.getcwd()
+
+
 
 QUICK = '--quick' == sys.argv[1]
 BUILD_TYPE = None
@@ -64,7 +91,7 @@ if not QUICK:
 
     result = subprocess.run(['python', 'manage.py', 'collectstatic', '--noinput'])
     if result.returncode != 0:
-        logger.info("Failed to collect stati files")
+        logger.info("Failed to collect static files")
         raise Exception("The static files collection process failed")
 
 

@@ -72,15 +72,16 @@ class ParticipantSelectWidget extends Component{
 
     render(){
         const containerStyle = {
-            backgroundColor: "#9cd",
+            backgroundColor: "#007bff",
+            color: 'white',
             padding: "20px",
             margin: "5px",
-            borderRadius: "20px"
+            borderRadius: "5px"
             
         };
         return(
             <div style={containerStyle}>
-                <h4>Select Participants</h4>
+                <h4>Participants</h4>
                 <div>
                     {this.state.items.map((item, i) =>{
                         return(<SelectedItem 
@@ -100,22 +101,23 @@ class ParticipantSelectWidget extends Component{
 
 class ParticipantEntry extends Component{
     state = {
-        selecting: "",
+        selecting: "employee",
         next: "",
         selected : {
 
         }
     }
-    radioHandler = (evt) =>{
+
+    clickHandler = (evt) =>{
         //convoluted but working
         //need to momentarily clear the select widgets before loading the next one 
-        this.setState({next: evt.target.value}, () =>{
+        this.setState({next: evt.target.id}, () =>{
             this.setState({selecting: ""}, () =>{
                 this.setState({selecting: this.state.next});
             })
         });
-    }
 
+    }
     onClearHandler = () =>{
         this.setState({selected: {}});
     }
@@ -175,67 +177,66 @@ class ParticipantEntry extends Component{
                     widgetSelector = <h4>Select Participant Category</h4>
             }
         const divStyle = {
-            border: "1px solid #ddd",
+            border: "1px solid #fff",
             padding: "10px"
+        }
+
+        const tabStyle = {
+            listStyleType: 'none',
+            display: 'inline-block',
+            borderRadius: '5px 5px 0px 0px',
+            padding: '5px',
+            borderStyle: 'solid',
+            borderColor: 'white'
+
         }
         return (
             <div style={divStyle}>
-                <RadioGroup handler={this.radioHandler}/>
-                <div style={{margin: "8px 0"}}>
+            <ul style={{listStylePosition: 'inside', paddingLeft: '0px'}}>
+            <li 
+                id="employee" 
+                style={{...tabStyle,
+                    borderWidth: this.state.selecting ==="employee"
+                    ? '1px 1px 0px 1px '
+                    : '0px 0px 1px 0px ',}}
+                onClick={this.clickHandler}>Employee</li>
+            <li 
+                id="customer" 
+                style={{...tabStyle,
+                    borderWidth: this.state.selecting ==="customer"
+                    ? '1px 1px 0px 1px '
+                    : '0px 0px 1px 0px ',}}
+                onClick={this.clickHandler}>Customer</li>
+            <li 
+                id="supplier" 
+                style={{...tabStyle,
+                    borderWidth: this.state.selecting ==="supplier"
+                    ? '1px 1px 0px 1px '
+                    : '0px 0px 1px 0px ',}}
+                onClick={this.clickHandler}>Vendor</li>
+        </ul>
+                <div >
                     {widgetSelector}
                 </div>            
                 <button 
-                    className="btn btn-primary"
+                    className="btn"
                     onClick={this.insertHandler}>
-                        Add Participant
+                        Add
                     </button>
             </div>
         );
     }       
 }
 
-const RadioGroup = (props) =>{
-    return(
-        <div>
-            <label 
-            className="radio-inline" 
-            style={{marginLeft: "30px"}}>
-            <input 
-                type="radio" 
-                name="selecting"
-                value="employee"
-                onChange={props.handler} />Employee
-        </label>
-        <label 
-            className="radio-inline" 
-            style={{marginLeft: "30px"}}>
-            <input 
-                type="radio" 
-                name="selecting"
-                value="customer"
-                onChange={props.handler} />Customer
-        </label>
-        <label 
-            className="radio-inline" 
-            style={{marginLeft: "30px"}}>
-            <input 
-                type="radio" 
-                name="selecting"
-                value="supplier"
-                onChange={props.handler} />Supplier
-        </label>
-        </div>
-    );
-}
 
 const SelectedItem = (props) => {
     let divStyle = {
         margin: "2px",
         padding: "5px",
-        border: "1px solid #ddd"
+        borderTop: "1px solid #fff"
     }
     const spanStyle = {
-        borderLeft: "2px solid #ddd",
+        borderLeft: "1px solid #fff",
         margin: "0px 15px",
         padding: "0px 5px"
     }

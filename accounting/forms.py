@@ -33,7 +33,7 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
 
 class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "last_created_date",
+        exclude = "last_created_date", 'entry'
         model = models.RecurringExpense
 
 class DirectPaymentForm(BootstrapMixin, forms.Form):

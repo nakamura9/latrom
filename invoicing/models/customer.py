@@ -73,6 +73,13 @@ class Customer(SoftDeletionModel):
         return [i for i in self.invoices \
             if i.status == 'invoice']
         
+    @property 
+    def address(self):
+        if self.is_organization:
+            return self.organization.business_address
+
+        return self.individual.address
+
     @property
     def age_list(self):
         #returns a 7 element tuple that enumerates the number of invoices 

@@ -71,6 +71,7 @@ def increment_build_counter(REPO, BUILD_TYPE):
 
 
 def repo_checks(repo, logger):
+    '''Makes sure the repository is on the master branch and all changes have been committed'''
     if len(repo.index.diff(None)) > 0:
         logger.critical("Changes to the repository were not yet committed")
         raise Exception("Please commit changes before continuing with the build process")

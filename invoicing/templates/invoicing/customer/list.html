@@ -18,6 +18,9 @@
                 <a href="{% url 'invoicing:update-customer' pk=customer.pk %}" class="dropdown-item">
                     <i class="fas fa-edit"></i> Update Customer Data
                 </a>
+                <a href="{% url 'invoicing:customer-details' pk=customer.pk %}" class="dropdown-item">
+                    <i class="fas fa-file"></i> Detail
+                </a>
                 <a class="dropdown-item" href="{% url 'invoicing:delete-customer' pk=customer.pk %}">
                     <i class="fas fa-trash"></i> Delete Customer
                 </a>

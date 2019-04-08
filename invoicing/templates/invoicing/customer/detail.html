@@ -1,0 +1,60 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-3">Customer Detail</h1>
+        <p class="lead">Customer information as well a interactions</p>
+        <hr class="my-2">
+        <p>Actions</p>
+        <p class="lead">
+            <a class="btn btn-primary" href="{% url 'invoicing:update-customer' pk=object.pk %}" role="button">Edit</a>
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+        <div class="card-deck">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Customer Info</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Email: {{object.email}}</p>
+                    <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual {% endif %}</p>
+                    <p class="card-text">Account Balance: {{object.account.balance}}</p>
+                    <p class="card-text">Address: {{object.address}}</p>
+
+
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Interactions</h4>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item"><a href="#invoices" class="nav-link active" data-toggle="tab">Invoices</a></li>
+                        <li class="nav-item"><a href="#quotations" class="nav-link" data-toggle="tab">Quotations</a></li>
+                        <li class="nav-item"><a href="#credit-notes" class="nav-link" data-toggle="tab">Credit Notes</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="invoices" class="tab-pane active">
+                            <h1>Invoices</h1>
+                        </div>
+                        <div id="quotations" class="tab-pane">
+                            <h1>Quotations</h1>
+                        </div>
+                        <div id="credit-notes" class="tab-pane">
+                            <h1>Credit Notes</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
