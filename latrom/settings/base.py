@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'webpack_loader',
     'django_filters',
     'crispy_forms',
-    'autofixture',
     'wkhtmltopdf',
     'reversion',
     'django_q',
