@@ -109,3 +109,14 @@ def run_tests(logger):
     if result.returncode != 0:
         logger.info("failed unit tests preventing application from building")
         raise Exception('The build cannot continue because of a failed unit test.')
+
+
+
+def hard_compile(base_dir):
+    '''run in the build path'''
+    global HARD_COMPILE_FILES
+
+    os.mkdir(os.path('temp'))
+
+    
+
