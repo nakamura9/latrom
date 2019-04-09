@@ -136,7 +136,6 @@ for file in FILES:
         os.path.join('dist', 'app', 'server'))
     
 
-
 logger.info('copying binaries')#vc++ nginx wkhtml
 copy_tree(os.path.join('build', 'app', 'bin'), os.path.join(
     'dist', 'app', 'bin'))
