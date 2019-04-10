@@ -1,5 +1,13 @@
 {% extends "window.html" %} {% block content %}
 
+<style>
+.white-on-blue{
+    background-color: white;
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+</style>
+
 <div class="jumbotron">
     <h1 class="display-3"><i class=" fas fa-toolbox" style="color:#07f; font-size:128;"></i> Services Dashboard</h1>
     <p class="lead">Control panel for listing services offered, assigning technicians work orders  and other service related functions</p>
@@ -126,7 +134,7 @@
                         <div class="bg-primary text-white dashbox">
                             <h3># Offered Services: {{services}}</h3>
                         </div>
-                        <div class="bg-primary text-white dashbox">
+                        <div class="dashbox white-on-blue">
                             <h3># Open Work Orders: {{wo_open}}</h3>
                         </div>
                         <div class="bg-primary text-white dashbox">

@@ -3,6 +3,12 @@
     .card th {
         color: white;
     }
+    .white-on-blue{
+        background-color: white;
+        border: 1px solid #007bff;
+        color: #007bff;
+}
+
 </style>
 <div class="jumbotron">
     <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128;"></i> Inventory Dashboard</h1>
@@ -217,7 +223,7 @@
                             <div class="bg-primary text-white dashbox">
                                 <h3># Orders Yet to Be Delivered: <br>{{undelivered_orders}}</h3>
                             </div>
-                            <div class="bg-primary text-white dashbox">
+                            <div class="dashbox white-on-blue">
                                 <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
                             </div>
                             <div class="bg-primary text-white dashbox">
@@ -226,13 +232,13 @@
                         </div>
                     <hr class="my-4">
                         <div class="dash-container">
-                            <div class="bg-primary text-white dashbox">
+                            <div class="dashbox white-on-blue">
                                 <h3># Active Vendors: <br>{{vendors}}</h3>
                             </div>
                             <div class="bg-primary text-white dashbox">
                                 <h3># Warehouses: <br>{{warehouses}}</h3>
                             </div>
-                            <div class="bg-primary text-white dashbox">
+                            <div class="dashbox white-on-blue">
                                 <h3># Open Requisitions: <br>{{open_requisitions}}</h3>
                             </div>
                         </div>
@@ -241,7 +247,7 @@
                             <div class="bg-primary text-white dashbox">
                                 <h3># Pending Inventory Transfers: <br>{{pending_transfers}}</h3>
                             </div>
-                            <div class="bg-primary text-white dashbox">
+                            <div class="dashbox white-on-blue">
                                 <h3># Equipment Items: <br>{{equipment}}</h3>
                             </div>
                             <div class="bg-primary text-white dashbox">
