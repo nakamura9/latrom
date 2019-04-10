@@ -9,6 +9,8 @@ BASE_DIR = os.path.dirname(
             )
         )
 
+print(BASE_DIR)
+
 HARD_COMPILE_FILES = [
     'common_data\\middleware\\license.py',
     'common_data\\middleware\\users.py',

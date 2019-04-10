@@ -332,10 +332,6 @@ class InstallApplicationPage(ttk.Frame):
         self.progress_var.set(30)
         self.update()
         
-        self.push_message("Adding python to system path")
-        self.push_message("Adding wkhtmltopdf to system path")
-    
-
         
         self.push_message("Installing Visual C++ binaries")
         self.progress_var.set(40)

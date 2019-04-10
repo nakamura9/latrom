@@ -52,6 +52,7 @@ from build.util import (increment_build_counter,
                        repo_checks,
                        run_tests,
                        compile_app)
+from build.build_extensions import process
 
 if len(sys.argv) < 2:
     raise Exception("""
@@ -113,10 +114,16 @@ os.remove(os.path.join('dist', 'app', 'server', 'latrom', '__init__.py'))
 shutil.copy(os.path.join('build', 'app', 'server', 'latrom', '__init__.py'),
     os.path.join('dist', 'app', 'server', 'latrom', 'settings'))
 
+#compile into pyc 
+logger.info("Compiling source files")
 compile_app(os.path.join('dist', 'app', 'server'), APPS)
+
+#compile special files into pyd 
+process.build()
 
 os.chdir(os.path.join(BASE_DIR, 'build', 'app', 'server'))
 
+logger.info("Creating trial license")
 result = subprocess.run(['python', 'license_creator.py', 'trial.json'])
 
 os.chdir(BASE_DIR)
@@ -146,12 +153,13 @@ os.chdir(os.path.join(BASE_DIR, 'build', 'app', 'python'))
 
 requirements_path = os.path.join(BASE_DIR, 'requirements.txt')
 
-
+logger.info("Installing python packages")
 if not QUICK:
     result = subprocess.run(['./python', '-m', 'pip', 'install', '-r', 
         requirements_path])
 
     if result.returncode != 0:
+        logger.info("Failed to install some packages to python")
         raise Exception("Failed to install some modules to python")
 
 os.chdir(BASE_DIR)

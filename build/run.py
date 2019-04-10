@@ -17,6 +17,7 @@ ENVIRONMENT['PATH'] += ";".join([os.path.join(BASE_DIR, 'python'),
                                 os.path.join(BASE_DIR, "server")])
 
 def load_browser():
+    #gives enough time for the server to start
     time.sleep(5)
     print("Opening Browser")
     webbrowser.open_new_tab("http://localhost/login")
@@ -24,16 +25,16 @@ def load_browser():
 
 print('Starting reverse proxy')
 os.chdir(os.path.join(BASE_DIR, 'bin', 'nginx'))
-proxy_proc = subprocess.Popen(["nginx.exe"])# so it is nonblocking
+proxy_proc = subprocess.Popen(["nginx.exe"])# Popen so it is nonblocking
 
-
+#Non blocking on the main turead
 thr = threading.Thread(target=load_browser)
 thr.start()
 
 print("Starting Server...")
 os.chdir(os.path.join(BASE_DIR, 'server'))
 proc_server = subprocess.run(["python", "server.py"], 
-    env=ENVIRONMENT)#also nonblocking so as to allow the browser to open
+    env=ENVIRONMENT)
 
 def exit_handler():
     global proc_server
