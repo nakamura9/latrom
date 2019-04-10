@@ -47,7 +47,31 @@ class DirectPaymentForm(BootstrapMixin, forms.Form):
     amount = forms.CharField(widget=forms.NumberInput)
     reference = forms.CharField()
     notes = forms.CharField(widget=forms.Textarea)
-    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    'date',
+                    Row(
+                        Column('paid_to', css_class='form-group col-6'),
+                        Column('account_paid_from', css_class='form-group col-6'),
+                        ),
+                    Row(
+                        Column('method', css_class='form-group col-6'),
+                        Column('amount', css_class='form-group col-6'),                
+                        ),
+                        'reference',
+                ),
+                Tab('notes',
+                    'notes',
+                ),
+            )
+            
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class TaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:

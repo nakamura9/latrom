@@ -235,7 +235,7 @@ class DirectPaymentFormView( ContextMixin, FormView):
     for transactions involving two accounts.
     '''
     form_class = forms.DirectPaymentForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = reverse_lazy('accounting:dashboard')
     extra_context = {'title': 'Create Direct Payment'}
 
