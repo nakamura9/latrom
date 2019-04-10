@@ -14,6 +14,8 @@ import shutil
 import time
 import copy
 import build_logger
+import urllib
+
 #the install app should collect a default username and password
 # the server should have a name 
 # the install script should do some dns and configure the pdf
@@ -112,8 +114,98 @@ class WelcomePage(ttk.Frame):
         self.CAN_MOVE_FORWARD = True
 
     def create_widgets(self):
-        self.welcomeMessage = tk.Label(self, text="This program will install suave business tools on your computer. click next to continue.", anchor=tk.N, height=7, wraplength=450, justify=tk.LEFT)
+        self.welcomeMessage = tk.Label(self, text="""
+        This program will install suave business tools on your computer. \nPlease note that an active internet connection is required to proceed. \nEnsure that the license attachment labelled "license.json" emailed to you is in the same directory as this file. \nClick next to continue.""", anchor=tk.N, height=7, wraplength=450, justify=tk.LEFT)
         self.welcomeMessage.grid(row=0, column=0, padx=20)
+
+
+class RegistrationPage(ttk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.app_text = tk.StringVar()
+        self.app_text.set("Please wait while  we confirm you have an active internet connection.")
+        self.grid()
+        self.create_widgets()
+        self.online_registration()
+        self.CAN_GO_BACK = True
+        self.CAN_MOVE_FORWARD = True
+        self.master.update_buttons()
+
+    def create_widgets(self):
+        self.registrationMessage = tk.Label(self, textvariable=self.app_text, anchor=tk.N, height=7, wraplength=450, justify=tk.LEFT)
+        self.registrationMessage.grid(row=0, column=0, padx=20)
+        self.retryButton = ttk.Button(self, 
+                                text="Retry", 
+                                command=self.online_registration)
+        self.retryButton.grid(row=1, column=0)
+        self.retryButton.state(['disabled'])
+
+
+    def online_registration(self):
+        self.retryButton.state(['disabled'])
+        self.app_text.set("checking your internet connection")
+        self.update()
+        try:
+            resp = requests.get('http://google.com')
+        except:
+            self.app_text.set("You do not seem to have an active internet connection so the installation is unable to proceed. Please press retry is if the issue is now resolved.")
+            self.retryButton.state(['!disabled'])
+            self.update()
+            return
+        
+        if resp.status_code != 200:
+            self.app_text.set("You do not seem to have an active internet connection so the installation is unable to proceed. Please press retry is if the issue is now resolved.")
+            self.retryButton.state(['!disabled'])
+            self.update()
+            return
+
+        self.app_text.set('looking for the license file.')
+
+        if not os.path.exists('license.json'):
+            self.app_text.set("The license file could not be found in the current directory. \nPlease check your email and download the file to the current folder. \nThe current folder is '{}' ".format(os.path.dirname(os.path.abspath(__file__))))
+            self.retryButton.state(['!disabled'])
+            self.update()
+            return 
+
+        license = None
+
+        with open('license.json') as license_file:
+            license = json.load(license_file)
+
+        data = urllib.parse.quote(json.dumps({
+                'customer_id': license['license']['customer_id'],
+                'hardware_id': self.generate_hardware_id(),
+                'signature': license['signature'],
+            }))
+
+        try:
+            resp = requests.get('http://localhost:8000/register', params={'info': data})
+        except:
+            self.app_text.set('failed to register with the application server.\nClick "retry" to try the process again.')
+            self.retryButton.state(['!disabled'])
+            self.update()
+
+        if resp.status_code == 200 and \
+                json.loads(resp.content)['status'] == 'ok':
+
+            self.app_text.set('Registered successfully, Click next to continue')
+            self.CAN_MOVE_FORWARD = True
+            self.master.update_buttons()
+            self.update()
+            
+
+        else:
+            self.app_text.set('failed to register with the application server.\nClick "retry" to try the process again.')
+            self.retryButton.state(['!disabled'])
+            self.update()
+
+    def generate_hardware_id(self):
+        result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)
+        _id = result.stdout.decode('utf-8')
+        _id = _id[_id.find('\n') + 1:]
+        id = _id[:_id.find(' ')]
+
+        return id
 
 class SelectFolderPage(ttk.Frame):
     def __init__(self, master=None):
@@ -270,8 +362,6 @@ class CreateSuperUserPage(ttk.Frame):
         })
         self.master.update_buttons()
         return True
-
-        
         
 class InstallApplicationPage(ttk.Frame):
     def __init__(self, master=None):
@@ -388,6 +478,7 @@ class InstallGUI(ttk.Frame):
     current_page = 0
     pages = [
         WelcomePage,
+        #RegistrationPage,
         SelectFolderPage,
         CreateSuperUserPage,
         InstallApplicationPage,
@@ -470,7 +561,5 @@ class InstallGUI(ttk.Frame):
 
 app = InstallGUI()
 app.master.title=("Suave Business Tools")
-app.master.geometry("500x200")
+app.master.geometry("700x500")
 app.mainloop()
-
-

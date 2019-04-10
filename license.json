@@ -1,11 +1,1 @@
-{
-    "signature": "a91ae60884cc80f6098f1b1c09d2a488d670fe24efce2efb9acbf66d0e7f1cd594cf40644635235473ddaacc85b355e6d1df6ef8a95533dc034b0702d6367c3a",
-    "license": {
-        "customer_id": 1,
-        "customer_name": "customer",
-        "date_issued": "21/01/19",
-        "expiry_date": "21/09/20",
-        "number_users": 20,
-        "number_employees": 100
-    }
-}
+{"signature": "4b92b982535474924d8885fe96ae48de54e11405693b4169fa808b19f6c6dce0d3a619ecd1dfc24fe782e9a591dde404bb28f923fb17d349da6b7bff35772120", "license": {"date_issued": "10/04/2019", "expiry_date": "09/04/2020", "customer": "caleb", "number_users": 1, "number_employees": 5}}

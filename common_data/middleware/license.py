@@ -1,9 +1,12 @@
 from django.http import HttpResponseRedirect
 import json
 import hashlib
+import datetime
+import requests
 import hmac 
 import time
-
+import urllib
+from common_data.models import GlobalConfig
 
 class UserTrackerException(Exception):
     pass
@@ -69,7 +72,6 @@ class LicenseMiddleware(object):
     def __call__(self, request):
         "map each user to a session id"
         "check the number of users that can be logged in"
-        
 
         if not request.path.startswith('/base/license-error'):
             try:
@@ -91,6 +93,31 @@ class LicenseMiddleware(object):
 
             if not hmac.compare_digest(hash, license['signature']):
                 return HttpResponseRedirect('/base/license-error-page')
+
+
+            #check with remote server every three days
+            config = GlobalConfig.objects.get(pk=1)
+
+            '''
+            if config.last_license_check == None or \
+                    (datetime.date.today() - \
+                    config.last_license_check).days > 2:
+                resp = requests.get('http://nakamura9.pythonanywhere.com/validate', params={
+                    'info': urllib.parse.quote(json.dumps({
+                        'customer_id': license['license']['customer_id'],
+                        'signature': license['signature'],
+                        'hardware_id': config.hardware_id
+                    }))
+                })
+
+                if resp.status_code == 200 and \
+                        json.loads(resp.content)['status'] == 'valid':
+                    config.last_license_check = datetime.date.today()
+                    config.save()
+                else:
+                    return HttpResponseRedirect('/base/license-error-page')
+
+            '''
 
         response = self.get_response(request)
 
