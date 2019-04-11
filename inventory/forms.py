@@ -84,26 +84,25 @@ class SupplierForm(BootstrapMixin, forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout= Layout(
-            Row(
-                Column('vendor_type', css_class='col-sm-12')
-            ),
-            Row(
-                Column('name', css_class='col-sm-12')
-            ),
-            Row(
-                Column('address',
-                        'billing_address', css_class='col-sm-6'),
-                Column( 'banking_details',
-                        'email',
-                        'website',
-                        'phone_1',
-                        'phone_2', css_class='col-sm-6')
-            ),
-            Row(
-                Column('image', 
-                        'organization',
-                        'business_partner_number',
-                        'other_details', css_class='col-sm-12')
+            TabHolder(
+                Tab('details',
+                    Row(
+                        Column('name', css_class='form-group col-6'),
+                        Column('email', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('address', css_class='form-group col-6'),
+                        Column('banking_details', css_class='form-group col-6'),
+                    ),
+                    'billing_address'
+                ),
+                    
+                Tab('other',
+                    'website',
+                    'image',
+                    'organization',
+                    'other_details',
+                ),
             )
         )
         self.helper.add_input(Submit('submit', 'Submit'))

@@ -1,4 +1,5 @@
 {% extends "window.html" %} {% load static %} {% block head %}
+{% load crispy_forms_tags %}
 <link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
 
 <div class="jumbotron">
@@ -21,7 +22,7 @@
                     <form method="POST" action="" enctype="multipart/form-data">
                         {% csrf_token %}
                         <table class="table">
-                            {{form.as_p}}
+                            {% crispy form %}
                         </table>
                         <button class="btn btn-default pull-right" type="submit">Submit</button>
                     </form>

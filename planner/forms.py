@@ -47,6 +47,8 @@ class EventForm(forms.ModelForm, BootstrapMixin):
                     'priority',
                     'repeat',
                     'repeat_active',
+                    'owner',
+                    'json_participants',
                 ),
                 Tab('participants',
                     HTML(
@@ -58,3 +60,4 @@ class EventForm(forms.ModelForm, BootstrapMixin):
                 ),
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))

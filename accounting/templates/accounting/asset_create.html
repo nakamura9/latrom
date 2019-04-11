@@ -5,7 +5,7 @@
     <div class="container">
         <h1 class="display-3">Add New Asset </h1>
         <hr class="my-2">
-        <p>Adds a depreciable asset to the accounting system that 
+        <p>Adds a depreciable asset to the accounting system that
             is automatically tracked and recorded in the system.
         </p>
 
@@ -19,12 +19,7 @@
         <div class="col-sm-6">
             <div class="card ">
                 <div class="card-body">
-                    <form method="POST" action="" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <table class="table">
-                            {{form.as_p}}
-                        </table>
-                        <button class="btn btn-default pull-right" type="submit">Submit</button>
+                    {% crispy form %}
                     </form>
                 </div>
 

@@ -30,7 +30,10 @@ class SupplierCreateView(ContextMixin, FormView):
     form_class = forms.SupplierForm
     success_url = reverse_lazy('inventory:home')
     template_name = os.path.join('inventory', 'supplier', 'create.html')
-    extra_context = {"title": "Add Vendor"}
+    extra_context = {
+        "title": "Add Vendor",
+        "description": "Record details of business partners that provide your organization with goods and services"
+        }
 
     def get_initial(self):
         return {

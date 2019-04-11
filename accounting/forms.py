@@ -26,15 +26,71 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.Asset
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self
+
 class ExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "entry", 
         model = models.Expense
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    Row(
+                        Column('customer', css_class='form-group col-6'),
+                        Column('date', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('amount', css_class='form-group col-6'),
+                        Column('debit_account', css_class='form-group col-6'),                        
+                    ),
+                    'category',
+                    'recorded_by',
+                    'cycle',
+                ),
+                Tab('description',
+                    'description',
+                    'reference',
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "last_created_date", 'entry'
         model = models.RecurringExpense
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    Row(
+                        Column('start_date', css_class='form-group col-6'),
+                        Column('expiration_date', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('amount', css_class='form-group col-6'),
+                        Column('debit_account', css_class='form-group col-6'),
+                    ),
+                    'category',
+                    'recorded_by',
+                    'cycle',
+                ),
+                Tab('description',
+                    'description',
+                    'reference',
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class DirectPaymentForm(BootstrapMixin, forms.Form):
     date = forms.DateField()

@@ -377,7 +377,7 @@ class AssetDetailView( DetailView):
 
 class ExpenseCreateView(ContextMixin,  CreateView):
     form_class = forms.ExpenseForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = "/accounting/"
     extra_context = {
         'title': 'Record Expense',
@@ -413,7 +413,7 @@ class ExpenseDeleteView( DeleteView):
 class RecurringExpenseCreateView(ContextMixin,  
         CreateView):
     form_class = forms.RecurringExpenseForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     success_url = "/accounting/"
     extra_context = {
         'title': 'Record Recurring Expense',
