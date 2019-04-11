@@ -147,7 +147,7 @@ class OrderListView( ContextMixin,
     paginate_by = 10
     filterset_class = filters.OrderFilter
     template_name = os.path.join("inventory", "order", "list.html")
-    extra_context = {"title": "Order List",
+    extra_context = {"title": "Purchase Order List",
                     "new_link": reverse_lazy("inventory:order-create")}
 
     def get_queryset(self):

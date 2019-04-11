@@ -7,6 +7,7 @@ import copy
 from django.db import models
 
 from latrom import settings
+import subprocess
 
 
 class Person(models.Model):
@@ -127,16 +128,32 @@ class GlobalConfig(SingletonModel):
     business_registration_number = models.CharField(max_length=32,blank=True, 
         default="")
     application_version = models.CharField(max_length=16, blank=True, default="0.0.1")
+    hardware_id = models.CharField(max_length=255, blank=True, default="")
+    last_license_check = models.DateField(null=True)
 
-    
+    def generate_hardware_id(self):
+        result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)
+        _id = result.stdout.decode('utf-8')
+        _id = _id[_id.find('\n') + 1:]
+        id = _id[:_id.find(' ')]
+
+        return id    
 
     def save(self, *args, **kwargs):
-        super(GlobalConfig, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        
+        #setup hardware id
+        if self.hardware_id == "":
+            self.hardware_id = self.generate_hardware_id()
+            self.save()
+
         #serialize and store in json file so settings.py can access
         json_config = os.path.join(settings.BASE_DIR, 'global_config.json')
         with open(json_config, 'w+') as fil:
             fields = copy.deepcopy(self.__dict__)
             del fields['logo']
+            del fields['hardware_id']
+            del fields['last_license_check']
             del fields['_state']
             json.dump(fields, fil)
 

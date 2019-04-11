@@ -58,7 +58,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     #not showing password on update view
     #email_password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
-        fields = "__all__"
+        exclude = "hardware_id", "application_version", "last_license_check",
         model = models.GlobalConfig
 
     def __init__(self, *args, **kwargs):

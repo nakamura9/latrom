@@ -220,6 +220,7 @@ class ParticipantEntry extends Component{
                 </div>            
                 <button 
                     className="btn"
+                    type="button"
                     onClick={this.insertHandler}>
                         Add
                     </button>
