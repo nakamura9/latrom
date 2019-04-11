@@ -65,7 +65,7 @@ class WareHouseListView(ContextMixin, ListView):
     paginate_by = 10
     extra_context = {
         'new_link': reverse_lazy('inventory:warehouse-create'),
-        'title': 'List of Inventory WareHouse Locations'
+        'title': 'List of  Warehouses'
     }
 
 
