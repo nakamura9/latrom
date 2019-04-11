@@ -17,7 +17,7 @@ TODAY = datetime.date.today()
 
 
 class GenericPageTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json', 'accounts.json', 'employees.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -53,7 +53,7 @@ class GenericPageTests(TestCase):
         self.assertTrue(resp.status_code == 200)
 
 class PayGradePageTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
 
     @classmethod
@@ -111,8 +111,8 @@ class PayGradePageTests(TestCase):
 
 
 class PaySlipPageTests(TestCase):
-    fixtures = ['common.json', 'accounts.json', 'journals.json', 'employees.json', 
-        'invoicing.json']
+    fixtures = ['common.json', 'accounts.json', 'journals.json', 
+        'employees.json', 'invoicing.json']
 
     @classmethod
     def setUpClass(cls):
@@ -181,7 +181,7 @@ class PaySlipPageTests(TestCase):
 
 
 class EmployeePageTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -305,7 +305,7 @@ class EmployeePageTests(TestCase):
         
 
 class BenefitsPageTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -363,7 +363,7 @@ class BenefitsPageTests(TestCase):
 
 
 class CommissionPageTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -422,7 +422,7 @@ class CommissionPageTests(TestCase):
 
 
 class DeductionPageTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -488,7 +488,7 @@ class DeductionPageTests(TestCase):
 
 
 class PayrollTaxViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -555,7 +555,7 @@ class PayrollTaxViewTests(TestCase):
 
 
 class PayrollOfficerViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -614,7 +614,7 @@ class PayrollOfficerViewTests(TestCase):
         self.assertEqual(resp.status_code, 302)
 
 class LeaveViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):
@@ -704,7 +704,7 @@ class LeaveViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
 class TimesheetViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json']
 
     @classmethod
     def setUpClass(cls):

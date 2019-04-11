@@ -14,6 +14,7 @@ from invoicing.models import Customer
 TODAY = datetime.date.today()
 
 class PlannerAPIViewTests(TestCase):
+    fixtures = ['common.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -60,7 +61,7 @@ class PlannerAPIViewTests(TestCase):
 
 
 class PlannerViewTests(TestCase):
-    fixtures = ['planner.json', 'accounts.json']
+    fixtures = ['planner.json', 'accounts.json', 'common.json']
 
     @classmethod
     def setUpClass(cls):

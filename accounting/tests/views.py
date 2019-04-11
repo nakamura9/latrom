@@ -18,7 +18,7 @@ from latrom import settings
 TODAY = datetime.date.today()
 
 class CommonViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json', 'journals.json']
+    fixtures = ['common.json', 'accounts.json', 'employees.json', 'journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -135,7 +135,7 @@ class CommonViewTests(TestCase):
 
 
 class JournalEntryViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json','journals.json']
+    fixtures = ['common.json', 'accounts.json', 'employees.json','journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -232,7 +232,7 @@ class JournalEntryViewTests(TestCase):
         
 
 class AccountViewTests(TestCase):
-    fixtures = ['accounts.json','employees.json', 'journals.json']
+    fixtures = ['common.json','accounts.json','employees.json', 'journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -361,6 +361,7 @@ class TestReportViews(TestCase):
 
 
 class TestCurrencyViews(TestCase):
+    fixtures = ['common.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

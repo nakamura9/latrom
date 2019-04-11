@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from messaging.models import *
 
 class MessagingViewTests(TestCase):
+    fixtures = ['common.json']
     
     @classmethod
     def setUpClass(cls):
@@ -43,6 +44,7 @@ class MessagingViewTests(TestCase):
         resp = self.client.get('/messaging/notification/1')
 
 class MessagingAPIViewTests(TestCase):
+    fixtures = ['common.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
