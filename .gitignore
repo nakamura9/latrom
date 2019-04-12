@@ -21,3 +21,4 @@ common_data/static/admin/
 .vscode/
 *.log
 *.spec
+*.c

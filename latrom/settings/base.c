@@ -2806,6 +2806,7 @@ if (!__Pyx_RefNanny) {
  * EMAIL_HOST_USER = email_config['email_user']
  * EMAIL_HOST_PASSWORD = email_config['email_password']             # <<<<<<<<<<<<<<
  * EMAIL_USE_TLS = True
+ * 
  */
   __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_email_config); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 186, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
@@ -2819,6 +2820,7 @@ if (!__Pyx_RefNanny) {
  * EMAIL_HOST_USER = email_config['email_user']
  * EMAIL_HOST_PASSWORD = email_config['email_password']
  * EMAIL_USE_TLS = True             # <<<<<<<<<<<<<<
+ * 
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_EMAIL_USE_TLS, Py_True) < 0) __PYX_ERR(0, 187, __pyx_L1_error)
 
