@@ -15,6 +15,7 @@ from inventory.tests import create_test_inventory_models
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 from accounting.tests.model_util import AccountingModelCreator
+from common_data.tests import create_test_common_entities
 
 TODAY = datetime.datetime.today()
 
@@ -26,6 +27,7 @@ class CommonViewsTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         create_test_user(cls)
+        create_test_common_entities(cls)
         cls.client=Client()
 
     
@@ -76,13 +78,14 @@ class ReportViewsTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         create_test_user(cls)
-        
         cls.client=Client()
 
     @classmethod
     def setUpTestData(cls):
         imc = InvoicingModelCreator(cls)
         imc.create_all()
+        create_test_common_entities(cls)
+
     
     def setUp(self):
         #wont work in setUpClass
@@ -136,6 +139,8 @@ class CustomerViewsTests(TestCase):
     def setUpTestData(cls):
         imc = InvoicingModelCreator(cls)
         imc.create_all()
+        create_test_common_entities(cls)
+
     
     def setUp(self):
         #wont work in setUpClass
@@ -216,6 +221,8 @@ class SalesRepViewsTests(TestCase):
         )
         create_test_user(cls)
         create_test_invoicing_models(cls)
+        create_test_common_entities(cls)
+
 
     
     def setUp(self):
@@ -301,6 +308,8 @@ class InvoiceViewTests(TestCase):
         imc.create_all()
         create_test_user(cls)
         amc = AccountingModelCreator(cls).create_tax()
+        create_test_common_entities(cls)
+
             
     def setUp(self):
         #wont work in setUpClass

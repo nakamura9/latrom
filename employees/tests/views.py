@@ -9,9 +9,9 @@ from django.test import Client, TestCase
 from django.contrib.auth.models import User
 
 from employees.models import *
-from latrom import settings
 from accounting.models import Account, JournalEntry
 from .models import create_test_employees_models
+import common_data
 
 TODAY = datetime.date.today()
 
@@ -27,6 +27,7 @@ class GenericPageTests(TestCase):
     def setUpTestData(cls):
         create_test_employees_models(cls)
         cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
+        common_data.tests.test_models.create_test_common_entities(cls)
         
 
     def setUp(self):
@@ -78,6 +79,8 @@ class PayGradePageTests(TestCase):
     def setUpTestData(cls):
         create_test_employees_models(cls)
         cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
+        common_data.tests.test_models.create_test_common_entities(cls)
+
         
     def setUp(self):
         #wont work in setUpClass
@@ -124,6 +127,8 @@ class PaySlipPageTests(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_superuser('Testuser', 'admin@test.com', '123')
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
         
     def setUp(self):
         #wont work in setUpClass
@@ -204,6 +209,8 @@ class EmployeePageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
 
     def setUp(self):
         #wont work in setUpClass
@@ -320,6 +327,8 @@ class BenefitsPageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
 
     def setUp(self):
         #wont work in setUpClass
@@ -379,6 +388,8 @@ class CommissionPageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
 
     def setUp(self):
         #wont work in setUpClass
@@ -441,6 +452,8 @@ class DeductionPageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
 
     def setUp(self):
         #wont work in setUpClass
@@ -499,6 +512,8 @@ class PayrollTaxViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
 
     def setUp(self):
         #wont work in setUpClass
@@ -566,6 +581,8 @@ class PayrollOfficerViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
+
 
     def setUp(self):
         #wont work in setUpClass
@@ -625,6 +642,7 @@ class LeaveViewTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        common_data.tests.test_models.create_test_common_entities(cls)
         create_test_employees_models(cls)
         cls.LEAVE_DATA = {
                 'start_date': TODAY,
@@ -716,6 +734,7 @@ class TimesheetViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        common_data.tests.test_models.create_test_common_entities(cls)
         cls.timesheet = EmployeeTimeSheet.objects.create(
             employee=cls.employee,
             month=1,

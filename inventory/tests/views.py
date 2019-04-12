@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from accounting.models import Account, JournalEntry, Tax
 from common_data.models import Organization
-from common_data.tests import create_account_models, create_test_user
+from common_data.tests import create_account_models, create_test_user, create_test_common_entities
 from inventory import models
 from django.contrib.auth.models import User
 
@@ -42,6 +42,8 @@ class CommonViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+        
         
     def setUp(self):
         self.client.login(username='Testuser', password='123')
@@ -160,6 +162,8 @@ class InventoryManagementViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
         
     def setUp(self):
         self.client.login(username='Testuser', password='123')
@@ -307,6 +311,8 @@ class ItemViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
         
     def setUp(self):
         self.client.login(username='Testuser', password='123')
@@ -463,6 +469,8 @@ class OrderViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
         
     def setUp(self):
         self.client.login(username='Testuser', password='123')
@@ -590,6 +598,8 @@ class SupplierViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
 
         cls.SUPPLIER_DATA = {
             'vendor_type': 'individual',
@@ -668,6 +678,8 @@ class WarehouseViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
 
 
     def setUp(self):
@@ -746,6 +758,8 @@ class ReportViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
 
     def setUp(self):
         self.client.login(username='Testuser', password='123')
@@ -793,6 +807,8 @@ class TransferViewTests(TestCase):
         create_account_models(cls)
         create_test_user(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
+
 
     def setUp(self):
         self.client.login(username='Testuser', password='123')

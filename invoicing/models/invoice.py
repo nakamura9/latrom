@@ -177,7 +177,6 @@ class Invoice(SoftDeletionModel):
 
     @property 
     def cost_of_goods_sold(self):
-        print([line.product.value for line in self.invoiceline_set.filter(product__isnull=False)])
         return sum([line.product.value for line in self.invoiceline_set.filter(
             product__isnull=False)], D(0.0))
 

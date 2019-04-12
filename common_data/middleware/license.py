@@ -98,13 +98,13 @@ class LicenseMiddleware(object):
             #check with remote server every three days
             config = GlobalConfig.objects.get(pk=1)
 
-            '''
+            
             if config.last_license_check == None or \
                     (datetime.date.today() - \
                     config.last_license_check).days > 2:
                 resp = requests.get('http://nakamura9.pythonanywhere.com/validate', params={
                     'info': urllib.parse.quote(json.dumps({
-                        'customer_id': license['license']['customer_id'],
+                        'customer_id': license['license']['customer'],
                         'signature': license['signature'],
                         'hardware_id': config.hardware_id
                     }))
@@ -117,7 +117,7 @@ class LicenseMiddleware(object):
                 else:
                     return HttpResponseRedirect('/base/license-error-page')
 
-            '''
+            
 
         response = self.get_response(request)
 
