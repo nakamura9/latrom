@@ -15,6 +15,7 @@ from inventory.tests import create_test_inventory_models
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 from accounting.tests.model_util import AccountingModelCreator
+from common_data.tests import create_test_common_entities
 
 TODAY = datetime.datetime.today()
 
@@ -26,6 +27,7 @@ class CommonViewsTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         create_test_user(cls)
+        create_test_common_entities(cls)
         cls.client=Client()
 
     
@@ -76,13 +78,14 @@ class ReportViewsTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         create_test_user(cls)
-        
         cls.client=Client()
 
     @classmethod
     def setUpTestData(cls):
         imc = InvoicingModelCreator(cls)
         imc.create_all()
+        create_test_common_entities(cls)
+
     
     def setUp(self):
         #wont work in setUpClass
@@ -136,6 +139,8 @@ class CustomerViewsTests(TestCase):
     def setUpTestData(cls):
         imc = InvoicingModelCreator(cls)
         imc.create_all()
+        create_test_common_entities(cls)
+
     
     def setUp(self):
         #wont work in setUpClass
@@ -202,7 +207,7 @@ class SalesRepViewsTests(TestCase):
         imc.create_all()
         cls.client=Client()
         cls.REP_DATA = {
-            'employee': 2,
+            'employee': 1,
             'can_reverse_invoices': True,
             'can_offer_discounts': True
         }
@@ -215,9 +220,8 @@ class SalesRepViewsTests(TestCase):
             hire_date=TODAY
         )
         create_test_user(cls)
-        create_test_invoicing_models(cls)
+        create_test_common_entities(cls)
 
-    
     def setUp(self):
         #wont work in setUpClass
         self.client.login(username='Testuser', password='123')
@@ -245,13 +249,12 @@ class SalesRepViewsTests(TestCase):
 
 
     def test_post_delete_sales_rep_page(self):
-        obj = SalesRepresentative.objects.create(
-            employee= Employee.objects.get(pk=2)
-        )
-        resp = self.client.post(reverse('invoicing:delete-sales-rep', kwargs={'pk':2}))
+        
+        resp = self.client.post(reverse('invoicing:delete-sales-rep', kwargs={'pk':SalesRepresentative.objects.first().pk}))
 
         self.assertEqual(resp.status_code, 302)
-        obj.hard_delete()
+        InvoicingModelCreator(self).create_sales_representative()
+        
 
 class InvoiceViewTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 
@@ -301,6 +304,8 @@ class InvoiceViewTests(TestCase):
         imc.create_all()
         create_test_user(cls)
         amc = AccountingModelCreator(cls).create_tax()
+        create_test_common_entities(cls)
+
             
     def setUp(self):
         #wont work in setUpClass

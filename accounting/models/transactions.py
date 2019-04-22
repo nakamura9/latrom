@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal as D
 from functools import reduce
+from itertools import chain
 
 from django.db import models
 from django.db.models import Q
@@ -31,6 +32,14 @@ class Transaction(models.Model):
     def __lt__(self, other):
         '''for comparing transactions when listing them in an account'''
         return self.entry.date < other.entry.date
+
+    @property
+    def is_debit(self):
+        return isinstance(self, Debit)
+
+    @property
+    def is_credit(self):
+        return isinstance(self, Credit)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -190,3 +199,14 @@ class JournalEntry(models.Model):
             amount = amount
         )
 
+    @property 
+    def debits(self):
+        return self.debit_set.all()
+
+    @property
+    def credits(self):
+        return self.credit_set.all()
+
+    @property
+    def transactions(self):
+        return chain(self.debits, self.credits)

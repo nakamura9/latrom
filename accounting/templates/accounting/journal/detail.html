@@ -4,6 +4,8 @@
         <h1 class="display-3">Journal Detail</h1>
         <hr class="my-2">
         <p class="lead">Journal Details and Entries</p>
+        <p class="lead">Actions</p>
+        <a href="{% url 'accounting:journal-form' pk=object.pk %}" class="btn btn-primary">Generate Report</a>
         
         
     </div>
@@ -16,13 +18,13 @@
                     </div>
                     <div class="card-body">
                         <p>Name: {{object.name}}</p>
-                        <p class="lead"> Start Period: {{object.start_period}}</p>
-                        <p class="lead"> End Period: {{object.end_period}}</p>
+                        <hr class="my-2">
+                        <p class="lead"> Description: {{object.description}}</p>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8">
-                
+                    <h4>Entries</h4>
                     <iframe frameborder="0" width="700" height="500"  id="journal-frame" src="/accounting/journal/{{object.pk}}/entry-list">
 
                     </iframe>

@@ -6,6 +6,8 @@ from services.models import *
 import urllib
 import json
 import datetime
+from common_data.tests import create_test_common_entities
+
 
 TODAY = datetime.date.today()
 
@@ -24,6 +26,7 @@ class BasicServiceViewTests(TestCase):
         cls.category = ServiceCategory.objects.create(
             **{'name': 'name', 'description': 'description'}   
         )
+        create_test_common_entities(cls)
         return super().setUpTestData()
 
     def setUp(self):
@@ -71,6 +74,7 @@ class ServicePersonnelViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        create_test_common_entities(cls)
         create_test_inventory_models(cls)
         cls.category = ServiceCategory.objects.create(
             **{'name': 'name', 'description': 'description'}   
@@ -171,6 +175,7 @@ class ServiceProcedureViewTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        create_test_common_entities(cls)
         create_test_employees_models(cls)
         create_test_inventory_models(cls)
         cls.procedure = ServiceProcedure.objects.create(
@@ -251,6 +256,7 @@ class RequisitionViewTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        create_test_common_entities(cls)
         create_test_employees_models(cls)
         create_test_inventory_models(cls)
         cls.category = ServiceCategory.objects.create(
@@ -431,6 +437,7 @@ class ServiceViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        create_test_common_entities(cls)
         create_test_inventory_models(cls)
         cls.category = ServiceCategory.objects.create(
             name="category",
@@ -509,6 +516,7 @@ class WorkOrderViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
+        create_test_common_entities(cls)
         create_test_inventory_models(cls)
         cls.category = ServiceCategory.objects.create(
             name="category",

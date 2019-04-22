@@ -6,6 +6,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from planner.models import *
 from employees.tests.models import create_test_employees_models
+from common_data.tests import create_test_common_entities
 
 from common_data.models import Organization
 from inventory.models import Supplier
@@ -14,6 +15,7 @@ from invoicing.models import Customer
 TODAY = datetime.date.today()
 
 class PlannerAPIViewTests(TestCase):
+    fixtures = ['common.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -22,7 +24,7 @@ class PlannerAPIViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.usr = User.objects.create_superuser('User', 'abc@xyz.com', '123')
-
+        create_test_common_entities(cls)
         cls.evt = Event.objects.create(
             date=TODAY,
             reminder=datetime.timedelta(hours=1),
@@ -60,13 +62,16 @@ class PlannerAPIViewTests(TestCase):
 
 
 class PlannerViewTests(TestCase):
-    fixtures = ['planner.json', 'accounts.json']
+    fixtures = ['planner.json', 'accounts.json', 'common.json']
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client
 
+    @classmethod
+    def setUpTestData(cls):
+        cls.usr = User.objects.create_superuser('User', 'abc@xyz.com', '123')
         create_test_employees_models(cls)
 
         cls.evt = Event.objects.create(
@@ -89,11 +94,8 @@ class PlannerViewTests(TestCase):
     )
         cls.employee.user = cls.usr 
         cls.employee.save()
+        create_test_common_entities(cls)
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.usr = User.objects.create_superuser('User', 'abc@xyz.com', '123')
-        
 
     def setUp(self):
         self.client.login(username='User', password='123')

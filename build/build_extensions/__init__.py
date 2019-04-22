@@ -1,1 +1,0 @@
-'''This package is designed build critical files that need to be protected from reverse engineering that perform critical licensing features'''

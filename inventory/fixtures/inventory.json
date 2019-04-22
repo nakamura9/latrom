@@ -48,25 +48,6 @@
         }
     },
     {
-        "model": "accounting.account",
-        "pk": 2101,
-        "fields": {
-            "name": "Default Supplier Account",
-            "balance": 0,
-            "description": "Default account for default supplier",
-            "type": "liability",
-            "balance_sheet_category": "current-liabilities"
-        }
-    },
-    {
-        "model": "inventory.Supplier",
-        "pk": 1,
-        "fields": {
-            "organization": 1,
-            "account": 2101
-        }
-    },
-    {
         "model": "inventory.Category",
         "pk": 1,
         "fields": {

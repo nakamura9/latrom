@@ -76,10 +76,12 @@ class MutableTable extends Component{
     verifyHandler = () =>{
         // iterate over all lines if all are verified enable the submit button 
 
-        let i =0;
+        let i;
         let verified = true;
-        for(i in this.state.data){
+        for(i=0; i < this.state.data.length; i++){
             if(!this.state.data[i].verified){
+                console.log('is not verified ')
+                console.log(i)
                 verified = false;
             }
         }

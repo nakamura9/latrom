@@ -1,0 +1,76 @@
+[
+    {
+        "model": "common_data.Individual",
+        "pk": 1,
+        "fields": {
+            "first_name": "Default",
+            "last_name": "Individual"
+        }
+    },
+    {
+        "model": "common_data.Organization",
+        "pk": 1,
+        "fields": {
+            "legal_name": "Default Organization"
+        }
+    },
+    {
+        "model": "employees.Employee",
+        "pk": 1,
+        "fields": {
+            "first_name": "First",
+            "last_name": "Last",
+            "hire_date": "2018-01-01",
+            "title": "Employee",
+            "pay_grade": 1,
+            "user": 2
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2101,
+        "fields": {
+            "name": "Default Supplier Account",
+            "balance": 0,
+            "description": "Default account for default supplier",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "inventory.Supplier",
+        "pk": 1,
+        "fields": {
+            "organization": 1,
+            "account": 2101
+        }
+    },
+    ,
+    {
+        "model": "accounting.account",
+        "pk": 1101,
+        "fields": {
+            "name": "Default Customer Account",
+            "balance": 0,
+            "description": "Default account for default customer",
+            "type": "asset",
+            "balance_sheet_category": "current-assets"
+        }
+    },
+    {
+        "model": "invoicing.Customer",
+        "pk": 1,
+        "fields": {
+            "individual": 1,
+            "account": 1101
+            
+        }
+    },
+    {
+        "model": "invoicing.SalesRepresentative",
+        "pk": 1,
+        "fields": {
+            "employee": 1
+        }
+    }
+]

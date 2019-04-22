@@ -3,8 +3,11 @@ import json
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from messaging.models import *
+from common_data.tests import create_test_common_entities
+
 
 class MessagingViewTests(TestCase):
+    fixtures = ['common.json']
     
     @classmethod
     def setUpClass(cls):
@@ -15,6 +18,7 @@ class MessagingViewTests(TestCase):
     def setUpTestData(cls):
         cls.usr = User.objects.create_superuser('User', 'abc@xyz.com', '123')
         cls.receiver = User.objects.create_user(username="sometwo")
+        create_test_common_entities(cls)
         
         cls.message = Message.objects.create(
             recipient=cls.receiver,
@@ -43,6 +47,7 @@ class MessagingViewTests(TestCase):
         resp = self.client.get('/messaging/notification/1')
 
 class MessagingAPIViewTests(TestCase):
+    fixtures = ['common.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -52,6 +57,7 @@ class MessagingAPIViewTests(TestCase):
     def setUpTestData(cls):
         cls.usr = User.objects.create_superuser('User', 'abc@xyz.com', '123')
         cls.receiver = User.objects.create_user(username="sometwo")
+        create_test_common_entities(cls)
         
         cls.message = Message.objects.create(
             recipient=cls.receiver,

@@ -112,7 +112,7 @@ class InventoryItem(SoftDeletionModel):
         total_product_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
             Q(order__date__lte=datetime.date.today()) &
-            Q(item_type=1)
+            Q(item__type=0)
         )
 
         ordered_quantity = sum([i.received for i in total_product_orders])
@@ -127,7 +127,7 @@ class InventoryItem(SoftDeletionModel):
             [(i.product.quantity - i.product.returned_quantity) \
                 for i in total_product_sales])
 
-        return current_total_product_quantity + sold_quantity - ordered_quantity
+        return current_total_product_quantity + float(sold_quantity) - ordered_quantity
 
 
 class ProductComponent(models.Model):

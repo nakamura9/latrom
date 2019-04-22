@@ -14,7 +14,8 @@
     <hr class="my-2">
     <p>Actions:</p>
     <p class="lead">
-        <a class="btn btn-success btn-lg" href="{% url 'accounting:account-update' pk=object.pk %}" role="button">Edit Details</a>
+        <a class="btn btn-success" href="{% url 'accounting:account-update' pk=object.pk %}" role="button">Edit Details</a>
+        <a class="btn btn-success" href="{% url 'accounting:account-report-form' pk=object.pk %}" role="button">Generate Report</a>
     </p>
 </div>
 

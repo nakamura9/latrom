@@ -26,6 +26,11 @@ def create_test_common_entities(cls):
         legal_name="business"
     )
 
+    if models.GlobalConfig.objects.all().count() > 0:
+        config = models.GlobalConfig.objects.first()
+        config.last_license_check = TODAY
+        config.save()
+
 def create_test_user(cls):
     '''creates a test user that can be logged in for view tests'''
     if not hasattr(cls, 'user'):

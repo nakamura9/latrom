@@ -85,7 +85,23 @@ report_urls = [
     re_path(r'^csv/balance-sheet/?$', views.balance_sheet_csv, 
         name='balance-sheet-csv'),
     re_path(r'^csv/trial-balance/?$', views.trial_balance_csv, 
-        name='trial-balance-csv')
+        name='trial-balance-csv'),
+    re_path(r'^journal-form/(?P<pk>[\d]+)/?$', views.JournalFormView.as_view(), name='journal-form'),
+    re_path(r'^journal-report/?$', views.JournalReport.as_view(), name='journal-report'),
+    re_path(r'^csv/journal-report/(?P<journal>[\d ]+)/(?P<start>[\w %]+)/'
+        '(?P<end>[\w %]+)/?$', views.journal_csv_report, 
+            name='journal-report-csv'),
+    re_path(r'^pdf/journal-report/(?P<journal>[\d ]+)/(?P<start>[\w %]+)/'
+        '(?P<end>[\w %]+)/?$', views.JournalReportPDFView.as_view(), 
+            name='journal-report-pdf'),
+    re_path(r'^account-report-form/(?P<pk>[\d]+)/?$', views.AccountReportFormView.as_view(), name='account-report-form'),
+    re_path(r'^account-report/?$', views.AccountReport.as_view(), name='account-report'),
+    re_path(r'^csv/account-report/(?P<account>[\d ]+)/(?P<start>[\w %]+)/'
+        '(?P<end>[\w %]+)/?$', views.account_csv_report, 
+            name='account-report-csv'),
+    re_path(r'^pdf/account-report/(?P<account>[\d ]+)/(?P<start>[\w %]+)/'
+        '(?P<end>[\w %]+)/?$', views.AccountReportPDFView.as_view(), 
+            name='account-report-pdf')
 ]
 
 account_urls = [

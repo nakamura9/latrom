@@ -3,35 +3,8 @@
         "model": "invoicing.SalesConfig",
         "pk": 1,
         "fields": {
-            "default_invoice_comments": "Thank you for your business"
-            
-        }
-    },
-    {
-        "model": "accounting.account",
-        "pk": 1101,
-        "fields": {
-            "name": "Default Customer Account",
-            "balance": 0,
-            "description": "Default account for default customer",
-            "type": "asset",
-            "balance_sheet_category": "current-assets"
-        }
-    },
-    {
-        "model": "invoicing.Customer",
-        "pk": 1,
-        "fields": {
-            "individual": 1,
-            "account": 1101
-            
-        }
-    },
-    {
-        "model": "invoicing.SalesRepresentative",
-        "pk": 1,
-        "fields": {
-            "employee": 1
+            "default_invoice_comments": "Thank you for your business"    
         }
     }
+    
 ]

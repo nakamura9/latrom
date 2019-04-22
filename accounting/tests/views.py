@@ -11,14 +11,14 @@ from django.shortcuts import reverse
 from django.test import Client, TestCase
 
 from accounting.models import *
-from common_data.tests import create_account_models, create_test_user
+from common_data.tests import create_account_models, create_test_user, create_test_common_entities
 from inventory.tests import create_test_inventory_models
 from latrom import settings
 
 TODAY = datetime.date.today()
 
 class CommonViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json', 'journals.json']
+    fixtures = ['common.json', 'accounts.json', 'employees.json', 'journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -27,6 +27,7 @@ class CommonViewTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        create_test_common_entities(cls)
         create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
@@ -135,7 +136,7 @@ class CommonViewTests(TestCase):
 
 
 class JournalEntryViewTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json','journals.json']
+    fixtures = ['common.json', 'accounts.json', 'employees.json','journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -147,6 +148,7 @@ class JournalEntryViewTests(TestCase):
         create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
     
         cls.ENTRY_DATA = {
             'reference': 'some test ref',
@@ -232,7 +234,7 @@ class JournalEntryViewTests(TestCase):
         
 
 class AccountViewTests(TestCase):
-    fixtures = ['accounts.json','employees.json', 'journals.json']
+    fixtures = ['common.json','accounts.json','employees.json', 'journals.json']
     
     @classmethod
     def setUpClass(cls):
@@ -244,6 +246,7 @@ class AccountViewTests(TestCase):
         create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
+        create_test_common_entities(cls)
     
         cls.ACCOUNT_DATA = {
                 'name': 'Other Test Account',
@@ -334,7 +337,7 @@ class TestReportViews(TestCase):
         create_test_user(cls)
         create_account_models(cls)
         create_test_inventory_models(cls)
-
+        create_test_common_entities(cls)
 
     def setUp(self):
         #wont work in setUpClass
@@ -361,6 +364,7 @@ class TestReportViews(TestCase):
 
 
 class TestCurrencyViews(TestCase):
+    fixtures = ['common.json']
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -385,6 +389,7 @@ class TestCurrencyViews(TestCase):
             exchange_rate=1.5,
             conversion_table=cls.currency_table
         )
+        create_test_common_entities(cls)
 
     def setUp(self):
         #wont work in setUpClass

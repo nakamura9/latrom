@@ -19,6 +19,7 @@ from .payroll import *
 from accounting.models import Account
 from .timesheets import *
 from .employee_portal import *
+from employees.views.dash_plotters import employee_roles_chart
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -45,6 +46,7 @@ class DashBoard( ContextMixin, TemplateView):
             status="verified")).count()
         context['unpaid_wages'] = sum([i.gross_pay for i in \
             models.Payslip.objects.filter(Q(status="verified"))])
+        context['graph'] = employee_roles_chart().render(is_unicode=True)
 
 
         context['tax'] = Account.objects.get(pk=5010).balance
@@ -55,7 +57,7 @@ class DashBoard( ContextMixin, TemplateView):
         try:
             service.run()
         except PayrollException:
-            messages.info(request, 'The payroll system does not have any payrol l dates loaded. Please enter suitable dates for the system to automatically generate payslips')
+            messages.info(request, 'The payroll system does not have any payroll dates loaded. Please enter suitable dates for the system to automatically generate payslips')
         return super().get(request)
 
 class PayrollConfig( ContextMixin, UpdateView):

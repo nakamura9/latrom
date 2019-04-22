@@ -25,7 +25,7 @@ from inventory import filters, forms, models, serializers
 from inventory.views.util import InventoryService
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition, ConsumablesRequisition
-
+from inventory.views.dash_plotters import stock_movement_plot
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
 
@@ -103,6 +103,7 @@ class InventoryDashboard(
             type=1).count()
         context['consumables'] = models.InventoryItem.objects.filter(
             type=2).count()
+        context['graph'] = stock_movement_plot().render(is_unicode=True)
 
         return context
 

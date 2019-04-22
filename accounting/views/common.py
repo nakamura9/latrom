@@ -24,7 +24,7 @@ from invoicing.models import Customer
 from accounting.util import AccountingTaskService
 from accounting import filters, forms, models, serializers
 from accounting.views.reports.balance_sheet import BalanceSheet
-
+from accounting.views.dash_plotters import expense_plot, revenue_vs_expense_plot
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
@@ -39,6 +39,13 @@ class Dashboard( TemplateView):
         context['liabilities'] = bsheet['current_liabilities_total'] + \
             bsheet['long_term_liabilities_total']
         context['equity'] = bsheet['equity_total']
+        expense_chart = expense_plot()
+        if expense_chart:
+            context['expense_graph'] = expense_chart.render(is_unicode=True)
+        else:
+            context['expense_graph'] = "No expenses were recorded over the last 30 days"
+
+        context['revenue_graph'] = revenue_vs_expense_plot().render(is_unicode=True)    
         return context
 
 

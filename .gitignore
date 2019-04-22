@@ -11,11 +11,9 @@ build/app/*/
 build/build/
 build/dist/
 !build/app/server/
-dist/
 global_config.json
 assets/webpack-stats.json
 license.json
-build.log
 common_data/static/rest_framework/
 common_data/static/*.js
 common_data/static/admin/
@@ -23,5 +21,4 @@ common_data/static/admin/
 .vscode/
 *.log
 *.spec
-build/app/hashed_password.txt
-build_counter.json
+*.c

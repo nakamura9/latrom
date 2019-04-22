@@ -83,4 +83,8 @@ class CreditNoteLine(models.Model):
 
     @property
     def returned_value(self):
-        return D(self.quantity) * self.line.product.price
+        '''Factors for line by line discount'''
+        discount =  self.line.product.nominal_price * \
+            (self.line.discount / D(100))
+        discounted_price = self.line.product.nominal_price - discount
+        return D(self.quantity) * discounted_price
