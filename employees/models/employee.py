@@ -35,6 +35,10 @@ class Employee(Person, SoftDeletionModel):
     is_<role> - checks the instance for evidence that an employee has been 
     assigned a certain role within the system.
     '''
+
+    GENDER_CHOICES = [('male','Male'),('female','Female')]
+
+
     employee_number = models.AutoField(primary_key=True)
     hire_date = models.DateField()
     title = models.CharField(max_length=32)
@@ -46,6 +50,9 @@ class Employee(Person, SoftDeletionModel):
     user = models.OneToOneField('auth.User', null=True,
          on_delete=models.CASCADE)#not all are users
     pin = models.PositiveSmallIntegerField(default=1000)
+    date_of_birth = models.DateField(null=True)
+    id_number = models.CharField(max_length=64, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     
     def increment_leave_days(self, days):
         self.leave_days += days

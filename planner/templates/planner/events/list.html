@@ -25,7 +25,7 @@
                 <a class="dropdown-item" href="{% url 'planner:event-update' pk=event.id %}">
                     <i class="fas fa-file"></i> Update
                 </a>
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{% url 'planner:event-delete' pk=event.id %}">
                     <i class="fas fa-trash"></i> Delete
                 </a>
 

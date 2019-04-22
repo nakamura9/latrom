@@ -111,7 +111,7 @@ class CommissionDeleteView( DeleteView):
 
 class PayGradeCreateView( ContextMixin, CreateView):
     form_class = forms.PayGradeForm
-    template_name =CREATE_TEMPLATE
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Add Pay Grade',

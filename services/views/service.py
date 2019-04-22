@@ -23,7 +23,7 @@ CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 class ServiceCreateView( ContextMixin, CreateView):
     form_class = forms.ServiceForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     success_url = reverse_lazy('services:dashboard')
     extra_context = {
         'title': 'Create Service',

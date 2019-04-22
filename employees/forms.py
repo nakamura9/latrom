@@ -78,6 +78,41 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.PayGrade
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    'monthly_leave_days',
+                    Row(
+                        Column('salary', css_class='form-group col-6'),
+                        Column('pay_frequency', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('hourly_rate', css_class='form-group col-4'),
+                        Column('overtime_rate', css_class='form-group col-4'),
+                        Column('overtime_two_rate', css_class='form-group col-4'),                        
+                    ),
+                    Row(
+                        Column('commission', css_class='form-group col-6'),
+                        Column('lunch_duration', css_class='form-group col-6'),
+                    ),
+                    'subtract_lunch_time_from_working_hours',
+                ),
+                Tab('allowances',
+                    'allowances',
+                ),
+                Tab('deductions',
+                    'deductions',
+                ),
+                Tab('payroll taxes',
+                    'payroll_taxes',
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 class CreateEmployeeUserForm(BootstrapMixin, forms.Form):
     employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
     username = forms.CharField()
@@ -136,12 +171,20 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('Personal', 
-                    'first_name',
-                    'last_name',
+                Tab('Personal information', 
+                    Row(
+                        Column('first_name', css_class='form-group col-6'),
+                        Column('last_name', css_class='form-group col-6'),
+                    ),
                     'address',
                     'email',
-                    'phone'),
+                    'phone'
+                    ),
+                    Tab('private',
+                        'date_of_birth',
+                        'id_number',
+                        'gender'
+                    ),
                 Tab('Employee Details', 
                     'hire_date',
                     'title',
@@ -256,6 +299,26 @@ class LeaveRequestForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.Leave
         exclude = 'status', 'authorized_by', 'recorded'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    Row(
+                        Column('start_date', css_class='form-group col-6'),
+                        Column('end_date', css_class='form-group col-6'),
+                    ),
+                    'employee',
+                    'category',
+                ),
+                Tab('notes',
+                    'notes',
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
     leave_request = forms.ModelChoiceField(models.Leave.objects.all(), 
@@ -326,6 +389,23 @@ class DepartmentForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.Department
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    'name',
+                    'description',
+                    'manager',
+                    'parent_department',
+                ),
+                Tab('employees',
+                    'employees',
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class EmployeeAuthenticateForm(BootstrapMixin, forms.Form):
     employee = forms.ModelChoiceField(models.Employee.objects.all())

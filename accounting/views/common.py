@@ -122,7 +122,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 
 class AccountTransferPage( ContextMixin, CreateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     success_url = reverse_lazy('accounting:dashboard')
     form_class = forms.SimpleJournalEntryForm
     extra_context = {
@@ -131,7 +131,7 @@ class AccountTransferPage( ContextMixin, CreateView):
     }
 
 class AccountCreateView( ContextMixin, CreateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     model = models.Account
     form_class = forms.AccountForm
     success_url = reverse_lazy('accounting:dashboard')
@@ -336,7 +336,7 @@ class CustomerExpenseAPIView(generics.ListAPIView):
 
 class AssetCreateView(ContextMixin,  CreateView):
     form_class = forms.AssetForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     success_url = "/accounting/"
     extra_context = {
         'title': 'Register New Asset',

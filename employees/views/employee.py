@@ -168,7 +168,7 @@ def remove_employee_user(request, pk=None):
     return HttpResponseRedirect(reverse_lazy('employees:dashboard'))
 
 class DepartmentCreateView(ContextMixin, CreateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     form_class = forms.DepartmentForm
     success_url = "/employees/"
     extra_context = {

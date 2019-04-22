@@ -26,10 +26,38 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.Asset
 
+    init_date =forms.DateField(label="Date purchased")
+    depreciation_period = forms.CharField(widget=forms.NumberInput, label="Depreciation Period(years)")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('basic',
+                    Row(
+                        Column('name', css_class='form-group col-6'),
+                        Column('created_by', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('initial_value', css_class='form-group col-6'),
+                        Column('salvage_value', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('depreciation_period', css_class='form-group col-6'),
+                        Column('depreciation_method', css_class='form-group col-6'),                        
+                    ),
+                    'init_date',
+                    'category',
+                ),
+                Tab('description',
+                    'description',
+                    'credit_account',
+                    
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class ExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -155,34 +183,62 @@ class SimpleJournalEntryForm(forms.ModelForm, BootstrapMixin):
             self.cleaned_data['debit']
         )
         return obj
-
-class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        exclude="posted_to_ledger", "adjusted"
-        model = models.JournalEntry
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-            Column('date', 
-                    'journal',
-                    'created_by',
-                    'draft',
-                    css_class="col-sm-6"),
-            Column('memo', css_class="col-sm-6")
-            )
+                Column('date', css_class="col-6"),
+                Column('created_by', css_class="col-6"),
+            ),
+            Row(
+                Column('credit', css_class="col-6"),
+                Column('debit', css_class="col-6"),
+            ),
+            'memo',
+            'journal',
+            'amount',
         )
         self.helper.add_input(Submit('submit', 'Submit'))
+
+class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        exclude="posted_to_ledger", "adjusted"
+        model = models.JournalEntry
+
+
 
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active",
         model = models.Account
-
+    
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('general',
+                    'name',
+                    'balance',
+                    Row(
+                        Column('balance_sheet_category', css_class='form-group col-6'),
+                        Column('type', css_class='form-group col-6'),
+                    ),
+                ),
+                Tab('account',
+                    'bank_account_number',
+                    'parent_account',
+                    Row(
+                        Column('control_account', css_class='form-group col-6'),
+                        Column('bank_account', css_class='form-group col-6'),
+                    ),
+                ),
+            )
+        )
 class AccountUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active", "balance"

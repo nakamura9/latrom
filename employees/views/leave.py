@@ -29,7 +29,7 @@ class LeaveRequestList( ContextMixin,
         'new_link': '/employees/leave-request'
     }
 class LeaveDayRequestView(ContextMixin,  CreateView):
-    template_name = os.path.join('common_data', 'create_template.html')
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     form_class = forms.LeaveRequestForm
     extra_context = {
         'title': 'Vacation Application Form',

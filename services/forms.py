@@ -1,5 +1,5 @@
 from django import forms
-
+from crispy_forms.bootstrap import TabHolder, Tab
 from common_data.forms import BootstrapMixin
 from django.contrib.auth import authenticate
 from crispy_forms.helper import FormHelper
@@ -17,6 +17,30 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Service
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helperlayout = Layout(
+            TabHolder(
+                Tab('basic',
+                    'name',
+                    Row(
+                        Column('flat_fee', css_class='form-group col-6'),
+                        Column('hourly_rate', css_class='form-group col-6'),
+                    ),
+                    Row(
+                        Column('category', css_class='form-group col-4'),
+                        Column('procedure', css_class='form-group col-4'),
+                        Column('frequency', css_class='form-group col-4'),
+                    ),
+                    'is_listed',
+                Tab('description',
+                    'description',
+                ),
+            ),
+        )
+    )
 
 class ServiceCategoryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -177,7 +201,7 @@ class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
                  css_class="form-row"),
             Row(
                 Column('reference', css_class="col-sm-12"),
-                css_class="form-row")
+                css_class="form-row"),
         )
 class ServiceProcedureForm(forms.ModelForm, BootstrapMixin):
     class Meta:

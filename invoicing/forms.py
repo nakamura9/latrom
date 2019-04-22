@@ -21,6 +21,13 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
         model = models.SalesConfig
         fields = "__all__"
 
+        widgets = {
+            'default_invoice_comments':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            'default_credit_note_comments':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            'default_quotation_comments':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            'default_terms':forms.Textarea(attrs={'rows':4, 'cols':15}),            
+        }
+
     def __init__(self, *args, **kwargs):
         super(SalesConfigForm, self).__init__(*args, **kwargs)
 

@@ -5,6 +5,8 @@ from django.forms import ValidationError
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (HTML, 
+                                Row,
+                                Column,
                                 Fieldset, 
                                 Layout, 
                                 Submit)
@@ -58,8 +60,14 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     #not showing password on update view
     #email_password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
-        exclude = "hardware_id", "application_version", "last_license_check",
+        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency',
         model = models.GlobalConfig
+
+        widgets = {
+            'business_address':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            'contact_details':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            'payment_details':forms.Textarea(attrs={'rows':4, 'cols':15}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,6 +76,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Business Details',
+
                     'business_name',
                     'business_address',
                     'logo',
@@ -81,10 +90,11 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
                     'email_port',
                     'email_user',
                     'email_password',
+                
                 )
             )
         )
-        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.add_input(Submit('submit', 'Submit')),
 
 class SendMailForm(BootstrapMixin, forms.Form):
     recipient = forms.EmailField()
