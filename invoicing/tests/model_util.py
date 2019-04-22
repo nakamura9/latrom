@@ -23,8 +23,6 @@ class InvoicingModelCreator():
         self.create_product_line_component()
         self.create_service_line()
         self.create_service_line_component()
-        
-        
 
     def create_customer_ind(self):
         if not hasattr(self.cls,' individual'):
@@ -209,7 +207,6 @@ class InvoicingModelCreator():
             emc = EmployeeModelCreator(self.cls)
             emc.create_employee()
 
-        
         self.cls.sales_representative = SalesRepresentative.objects.create(
             employee= self.cls.employee
         )

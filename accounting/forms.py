@@ -10,7 +10,7 @@ from crispy_forms.layout import (Fieldset,
 from django import forms
 from django.contrib.auth.models import User
 
-from common_data.forms import BootstrapMixin
+from common_data.forms import BootstrapMixin, PeriodReportForm
 from inventory.models import Supplier, WareHouse
 
 from . import models
@@ -160,3 +160,11 @@ class ExchangeTableForm(forms.ModelForm):
     class Meta:
         fields = 'reference_currency', 'name',
         model = models.CurrencyConversionTable
+
+class JournalReportForm(PeriodReportForm):
+    journal = forms.ModelChoiceField(models.Journal.objects.all(), 
+        widget=forms.HiddenInput)
+
+class AccountReportForm(PeriodReportForm):
+    account = forms.ModelChoiceField(models.Account.objects.all(), 
+        widget=forms.HiddenInput)

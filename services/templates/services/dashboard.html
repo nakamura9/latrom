@@ -141,6 +141,11 @@
                             <h3># Work Orders Completed: {{wo_closed}}</h3>
                         </div>
                     </div>
+                    <hr class="my-4">
+                    <h3>Service Person Utilization over the last 30 days</h3>
+                    {% autoescape off %}
+                    {{graph}}
+                    {% endautoescape %}
                 </div>
     </div>
 </div>

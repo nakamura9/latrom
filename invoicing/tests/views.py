@@ -207,7 +207,7 @@ class SalesRepViewsTests(TestCase):
         imc.create_all()
         cls.client=Client()
         cls.REP_DATA = {
-            'employee': 2,
+            'employee': 1,
             'can_reverse_invoices': True,
             'can_offer_discounts': True
         }
@@ -220,11 +220,8 @@ class SalesRepViewsTests(TestCase):
             hire_date=TODAY
         )
         create_test_user(cls)
-        create_test_invoicing_models(cls)
         create_test_common_entities(cls)
 
-
-    
     def setUp(self):
         #wont work in setUpClass
         self.client.login(username='Testuser', password='123')
@@ -252,13 +249,12 @@ class SalesRepViewsTests(TestCase):
 
 
     def test_post_delete_sales_rep_page(self):
-        obj = SalesRepresentative.objects.create(
-            employee= Employee.objects.get(pk=2)
-        )
-        resp = self.client.post(reverse('invoicing:delete-sales-rep', kwargs={'pk':2}))
+        
+        resp = self.client.post(reverse('invoicing:delete-sales-rep', kwargs={'pk':SalesRepresentative.objects.first().pk}))
 
         self.assertEqual(resp.status_code, 302)
-        obj.hard_delete()
+        InvoicingModelCreator(self).create_sales_representative()
+        
 
 class InvoiceViewTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 

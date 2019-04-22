@@ -170,6 +170,8 @@ class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class QuotationForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
+    quotation_date = forms.DateField(required=True)
+    quotation_valid = forms.DateField(required=True)
 
     class Meta:
         fields = ["status", 'customer', 'quotation_date', 'quotation_valid', 'salesperson', 'terms', 'comments']

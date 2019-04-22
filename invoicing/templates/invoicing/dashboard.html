@@ -85,23 +85,35 @@
                 <div id="dashboard" class="tab-pane">
                     <div class="dash-container">
                         <div class="bg-success text-white dashbox">
-                            <h3>Sales To Date: ${{sales_to_date}}</h3>
+                            <h4>Sales This Month:</h4>
+                            <h3>${{sales_to_date | floatformat:2}}</h3>
                         </div>
                         <div class="bg-primary text-white dashbox">
-                            <h3>Active Customers: {{customers}}</h3>
+                            <h4>Active Customers: </h4>
+                            <h3>{{customers}}</h3>
                         </div>
                         <div class="bg-warning text-white dashbox">
-                            <h3>Outstanding Invoices: {{outstanding_invoices}}</h3>
+                            <h4>Outstanding Invoices: </h4>
+                            <h3>{{outstanding_invoices}}</h3>
                         </div>
                     </div>
                     <hr class="my-4">
                     <div class="dash-container">
                         <div class="bg-warning text-white dashbox">
-                            <h3>Money Owed: ${{money_owed | floatformat:2 }}</h3>
+                            <h4>Money Owed: </h4>
+                            <h3>${{money_owed | floatformat:2 }}</h3>
                         </div>
                         <div class="bg-danger text-white dashbox">
-                            <h3>Overdue Invoices: {{overdue}}</h3>
+                            <h4>Overdue Invoices: </h4>
+                            <h3>{{overdue}}</h3>
                         </div>
+                    </div>
+                    <hr class="my-4" />
+                    <div>
+                        <h4>Sales for the last 30 days</h4>
+                        {% autoescape off %}
+                        {{graph}}                    
+                        {% endautoescape %}
                     </div>
                 </div>
             </div>

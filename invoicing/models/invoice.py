@@ -159,6 +159,7 @@ class Invoice(SoftDeletionModel):
             )
 
     def update_inventory(self):
+        '''Removes inventory from the warehouse'''
         #called in views.py
         for line in self.invoiceline_set.filter(product__isnull=False):
             #check if ship_from has the product in sufficient quantity
@@ -177,6 +178,8 @@ class Invoice(SoftDeletionModel):
 
     @property 
     def cost_of_goods_sold(self):
+        '''calculates the value of each line in the invoice and returns their 
+        sum'''
         return sum([line.product.value for line in self.invoiceline_set.filter(
             product__isnull=False)], D(0.0))
 
@@ -195,7 +198,7 @@ class Invoice(SoftDeletionModel):
         
     @property
     def total(self):
-        '''the total value of the invoice'''
+        '''the total value of the invoice inclusive of tax'''
         return self.subtotal + self.tax_amount
 
     @property
@@ -264,9 +267,9 @@ class Invoice(SoftDeletionModel):
                 draft=False
             )
 
-        j.credit(self.subtotal, Account.objects.get(pk=4000))
+        j.credit(self.subtotal, Account.objects.get(pk=4000))#sales does not affect balance sheet
 
-        j.debit(self.total, self.customer.account)
+        j.debit(self.total, self.customer.account)#asset increase
 
         if self.tax_amount > D(0):
             j.credit(self.tax_amount, Account.objects.get(pk=2001))#sales tax
@@ -413,11 +416,12 @@ class InvoiceLine(models.Model):
     def __str__(self):
         if not self.component:
             return "<INVALID INVOICE LINE>"
+
         if self.line_type == 1:
             return '[PRODUCT] {} x {} @ ${:0.2f}{}'.format(
                 self.component.quantity,
                 str(self.component.product).split('-')[1],
-                self.component.price,
+                self.nominal_price,
                 self.component.product.unit
             )
         elif self.line_type == 2:
@@ -430,35 +434,33 @@ class InvoiceLine(models.Model):
         elif self.line_type ==3:
             return '[BILLABE EXPENSE] %s' % self.expense.expense.description
 
-    
+    @property
+    def subtotal(self):
+        '''Returns the value of the line after the discount and before taxes'''
+        return self.nominal_price - self.discount_total
+
     @property
     def total(self):
+        '''Includes price after discount and tax'''
         if not self.component:
             return 0
-
         
-        price_with_discount = self.price - self.discount
-        
-        if not self.tax:
-            return price_with_discount
-
-        price_after_tax = price_with_discount + \
-            (price_with_discount * D(D(self.tax.rate) / D(100.0)))
-
-        return price_after_tax
+        return self.subtotal + self.tax_
 
     @property
     def discount_total(self):
-        return self.price * (self.discount / D(100.0))
+        '''Returns the value subtracted from the nominal price due to a discount'''
+        return D(self.nominal_price) * (D(self.discount) / D(100.0))
 
     @property
     def tax_(self):
+        '''Returns the tax obtained from an invoice line'''
         if self.tax == None:
             return D(0)
-        discounted_price = self.price - self.discount_total
-        return discounted_price * D(self.tax.rate / 100.0)
+        
+        return self.subtotal * D(self.tax.rate / 100.0)
 
-
+    
     def __getattribute__(self, name):
         try:
             return super().__getattribute__(name)
@@ -473,7 +475,7 @@ class InvoiceLine(models.Model):
             
             raise attrerr
         raise AttributeError(f"{type(self)} has no attribute '{name}'")
-
+    
 class ProductLineComponent(models.Model):
     product = models.ForeignKey('inventory.InventoryItem', null=True, 
         on_delete=models.SET_NULL)
@@ -492,17 +494,21 @@ class ProductLineComponent(models.Model):
         default=0.0)  
 
     @property
-    def price(self):
+    def nominal_price(self):
+        '''The price of the line without discount and taxes'''
         return self.quantity * self.unit_price
 
     @property 
     def line(self):
+        '''The invoice line the component belongs to'''
         if InvoiceLine.objects.filter(product=self).exists():
             return InvoiceLine.objects.get(product=self)
         return None
 
     @property
     def returned_quantity(self):
+        '''The returns effected by credit notes for this particular invoice 
+        line'''
         if self.line:
             return sum([ item.quantity \
                 for item in CreditNoteLine.objects.filter(line=self.line)])
@@ -511,9 +517,6 @@ class ProductLineComponent(models.Model):
     def __str__(self):
         return str(self.product)
 
-    @property
-    def subtotal(self):
-        return D(self.quantity) * D(self.price)
 
     def _return(self, quantity):
         self.returned = True
@@ -528,9 +531,12 @@ class ProductLineComponent(models.Model):
 
     @property
     def returned_value(self):
-        if self.price == D(0.0):
-            return self.product.unit_sales_price * D(self.returned_quantity)
-        return self.price * D(self.returned_quantity)
+        '''accounting for discount and tax in unit pricing'''
+        if self.quantity > 0:
+            invoiced_unit_price = self.line.total / self.quantity
+        else: return 0
+        
+        return invoiced_unit_price * D(self.returned_quantity)
 
     def check_inventory(self):
         '''Checks the shipping warehouse for the required quantity of inventory
@@ -585,28 +591,18 @@ class ServiceLineComponent(models.Model):
         return str(self.service)
 
     @property
-    def price(self):
+    def nominal_price(self):
+        '''Returns the value of the line excluding taxes and discounts'''
         return self.flat_fee  + (D(self.hours) * D(self.hourly_rate))
 
     @property
     def line(self):
+        '''Returns the invoice line the component belongs to'''
         if InvoiceLine.objects.filter(service=self).exists():
             return InvoiceLine.objects.get(service=self)
 
         return None
 
-    @property
-    def subtotal(self):
-        product = float(self.hours) * float(self.service.hourly_rate)
-        return D(float(self.service.flat_fee) + product)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.price == 0.0 and self.subtotal > 0:
-            self.price = self.subtotal
-            self.save()
-
-        
 
 class ExpenseLineComponent(models.Model):
     expense = models.ForeignKey('accounting.Expense', 
@@ -614,17 +610,16 @@ class ExpenseLineComponent(models.Model):
         null=True)
     price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
 
-
-
     @property
     def line(self):
+        '''Returns the invoice line the component belongs to'''
         if InvoiceLine.objects.filter(expense=self).exists():
             return InvoiceLine.objects.get(expense=self)
 
         return None
 
     @property
-    def subtotal(self):
+    def nominal_price(self):
         return self.price
 
     def save(self, *args, **kwargs):

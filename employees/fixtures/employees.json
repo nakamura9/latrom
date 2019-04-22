@@ -1,11 +1,4 @@
-[{
-        "model": "auth.User",
-        "pk": 2,
-        "fields": {
-            "username": "default_employee_user",
-            "password": "123"
-        }
-    },
+[  
     {
         "model": "employees.EmployeesSettings",
         "pk": 1,
@@ -19,18 +12,6 @@
         "pk": 1,
         "fields": {
             "name": "Default"
-        }
-    },
-    {
-        "model": "employees.Employee",
-        "pk": 1,
-        "fields": {
-            "first_name": "First",
-            "last_name": "Last",
-            "hire_date": "2018-01-01",
-            "title": "Employee",
-            "pay_grade": 1,
-            "user": 2
         }
     },
     {

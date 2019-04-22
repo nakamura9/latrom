@@ -75,7 +75,6 @@ class BalanceSheet(ConfigMixin,TemplateView):
 
         working_capital =  current_assets_total - current_liabilities_total
         
-
         #LONG TERM LIABILITIES
         long_term_liabilities = models.Account.objects.filter(
             Q(balance_sheet_category='non-current-liabilities')).exclude(

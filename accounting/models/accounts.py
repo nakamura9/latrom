@@ -1,7 +1,7 @@
 import datetime
 from decimal import Decimal as D
 from functools import reduce
-
+from itertools import chain
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -55,8 +55,7 @@ class AbstractAccount(SoftDeletionModel):
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
     
     def __str__(self):
-        return str(self.pk) + "-" + self.name + '-' + \
-            str(self.control_balance)
+        return str(self.pk) + "-" + self.name
 
     
     def balance_on_date(self, date):
@@ -164,6 +163,18 @@ class Account(AbstractAccount):
         # create an instance of InterestBearingAccount 
         # and delete this account
         pass
+
+    @property
+    def credit_transactions(self):
+        return Credit.objects.filter(account=self)
+
+    @property
+    def debit_transactions(self):
+        return Debit.objects.filter(account=self)
+    
+    @property
+    def transactions(self):
+        return chain(self.credit_transactions, self.debit_transactions)
     
 
 class InterestBearingAccount(AbstractAccount):

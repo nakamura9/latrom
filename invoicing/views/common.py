@@ -21,6 +21,7 @@ from accounting.forms import TaxForm
 from common_data.utilities import ContextMixin, ConfigMixin
 from invoicing import filters, forms, serializers
 from invoicing.models import *
+from invoicing.views.report_utils import plotters
 
 
 class SalesConfigMixin(object):
@@ -52,6 +53,10 @@ class Home(SalesConfigMixin, TemplateView):
                 due__gt=TODAY
             )).count()
 
+        context['graph'] = plotters.plot_sales(
+            datetime.date.today() - datetime.timedelta(days=30),
+            datetime.date.today()
+        )
         return context
         
 

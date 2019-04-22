@@ -7,6 +7,7 @@ import hmac
 import time
 import urllib
 from common_data.models import GlobalConfig
+from latrom import settings
 
 class UserTrackerException(Exception):
     pass
@@ -98,18 +99,21 @@ class LicenseMiddleware(object):
             #check with remote server every three days
             config = GlobalConfig.objects.get(pk=1)
 
-            
-            if config.last_license_check == None or \
-                    (datetime.date.today() - \
-                    config.last_license_check).days > 2:
-                resp = requests.get('http://nakamura9.pythonanywhere.com/validate', params={
-                    'info': urllib.parse.quote(json.dumps({
-                        'customer_id': license['license']['customer'],
-                        'signature': license['signature'],
-                        'hardware_id': config.hardware_id
-                    }))
-                })
 
+            
+            if not settings.DEBUG and  (config.last_license_check == None or \
+                    (datetime.date.today() - \
+                    config.last_license_check).days > 2):
+                try:
+                    resp = requests.get('http://nakamura9.pythonanywhere.com/validate', params={
+                        'info': urllib.parse.quote(json.dumps({
+                            'customer_id': license['license']['customer'],
+                            'signature': license['signature'],
+                            'hardware_id': config.hardware_id
+                        }))
+                    })
+                except requests.ConnectionError:
+                    return HttpResponseRedirect('/base/license-error-page')                    
                 if resp.status_code == 200 and \
                         json.loads(resp.content)['status'] == 'valid':
                     config.last_license_check = datetime.date.today()

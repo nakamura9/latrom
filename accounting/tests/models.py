@@ -255,7 +255,7 @@ class ExpenseModelTests(TestCase):
 
     def test_expense_entry(self):
         self.expense.create_entry()
-        self.assertIsNotNone(self.expense.entry)
+        self.assertIsInstance(self.expense.entry, JournalEntry)
 
     def test_expense_category_string(self):
         self.assertEqual(self.expense.category_string, "Advertising")

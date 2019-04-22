@@ -218,7 +218,6 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                 Tab('Description', 
                     'name',
                     'description',
-                    'condition',
                     'unit_purchase_price',
                     'type'
                     ),

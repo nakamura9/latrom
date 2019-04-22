@@ -20,5 +20,8 @@ class Dashboard( TemplateView):
         context['services'] = Service.objects.filter(is_listed=True).count()
         context['wo_open'] = ServiceWorkOrder.objects.filter(Q(status="request") | Q(status="in-progress")).count()
         context['wo_closed'] = ServiceWorkOrder.objects.filter(Q(status="completed")).count()
+        today = datetime.date.today()
+        start = today - datetime.timedelta(days = 30)
+        ServicePersonUtilizationReport.common_context(context, start, today)
 
         return context

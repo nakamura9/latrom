@@ -187,6 +187,11 @@
                             <h3>Outstanding Payroll Taxes: <br>${{tax}}</h3>
                         </div>
                     </div>
+                    <hr class="my-4">
+                    <h4>Employee Roles</h4>
+                    {% autoescape off %}
+                    {{graph}}
+                    {% endautoescape %}
                 </div>
             </div>
 
@@ -194,17 +199,3 @@
     </div>
 </div>
 {% endblock content %}
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Dropdown
-    </button>
-    <div class="dropdown-menu" aria-labelledby="triggerId">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item disabled" href="#">Disabled action</a>
-        <h6 class="dropdown-header">Section header</h6>
-        <a class="dropdown-item" href="#">Action</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="#">After divider action</a>
-    </div>
-</div>

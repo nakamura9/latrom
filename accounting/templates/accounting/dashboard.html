@@ -161,6 +161,17 @@
                             <h3>Equity: <br>${{equity}}</h3>
                         </div>
                     </div>
+                    <div >
+                        <h4>Expenses Breakdown</h4>
+                        {% autoescape off %}
+                        {{expense_graph}}
+                    </div>
+                    <div>
+                        <h4>Revenue vs Expenses</h4>
+                        {{revenue_graph}}
+                    </div>
+                        {% endautoescape %}
+
                 </div>
             </div>
         </div>

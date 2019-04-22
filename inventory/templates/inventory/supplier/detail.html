@@ -12,110 +12,99 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h4 class="card-title">Supplier Information</h4>
-                    <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual {% endif %} </p>
-                    <p class="card-text">Name: {{object}}</p>
-                    <h5>Contact Details</h5>
-                    <p class="card-text">Email: {{object.email}}</p>
-                    <p class="card-text">Address: {{object.address}}</p>
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h4 class="card-title">Supplier Information</h4>
+                        <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual
+                            {% endif %} </p>
+                        <p class="card-text">Name: {{object}}</p>
+                        <h5>Contact Details</h5>
+                        <p class="card-text">Email: {{object.email}}</p>
+                        <p class="card-text">Address: {{object.address}}</p>
+                        <h4 class="card-title">Supplier Account</h4>
+                        <p class="card-text">Name: {{object.account}}</p>
+                        <p class="card-text">Balance: {{object.account.balance}}</p>
 
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h4 class="card-title">Products</h4>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Last Purchase Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in object.products %}
-                                <tr>
-                                    <td>{{p.name}}</td>
-                                    <td>{{p.description}}</td>
-                                    <td>{{p.unit_purchase_price}}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <h4 class="card-title">Consumables</h4>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Last Purchase Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in object.consumables %}
-                                <tr>
-                                    <td>{{p.name}}</td>
-                                    <td>{{p.description}}</td>
-                                    <td>{{p.unit_purchase_price}}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <h4 class="card-title">Equipment</h4>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Last Purchase Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in object.equipment %}
-                                <tr>
-                                    <td>{{p.name}}</td>
-                                    <td>{{p.description}}</td>
-                                    <td>{{p.unit_purchase_price}}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h4 class="card-title">Supplier Account</h4>
-                    <p class="card-text">Name: {{object.account}}</p>
-                    <p class="card-text">Balance: {{object.account.balance}}</p>
-                    <h4 class="card-title">Recent Transactions</h4>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for t in object.recent_entries %}
-                                <tr>
-                                    <td>{{t.date}}</td>
-                                    <td>{{t.memo | truncatechars:50 }}</td>
-                                    <td>{{t.total_debits}}</td>
-                                    <td>{{t.total_credits}}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Interactions</h4>
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item"><a href="#invoices" class="nav-link active"
+                                    data-toggle="tab">Products</a></li>
+                            <li class="nav-item"><a href="#quotations" class="nav-link" data-toggle="tab">Consumables</a>
+                            </li>
+                            <li class="nav-item"><a href="#credit-notes" class="nav-link" data-toggle="tab">Equipment</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="invoices" class="tab-pane active">
+                                <h4>Products</h4>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Last Purchase Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in object.products %}
+                                        <tr>
+                                            <td>{{p.name}}</td>
+                                            <td>{{p.description}}</td>
+                                            <td>{{p.unit_purchase_price}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="quotations" class="tab-pane">
+                                <h4 class="card-title">Consumables</h4>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Last Purchase Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in object.consumables %}
+                                        <tr>
+                                            <td>{{p.name}}</td>
+                                            <td>{{p.description}}</td>
+                                            <td>{{p.unit_purchase_price}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="credit-notes" class="tab-pane">
+                                <h4>Equipment</h4>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Last Purchase Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in object.equipment %}
+                                        <tr>
+                                            <td>{{p.name}}</td>
+                                            <td>{{p.description}}</td>
+                                            <td>{{p.unit_purchase_price}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

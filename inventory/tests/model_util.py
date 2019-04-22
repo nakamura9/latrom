@@ -7,6 +7,18 @@ class InventoryModelCreator():
     def __init__(self, klass):
         self.cls = klass
 
+    def create_all(self):
+        self.create_supplier()
+        self.create_warehouse()
+        self.create_order()
+        self.create_unit()
+        self.create_inventory_category()
+        self.create_product_component()
+        self.create_product()
+        self.create_warehouse_item()
+        self.create_orderitem()
+        self.create_debit_note()
+
     def create_supplier(self):
         if not hasattr(self.cls, 'organization'):
             CommonModelCreator(self.cls).create_organization()
@@ -141,4 +153,15 @@ class InventoryModelCreator():
             item=self.cls.product,
             quantity=1,
             order_price=10,
+        )
+
+    def create_debit_note(self):
+        if not hasattr(self.cls, 'order'):
+            self.create_order()
+            self.create_orderitem()
+
+        self.cls.debit_note = models.DebitNote.objects.create(
+            date=datetime.date.today(),
+            order=self.cls.order,
+            comments='Comment'
         )

@@ -26,7 +26,7 @@ def plot_sales(start, end):
 
         delta = 1
 
-    y_query = get_queryset_list(start, end, delta)
+    y_query = get_queryset_list(Invoice, start, end, delta)
 
     y = [get_sales_totals(q) for q in y_query]
 
@@ -42,18 +42,18 @@ def plot_sales(start, end):
 def get_sales_totals(queryset):
     total = 0
     for invoice in queryset:
-        total += invoice.total
+        total += invoice.subtotal# no tax
 
     return total
 
-def get_queryset_list(start, end, delta):
+def get_queryset_list(obj, start, end, delta):
     curr_date = start
     prev_date = start
     query_list = []
 
     while curr_date < end:
         curr_date  = curr_date + datetime.timedelta(days=delta)
-        query_list.append(Invoice.objects.filter(
+        query_list.append(obj.objects.filter(
             date__gt=prev_date, date__lte=curr_date
         ))
         prev_date = curr_date

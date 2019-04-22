@@ -91,7 +91,8 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
             
         inv = self.object
         items = request.POST.get("item_list", None)
-        process_data(items, inv)        
+        process_data(items, inv)
+            
         return resp
 
 class InvoiceUpdateView(ContextMixin, UpdateView):
@@ -121,7 +122,7 @@ class InvoiceUpdateView(ContextMixin, UpdateView):
         
         process_data(items, inv)
 
-        if self.object.status in ["invoice", 'paid']:
+        if self.object.status in ["invoice", 'paid'] and not self.object.draft:
             self.object.create_entry()
 
         return resp

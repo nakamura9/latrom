@@ -45,12 +45,15 @@ class ServicePersonUtilizationReport(TemplateView):
 
 
         context['graph'] = chart.render(is_unicode=True)
+        average_time = 0 
+        if len(y) > 0:
+            average_time = sum(y) / len(y)
         context.update({
             'start': start.strftime("%d %B %Y"),
             'end': end.strftime("%d %B %Y"),
             'date': datetime.date.today(),
             'number_employees': len(x),
-            'average_time': sum(y) / len(y)
+            'average_time': average_time
             })
         return context
 
