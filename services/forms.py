@@ -8,7 +8,8 @@ from crispy_forms.layout import (Row,
                                 Column, 
                                 Fieldset,
                                 Submit, 
-                                Layout)
+                                Layout,
+                                HTML)
 from . import models
 from employees.models import Employee
 
@@ -64,6 +65,27 @@ class ServiceTeamForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "members",
         model = models.ServiceTeam
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Team Creation Form',
+                    'name',
+                    'description',
+                    'manager',
+                ),
+                Tab('Service People',
+                    HTML(
+                    """
+                    <div class="col-sm-4"><div id="personnel-list"></div>
+                    """
+                    )
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit')) 
 
 class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
     #create service people in react
@@ -207,6 +229,36 @@ class ServiceProcedureForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "required_equipment", "required_consumables"
         model = models.ServiceProcedure
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Procedure Details',
+                    'name',
+                    'reference',
+                    'author',
+                    'description',
+                ),
+                Tab('procedure steps',
+                    HTML(
+                        """
+                        <div id="procedure-widgets" style="display:block;clear:both">
+                        </div>
+                        """
+                    )
+                ),
+                Tab('Select Equipment And Consumables',
+                    HTML(
+                        """
+            <div id="inventory-widgets" style="display:block;clear:both"></div>
+                        """
+                    )
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class EquipmentReturnForm(BootstrapMixin, forms.Form):

@@ -64,11 +64,11 @@ class CustomerForm(BootstrapMixin, forms.Form):
         ('organization', 'Organization')
         ])
     name=forms.CharField()
-    address=forms.CharField(widget=forms.Textarea, 
+    address=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':10}),
                             required=False)
     billing_address=forms.CharField(widget=forms.Textarea, 
                             required=False)
-    banking_details=forms.CharField(widget=forms.Textarea, 
+    banking_details=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':10}),
                             required=False)
     email= forms.EmailField(required=False)
     organization=forms.ModelChoiceField(Organization.objects.all(), 
@@ -81,6 +81,9 @@ class CustomerForm(BootstrapMixin, forms.Form):
 
     other_details=forms.CharField(widget=forms.Textarea, required=False)
 
+    
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -89,22 +92,24 @@ class CustomerForm(BootstrapMixin, forms.Form):
                 Tab('details',
                     Row(
                         Column('name', css_class='form-group col-6'),
-                        Column('email', css_class='form-group col-6'),
+                        Column('organization', css_class='form-group col-6'),
                     ),
                     Row(
                         Column('address', css_class='form-group col-6'),
                         Column('banking_details', css_class='form-group col-6'),
                     ),
                     Row(
-                        Column('billing_address', css_class='form-group col-4'),
-                        Column('phone_1', css_class='form-group col-4'),
-                        Column('phone_2', css_class='form-group col-4'),
-                    ),
+                        Column(
+                            'phone_1',
+                            'phone_2',
+                            'email', css_class='form group col-6'
+                        ),
+                        Column('billing_address', css_class='form group col-6')
+                    ),                    
                 ),
                 Tab('other',
                     'website',
                     'image',
-                    'organization',
                     'other_details',
                 ),
             )

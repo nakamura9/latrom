@@ -25,6 +25,11 @@ class EventForm(forms.ModelForm, BootstrapMixin):
         model = models.Event
         exclude = ["participants", 'completed', 'completion_time', 'reminder_notification']
 
+        widgets = {
+            'description':forms.Textarea(attrs={'rows':4, 'cols':15}),           
+        }
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
