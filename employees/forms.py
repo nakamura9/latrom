@@ -198,7 +198,7 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
 
 class EmployeePortalForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields=['first_name', 'last_name', 'address', 'email', 'phone']
+        fields=['first_name', 'last_name', 'address', 'email', 'phone', 'date_of_birth', 'gender', 'id_number']
         model = models.Employee
 
 

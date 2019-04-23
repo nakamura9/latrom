@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'wkhtmltopdf',
     'reversion',
     'django_q',
+    'dbbackup',
+    
 ] + USER_APPS
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
@@ -186,3 +188,4 @@ EMAIL_HOST_USER = email_config['email_user']
 EMAIL_HOST_PASSWORD = email_config['email_password']
 EMAIL_USE_TLS = True
 
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'

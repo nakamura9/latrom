@@ -18,3 +18,4 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'assets', 'webpack-stats.json'),
     }
 }
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, 'dbs')}

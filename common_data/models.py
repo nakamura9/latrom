@@ -8,7 +8,9 @@ from django.db import models
 
 from latrom import settings
 import subprocess
-
+from django_q.tasks import schedule
+from django_q.models import Schedule
+from common_data.utilities import db_util
 
 class Person(models.Model):
     first_name = models.CharField(max_length =32)
@@ -116,17 +118,13 @@ class GlobalConfig(SingletonModel):
     email_user = models.CharField(max_length=32, blank=True, default="")
     # TODO secure email password
     email_password = models.CharField(max_length=255, blank=True, default="")
-    business_address = models.TextField(blank=True)
-    logo = models.ImageField(null=True,upload_to="logo/", blank=True)
     document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES, 
         default=1)
     currency = models.ForeignKey('accounting.Currency', blank=True, 
         on_delete=models.SET_NULL, null=True)
-    business_name = models.CharField(max_length=255, blank=True, default="")
+    organization = models.ForeignKey('common_data.organization',
+        on_delete=models.SET_NULL, null=True)
     payment_details = models.TextField(blank=True, default="")
-    contact_details = models.TextField(blank=True, default="")
-    business_registration_number = models.CharField(max_length=32,blank=True, 
-        default="")
     application_version = models.CharField(max_length=16, blank=True, default="0.0.1")
     hardware_id = models.CharField(max_length=255, blank=True, default="")
     last_license_check = models.DateField(null=True)
@@ -142,6 +140,8 @@ class GlobalConfig(SingletonModel):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         
+        schedule('db_util.backup_db', schedule_type=Schedule.MINUTES, minutes=1)
+
         #setup hardware id
         if self.hardware_id == "":
             self.hardware_id = self.generate_hardware_id()
@@ -151,7 +151,6 @@ class GlobalConfig(SingletonModel):
         json_config = os.path.join(settings.BASE_DIR, 'global_config.json')
         with open(json_config, 'w+') as fil:
             fields = copy.deepcopy(self.__dict__)
-            del fields['logo']
             del fields['hardware_id']
             del fields['last_license_check']
             del fields['_state']
@@ -163,3 +162,20 @@ class GlobalConfig(SingletonModel):
         if conf and conf.logo:
             return conf.logo.url
         return ""
+
+    @property
+    def business_address(self):
+        return self.organization.business_address if self.organization else None
+
+    @property
+    def business_name(self):
+        return self.organization.legal_name if self.organization else None
+
+    @property
+    def contact_details(self):
+        return f"Phone: {self.organization.phone}"
+        f"Email: {self.organization.email}" if self.organization else ""
+
+    @property
+    def logo(self):
+        return self.organization.logo if self.organization else None

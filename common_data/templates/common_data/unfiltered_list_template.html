@@ -86,7 +86,7 @@
     //fix in python
     $('input').addClass('form-control');
     $('select').addClass('form-control');
-    $('#id_date').datepicker();
-    $('#id_expected_receipt_date').datepicker();
+    $('#id_date').datepicker({changeYear: true});
+    $('#id_expected_receipt_date').datepicker({changeYear: true});
 </script>
 {% endblock %}

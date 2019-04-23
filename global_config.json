@@ -1,1 +1,1 @@
-{"id": 1, "email_host": "", "email_port": null, "email_user": "", "email_password": "", "business_address": "", "document_theme": 1, "currency_id": null, "business_name": "", "payment_details": "", "contact_details": "", "business_registration_number": "", "application_version": "0.0.1"}
+{"id": 1, "email_host": "", "email_port": null, "email_user": "", "email_password": "", "document_theme": 1, "currency_id": null, "organization_id": 4, "payment_details": "", "application_version": "0.0.1"}

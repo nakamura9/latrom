@@ -5,11 +5,11 @@
     <p class="lead">Personal, Salary and Employee Details</p>
     <hr class="my-2">
     <p class="lead">
-        {% if request.user.is_superuser %}
+        {% if request.user.is_superuser or request.user.employee.is_payroll_officer  %}
 
         <a class="btn btn-primary btn-lg" href="{% url 'employees:employee-update' pk=object.pk %}" role="button">Edit</a>
-        {% elif request.user.employee and request.user.employee.is_payroll_officer %}
-        <a class="btn btn-primary btn-lg" href="{% url 'employees:employee-update' pk=object.pk %}" role="button">Edit</a>
+        {% elif request.user.employee %}
+        <a class="btn btn-primary btn-lg" href="{% url 'employees:employee-portal-update' pk=object.pk %}" role="button">Edit</a>
         {% endif %}
     </p>
 </div>

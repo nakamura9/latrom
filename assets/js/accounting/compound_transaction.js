@@ -85,7 +85,7 @@ class Content extends Component{
             {this.props.contents.map((item, index) => (
                 <tr key={index}>
                     <td>
-                        <button className="btn btn-danger"
+                        <button className="btn btn-danger" type="button"
                             onClick={() =>this.props.removeHandler(index)} >
                             <i className="fas fa-trash"></i>
                         </button>
@@ -188,7 +188,7 @@ class EntryRow extends Component {
                                         "Balanced" : 
                                         "Unbalanced"}</td>
                    <td>
-                        <button className="btn btn-primary" 
+                        <button className="btn btn-primary" type="button" 
                             onClick={this.addHandler.bind(this)}>
                         Insert Transaction
                         </button>

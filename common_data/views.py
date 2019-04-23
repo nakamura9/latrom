@@ -17,7 +17,7 @@ from wkhtmltopdf.views import PDFTemplateView
 from accounting.models import Journal
 from common_data import filters, models
 from common_data.forms import SendMailForm
-from common_data.models import GlobalConfig
+from common_data.models import GlobalConfig, Organization
 from common_data.utilities import (ContextMixin, 
                                     apply_style, 
                                     MultiPageDocument, 
@@ -181,6 +181,45 @@ class GlobalConfigView(ContextMixin,  LoginRequiredMixin, UpdateView):
     extra_context = {
         'title': 'Configure global application features'
     }
+
+    def get_initial(self):
+        if self.object.organization:
+            return {
+                'organization_name': self.object.organization.legal_name,
+                'organization_logo': self.object.logo,
+                'organization_address': \
+                    self.object.organization.business_address,
+                'organization_email': self.object.organization.email,
+                'organization_phone': self.object.organization.phone,
+                'organization_website': self.object.organization.website,
+                'organization_business_partner_number': \
+                    self.object.organization.bp_number
+            }
+
+        return None
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+
+        if self.object.organization:
+            org = self.object.organization
+        else:
+            org = Organization()
+
+        org.legal_name = form.cleaned_data['organization_name'] 
+        org.business_address = form.cleaned_data['organization_address']
+        org.website = form.cleaned_data['organization_website']
+        org.bp_number = \
+            form.cleaned_data['organization_business_partner_number']
+        org.email = form.cleaned_data['organization_email']
+        org.phone = form.cleaned_data['organization_phone']
+        org.logo = form.cleaned_data['organization_logo']
+
+        org.save()
+        self.object.organization = org
+        self.object.save()
+
+        return resp
 
 class AuthenticationView(FormView):
     # TODO add features to use as a plugin for views that require

@@ -14,7 +14,14 @@ from .functions import apply_style
 class ConfigMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context.update(models.GlobalConfig.objects.first().__dict__)
+        config = models.GlobalConfig.objects.first()
+        context.update(config.__dict__)
+        
+        context.update({
+            'logo': config.logo,
+            'business_name': config.business_name,
+            'business_address': config.business_address
+        })
         return apply_style(context)
 
 

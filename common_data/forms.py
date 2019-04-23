@@ -59,14 +59,35 @@ class IndividualForm(forms.ModelForm, BootstrapMixin):
 class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     #not showing password on update view
     #email_password = forms.CharField(widget=forms.PasswordInput)
+    organization_name = forms.CharField()
+    organization_logo =forms.ImageField(required=False)
+    organization_email = forms.EmailField(required=False)
+    organization_phone = forms.CharField(required=False)
+    organization_address = forms.CharField(
+        widget=forms.Textarea(attrs={'rows':4}))
+    organization_website = forms.CharField(required=False)
+    organization_business_partner_number = forms.CharField(required=False)
+    use_backups = forms.BooleanField(label="Use backups?", required=False)
+    backup_frequency=forms.ChoiceField(choices=[
+        ('D', 'Daily'),
+        ('M', 'Monthly'),
+        ('W', 'Weekly')
+        ], required=False)
+    backup_location_type= forms.ChoiceField(
+            widget=forms.RadioSelect, choices=[
+                ('local', 'Local File System'),
+                ('network', 'Network Storage via FTP')
+                ], required=False)
+    backup_location =forms.CharField(required=False)
+    
     class Meta:
-        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency',
+        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization'
         model = models.GlobalConfig
 
         widgets = {
             'business_address':forms.Textarea(attrs={'rows':4, 'cols':15}),
             'contact_details':forms.Textarea(attrs={'rows':4, 'cols':15}),
-            'payment_details':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            'payment_details':forms.Textarea(attrs={'rows':8, 'cols':15}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -77,20 +98,42 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('Business Details',
 
-                    'business_name',
-                    'business_address',
-                    'logo',
-                    'document_theme',
-                    'currency',
-                    'payment_details',
-                    'contact_details',
-                    'business_registration_number'),
+                    'organization_name',
+                    'organization_address',
+                    'organization_business_partner_number',
+                    Row(
+                        Column('organization_logo',
+                            css_class='form-group col-6'),
+                        Column(
+                            HTML("""
+                        <img id="id-logo-preview" width="300" height="200" class="img" src="" alt="logo image" />"""),
+                            css_class='form-group col-6')
+                    ),
+                    Row(
+                    
+                        Column('payment_details', css_class='form-group col-6'),
+                        Column(
+                            Row(Column('organization_email', 
+                                css_class='form-group col-12')),
+                            Row(Column('organization_phone', 
+                                css_class='form-group col-12')),
+                            Row(Column('organization_website', 
+                                css_class='form-group col-12')),
+                            css_class='form-group col-6'
+                        )
+                    )
+                    ),
                 Tab('Email Config',
                     'email_host',
                     'email_port',
                     'email_user',
                     'email_password',
-                
+                ),
+                Tab('Backups',
+                    'use_backups',
+                    'backup_frequency',
+                    'backup_location_type',
+                    'backup_location'
                 )
             )
         )
