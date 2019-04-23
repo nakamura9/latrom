@@ -1,4 +1,3 @@
-
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Fieldset, 
@@ -89,6 +88,7 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
             )
         )
         self.helper.add_input(Submit('submit', 'Submit'))
+
 class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "last_created_date", 'entry'
@@ -208,7 +208,29 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
         exclude="posted_to_ledger", "adjusted"
         model = models.JournalEntry
 
+        widgets = {
+            'memo':forms.Textarea(attrs={'rows':4, 'cols':15}),           
+        }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('date', css_class='form group col-10'),
+                Column('draft', css_class='form group col-2'),
+            ),
+            'memo',
+            'journal',
+            'created_by',
+            HTML(
+                """
+                <div id="transaction-table">
+            </div>
+            """
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
