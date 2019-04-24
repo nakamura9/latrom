@@ -21,13 +21,11 @@ class EventForm(forms.ModelForm, BootstrapMixin):
     json_participants = forms.CharField(
         widget=forms.HiddenInput
         )
+    label  =forms.CharField(required=True)
+    description  =forms.CharField(required=True, widget=forms.Textarea(attrs={'rows':4, 'cols':15}))
     class Meta:
         model = models.Event
         exclude = ["participants", 'completed', 'completion_time', 'reminder_notification']
-
-        widgets = {
-            'description':forms.Textarea(attrs={'rows':4, 'cols':15}),           
-        }
 
 
     def __init__(self, *args, **kwargs):
