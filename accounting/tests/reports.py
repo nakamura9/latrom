@@ -52,6 +52,8 @@ class ReportTests(TestCase):
 
         InventoryModelCreator(cls).create_all()
         InvoicingModelCreator(cls).create_all()
+        cls.product.unit_purchase_price = 0
+        cls.product.save()
 
         cls.asset = Asset.objects.create(
             name='Test Asset',
@@ -77,63 +79,72 @@ class ReportTests(TestCase):
         self.customer_org.account.balance = D(0)
         self.customer_org.account.save()
 
+
     def balanceSheetInBalance(self):
         '''Assets - liabilities = equity'''
 
         context = BalanceSheet.common_context({})
         print(f"Balance Sheet: {context['net_assets']} {context['equity_total']}")
         return context['net_assets'] == context['equity_total']  
-
+    
     def trialBalanceInBalance(self):
         context = TrialBalance.common_context({})
         print(f"Trial balance: {context['total_debit']}"
             f" {context['total_credit']}")
         return context['total_debit'] == context['total_credit']
 
+    def test_initial_status(self):
+        self.assertTrue(self.trialBalanceInBalance())
+        self.assertTrue(self.balanceSheetInBalance())
+
+    
     def test_sales_invoice(self):
         print("Testing Invoice")
         print('invoice total ', self.invoice.total)
-        #self.invoice.create_entry()
+        self.invoice.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
-
+    
+    
     def test_purchase_order(self):
         print("Testing Purchase Order")
-        #self.order.create_entry()
+        self.order.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
+    
     def test_create_asset(self):
         print("Testing Assets")
-        #self.asset.create_entry()
+        self.asset.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
+    
     def test_record_expense(self):
         print("Testing Recording expense")
-        #self.expense.create_entry()
+        self.expense.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
     def test_create_payslip(self):
 
         print("Testing Payslip")
-        #self.slip.create_entry()
+        self.slip.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
     def test_create_invoice_payment(self):
         print("Testing Payslip")
         
-        #self.payment.create_entry()
+        self.payment.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
     def test_credit_note(self):
         print("Testing Credit Note")
         
-        #self.credit_note.create_entry()
+        self.credit_note.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
@@ -141,7 +152,7 @@ class ReportTests(TestCase):
     def test_debit_note(self):
         print("Testing Debit Note")
         
-        #self.debit_note.create_entry()
+        self.debit_note.create_entry()
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
@@ -158,7 +169,7 @@ class ReportTests(TestCase):
             date=TODAY
         )
 
-        #expense.create_entry()
+        expense.create_entry()
 
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
@@ -188,3 +199,4 @@ class ReportTests(TestCase):
         self.assertTrue(self.trialBalanceInBalance())
         self.assertTrue(self.balanceSheetInBalance())
 
+    

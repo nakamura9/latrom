@@ -121,6 +121,7 @@ class PlannerViewTests(TestCase):
             data={
                 'owner': 1,
                 'date': TODAY,
+                'label': 'caleb',
                 'reminder': '0:15:00',
                 'start_time': '06:00:00', 
                 'end_time': '06:00:00',
@@ -132,6 +133,7 @@ class PlannerViewTests(TestCase):
                     'pk': '1'
                 }]))
             })
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_event_update_page(self):
@@ -143,6 +145,7 @@ class PlannerViewTests(TestCase):
             data={
                 'owner': 1,
                 'date': TODAY,
+                'label': 'caleb',
                 'reminder': '0:15:00',
                 'start_time': '06:00:00', 
                 'end_time': '06:00:00',

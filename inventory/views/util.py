@@ -63,4 +63,4 @@ class InventoryService(object):
                                     f"by the system. Warehouse location " 
                                     f"{warehouse.name} is scheduled to have"
                                     f"its inventory checked.",
-                                    owner=warehouse.inventory_controller.user)
+                                    owner=warehouse.inventory_controller.employee.user)

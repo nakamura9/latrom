@@ -165,6 +165,7 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
         exclude="active", 'user','last_leave_day_increment'
         model = models.Employee
 
+    date_of_birth = forms.DateField(required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         

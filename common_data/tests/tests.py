@@ -194,8 +194,11 @@ class ViewTests(TestCase):
         resp = self.client.post('/base/config/1',
             data={
                 'email_user': 'username',
-                'document_theme': 1,
+                'backup_frequency': 'D',
+                'organization_name': 'latrom',
+                'organization_address': 'somewhere'
             })
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_api_current_user(self):

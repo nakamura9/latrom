@@ -14,17 +14,13 @@
         {% if related_links %}
         <p>Actions</p>
             <script>
-                function linkClickHandler(link){
-                    /*
-                    window.open(link ,'popup','width=900,height=480');
-                    $('#refresher-button').css('display', 'block');
-                    return false;
-                    */
-                   $('#popup-frame').attr('src', link);
-                   var modal = document.getElementById('id-my-modal');
-                    modal.style.display = 'block';
-                    $('#refresher-button').css('display', 'block');
-                }   
+            function linkClickHandler(link){
+      
+        $('#popup-frame').attr('src', link);
+        var modal = document.getElementById('id-my-modal');
+        modal.style.display = 'block';
+        $('#refresher-button').css('display', 'block');
+    }
             </script>
             <div class="btn btn-group">
                     {% for item in related_links %}

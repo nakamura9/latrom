@@ -14,6 +14,10 @@ from inventory import models
 from django.contrib.auth.models import User
 
 from .models import create_test_inventory_models
+from .model_util import InventoryModelCreator
+from employees.tests.model_util import EmployeeModelCreator
+from inventory import models
+from employees.models import Employee
 
 TODAY = datetime.date.today()
         
@@ -43,6 +47,7 @@ class CommonViewTests(TestCase):
         create_test_user(cls)
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
+        EmployeeModelCreator(cls).create_employee()
         
         
     def setUp(self):
@@ -137,10 +142,11 @@ class CommonViewTests(TestCase):
         resp = self.client.post(reverse(
             'inventory:create-inventory-controller'), 
                 data={
-                    'employee': 1,
+                    'employee': self.employee.pk,
                     'can_authorize_equipment_requisitions': True,
                     'can_authorize_consumables_requisitions': True
                 })
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_inventory_controller_list_page(self):
@@ -163,6 +169,7 @@ class InventoryManagementViewTests(TestCase):
         create_test_user(cls)
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
+        InventoryModelCreator(cls).create_inventory_controller()
 
         
     def setUp(self):
@@ -189,6 +196,7 @@ class InventoryManagementViewTests(TestCase):
                         'receiving_location': "1 - some location"
                 }]))
             })
+        
         self.assertEqual(resp.status_code,  302)
 
     def test_get_goods_received_page(self):
@@ -248,6 +256,7 @@ class InventoryManagementViewTests(TestCase):
 
 
             })
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_inventory_scrapping_history_page(self):
@@ -443,7 +452,6 @@ class OrderViewTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client
-
         cls.ORDER_DATA = {
             'expected_receipt_date' : TODAY,
             'date' : TODAY,
@@ -461,7 +469,7 @@ class OrderViewTests(TestCase):
                 'unit': "1 - unit",
                 'order_price': 10
                 }])),
-            'issuing_inventory_controller': User.objects.create_user(username="someone").pk
+            'issuing_inventory_controller': 1
         }
 
     @classmethod
@@ -470,6 +478,8 @@ class OrderViewTests(TestCase):
         create_test_user(cls)
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
+        InventoryModelCreator(cls).create_inventory_controller()
+
 
         
     def setUp(self):
@@ -549,7 +559,7 @@ class OrderViewTests(TestCase):
         resp = self.client.post("/inventory/order-expense/1", data={
             'date': datetime.date.today(),
             'description': 'Some description',
-            'recorded_by': 2,
+            'recorded_by': 1,
             'amount': 10,
             'reference': "123"
         })
@@ -652,6 +662,7 @@ class WarehouseViewTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client
+
         cls.WAREHOUSE_DATA = {
             'name': 'Test Name',
             'address': 'TEst Address',
@@ -679,6 +690,8 @@ class WarehouseViewTests(TestCase):
         create_test_user(cls)
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
+        InventoryModelCreator(cls).create_inventory_controller()
+
 
 
 
@@ -692,6 +705,7 @@ class WarehouseViewTests(TestCase):
     def test_post_warehouse_create_page(self):
         resp = self.client.post(reverse('inventory:warehouse-create'),
             data=self.WAREHOUSE_DATA)
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_warehouse_update_page(self):
@@ -702,6 +716,8 @@ class WarehouseViewTests(TestCase):
     def test_post_warehouse_update_page(self):
         resp = self.client.post(reverse('inventory:warehouse-update',
             kwargs={'pk': 1}), data=self.WAREHOUSE_DATA)
+        
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_warehouse_list_page(self):
@@ -781,6 +797,7 @@ class TransferViewTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client
+
         cls.TRANSFER_DATA = {
             'source_warehouse': 1,
             'date': TODAY.strftime('%m/%d/%Y'),
@@ -808,6 +825,8 @@ class TransferViewTests(TestCase):
         create_test_user(cls)
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
+        InventoryModelCreator(cls).create_inventory_controller()
+
 
 
     def setUp(self):
@@ -821,6 +840,7 @@ class TransferViewTests(TestCase):
     def test_post_create_transfer_order_page(self):
         resp = self.client.post(reverse('inventory:create-transfer-order',
             kwargs={'pk': 1}), data=self.TRANSFER_DATA)
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_transfer_order_list_page(self):

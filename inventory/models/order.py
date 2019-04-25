@@ -67,7 +67,7 @@ class Order(SoftDeletionModel):
     status = models.CharField(max_length=24, 
         choices=ORDER_STATUS_CHOICES)
     received_to_date = models.FloatField(default=0.0)
-    issuing_inventory_controller = models.ForeignKey('auth.user', 
+    issuing_inventory_controller = models.ForeignKey('inventory.InventoryController', 
         default=1, on_delete=models.SET_NULL, null=True)
     entry = models.ForeignKey('accounting.JournalEntry',
          blank=True, on_delete=models.SET_NULL, null=True, related_name="order_entry")
@@ -169,7 +169,7 @@ class Order(SoftDeletionModel):
                     date=self.date,
                     memo = self.notes,
                     journal = Journal.objects.get(pk=4),
-                    created_by = self.issuing_inventory_controller,
+                    created_by = self.issuing_inventory_controller.employee.user,
                     draft=False
                 )
 

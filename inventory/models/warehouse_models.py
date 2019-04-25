@@ -20,10 +20,9 @@ class WareHouse(models.Model):
     name = models.CharField(max_length=128)
     address = models.TextField()
     description = models.TextField(blank=True)
-    inventory_controller = models.ForeignKey('employees.Employee', 
+    inventory_controller = models.ForeignKey('inventory.InventoryController', 
         on_delete=models.SET_NULL, null=True, 
-        blank=True,
-        limit_choices_to=Q(user__isnull=False))
+        blank=True)
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)

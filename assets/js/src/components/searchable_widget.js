@@ -61,6 +61,10 @@ class SearchableWidget extends Component {
         
     }
 
+    showOptions = () =>{
+        this.setState({optionsHidden: false});
+    }
+
     clearValue = () =>{
         this.setState({
             currValue: "",
@@ -109,12 +113,14 @@ class SearchableWidget extends Component {
                     validChoice={this.state.selectedValue}
                     handleChange={this.handleChange}
                     toggleOptions={this.toggleOptions}
+                    showOptions={this.showOptions}
                     bordered={this.props.bordered}/>
                    
                 <OptionsWidget 
                     choices={this.state.filteredChoices}
                     onSelectValue={this.onSelectValue}
-                    hidden={this.state.optionsHidden}/>
+                    hidden={this.state.optionsHidden}
+                    newLink={this.props.newLink}/>
             </div>
         );
     }
@@ -122,6 +128,11 @@ class SearchableWidget extends Component {
 
 
 class TextBoxWidget extends Component{
+    componentDidMount(){
+        let input = document.getElementById(`${this.props.idRoot}-input`);
+        input.addEventListener('focus', this.props.showOptions)
+    }
+
     render(){
         let icon;
         if(this.props.validChoice === ""){
@@ -136,6 +147,7 @@ class TextBoxWidget extends Component{
             backgroundColor: "white", 
             borderRadius: "2px"}}>
         <input 
+            id={`${this.props.idRoot}-input`}
             type="text"
             value={this.props.currValue}
             onChange={this.props.handleChange}
