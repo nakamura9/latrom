@@ -18,6 +18,7 @@ from invoicing.models import (InvoiceLine,
                               ProductLineComponent)
 from employees.models import Employee
 from django.contrib.auth.models import User
+from inventory.tests.model_util import InventoryModelCreator
 TODAY = datetime.date.today()
 
 
@@ -36,6 +37,7 @@ def create_test_inventory_models(cls):
             account = cls.account_c
             )
 
+    InventoryModelCreator(cls).create_inventory_controller()
     cls.unit = models.UnitOfMeasure.objects.create(
             name='Test Unit',
             description='Test description'
@@ -118,7 +120,7 @@ def create_test_inventory_models(cls):
             tracking_number = '34234',
             notes = 'Test Note',
             status = 'draft',
-            issuing_inventory_controller=User.objects.first()
+            issuing_inventory_controller=cls.controller
         )
     cls.order_item = models.OrderItem.objects.create(
             order=cls.order,
@@ -135,7 +137,7 @@ def create_test_inventory_models(cls):
 
     cls.check = models.InventoryCheck.objects.create(
         date=TODAY,
-        adjusted_by=Employee.objects.first(),
+        adjusted_by=cls.controller,
         warehouse=cls.warehouse,
         comments="Nothing new"
     )
@@ -150,8 +152,8 @@ def create_test_inventory_models(cls):
     cls.transfer = models.TransferOrder.objects.create(
         date = TODAY,
         expected_completion_date = TODAY,
-        issuing_inventory_controller = Employee.objects.first(),
-        receiving_inventory_controller = Employee.objects.first(),
+        issuing_inventory_controller = cls.controller,
+        receiving_inventory_controller = cls.controller,
         actual_completion_date = TODAY,
         source_warehouse = cls.warehouse,
         receiving_warehouse = cls.warehouse,
@@ -163,7 +165,7 @@ def create_test_inventory_models(cls):
     )
     cls.scrap = models.InventoryScrappingRecord.objects.create(
         date=TODAY,
-        controller=Employee.objects.first(),
+        controller=cls.controller,
         warehouse=cls.warehouse
     )
     cls.scrap_line = models.InventoryScrappingRecordLine.objects.create(
@@ -177,7 +179,7 @@ def create_test_inventory_models(cls):
             order=cls.order,
             comments= "comment"
         )
-    
+
 
 class CommonModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json']
@@ -192,12 +194,7 @@ class CommonModelTests(TestCase):
         obj.save()
     
     def test_create_invetory_controller(self):
-        obj = models.InventoryController.objects.create(
-            employee = Employee.objects.first(),
-            can_authorize_equipment_requisitions = True,
-            can_authorize_consumables_requisitions = True
-        )
-        self.assertIsInstance(obj, models.InventoryController)
+        self.assertIsInstance(self.controller, models.InventoryController)
     
     def test_create_supplier(self):
         ind = Individual.objects.create(
@@ -440,7 +437,7 @@ class ItemManagementModelTests(TestCase):
     def test_create_stock_receipt(self):
         obj = models.StockReceipt.objects.create(
             order=self.order,
-            received_by=Employee.objects.first(),
+            received_by=self.controller,
             receive_date = TODAY,
             note = "Some note",
         )
@@ -451,7 +448,7 @@ class ItemManagementModelTests(TestCase):
     def test_create_inventory_check(self):
         obj = models.InventoryCheck.objects.create(
             date=TODAY,
-            adjusted_by=Employee.objects.first(),
+            adjusted_by=self.controller,
             warehouse=self.warehouse,
             comments="Nothing new"
         )
@@ -494,8 +491,8 @@ class ItemManagementModelTests(TestCase):
         obj = models.TransferOrder.objects.create(
             date = TODAY,
             expected_completion_date = TODAY,
-            issuing_inventory_controller = Employee.objects.first(),
-            receiving_inventory_controller = Employee.objects.first(),
+            issuing_inventory_controller = self.controller,
+            receiving_inventory_controller = self.controller,
             actual_completion_date = TODAY,
             source_warehouse = self.warehouse,
             receiving_warehouse = self.warehouse,
@@ -519,7 +516,7 @@ class ItemManagementModelTests(TestCase):
     def test_create_inventory_scrapping_record(self):
         obj = models.InventoryScrappingRecord.objects.create(
             date=TODAY,
-            controller=Employee.objects.first(),
+            controller=self.controller,
             warehouse=self.warehouse
         )
         self.assertIsInstance(obj, models.InventoryScrappingRecord)
@@ -596,7 +593,11 @@ class ItemModelTests(TestCase):
         self.assertEqual(self.product.unit_sales_price, 10)
 
     def test_product_stock_value(self):
+        self.order.status = 'order'
+        self.order.save()
         self.assertEqual(self.product.stock_value, 10)
+        self.order.status = 'draft'
+        self.order.save()
 
     def test_sales_to_date(self):
         self.assertEqual(self.product.product_component.sales_to_date, D(10.0))
@@ -615,7 +616,6 @@ class ItemModelTests(TestCase):
         obj.delete()
 
  
-
     def test_create_consumable(self):
         obj = models.InventoryItem.objects.create(
             name='test comsumable',
@@ -652,7 +652,7 @@ class WarehouseModelTests(TestCase):
             name="Test Name",
             address="Test address",
             description="test description",
-            inventory_controller=Employee.objects.first()
+            inventory_controller=self.controller
         )
         self.assertIsInstance(obj, models.WareHouse)
         obj.delete()

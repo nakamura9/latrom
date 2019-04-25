@@ -1,7 +1,7 @@
 {
     "python.pythonPath": "C:\\Python37\\python.exe",
     "git.ignoreLimitWarning": true,
-    "python.jediEnabled": true,
+    "python.jediEnabled": false,
     "python.linting.enabled": true,
     "emmet.includeLanguages": {"django-template": "html"},
     "files.associations": {

@@ -103,65 +103,32 @@
                     <hr class="my-4" />
 
                     <div class="card-deck">
-                        {% if use_product_inventory %}
-                        <div class="card bg-primary text-white">
+                    <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Products</h4>
+                                <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Inventory</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:product-create' %}">Create New Product</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:product-list' %}">Manage Product Inventory</a>
-                                    </li>
+                                    {% if use_product_inventory %}
+                                   <li class="list-group-item">
+                                        <a href="{% url 'inventory:product-list' %}">Manage Products</a>
+                                    </li>            
+                                    {% endif %}
+                                    {% if use_equipment_inventory %}
+                                        <li class="list-group-item">
+                                            <a href="{% url 'inventory:equipment-list' %}">Manage Equipment</a>
+                                        </li>
+                                    {% endif %}
+                                    {% if use_consumables_inventory %}
+                                        <li class="list-group-item">
+                                        <a href="{% url 'inventory:consumable-list' %}">Manage Consumables</a>
+                                        </li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>
-                        {% endif %}
-                        {% if use_equipment_inventory %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-tools"></i> Equipment</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:equipment-create' %}">Add New Equipment</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:equipment-list' %}">Manage Equipment Inventory</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if use_consumables_inventory %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-hand-holding"></i> Consumables</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:consumable-create' %}">Create New Consumable</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:consumable-list' %}">Manage Consumable Inventory</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <hr class="my-4" />
-
-                    <div class="card-deck">
-                        {% if use_equipment_inventory or use_consumables_inventory %}
+                    
+                    {% if use_equipment_inventory or use_consumables_inventory %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
                                 <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>

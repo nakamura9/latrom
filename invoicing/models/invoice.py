@@ -526,7 +526,7 @@ class ProductLineComponent(models.Model):
         self.save()
 
     def set_value(self):
-        self.value = self.product.stock_value * D(self.quantity)
+        self.value = self.product.unit_value * D(self.quantity)
         self.save()
 
     @property
@@ -569,7 +569,7 @@ class ProductLineComponent(models.Model):
             self.returned = True
 
         if self.value == D(0.0) and \
-                self.product.product_component.stock_value > D(0.0):
+                self.product.product_component.unit_value > D(0.0):
             self.set_value()  
         if self.unit_price == D(0.0):
             self.unit_price = self.product.product_component.unit_sales_price

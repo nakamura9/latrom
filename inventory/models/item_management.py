@@ -34,7 +34,7 @@ class OrderPayment(models.Model):
                     if comments == "" else comments,
                 date=self.date,
                 journal =Journal.objects.get(pk=4),
-                created_by = self.order.issuing_inventory_controller,
+                created_by = self.order.issuing_inventory_controller.employee.user,
                 draft=False
             )
         
@@ -63,11 +63,10 @@ class StockReceipt(models.Model):
     '''
     order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, 
         null=True)
-    received_by = models.ForeignKey('employees.Employee', 
+    received_by = models.ForeignKey('inventory.InventoryController', 
         on_delete=models.SET_NULL, 
         null=True,
-        default=1, 
-        limit_choices_to=Q(user__isnull=False))
+        default=1)
     receive_date = models.DateField()
     note =models.TextField(blank=True, default="")
     fully_received = models.BooleanField(default=False)
@@ -85,10 +84,9 @@ class StockReceipt(models.Model):
 #might need to rename
 class InventoryCheck(models.Model):
     date = models.DateField()
-    adjusted_by = models.ForeignKey('employees.Employee', 
+    adjusted_by = models.ForeignKey('inventory.InventoryController', 
         on_delete=models.SET_NULL, 
-        null=True, 
-        limit_choices_to=Q(user__isnull=False) )
+        null=True )
     warehouse = models.ForeignKey('inventory.WareHouse', 
         on_delete=models.SET_NULL, 
         null=True )
@@ -133,13 +131,11 @@ class StockAdjustment(models.Model):
 class TransferOrder(models.Model):
     date = models.DateField()
     expected_completion_date = models.DateField()
-    issuing_inventory_controller = models.ForeignKey('employees.Employee',
+    issuing_inventory_controller = models.ForeignKey('inventory.InventoryController',
         related_name='issuing_inventory_controller', 
-        on_delete=models.SET_NULL, null=True,
-        limit_choices_to=Q(user__isnull=False))
-    receiving_inventory_controller = models.ForeignKey('employees.Employee', 
-        on_delete=models.SET_NULL, null=True, 
-        limit_choices_to=Q(user__isnull=False))
+        on_delete=models.SET_NULL, null=True)
+    receiving_inventory_controller = models.ForeignKey('inventory.InventoryController', 
+        on_delete=models.SET_NULL, null=True)
     actual_completion_date =models.DateField(null=True)#provided later
     source_warehouse = models.ForeignKey('inventory.WareHouse',
         related_name='source_warehouse', on_delete=models.SET_NULL, null=True,)
@@ -187,9 +183,8 @@ class TransferOrderLine(models.Model):
 
 class InventoryScrappingRecord(models.Model):
     date = models.DateField()
-    controller = models.ForeignKey('employees.Employee', 
-        on_delete=models.SET_NULL, null=True,
-        limit_choices_to=Q(user__isnull=False))
+    controller = models.ForeignKey('inventory.InventoryController', 
+        on_delete=models.SET_NULL, null=True)
     warehouse = models.ForeignKey('inventory.WareHouse', on_delete=models.SET_NULL, null=True)
     comments = models.TextField(blank=True)
 

@@ -10,13 +10,13 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-4">
-                <div class="card text-white bg-primary">
+                <div class="card shadow">
                         <div class="card-body">
                           <h4 class="card-title">Credit Note Form</h4>
                           <form action="" method="POST">
                                 {% csrf_token %}
                                 {{form.as_p}}
-                                <button class="btn" type="submit">Submit</button>
+                                <button class="btn btn-primary" type="submit">Submit</button>
                           </form>
                           
                         </div>

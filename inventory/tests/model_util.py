@@ -1,8 +1,9 @@
 from common_data.tests.model_util import CommonModelCreator
 from accounting.tests.model_util import AccountingModelCreator
+from employees.tests.model_util import EmployeeModelCreator
 from inventory import models 
 import datetime
-
+#change order status from order
 class InventoryModelCreator():
     def __init__(self, klass):
         self.cls = klass
@@ -72,7 +73,6 @@ class InventoryModelCreator():
         
         if not hasattr(self.cls, 'supplier'):
             self.create_supplier()
-
         self.cls.product = models.InventoryItem.objects.create(
             name='test name',
             unit=self.cls.unit,
@@ -123,8 +123,8 @@ class InventoryModelCreator():
         if not hasattr(self.cls, 'warehouse'):
             self.create_warehouse()
 
-        if not hasattr(self.cls, 'user'):
-            CommonModelCreator(self.cls).create_user()
+        if not hasattr(self.cls, 'controller'):
+            self.create_inventory_controller()
 
         self.cls.order = models.Order.objects.create(
             expected_receipt_date = datetime.date.today(),
@@ -134,8 +134,8 @@ class InventoryModelCreator():
             ship_to = self.cls.warehouse,
             tracking_number = '34234',
             notes = 'Test Note',
-            status = 'order',
-            issuing_inventory_controller=self.cls.user
+            status = 'draft',
+            issuing_inventory_controller=self.cls.controller
         )
 
     def create_orderitem(self):
@@ -165,3 +165,14 @@ class InventoryModelCreator():
             order=self.cls.order,
             comments='Comment'
         )
+
+    def create_inventory_controller(self):
+        if hasattr(self.cls, 'controller'):
+            return self.cls.controller
+        if not hasattr(self.cls, 'employee'):
+            EmployeeModelCreator(self.cls).create_employee()
+
+        self.cls.controller = models.InventoryController.objects.create(
+            employee=self.cls.employee
+        )
+        return self.cls.controller

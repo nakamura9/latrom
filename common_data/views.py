@@ -27,8 +27,8 @@ from rest_framework.generics import RetrieveAPIView, ListAPIView
 from common_data import serializers 
 from django.contrib.auth.models import User
 from . import forms
-
-
+from django.apps import apps
+from formtools.wizard.views import SessionWizardView
 
 class PaginationMixin(object):
     '''quick and dirty mixin to support pagination on filterviews '''
@@ -372,3 +372,18 @@ class PDFDetailView(PDFTemplateView):
         context['object'] = self.model.objects.get(pk=self.kwargs['pk'])
         context.update(self.context)
         return context
+
+def get_model_latest(request, app=None, model_name=None):
+    try:
+        model = apps.get_model(app_label=app, model_name=model_name)
+    except:
+        return JsonResponse({'status': 'failed'})
+
+    latest = model.objects.latest('pk')
+    return JsonResponse({latest.pk: str(latest)})
+
+
+class ConfigWizard(SessionWizardView):
+    template_name = os.path.join('common_data', 'wizard.html')
+    def done(self, form_list, **kwargs):
+        pass

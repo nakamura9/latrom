@@ -4,17 +4,17 @@ import datetime
 class AccountingModelCreator():
     def __init__(self, klass):
         self.cls = klass
-
+    #changed opening balances from 100 to 0
     def create_accounts(self):
         self.cls.account_c = Account.objects.create(
             name= 'Model Test Credit Account',
-            balance=100,
+            balance=0,
             type='asset',
             description='Some description'
         )
         self.cls.account_d = Account.objects.create(
             name= 'Model Test Debit Account',
-            balance=100,
+            balance=0,
             type='liability',
             description='Some description'
         )

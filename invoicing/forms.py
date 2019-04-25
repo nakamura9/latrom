@@ -47,12 +47,6 @@ class SalesConfigForm(forms.ModelForm, BootstrapMixin):
                 'next_quotation_number',
                 'include_units_in_sales_invoice',
                 'include_shipping_address',
-                ),
-            Tab('Invoice Types',
-                'use_sales_invoice',
-                'use_combined_invoice',
-                'use_bill_invoice',
-                'use_service_invoice',
                 )
         ))
 

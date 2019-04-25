@@ -188,8 +188,9 @@ class ProductComponent(models.Model):
     @property 
     def unit_value(self):
         '''the value of inventory on a per item basis'''
-        if self.inventoryitem.quantity  == 0:
-            return 0
+        if self.inventoryitem.quantity  == 0 or self.stock_value == 0:
+            print('unit puchase price ', self.inventoryitem.unit_purchase_price)
+            return self.inventoryitem.unit_purchase_price
         return self.stock_value / D(self.inventoryitem.quantity)
 
     @property
@@ -208,7 +209,7 @@ class ProductComponent(models.Model):
 
         #getting the latest orderitems in order of date ordered
         order_items = inventory.models.OrderItem.objects.filter(
-            item=self.parent).order_by("order__date").reverse()
+            item=self.parent, order__status="order").order_by("order__date").reverse()
 
         #iterate over items
         for item in order_items:

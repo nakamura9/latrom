@@ -112,23 +112,58 @@ class GlobalConfig(SingletonModel):
         (4, 'Verdant'),
         (5, 'Warm')
     ]
+
+    BACKUP_FREQUENCY_CHOICES = [
+        ('D', 'Daily'),
+        ('M', 'Monthly'),
+        ('W', 'Weekly')
+        ]
     # TODO personalize email settings for each user
     email_host = models.CharField(max_length=32, blank=True, default="")
     email_port = models.IntegerField(null=True, blank=True)
     email_user = models.CharField(max_length=32, blank=True, default="")
     # TODO secure email password
     email_password = models.CharField(max_length=255, blank=True, default="")
-    document_theme = models.IntegerField(choices= DOCUMENT_THEME_CHOICES, 
+    document_theme = models.IntegerField(
+        choices= DOCUMENT_THEME_CHOICES, 
         default=1)
-    currency = models.ForeignKey('accounting.Currency', blank=True, 
-        on_delete=models.SET_NULL, null=True)
-    organization = models.ForeignKey('common_data.organization',
-        on_delete=models.SET_NULL, null=True)
-    payment_details = models.TextField(blank=True, default="")
-    application_version = models.CharField(max_length=16, blank=True, default="0.0.1")
-    hardware_id = models.CharField(max_length=255, blank=True, default="")
+    currency = models.ForeignKey(
+        'accounting.Currency', 
+        blank=True, 
+        on_delete=models.SET_NULL, 
+        null=True)
+    organization = models.ForeignKey(
+        'common_data.organization',
+        on_delete=models.SET_NULL, 
+        null=True)
+    payment_details = models.TextField(
+        blank=True, 
+        default="")
+    application_version = models.CharField(
+        max_length=16, 
+        blank=True, 
+        default="0.0.1")
+    hardware_id = models.CharField(
+        max_length=255, 
+        blank=True, 
+        default="")
     last_license_check = models.DateField(null=True)
-
+    use_backups = models.BooleanField(
+        blank=True,
+        default=False)
+    backup_frequency = models.CharField(
+        max_length=32, 
+        choices=BACKUP_FREQUENCY_CHOICES, 
+        default="D")
+    backup_location_type = models.CharField(
+        blank=True, 
+        default="",
+        max_length=255)
+    backup_location = models.CharField(
+        default="", 
+        blank=True,
+        max_length=255)
+    
     def generate_hardware_id(self):
         result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)
         _id = result.stdout.decode('utf-8')
@@ -138,9 +173,21 @@ class GlobalConfig(SingletonModel):
         return id    
 
     def save(self, *args, **kwargs):
+        
         super().save(*args, **kwargs)
         
-        schedule('db_util.backup_db', schedule_type=Schedule.MINUTES, minutes=1)
+        has_schedule = Schedule.objects.filter(
+                func='db_util.backup_db', 
+                schedule_type=self.backup_frequency).exists()
+        if not has_schedule and \
+                self.use_backups:
+            schedule('db_util.backup_db', schedule_type=self.backup_frequency)
+        
+        elif has_schedule and not self.use_backups:
+            Schedule.objects.get(
+                func='db_util.backup_db', 
+                schedule_type=self.backup_frequency).delete()
+
 
         #setup hardware id
         if self.hardware_id == "":

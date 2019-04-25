@@ -171,6 +171,7 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                 'address':forms.Textarea(attrs={'rows':4, 'cols':15}), 
             }
 
+    date_of_birth = forms.DateField(required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         

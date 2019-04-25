@@ -4,6 +4,7 @@
     <td>ID</td>
     <td>Customer</td>
     <td>Total</td>
+    <td>Draft?</td>
     <td>Status</td>
 </tr>
 {% endblock %} {% block list_content %} 
@@ -13,6 +14,7 @@
     <td>{{inv.pk}}</td>
     <td>{{inv.customer}}</td>
     <td>{{inv.total | floatformat:2}}</td>
+    <td>{% if inv.draft %} Yes {% else %} No {% endif %}</td>
     <td>{{inv.status}}</td>
     <td>
         <div class="dropdown">

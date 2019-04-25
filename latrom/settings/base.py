@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'reversion',
     'django_q',
     'dbbackup',
+    'formtools'
     
 ] + USER_APPS
 

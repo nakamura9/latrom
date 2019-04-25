@@ -68,17 +68,11 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     organization_website = forms.CharField(required=False)
     organization_business_partner_number = forms.CharField(required=False)
     use_backups = forms.BooleanField(label="Use backups?", required=False)
-    backup_frequency=forms.ChoiceField(choices=[
-        ('D', 'Daily'),
-        ('M', 'Monthly'),
-        ('W', 'Weekly')
-        ], required=False)
     backup_location_type= forms.ChoiceField(
             widget=forms.RadioSelect, choices=[
                 ('local', 'Local File System'),
                 ('network', 'Network Storage via FTP')
                 ], required=False)
-    backup_location =forms.CharField(required=False)
     
     class Meta:
         exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization'

@@ -1,9 +1,9 @@
 from django.urls import include, re_path
 
 from common_data import views
-
+workflow = views.WorkFlowView.as_view()
 urlpatterns = [
-    re_path(r'^workflow/?$', views.WorkFlowView.as_view(), name="workflow"),
+    re_path(r'^workflow/?$', workflow, name="workflow"),
     re_path(r'^react-test/?$', views.ReactTestView.as_view(), 
         name="react-test"),    
     re_path(r'^about/?$', views.AboutView.as_view(), name="about"),
@@ -39,5 +39,7 @@ urlpatterns = [
     re_path(r'^license-error/users/?$', views.UsersErrorPage.as_view(),
         name='license-error-users'),
     re_path(r'^api/users/?$', views.UserAPIView.as_view(), name='api-users'),
-    re_path(r'^create-note/?$', views.create_note, name='create-note')
+    re_path(r'^create-note/?$', views.create_note, name='create-note'),
+    re_path(r'^models/get-latest/(?P<app>[\w ]+)/(?P<model_name>[\w ]+)/?$', 
+        views.get_model_latest, name='get-latest-model'),
 ]

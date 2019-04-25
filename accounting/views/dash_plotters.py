@@ -49,16 +49,20 @@ def revenue_vs_expense_plot():
     # get invoice totals for each week
     inv_query_list = get_queryset_list(Invoice, start, today, 7)
     revenue = [get_sales_totals(q) for q in inv_query_list]
-    print(revenue)
     #get expense totals for each week
     expense_query_list = get_queryset_list(Expense, start, today, 7)
     expenses = [get_expense_totals(q) for q in expense_query_list]
-    print(expenses)
     #get the difference for each week
-    profit = [i - expenses[revenue.index(i)] for i in revenue]
+    profit = []
+    for i in range(len(revenue)):
+        profit.append(revenue[i] - expenses[i])
+        
+    print(revenue)
+    print(expenses)
     print(profit)
+    
 
-    chart = pygal.Bar(x_title="Week Ending", x_label_rotation=15)
+    chart = pygal.Bar(x_title="Week Ending", x_label_rotation=15, )
     chart.title = "Revenue vs Expenses"
     chart.x_labels = dates
     chart.add("Revenue", revenue)

@@ -18,8 +18,10 @@ from django.conf.urls import static
 from django.contrib import admin
 from django.urls import include, re_path
 from planner.views import ReactCalendar
+from common_data.urls import workflow
 urlpatterns = [
     re_path('admin/', admin.site.urls),
+    re_path(r'^$', workflow),
     re_path(r'^base/', include(('common_data.urls', 'base'), namespace='base')),
     re_path(r'^invoicing/', include(("invoicing.urls", 'invoicing'), namespace="invoicing")),
     re_path(r'^accounting/', include(("accounting.urls", 'accounting'), namespace="accounting")),
