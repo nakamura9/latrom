@@ -1,17 +1,9 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
-<input id="page-token" value="{{csrf_token}}" type="hidden"/>
-<div class="container">
-    <div class="row">
-        <div class="col-sm-12">
-            <form>
-                {% csrf_token %}
-            </form>
-            <div id="test" class="row"></div>
-            
-    </div>
-</div>
+
+
+
 
 {% render_bundle "widgets" %}
 

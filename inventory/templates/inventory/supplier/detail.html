@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="jumbotron">
-    <h1 class="display-3">Supplier Detail</h1>
+    <h1 class="display-3">Vendor Detail</h1>
     <p class="lead">Information Regarding supplier Products, Contact Information and Accounting Data</p>
     <hr class="my-2">
     <p>Actions</p>
@@ -16,14 +16,14 @@
             <div class="card-deck">
                 <div class="card bg-primary text-white">
                     <div class="card-body">
-                        <h4 class="card-title">Supplier Information</h4>
+                        <h4 class="card-title">Vendor Information</h4>
                         <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual
                             {% endif %} </p>
                         <p class="card-text">Name: {{object}}</p>
                         <h5>Contact Details</h5>
                         <p class="card-text">Email: {{object.email}}</p>
                         <p class="card-text">Address: {{object.address}}</p>
-                        <h4 class="card-title">Supplier Account</h4>
+                        <h4 class="card-title">Vendor Account</h4>
                         <p class="card-text">Name: {{object.account}}</p>
                         <p class="card-text">Balance: {{object.account.balance}}</p>
 
@@ -31,7 +31,6 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Interactions</h4>
                         <ul class="nav nav-tabs">
                             <li class="nav-item"><a href="#invoices" class="nav-link active"
                                     data-toggle="tab">Products</a></li>
@@ -41,7 +40,6 @@
                         </ul>
                         <div class="tab-content">
                             <div id="invoices" class="tab-pane active">
-                                <h4>Products</h4>
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -62,7 +60,6 @@
                                 </table>
                             </div>
                             <div id="quotations" class="tab-pane">
-                                <h4 class="card-title">Consumables</h4>
                                 <table class="table">
                                     <thead>
                                         <tr>

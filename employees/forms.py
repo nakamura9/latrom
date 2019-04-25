@@ -7,7 +7,8 @@ from crispy_forms.layout import (Fieldset,
                                 Layout, 
                                 Submit, 
                                 Row, 
-                                Column)
+                                Column,
+                                HTML)
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -84,6 +85,7 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('basic',
+                    'name',
                     'monthly_leave_days',
                     Row(
                         Column('salary', css_class='form-group col-6'),
@@ -165,6 +167,10 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
         exclude="active", 'user','last_leave_day_increment'
         model = models.Employee
 
+        widgets = {
+                'address':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+            }
+
     date_of_birth = forms.DateField(required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -202,17 +208,58 @@ class EmployeePortalForm(forms.ModelForm, BootstrapMixin):
         fields=['first_name', 'last_name', 'address', 'email', 'phone', 'date_of_birth', 'gender', 'id_number']
         model = models.Employee
 
-
+        widgets = {
+                'address':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+            }
 class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.PayrollTax
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super(). __init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Payroll Tax Details',
+                    'name',
+                    'paid_by',
+                ),
+                Tab('Tax Brackets',
+                    HTML(
+                        """
+            <div id="tax-brackets"></div>                        
+                        """
+                    )
+                )
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class TimesheetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.EmployeeTimeSheet
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('employee', css_class='form group col-3'),
+                Column('month', css_class='form group col-3'),
+                Column('year', css_class='form group col-3'),
+                Column('recorded_by', css_class='form group col-3'),
+            ),
+            HTML(
+                """
+                <div class="col-sm-12" id="timesheet-root">
+                </div>
+                """
+            ),
+            'complete',
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class PayrollOfficerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -389,6 +436,10 @@ class DepartmentForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Department
+
+        widgets = {
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+            }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,6 +1,7 @@
 {% extends "window.html" %}
 {% block content %}
 {% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
 
 <div class="jumbotron">
     <h1 class="display-3">Time Sheets</h1>
@@ -13,16 +14,9 @@
 </div>
 
 <div class="container">
-    <div class="row">
-        <div class="col-sm-3">
-            <form method="POST" action="">
-                {% csrf_token %}
-                {{form.as_p}}
-                <input type="submit" class="btn btn-primary" value="Submit" />
-            </form>
-        </div>
-        <div class="col-sm-9" id="timesheet-root">
-
+    <div class="shadow row">
+        <div class="col-sm-12">
+                {% crispy form %}
         </div>
     </div>
 </div>

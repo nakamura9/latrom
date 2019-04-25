@@ -18,14 +18,17 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Service
+
+        widgets = {
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+            }   
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helperlayout = Layout(
-            TabHolder(
-                Tab('basic',
+        self.helper.layout = Layout(
                     'name',
+                    'description',
                     Row(
                         Column('flat_fee', css_class='form-group col-6'),
                         Column('hourly_rate', css_class='form-group col-6'),
@@ -36,13 +39,8 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
                         Column('frequency', css_class='form-group col-4'),
                     ),
                     'is_listed',
-                Tab('description',
-                    'description',
-                ),
-            ),
-        )
     )
-
+        self.helper.add_input(Submit('submit', 'Submit'))
 class ServiceCategoryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"

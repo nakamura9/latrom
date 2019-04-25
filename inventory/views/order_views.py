@@ -110,7 +110,7 @@ class OrderCreateView( ContextMixin,
         "related_links": [
             {
                 'name': 'Add Vendor',
-                'url': '/inventory/supplier-create/organization/'
+                'url': '/inventory/supplier/create'
             },{
                 'name': 'Add Product',
                 'url': '/inventory/product-create/'

@@ -78,7 +78,7 @@ input:required, textarea:required, select:required {
 }
 
 .shadow {
-    border: 1px solid;
-    padding: 40px;
-    box-shadow: 5px 10px 30px grey;
+    border: 1px solid grey;
+    padding: 40px ;
+    box-shadow: 5px 10px 30px powderblue;
 }

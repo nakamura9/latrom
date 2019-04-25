@@ -28,7 +28,7 @@ from .common import CREATE_TEMPLATE
 
 
 class WareHouseCreateView(ContextMixin, CreateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     form_class = forms.WareHouseForm
     success_url = reverse_lazy('inventory:warehouse-list')
     extra_context = {

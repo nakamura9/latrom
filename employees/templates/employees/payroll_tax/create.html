@@ -1,5 +1,6 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 <div class="jumbotron">
@@ -10,21 +11,16 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card">
+        <div class="col-sm-12">
+            <div class="shadow card">
                 <div class="card-body">
                     <h4 class="card-title">Payroll Tax Details</h4>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        {{form.as_p}}
+                        {% crispy form %}
                         <input type="hidden" name="brackets" id="id_brackets" />
-                        <button class="btn btn-primary">Submit</button>
-                    </form>
                 </div>
             </div>
         </div>
         <div class="col-sm-8">
-            <div id="tax-brackets"></div>
         </div>
     </div>
 </div>
