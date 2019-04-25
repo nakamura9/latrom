@@ -22,3 +22,4 @@ common_data/static/admin/
 *.log
 *.spec
 *.c
+build_counter.json
