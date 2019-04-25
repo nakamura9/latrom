@@ -103,32 +103,32 @@
                     <hr class="my-4" />
 
                     <div class="card-deck">
-                    <div class="card bg-primary text-white">
+                        <div class="card bg-primary text-white">
                             <div class="card-header">
                                 <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Inventory</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
                                     {% if use_product_inventory %}
-                                   <li class="list-group-item">
+                                    <li class="list-group-item">
                                         <a href="{% url 'inventory:product-list' %}">Manage Products</a>
-                                    </li>            
+                                    </li>
                                     {% endif %}
                                     {% if use_equipment_inventory %}
-                                        <li class="list-group-item">
-                                            <a href="{% url 'inventory:equipment-list' %}">Manage Equipment</a>
-                                        </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'inventory:equipment-list' %}">Manage Equipment</a>
+                                    </li>
                                     {% endif %}
                                     {% if use_consumables_inventory %}
-                                        <li class="list-group-item">
+                                    <li class="list-group-item">
                                         <a href="{% url 'inventory:consumable-list' %}">Manage Consumables</a>
-                                        </li>
+                                    </li>
                                     {% endif %}
                                 </ul>
                             </div>
                         </div>
-                    
-                    {% if use_equipment_inventory or use_consumables_inventory %}
+
+                        {% if use_equipment_inventory or use_consumables_inventory %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
                                 <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
@@ -189,12 +189,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="dashboard">
+                <div id="dashboard" class="tab-pane">
                     <div class="container">
                         <div class="row">
                             <div class="col-sm-2">
                                 <ul class="nav nav-pills flex-column ">
-                                    <li class="nav-item" ><a data-toggle="pill" href="#Main"
+                                    <li class="nav-item"><a data-toggle="pill" href="#Main"
                                             class="nav-link active">Main</a></li>
                                     <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Data
                                             Grid</a></li>
