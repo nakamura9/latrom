@@ -1,4 +1,3 @@
-
 from crispy_forms.bootstrap import Tab, TabHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Fieldset, 
@@ -63,11 +62,11 @@ class SupplierForm(BootstrapMixin, forms.Form):
         ('organization', 'Organization')
         ])
     name=forms.CharField()
-    address=forms.CharField(widget=forms.Textarea, 
+    address=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), 
                             required=False)
-    billing_address=forms.CharField(widget=forms.Textarea, 
+    billing_address=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), 
                             required=False)
-    banking_details=forms.CharField(widget=forms.Textarea, 
+    banking_details=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), 
                             required=False)
     email= forms.EmailField(required=False)
     organization=forms.ModelChoiceField(Organization.objects.all(), 
@@ -78,7 +77,8 @@ class SupplierForm(BootstrapMixin, forms.Form):
     website=forms.CharField(required=False)
     business_partner_number=forms.CharField(required=False)
 
-    other_details=forms.CharField(widget=forms.Textarea, required=False)
+    other_details=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), 
+                            required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -420,6 +420,29 @@ class WareHouseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = '__all__'
         model = models.WareHouse
+
+        widgets = {
+                'address':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+            }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'name',
+            'address',
+            'description',
+            'inventory_controller',
+            Row(
+                Column('length', css_class='form group col-4'),
+                Column('width', css_class='form group col-4'),
+                Column('height', css_class='form group col-4'),
+            ),
+            'last_inventory_check_date',
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 
 class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
     warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), widget=forms.HiddenInput)

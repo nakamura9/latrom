@@ -3,12 +3,12 @@
     .card th {
         color: white;
     }
-    .white-on-blue{
+
+    .white-on-blue {
         background-color: white;
         border: 1px solid #007bff;
         color: #007bff;
-}
-
+    }
 </style>
 <div class="jumbotron">
     <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128;"></i> Inventory Dashboard</h1>
@@ -17,7 +17,7 @@
 
 </div>
 <div class="container">
-    <div class="row">
+    <div class="tab-content">
         <div class="col-sm-12">
             <ul class="nav nav-tabs">
                 <li class="nav-item"><a class="nav-link active" href="#actions" data-toggle="tab">Actions</a></li>
@@ -25,7 +25,7 @@
             </ul>
             <div class="tab-content panel-body">
                 <div id="actions" class="tab-pane active">
-                    <div class="card-deck">            
+                    <div class="card-deck">
                         {% if use_warehousing_model %}
                         <div class="card bg-primary text-white">
                             <div class="card-body">
@@ -88,7 +88,8 @@
                                 <ul class="list-group">
 
                                     <li class="list-group-item">
-                                        <a class="card-link" href="{% url 'inventory:supplier-create' %}">Create Vendor</a>
+                                        <a class="card-link" href="{% url 'inventory:supplier-create' %}">Create
+                                            Vendor</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="{% url 'inventory:supplier-list'%} ">Manage Vendors</a>
@@ -160,7 +161,7 @@
                     <hr class="my-4" />
 
                     <div class="card-deck">
-                    {% if use_equipment_inventory or use_consumables_inventory %}
+                        {% if use_equipment_inventory or use_consumables_inventory %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
                                 <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
@@ -169,15 +170,17 @@
                                 <ul class="list-group">
 
                                     <li class="list-group-item">
-                                        <a href="{% url 'services:equipment-requisition-list' %}">Manage Equipment Requisitions</a>
+                                        <a href="{% url 'services:equipment-requisition-list' %}">Manage Equipment
+                                            Requisitions</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables Requisitions</a>
+                                        <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables
+                                            Requisitions</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                    {% endif %}
+                        {% endif %}
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <div class="card-header">
@@ -190,7 +193,8 @@
                                     </li>
 
                                     <li class="list-group-item">
-                                        <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders Report</a>
+                                        <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
+                                            Report</a>
                                     </li>
                                 </ul>
                             </div>
@@ -218,58 +222,82 @@
                         </div>
                     </div>
                 </div>
-                <div id="dashboard" class="tab-pane">
-                        <div class="dash-container">
-                            <div class="bg-primary text-white dashbox">
-                                <h3># Orders Yet to Be Delivered: <br>{{undelivered_orders}}</h3>
+                <div id="dashboard">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <ul class="nav nav-pills flex-column ">
+                                    <li class="nav-item" ><a data-toggle="pill" href="#Main"
+                                            class="nav-link active">Main</a></li>
+                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Data
+                                            Grid</a></li>
+                                </ul>
                             </div>
-                            <div class="dashbox white-on-blue">
-                                <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
-                            </div>
-                            <div class="bg-primary text-white dashbox">
-                                <h3>Money Owed to Vendors: <br>${{money_owed}}</h3>
+                            <div class="col-sm-10">
+                                <div class="tab-content panel-body">
+
+                                    <div id="Main" class="tab-pane active">
+                                        <div class="dash-container">
+                                            <div class="bg-primary text-white dashbox">
+                                                <h3># Orders Yet to Be Delivered: <br>{{undelivered_orders}}</h3>
+                                            </div>
+                                            <div class="dashbox white-on-blue">
+                                                <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
+                                            </div>
+                                            <div class="bg-primary text-white dashbox">
+                                                <h3>Money Owed to Vendors: <br>${{money_owed}}</h3>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4">
+                                        <div class="dash-container">
+                                            <div class="dashbox white-on-blue">
+                                                <h3># Active Vendors: <br>{{vendors}}</h3>
+                                            </div>
+                                            <div class="bg-primary text-white dashbox">
+                                                <h3># Warehouses: <br>{{warehouses}}</h3>
+                                            </div>
+                                            <div class="dashbox white-on-blue">
+                                                <h3># Open Requisitions: <br>{{open_requisitions}}</h3>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4">
+                                        <div class="dash-container">
+                                            <div class="bg-primary text-white dashbox">
+                                                <h3># Pending Inventory Transfers: <br>{{pending_transfers}}</h3>
+                                            </div>
+                                            <div class="dashbox white-on-blue">
+                                                <h3># Equipment Items: <br>{{equipment}}</h3>
+                                            </div>
+                                            <div class="bg-primary text-white dashbox">
+                                                <h3># Unique Consumable Items: <br>{{consumables}}</h3>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4">
+                                        <div class="dash-container">
+                                            <div class="bg-primary text-white dashbox">
+                                                <h3># Unique Products: <br>{{products}}</h3>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div id="Graph" class="tab-pane fade in">
+                                        <h4>Inventory Movement in the last 7 days</h4>
+                                        {% autoescape off %}
+                                        {{graph}}
+                                        {% endautoescape %}
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-                    <hr class="my-4">
-                        <div class="dash-container">
-                            <div class="dashbox white-on-blue">
-                                <h3># Active Vendors: <br>{{vendors}}</h3>
-                            </div>
-                            <div class="bg-primary text-white dashbox">
-                                <h3># Warehouses: <br>{{warehouses}}</h3>
-                            </div>
-                            <div class="dashbox white-on-blue">
-                                <h3># Open Requisitions: <br>{{open_requisitions}}</h3>
-                            </div>
-                        </div>
-                    <hr class="my-4">
-                        <div class="dash-container">
-                            <div class="bg-primary text-white dashbox">
-                                <h3># Pending Inventory Transfers: <br>{{pending_transfers}}</h3>
-                            </div>
-                            <div class="dashbox white-on-blue">
-                                <h3># Equipment Items: <br>{{equipment}}</h3>
-                            </div>
-                            <div class="bg-primary text-white dashbox">
-                                <h3># Unique Consumable Items: <br>{{consumables}}</h3>
-                            </div>
-                        </div>
-                    <hr class="my-4">
-                    <div class="dash-container">
-                        <div class="bg-primary text-white dashbox">
-                        <h3># Unique Products: <br>{{products}}</h3>
                     </div>
-                    </div>
-                    <hr class="my-4">
-                    <h4>Inventory Movement in the last 7 days</h4>
-                    {% autoescape off %}
-                    {{graph}}
-                    {% endautoescape %}
+
+
                 </div>
             </div>
-            
         </div>
     </div>
+</div>
 </div>
 
 {% endblock %}
