@@ -1,8 +1,5 @@
 {% extends "window.html" %}
 {% block content %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
 <div class="jumbotron">
     <h1 class="display-3">WareHouse Details</h1>
@@ -13,17 +10,11 @@
         <a class="btn btn-primary btn-lg" href="{% url 'inventory:order-create' %}" role="button">Order new stock</a>
     </p>
 </div>
-<div class="nav nav-tabs">
-  <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#Details">Details</a></li>
-    <li><a data-toggle="tab" href="#Actions">Actions</a></li>
-    <li><a data-toggle="tab" href="#Items">Items</a></li>
-  </ul>
-</div>
 
-<div class="tab-content">
-    <div id="Details" class="tab-pane fade in active container">
-        <div class="card bg-primary text-white">
+
+<div class="container">
+    <div class="row">
+        <div class="card bg-primary text-white col-sm-6">
             <div class="card-body">
                 <h4 class="card-title">Warehouse Details</h4>
                 <p class="card-text"><b>Name:</b> {{object.name}}</p>
@@ -32,38 +23,35 @@
                 <p class="card-text"># of Items: {{object.all_items.count}} </p>
             </div>
         </div>
-        <div id="Actions" class="tab-pane fade in active card bg-primary text-white">
-            <div class="card-body">
-                <h4 class="card-title">Actions</h4>
-                <p class="card-text">
-                    <a class="btn btn-info" href="/inventory/create-inventory-check/{{object.pk}}">Check Inventory</a>
-                </p>
-                <p class="card-text">
-                    <a class="btn btn-info" href="/inventory/scrap-inventory/{{object.pk}}">Scrap Inventory</a></p>
-                {% if use_warehousing_model %}
+        <br>
+        <div class="card-body bg-primary text-white col-sm-6">
+            <h4 class="card-title">Actions</h4>
+            <p class="card-text">
+                <a class="btn btn-primary" href="/inventory/create-inventory-check/{{object.pk}}">Check Inventory</a>
+            </p>
+            <p class="card-text">
+                <a class="btn btn-primary" href="/inventory/scrap-inventory/{{object.pk}}">Scrap Inventory</a></p>
+            {% if use_warehousing_model %}
 
-                <p class="card-text">
-                    <a class="btn btn-info" href="/inventory/create-transfer-order/{{object.pk}}">Transfer Inventory</a>
-                </p>
-                {% endif %}
-                {% if use_storage_media_model %}
-                <p class="card-text">
-                    <a class="btn btn-info" href="/inventory/storage-media-create/{{object.pk}}">Add Storage Medium</a>
-                </p>
-                {% endif %}
-            </div>
+            <p class="card-text">
+                <a class="btn btn-primary" href="/inventory/create-transfer-order/{{object.pk}}">Transfer Inventory</a>
+            </p>
+            {% endif %}
+            {% if use_storage_media_model %}
+            <p class="card-text">
+                <a class="btn btn-primary" href="/inventory/storage-media-create/{{object.pk}}">Add Storage Medium</a>
+            </p>
+            {% endif %}
         </div>
 
-    <div id="Items" class="tab-pane fade in active">
-        <h3>Items</h3>
-        <hr class="my-2">
-        <iframe frameborder="0" width="700" height="500" id="journal-frame"
-            src="/inventory/warehouse/{{object.pk}}/item-list">
+        <div>
+            <h3>Items</h3>
+            <hr class="my-2">
+            <iframe frameborder="0" width="700" height="500" id="journal-frame"
+                src="/inventory/warehouse/{{object.pk}}/item-list">
 
-        </iframe>
+            </iframe>
+        </div>
     </div>
 </div>
-</div>
-</div>
-
 {% endblock %}

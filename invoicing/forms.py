@@ -84,10 +84,8 @@ class CustomerForm(BootstrapMixin, forms.Form):
         self.helper.layout= Layout(
             TabHolder(
                 Tab('details',
-                    Row(
-                        Column('name', css_class='form-group col-6'),
-                        Column('organization', css_class='form-group col-6'),
-                    ),
+                'customer_type',
+                'name',
                     Row(
                         Column('address', css_class='form-group col-6'),
                         Column('banking_details', css_class='form-group col-6'),
@@ -105,6 +103,7 @@ class CustomerForm(BootstrapMixin, forms.Form):
                     'website',
                     'image',
                     'other_details',
+                    'organization'
                 ),
             )
         )
