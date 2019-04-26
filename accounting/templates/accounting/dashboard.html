@@ -42,7 +42,8 @@
                         </div>
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i> Expenses</h4>
+                                <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i> Expenses
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
@@ -87,7 +88,8 @@
                     <div class="card-deck">
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class=" fas fa-chart-bar" style=" font-size:28;"></i> Reports</h4>
+                                <h4 class="card-title"><i class=" fas fa-chart-bar" style=" font-size:28;"></i> Reports
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
@@ -150,33 +152,49 @@
                     </div>
                 </div>
                 <div id="dashboard" class="tab-pane">
-                    <div class="dash-container">
-                        <div class="bg-success text-white dashbox">
-                            <h3>Assets: <br>${{assets}}</h3>
-                        </div>
-                        <div class="bg-danger text-white dashbox">
-                            <h3>Liabilities: <br>${{liabilities}}</h3>
-                        </div>
-                        <div class="bg-warning text-white dashbox">
-                            <h3>Equity: <br>${{equity}}</h3>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <ul class="nav nav-pills flex-column">
+                                    <li class="nav-item"><a data-toggle="pill" href="#Main" class="nav-link active">Data
+                                            Grid</a></li>
+                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="tab-content panel-body">
+                                    <div id="Main" class="tab-pane active">
+                                        <div id="dashboard" class="tab-pane">
+                                            <div class="dash-container">
+                                                <div class="bg-success text-white dashbox">
+                                                    <h3>Assets: <br>${{assets}}</h3>
+                                                </div>
+                                                <div class="bg-danger text-white dashbox">
+                                                    <h3>Liabilities: <br>${{liabilities}}</h3>
+                                                </div>
+                                                <div class="bg-warning text-white dashbox">
+                                                    <h3>Equity: <br>${{equity}}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="Graph" class="tab-pane fade in active">
+                                        <h4>Expenses Breakdown</h4>
+                                        {% autoescape off %}
+                                        {{expense_graph}}
+                                        <h4>Revenue vs Expenses</h4>
+                                        {{revenue_graph}}
+                                        {% endautoescape %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div >
-                        <h4>Expenses Breakdown</h4>
-                        {% autoescape off %}
-                        {{expense_graph}}
-                    </div>
-                    <div>
-                        <h4>Revenue vs Expenses</h4>
-                        {{revenue_graph}}
-                    </div>
-                        {% endautoescape %}
-
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 {% endblock %}

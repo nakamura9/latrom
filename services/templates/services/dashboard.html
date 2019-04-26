@@ -1,16 +1,17 @@
 {% extends "window.html" %} {% block content %}
 
 <style>
-.white-on-blue{
-    background-color: white;
-    border: 1px solid #007bff;
-    color: #007bff;
-}
+    .white-on-blue {
+        background-color: white;
+        border: 1px solid #007bff;
+        color: #007bff;
+    }
 </style>
 
 <div class="jumbotron">
     <h1 class="display-3"><i class=" fas fa-toolbox" style="color:#07f; font-size:128;"></i> Services Dashboard</h1>
-    <p class="lead">Control panel for listing services offered, assigning technicians work orders  and other service related functions</p>
+    <p class="lead">Control panel for listing services offered, assigning technicians work orders and other service
+        related functions</p>
     <hr class="my-2">
 </div>
 <div class="container">
@@ -65,15 +66,17 @@
                             <div class="card-body">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a href="{% url 'services:equipment-requisition-create' %}">Create Equipment Requistion</a>
+                                        <a href="{% url 'services:equipment-requisition-create' %}">Create Equipment
+                                            Requistion</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="{% url 'services:consumable-requisition-create' %}">Create Consumable Requistion</a>
+                                        <a href="{% url 'services:consumable-requisition-create' %}">Create Consumable
+                                            Requistion</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        
+
                     </div>
                     <hr class="my-2">
                     <div class="card-deck">
@@ -90,7 +93,7 @@
                                         <a href="{% url 'services:list-procedures' %}">Manage Service Procedures</a>
                                     </li>
                                 </ul>
-        
+
                             </div>
                         </div>
                         <div class="card bg-primary text-white">
@@ -106,7 +109,7 @@
                                     </li>
                                     <li class="list-group-item">
                                         <a href="{% url 'services:team-list' %}">
-                                                List and Manage Service Teams
+                                            List and Manage Service Teams
                                         </a>
                                     </li>
                                 </ul>
@@ -122,7 +125,8 @@
                                         <a href="" style="color:grey;">Services History</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="{% url 'services:reports-service-person-utilization-form' %}" >Service Personnel utilization report</a>
+                                        <a href="{% url 'services:reports-service-person-utilization-form' %}">Service
+                                            Personnel utilization report</a>
                                     </li>
                                 </ul>
                             </div>
@@ -130,23 +134,47 @@
                     </div>
                 </div>
                 <div id="dashboard" class="tab-pane">
-                    <div class="dash-container">
-                        <div class="bg-primary text-white dashbox">
-                            <h3># Offered Services: {{services}}</h3>
-                        </div>
-                        <div class="dashbox white-on-blue">
-                            <h3># Open Work Orders: {{wo_open}}</h3>
-                        </div>
-                        <div class="bg-primary text-white dashbox">
-                            <h3># Work Orders Completed: {{wo_closed}}</h3>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <ul class="nav nav-pills flex-column">
+                                    <li class="nav-item"><a data-toggle="pill" href="#Main" class="nav-link active">Data
+                                            Grid</a></li>
+                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="tab-content panel-body">
+                                    <div id="Main" class="tab-pane active">
+                                        <div id="dashboard" class="tab-pane">
+                                            <div class="dash-container">
+                                                <div class="bg-primary text-white dashbox">
+                                                    <h3># Offered Services: {{services}}</h3>
+                                                </div>
+                                                <div class="dashbox white-on-blue">
+                                                    <h3># Open Work Orders: {{wo_open}}</h3>
+                                                </div>
+                                                <div class="bg-primary text-white dashbox">
+                                                    <h3># Work Orders Completed: {{wo_closed}}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="Graph" class="tab-pane fade in active">
+                                        <hr class="my-4">
+                                        <h3>Service Person Utilization over the last 30 days</h3>
+                                        {% autoescape off %}
+                                        {{graph}}
+                                        {% endautoescape %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <hr class="my-4">
-                    <h3>Service Person Utilization over the last 30 days</h3>
-                    {% autoescape off %}
-                    {{graph}}
-                    {% endautoescape %}
                 </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}

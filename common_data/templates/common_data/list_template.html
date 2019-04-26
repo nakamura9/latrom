@@ -106,7 +106,11 @@
     //fix in python
     $('input').addClass('form-control');
     $('select').addClass('form-control');
-    $('#id_date').datepicker({changeYear: true});
-    $('#id_expected_receipt_date').datepicker({changeYear: true});
+    $('#id_date').datepicker({
+        changeYear: true,
+        dateFormat: 'yy-mm-dd'  });
+    $('#id_expected_receipt_date').datepicker({
+        changeYear: true,
+        dateFormat: 'yy-mm-dd' });
 </script>
 {% endblock %}
