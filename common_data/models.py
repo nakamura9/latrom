@@ -163,6 +163,7 @@ class GlobalConfig(SingletonModel):
         default="", 
         blank=True,
         max_length=255)
+    is_configured = models.BooleanField(default=False)
     
     def generate_hardware_id(self):
         result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)

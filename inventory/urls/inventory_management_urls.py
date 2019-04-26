@@ -8,6 +8,7 @@ stock_adjustment_router.register(r'^api/stock-adjustment', views.StockAdjustment
 
 
 inventory_management_urls = [
+    re_path(r'^config-wizard', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^stock-receipt-create/(?P<pk>[\d]+)/?$', 
         views.StockReceiptCreateView.as_view(), name="stock-receipt-create"),
     re_path(r'^goods-received/(?P<pk>[\w]+)/?$', 

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
+{% block window %}
+
+
+<div class="jumbotron">
+<h1 class="display-3">Welcome To The Inventory Section</h1>
+<p class="lead">To Proceed Please Fill In These Forms</p>
+<hr class="my-2">
+<p>Step {{wizard.steps.step1}} of {{wizard.steps.count}}.</p>
+<style>
+    .li-focused {
+        font-weight: bold;
+        font-size: 16px;
+    }
+</style>
+<ul>
+    <li class="{% if wizard.steps.step1 == 1 %}li-focused{% endif%}" >Configure the application</li>
+    <li class="{% if wizard.steps.step1 == 2 %}li-focused{% endif%}">Add Inventory Controller</li>
+    <li class="{% if wizard.steps.step1 == 3 %}li-focused{% endif%}">Create Warehouse</li>
+    <li class="{% if wizard.steps.step1 == 4 %}li-focused{% endif%}">Make First Supplier</li>
+</ul>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 shadow">
+        <form action="" method="POST">
+        {{wizard.management_form}}
+
+        {% if wizard.forms.forms %}
+            {{wizard.form.management_form}}
+            {% for form in wizard.form.forms %}
+                {% crispy form %}
+                {% endfor %}
+
+            {% else %}
+            {{form.errors}}
+
+                {% crispy wizard.form %}
+
+            {% endif %}
+        </form>
+        </div>
+    </div>
+</div>
+
+{% render_bundle "widgets" %}
+
+<script>
+            function dynamicFormRenderer(){
+                var input = $("#id_id_vendor_type_0_1") //individual 
+                if(input[0].checked){
+                    $('#div_id_business_partner_number').hide();
+                    $('#div_id_organization').show();
+                }else{
+                    $('#div_id_business_partner_number').show();
+                    $('#div_id_organization').hide();
+                }
+                
+            }
+            $(document).ready(dynamicFormRenderer);
+            $("input[name='vendor_type']").on('change', function(evt){
+                var value = evt.target.value;
+                if(value === "individual"){
+                    $('#div_id_business_partner_number').hide();
+                    $('#div_id_organization').show();
+                }else{
+                    $('#div_id_business_partner_number').show();
+                    $('#div_id_organization').hide();
+                }
+            })
+    </script>
+{% endblock window %}

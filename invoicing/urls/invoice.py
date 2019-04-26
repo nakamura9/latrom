@@ -7,6 +7,7 @@ invoice_router = routers.DefaultRouter()
 invoice_router.register('api/invoice', views.InvoiceAPIViewSet)
 
 credit_note_urls = [
+    re_path(r'^config-wizard', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^credit-note-create/(?P<pk>[\w]+)/?$', 
         views.CreditNoteCreateView.as_view(), name='credit-note-create'),
     re_path(r'^credit-note-list/?$', views.CreditNoteListView.as_view(), 

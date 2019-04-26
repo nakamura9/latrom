@@ -57,6 +57,7 @@ class InventorySettings(SingletonModel):
     use_consumables_inventory = models.BooleanField(default=True)
     use_raw_materials_inventory = models.BooleanField(default=True)
     #TODO capitalization_limit = models.DecimalField(max_digits=6, decimal_places=2)
+    is_configured = models.BooleanField(default=False)
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
@@ -67,6 +68,9 @@ class InventoryController(models.Model):
         limit_choices_to=Q(user__isnull=False))
     can_authorize_equipment_requisitions = models.BooleanField(default=False)
     can_authorize_consumables_requisitions = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.employee.full_name
 
 
 class Supplier(SoftDeletionModel):

@@ -28,6 +28,10 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.InventorySettings
+       
+        widgets = {
+            'inventory_check_date': forms.Select(choices=[(i, i) for i in range(1, 29)])
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,7 +42,7 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
                 Tab('Inventory Settings',
                     'inventory_check_date',
                     'inventory_check_frequency',
-                    'product_sales_pricing_method',
+                    'default_product_sales_pricing_method',
                     'inventory_valuation_method',
                     ),
                 Tab('WareHousing Settings',
@@ -86,6 +90,7 @@ class SupplierForm(BootstrapMixin, forms.Form):
         self.helper.layout= Layout(
             TabHolder(
                 Tab('details',
+                    'vendor_type',
                     Row(
                         Column('name', css_class='form-group col-6'),
                         Column('email', css_class='form-group col-6'),
@@ -116,6 +121,42 @@ class SupplierForm(BootstrapMixin, forms.Form):
 
         return cleaned_data
 
+    def save(self):
+        cleaned_data = self.clean()
+        if cleaned_data['vendor_type'] == "individual":
+            names = cleaned_data['name'].split(' ')
+            individual = Individual.objects.create(
+                first_name=" ".join(names[:-1]),# for those with multiple first names
+                last_name=names[-1],
+                address=cleaned_data['address'],
+                email=cleaned_data['email'],
+                phone=cleaned_data['phone_1'],
+                phone_two=cleaned_data['phone_2'],
+                photo=cleaned_data['image'],
+                other_details=cleaned_data['other_details'],
+                organization=cleaned_data['organization']
+            )
+            models.Supplier.objects.create(
+                individual=individual,
+                billing_address=cleaned_data['billing_address'],
+                banking_details=cleaned_data['banking_details']
+            )
+        else:
+            org = Organization.objects.create(
+                legal_name=cleaned_data['name'],
+                business_address=cleaned_data['address'],
+                website=cleaned_data['website'],
+                bp_number=cleaned_data['business_partner_number'],
+                email=cleaned_data['email'],
+                phone=cleaned_data['phone_1'],
+                logo=cleaned_data['image']
+            )
+            models.Supplier.objects.create(
+                organization=org,
+                billing_address=cleaned_data['billing_address'],
+                banking_details=cleaned_data['banking_details']
+            )
+
 class ItemInitialMixin(forms.Form):
     initial_quantity = forms.CharField(widget=forms.NumberInput, initial=0)
     warehouse = forms.ModelChoiceField(
@@ -131,7 +172,7 @@ class ItemInitialMixin(forms.Form):
         return obj
 
 class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
-    pricing_method = forms.CharField(widget=forms.NumberInput)
+    pricing_method = forms.CharField(widget=forms.NumberInput, required=False)
     margin = forms.CharField(widget=forms.NumberInput, required=False)
     markup = forms.CharField(widget=forms.NumberInput, required=False)
     direct_price = forms.CharField(widget=forms.NumberInput, required=False)
@@ -167,7 +208,8 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                     'initial_quantity', 
                     'warehouse',
                     ),
-                Tab('Image', 'image'),
+                Tab('Image', 'image',
+                ),
             )
             )
         self.helper.add_input(Submit('submit', 'Submit'))
@@ -423,7 +465,7 @@ class WareHouseForm(forms.ModelForm, BootstrapMixin):
 
         widgets = {
                 'address':forms.Textarea(attrs={'rows':4, 'cols':15}), 
-                'description':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}),
             }
 
     def __init__(self, *args, **kwargs):
@@ -439,7 +481,6 @@ class WareHouseForm(forms.ModelForm, BootstrapMixin):
                 Column('width', css_class='form group col-4'),
                 Column('height', css_class='form group col-4'),
             ),
-            'last_inventory_check_date',
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 
@@ -517,6 +558,12 @@ class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.InventoryController
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class InventoryControllerUpdateForm(forms.ModelForm, BootstrapMixin):

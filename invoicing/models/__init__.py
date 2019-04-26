@@ -24,6 +24,8 @@ class SalesConfig(SingletonModel):
     use_service_invoice = models.BooleanField(default=True)
     use_bill_invoice = models.BooleanField(default=True)
     use_combined_invoice = models.BooleanField(default=True)
+    is_configured = models.BooleanField(default=False)
+
 
     @classmethod
     def get_config_dict(cls):

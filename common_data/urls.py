@@ -4,6 +4,7 @@ from common_data import views
 workflow = views.WorkFlowView.as_view()
 urlpatterns = [
     re_path(r'^workflow/?$', workflow, name="workflow"),
+    re_path(r'^config-wizard', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^react-test/?$', views.ReactTestView.as_view(), 
         name="react-test"),    
     re_path(r'^about/?$', views.AboutView.as_view(), name="about"),
