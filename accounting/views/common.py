@@ -17,6 +17,9 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
 from django_filters.views import FilterView
 from rest_framework import viewsets, generics
 from django.shortcuts import get_object_or_404
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+from formtools.wizard.views import SessionWizardView
 
 from common_data.utilities import ContextMixin, apply_style
 from common_data.views import PaginationMixin
@@ -30,6 +33,15 @@ CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 class Dashboard( TemplateView):
     template_name = os.path.join('accounting', 'dashboard.html')
+
+    def get(self, *args, **kwargs):
+        config = AccountingSettings.objects.first()
+        if config is None:
+            config = AccountingSettings.objects.create(is_configured = False)
+        if config.is_configured:
+            return super().get(*args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse_lazy('accounting:config-wizard'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -586,3 +598,19 @@ def verify_entry(request, pk=None):
     entry = get_object_or_404(models.JournalEntry, pk=pk)
     entry.verify()
     return HttpResponseRedirect('/accounting/entry-detail/{}'.format(pk))
+
+class ConfigWizard(SessionWizardView):
+    template_name = os.path.join('accounting', 'wizard.html')
+    form_list = [
+        forms.ConfigForm, forms.BookkeeperForm, forms.TaxForm
+    ]
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
+
+    def done(self, form_list, **kwargs):
+        for form in form_list:
+            form.save()
+
+        config = models.AccountingSettings.objects.first()
+        config.is_configured = True
+        config.save()
+        return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))

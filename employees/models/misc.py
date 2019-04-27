@@ -26,3 +26,4 @@ class EmployeesSettings(SingletonModel):
         on_delete=models.SET_DEFAULT,
         default=1000)
     payroll_counter = models.IntegerField(default=0)
+    is_configured = models.BooleanField(default=False)

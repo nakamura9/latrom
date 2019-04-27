@@ -113,7 +113,10 @@
         
 </div>
 <script>
-       
+       $(".ui-date-picker").datepicker({
+        changeYear: true,
+        dateFormat: 'yy-mm-dd' 
+        });
     var modal = document.getElementById('id-my-modal');
     
     window.onclick = function(evt){

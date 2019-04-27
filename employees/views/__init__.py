@@ -20,6 +20,8 @@ from accounting.models import Account
 from .timesheets import *
 from .employee_portal import *
 from employees.views.dash_plotters import employee_roles_chart
+from django.urls import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -29,6 +31,15 @@ class DashBoard( ContextMixin, TemplateView):
     extra_context = {
         'employees': models.Employee.objects.all()
     }
+
+    def get(*args, **kwargs):
+        config = EmployeesSettings.objects.first()
+        if config is None:
+            config = EmployeesSettings.objects.create(is_configured = False)
+        if config.is_configured:
+            return super().get(*args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse_lazy('employees:config-wizard'))
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

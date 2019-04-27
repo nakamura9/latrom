@@ -1,6 +1,6 @@
 import os
 from django.views.generic import TemplateView
-from services.models import ServiceWorkOrder, Service
+from services.models import ServiceWorkOrder, Service, ServicesSettings
 from django.db.models import Q
 
 from .service import *
@@ -10,9 +10,20 @@ from .work_orders import *
 from .requisitions import *
 from .category import *
 from .reports import *
+from django.urls import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
 
 class Dashboard( TemplateView):
     template_name = os.path.join('services', 'dashboard.html')
+
+    def get(self, *args, **kwargs):
+        config = ServicesSettings.objects.first()
+        if config is None:
+            config = ServicesSettings.objects.create(is_configured = False)
+        if config.is_configured:
+            return super().get(*args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse_lazy('services:config-wizard'))
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
