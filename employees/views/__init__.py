@@ -37,7 +37,7 @@ class DashBoard( ContextMixin, TemplateView):
         'employees': models.Employee.objects.all()
     }
 
-    def get(request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         config = models.EmployeesSettings.objects.first()
         #print_hello()
         if config is None:
