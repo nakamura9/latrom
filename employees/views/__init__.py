@@ -22,9 +22,14 @@ from .employee_portal import *
 from employees.views.dash_plotters import employee_roles_chart
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
+from background_task import background
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
+
+@background(schedule=5)
+def print_hello():
+    print('hello world')
 
 class DashBoard( ContextMixin, TemplateView):
     template_name = os.path.join('employees', 'dashboard.html')
@@ -34,6 +39,7 @@ class DashBoard( ContextMixin, TemplateView):
 
     def get(request, *args, **kwargs):
         config = models.EmployeesSettings.objects.first()
+        #print_hello()
         if config is None:
 
             config = models.EmployeesSettings.objects.create(is_configured = False)

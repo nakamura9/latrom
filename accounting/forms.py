@@ -271,6 +271,9 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
                 ),
             )
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
 class AccountUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active", "balance"
