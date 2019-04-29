@@ -7,6 +7,7 @@ service_router = routers.DefaultRouter()
 service_router.register('api/service', views.ServiceAPIView)
 
 service_urls = [
+    re_path(r'^config-wizard/', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^create-service/?$', views.ServiceCreateView.as_view(), 
         name='create-service'),
     re_path(r'^list-services/?$', views.ServiceListView.as_view(), 

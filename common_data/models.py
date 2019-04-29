@@ -162,6 +162,7 @@ class GlobalConfig(SingletonModel):
         default="", 
         blank=True,
         max_length=255)
+<<<<<<< HEAD
     verification_task_id = models.CharField(
         default="", 
         blank=True,
@@ -170,6 +171,9 @@ class GlobalConfig(SingletonModel):
         default=False
     )
     
+=======
+    is_configured = models.BooleanField(default=False)
+>>>>>>> f5948354fed503cf0c6d4d0e8a895d8cd9d664ff
     
     def generate_hardware_id(self):
         result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)

@@ -13,6 +13,11 @@ from rest_framework import viewsets
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
+from formtools.wizard.views import SessionWizardView
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponseRedirect
+
 
 
 
@@ -36,6 +41,7 @@ class ServiceCreateView( ContextMixin, CreateView):
             'url': '/services/create-category/'
         }]
     }
+
 
 class ServiceUpdateView( ContextMixin, UpdateView):
     form_class = forms.ServiceForm
@@ -70,3 +76,20 @@ class ServiceDetailView( DetailView):
 class ServiceAPIView(viewsets.ModelViewSet):
     queryset = models.Service.objects.all()
     serializer_class = serializers.ServiceSerializer
+
+class ConfigWizard(SessionWizardView):
+    template_name = os.path.join('services', 'wizard.html')
+    form_list = [
+        forms.ServiceForm, forms.ServicePersonForm
+    ]
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
+
+    def done(self, form_list, **kwargs):
+        for form in form_list:
+            form.save()
+
+        config = models.ServicesSettings.objects.first()
+        print(f'config is {config}')
+        config.is_configured = True
+        config.save()
+        return HttpResponseRedirect(reverse_lazy('services:dashboard'))

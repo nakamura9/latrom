@@ -26,6 +26,12 @@ from inventory.views.util import InventoryService
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition, ConsumablesRequisition
 from inventory.views.dash_plotters import stock_movement_plot
+from formtools.wizard.views import SessionWizardView
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+
+
+
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
 
@@ -46,6 +52,7 @@ class InventoryControllerCreateView(ContextMixin, CreateView):
             'url': '/employees/create-employee/'
         }]
     }
+
     
 class InventoryControllerUpdateView(ContextMixin, UpdateView):
     form_class = forms.InventoryControllerUpdateForm
@@ -74,10 +81,15 @@ class InventoryDashboard(
     template_name = os.path.join("inventory", "dashboard.html")
 
     def get(self, *args, **kwargs):
-        resp = super().get(*args, **kwargs)
-        InventoryService().run()
-        return resp 
+        if models.InventorySettings.objects.first().is_configured:
+            resp = super().get(*args, **kwargs)
+            InventoryService().run()
+            return resp 
 
+        else:
+            return HttpResponseRedirect(reverse_lazy('inventory:config-wizard'))
+
+            
     def get_context_data(self, *args, **kwargs):
         context =  super().get_context_data(*args, **kwargs)
 
@@ -186,3 +198,29 @@ class CategoryListAPIView(ListAPIView):
 
     def get_queryset(self):
         return models.Category.objects.filter(parent=None)
+
+class ConfigWizard(SessionWizardView):
+    template_name = os.path.join('inventory', 'wizard.html')
+    form_list = [
+        forms.ConfigForm, 
+        forms.InventoryControllerForm,
+        forms.WareHouseForm, 
+        forms.SupplierForm, 
+        #forms.ProductForm
+        ]
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
+
+    def done(self, form_list, **kwargs):
+        for form in form_list:
+            form.save()
+        
+        config = models.InventorySettings.objects.first()
+        config.is_configured = True
+        config.save()
+        return HttpResponseRedirect(reverse_lazy('inventory:home'))
+
+    def get_form_initial(self, step):
+        initial = self.initial_dict.get(step, {})
+        if step == '3':
+            initial.update({'type': 0})# for product
+        return initial

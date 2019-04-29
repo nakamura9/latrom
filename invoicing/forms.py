@@ -12,7 +12,7 @@ from django.forms.widgets import HiddenInput, MultipleHiddenInput
 
 from accounting.models import Account, Journal,Tax
 from common_data.forms import BootstrapMixin, PeriodReportForm
-from common_data.models import Organization
+from common_data.models import Organization, Individual
 from . import models
 from django.forms import ValidationError
 
@@ -118,11 +118,53 @@ class CustomerForm(BootstrapMixin, forms.Form):
 
         return cleaned_data
 
+    def save(self):
+        cleaned_data = self.clean()
+        if cleaned_data['customer_type'] == "individual":
+            names = cleaned_data['name'].split(' ')
+            individual = Individual.objects.create(
+                first_name=" ".join(names[:-1]),# for those with multiple first names
+                last_name=names[-1],
+                address=cleaned_data['address'],
+                email=cleaned_data['email'],
+                phone=cleaned_data['phone_1'],
+                phone_two=cleaned_data['phone_2'],
+                photo=cleaned_data['image'],
+                other_details=cleaned_data['other_details'],
+                organization=cleaned_data['organization']
+            )
+            models.Customer.objects.create(
+                individual=individual,
+                billing_address=cleaned_data['billing_address'],
+                banking_details=cleaned_data['banking_details']
+            )
+        else:
+            org = Organization.objects.create(
+                legal_name=cleaned_data['name'],
+                business_address=cleaned_data['address'],
+                website=cleaned_data['website'],
+                bp_number=cleaned_data['business_partner_number'],
+                email=cleaned_data['email'],
+                phone=cleaned_data['phone_1'],
+                logo=cleaned_data['image']
+            )
+            models.Customer.objects.create(
+                organization=org,
+                billing_address=cleaned_data['billing_address'],
+                banking_details=cleaned_data['banking_details']
+            )
+
 
 class SalesRepForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = 'active',
         model = models.SalesRepresentative
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class InvoiceCreateMixin(forms.Form):
     apply_payment = forms.BooleanField(required=False)

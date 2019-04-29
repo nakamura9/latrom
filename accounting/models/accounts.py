@@ -53,6 +53,7 @@ class AbstractAccount(SoftDeletionModel):
         null=True, on_delete=models.SET_NULL)
     balance_sheet_category = models.CharField(max_length=16, 
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
+    is_configured = models.BooleanField(default=False)
     
     def __str__(self):
         return str(self.pk) + "-" + self.name

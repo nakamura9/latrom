@@ -4,9 +4,14 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
 from common_data.utilities import time_choices
-
+from common_data.models import SingletonModel
 
 # Create your models here.
+
+class ServicesSettings(SingletonModel):
+    is_configured = models.BooleanField(default=False)
+    
+
 class Service(models.Model):
     # client and sales facing model
     name = models.CharField(max_length=255)

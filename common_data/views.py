@@ -2,7 +2,7 @@ import os
 import datetime
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.template import loader
@@ -15,7 +15,7 @@ from wkhtmltopdf import utils as pdf_tools
 from wkhtmltopdf.views import PDFTemplateView
 
 from accounting.models import Journal
-from common_data import filters, models
+from common_data import filters, models, serializers, forms
 from common_data.forms import SendMailForm
 from common_data.models import GlobalConfig, Organization
 from common_data.utilities import (ContextMixin, 
@@ -24,11 +24,11 @@ from common_data.utilities import (ContextMixin,
                                     MultiPagePDFDocument)
 from invoicing.models import SalesConfig
 from rest_framework.generics import RetrieveAPIView, ListAPIView
-from common_data import serializers 
 from django.contrib.auth.models import User
-from . import forms
 from django.apps import apps
 from formtools.wizard.views import SessionWizardView
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 class PaginationMixin(object):
     '''quick and dirty mixin to support pagination on filterviews '''
@@ -158,6 +158,12 @@ class IndividualListView(ContextMixin, PaginationMixin,  LoginRequiredMixin,
 
 class WorkFlowView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "workflow.html")
+
+    def get(self, *args, **kwargs):
+        if not GlobalConfig.objects.first().is_configured:
+            return HttpResponseRedirect(reverse_lazy('base:config-wizard'))
+        else:
+            return super().get(*args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -385,5 +391,15 @@ def get_model_latest(request, app=None, model_name=None):
 
 class ConfigWizard(SessionWizardView):
     template_name = os.path.join('common_data', 'wizard.html')
+    form_list = [forms.GlobalConfigForm]
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
+    
     def done(self, form_list, **kwargs):
-        pass
+        for form in form_list:
+            form.save()
+            
+        config = GlobalConfig.objects.first()
+        config.is_configured = True
+        config.save()
+        return HttpResponseRedirect(reverse_lazy('base:workflow'))
+

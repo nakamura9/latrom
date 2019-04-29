@@ -1,4 +1,6 @@
-{% extends "window.html" %} {% block content %}
+{% extends "window.html" %} 
+{% load crispy_forms_tags %}
+{% block content %}
 <div class="jumbotron">
     <h1 class="display-3">Accounting Configuration</h1>
     <p class="lead">List of settings for Accounts</p>
@@ -7,19 +9,13 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6">
+        <div class="col-sm-12">
             <div class="shadow card">
                 <div class="card-body">
-                    <h4 class="card-title">Options</h4>
-                    <form method="POST" action="">
-                            {% csrf_token %} {{form.as_p}}
-                        <button class="btn btn-primary">Submit</button>
-                        </form>
-                </div>
+                     {% crispy form %}
+                 </div>
             </div>
         </div>
-        <div class="col-sm-3"></div>
     </div>
 </div>
 

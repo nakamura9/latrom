@@ -10,6 +10,7 @@ from .portal import portal_urls
 from employees import views
 
 urlpatterns = [
+    re_path(r'^config-wizard', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^$', views.DashBoard.as_view(), name='dashboard')
 ] + other_urls + \
     employee_urls + \

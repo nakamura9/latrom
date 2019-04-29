@@ -20,6 +20,8 @@ from accounting.models import Account
 from .timesheets import *
 from .employee_portal import *
 from employees.views.dash_plotters import employee_roles_chart
+from django.urls import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
 
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -29,6 +31,23 @@ class DashBoard( ContextMixin, TemplateView):
     extra_context = {
         'employees': models.Employee.objects.all()
     }
+
+    def get(request, *args, **kwargs):
+        config = models.EmployeesSettings.objects.first()
+        if config is None:
+
+            config = models.EmployeesSettings.objects.create(is_configured = False)
+        
+        print(config.is_configured)
+        if config.is_configured:
+            service = AutomatedPayrollService()
+            try:
+                service.run()
+            except PayrollException:
+                messages.info(request, 'The payroll system does not have any payroll dates loaded. Please enter suitable dates for the system to automatically generate payslips')
+            return super().get(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse_lazy('employees:config-wizard'))
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -52,13 +71,6 @@ class DashBoard( ContextMixin, TemplateView):
         context['tax'] = Account.objects.get(pk=5010).balance
         return context
 
-    def get(self, request):
-        service = AutomatedPayrollService()
-        try:
-            service.run()
-        except PayrollException:
-            messages.info(request, 'The payroll system does not have any payroll dates loaded. Please enter suitable dates for the system to automatically generate payslips')
-        return super().get(request)
 
 class PayrollConfig( ContextMixin, UpdateView):
     model = models.EmployeesSettings

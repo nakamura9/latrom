@@ -34,7 +34,16 @@ class BasicServiceViewTests(TestCase):
 
     def test_get_dashboard_page(self):
         resp = self.client.get('/services/')
+        self.assertEqual(resp.status_code, 302)
+        # for after configuration
+        settings = ServicesSettings.objects.first()
+        settings.is_configured = True
+        settings.save()
+        resp = self.client.get('/services/')
         self.assertEqual(resp.status_code, 200)
+        settings.is_configured = False
+        settings.save()
+
 
     def test_get_create_category_page(self):
         resp = self.client.get('/services/create-category')

@@ -19,6 +19,11 @@ class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.AccountingSettings
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
         
 class AssetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -162,6 +167,11 @@ class TaxForm(forms.ModelForm, BootstrapMixin):
         fields ='__all__'
         model = models.Tax
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 class TaxUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields ='name',
@@ -288,6 +298,11 @@ class BookkeeperForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "active",
         model = models.Bookkeeper
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class ExchangeTableForm(forms.ModelForm):

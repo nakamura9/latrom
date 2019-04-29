@@ -25,8 +25,13 @@ class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     #hourly workers must be calculated first
     class Meta:
         model = models.EmployeesSettings
-        exclude = "last_payroll_date",
+        exclude = "last_payroll_date", 'is_configured'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 #named benefits on the front end
 class AllowanceForm(forms.ModelForm, BootstrapMixin):
@@ -269,6 +274,11 @@ class PayrollOfficerForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.PayrollOfficer
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 class PayrollOfficerUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "employee",
@@ -421,16 +431,15 @@ class PayrollDateForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.PayrollDate
 
-    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.helper = FormHelper()
         self.helper.layout = Layout(
-
+            
         )
 
-        self.helper.add_input(Submit('submit', 'Submit'))'''
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class DepartmentForm(forms.ModelForm, BootstrapMixin):

@@ -37,8 +37,15 @@ class CommonViewsTests(TestCase):
 
     def test_get_home_page(self):
         resp = self.client.get(reverse('invoicing:home'))
+        self.assertEqual(resp.status_code, 302)
+        #after configuration
+        settings = SalesConfig.objects.first()
+        settings.is_configured = True
+        settings.save()
+        resp = self.client.get(reverse('invoicing:home'))
         self.assertEqual(resp.status_code, 200)
-
+        settings.is_configured = False
+        settings.save()
 
     def test_get_config_page(self):
         resp = self.client.get(reverse('invoicing:config', kwargs={

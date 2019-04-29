@@ -1,7 +1,64 @@
-{% extends 'window.html' %}
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block window %}
 
-{% block page_contents %}
+<div class="jumbotron">
+    <h1 class="display-3">Welcome to Suave Business Tools</h1>
+    <p class="lead">To get started Please configure the application using the following forms</p>
+    <hr class="my-2">
+    <p>Step {{wizard.steps.step1}} of {{wizard.steps.count}}.</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 shadow">
+        <form action="" method="POST">
+        
+            {{wizard.management_form}}
+
+            {% if wizard.form.forms %}
+                {{wizard.form.management_form}}
+                {% for form in wizard.form.forms %}
+                    {% crispy form %}
+                {% endfor %}
+
+            {% else %}
+
+                {% crispy wizard.form %}
+
+            {% endif %}        
+        
+        </form>
+            
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            url: "/base/logo-url",
+            method:"get"
+        }).then(res => {
+            $("#id-logo-preview").attr({src: res.url });
+        })
+        
+        $('input[type="file"]').attr({
+            'onchange': 'upload_img(this)'
+        });
+    })
+
+    function upload_img(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#id-logo-preview').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
 
-
+</script>
 {% endblock %}
