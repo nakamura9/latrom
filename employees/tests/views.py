@@ -36,7 +36,15 @@ class GenericPageTests(TestCase):
 
     def test_get_employees_page(self):
         resp = self.client.get(reverse('employees:dashboard'))
+        self.assertTrue(resp.status_code == 302)
+        settings = EmployeesSettings.objects.first()
+        settings.is_configured = True
+        settings.save()
+        resp = self.client.get(reverse('employees:dashboard'))
         self.assertTrue(resp.status_code == 200)
+        settings.is_configured = False
+        settings.save()
+
 
     def test_get_util_list_page(self):
         resp = self.client.get(reverse('employees:util-list'))

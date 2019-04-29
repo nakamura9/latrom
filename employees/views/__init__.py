@@ -32,12 +32,20 @@ class DashBoard( ContextMixin, TemplateView):
         'employees': models.Employee.objects.all()
     }
 
-    def get(*args, **kwargs):
-        config = EmployeesSettings.objects.first()
+    def get(request, *args, **kwargs):
+        config = models.EmployeesSettings.objects.first()
         if config is None:
-            config = EmployeesSettings.objects.create(is_configured = False)
+
+            config = models.EmployeesSettings.objects.create(is_configured = False)
+        
+        print(config.is_configured)
         if config.is_configured:
-            return super().get(*args, **kwargs)
+            service = AutomatedPayrollService()
+            try:
+                service.run()
+            except PayrollException:
+                messages.info(request, 'The payroll system does not have any payroll dates loaded. Please enter suitable dates for the system to automatically generate payslips')
+            return super().get(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(reverse_lazy('employees:config-wizard'))
 
@@ -63,13 +71,6 @@ class DashBoard( ContextMixin, TemplateView):
         context['tax'] = Account.objects.get(pk=5010).balance
         return context
 
-    def get(self, request):
-        service = AutomatedPayrollService()
-        try:
-            service.run()
-        except PayrollException:
-            messages.info(request, 'The payroll system does not have any payroll dates loaded. Please enter suitable dates for the system to automatically generate payslips')
-        return super().get(request)
 
 class PayrollConfig( ContextMixin, UpdateView):
     model = models.EmployeesSettings

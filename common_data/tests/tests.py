@@ -182,7 +182,16 @@ class ViewTests(TestCase):
     def test_get_workflow_page(self):
         #ensure that all links are shown
         resp = self.client.get('/base/workflow')
+        self.assertEqual(resp.status_code, 302)
+        settings = GlobalConfig.objects.first()
+        settings.is_configured=True
+        settings.save()
+
+        resp = self.client.get('/base/workflow')
         self.assertEqual(resp.status_code, 200)
+        settings.is_configured=False
+        settings.save()
+
 
     def test_get_global_config_page(self):
         #ensure that all links are shown

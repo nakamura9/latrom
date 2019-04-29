@@ -202,10 +202,12 @@ class ConfigWizard(SessionWizardView):
         forms.PayrollDateForm, forms.PayGradeForm, forms.EmployeeForm, forms.PayrollOfficerForm, forms.EmployeesSettingsForm
     ]
 
-    def done(self, form_list, **kwargs):
-        for form in form_list:
-            form.save()
+    def render_next_step(self, form, **kwargs):
+        form.save()
+        return super().render_next_step(form, **kwargs)
 
+
+    def done(self, form_list, **kwargs):
         config = models.EmployeesSettings.objects.first()
         config.is_configured = True
         config.save()

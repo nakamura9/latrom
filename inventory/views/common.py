@@ -32,7 +32,6 @@ from django.core.files.storage import FileSystemStorage
 
 
 
-
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
 
@@ -54,11 +53,6 @@ class InventoryControllerCreateView(ContextMixin, CreateView):
         }]
     }
 
-    def get(self, *args, **kwargs):
-        if inventory.settings.objects.first().is_configured:
-            return HttpResponseRedirect(reverse_lazy('inventory:config-wizard'))
-        else:
-            return super().get(*args, **kwargs)
     
 class InventoryControllerUpdateView(ContextMixin, UpdateView):
     form_class = forms.InventoryControllerUpdateForm
