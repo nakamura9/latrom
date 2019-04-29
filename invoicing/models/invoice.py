@@ -236,6 +236,13 @@ class Invoice(SoftDeletionModel):
     def __str__(self):
         return 'INV' + str(self.pk)
 
+    @property
+    def quotation_is_valid(self):
+        return self.status == "quotation" and \
+            self.quotation_valid and \
+            self.quotation_valid >= datetime.date.today()
+        
+
     def set_quote_invoice_number(self):
         '''This method is called when the invoice is created to follow the numbering sequence stored in the sales config '''
         config = inv_models.SalesConfig.objects.first() 

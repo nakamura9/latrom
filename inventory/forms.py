@@ -382,6 +382,11 @@ class StockReceiptForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = 'fully_received',
         model= models.StockReceipt
+        widgets = {
+            'note': forms.Textarea(attrs={
+                'rows': 5
+            })
+        }
 
 
     def __init__(self, *args, **kwargs):
@@ -449,6 +454,11 @@ class InventoryCheckForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.InventoryCheck
+        widgets = {
+            'comments': forms.Textarea(attrs={
+                'rows': 5
+            })
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -470,6 +480,8 @@ class TransferOrderForm(forms.ModelForm, BootstrapMixin):
     source_warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(),
         widget=forms.HiddenInput)
     items = forms.CharField(widget=forms.HiddenInput)
+    order_issuing_notes = forms.CharField(widget=forms.Textarea(
+        attrs={'rows': 8}))
     class Meta:
         exclude = ['actual_completion_date', 'receiving_inventory_controller','receive_notes', 'completed']
         model = models.TransferOrder
@@ -480,8 +492,11 @@ class TransferOrderForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-            Column('date', 
-                    'expected_completion_date',
+            Column(
+                    Row(
+                        Column('date', css_class="col-sm-6"),
+                        Column('expected_completion_date',css_class="col-sm-6"),
+                    ),
                     'issuing_inventory_controller',
                     'receiving_warehouse',
                     'source_warehouse',
@@ -531,6 +546,9 @@ class ScrappingRecordForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.InventoryScrappingRecord
+        widgets = {
+            'comments': forms.Textarea(attrs={'rows': 5})
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

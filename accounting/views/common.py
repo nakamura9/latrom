@@ -205,7 +205,7 @@ class TaxUpdateView( ContextMixin, UpdateView):
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
     extra_context = {
-        'title': 'Editing Existing Tax'
+        'title': 'Edit Sales Tax'
     }
 
 class TaxCreateView( ContextMixin, CreateView):
@@ -213,12 +213,9 @@ class TaxCreateView( ContextMixin, CreateView):
     template_name = os.path.join('common_data','create_template.html')
     success_url = reverse_lazy('employees:util-list')
     extra_context = {
-        'title': 'Add Global Taxes',
-        'description': 'These tax objects are used in orders and invoices. Not to be confused with payroll taxes',
-        'related_links': [{
-            'name': 'Create Payroll Tax',
-            'url': '/employees/create-payroll-tax'
-        }]
+        'title': 'Add Sales Taxes',
+        'description': 'Sales taxes are used in orders and invoices.',
+        
     }
 
 
@@ -228,7 +225,7 @@ class TaxListView( ContextMixin, PaginationMixin, FilterView):
     paginate_by =10
     model = models.Tax
     extra_context = {
-        'title': 'Tax List',
+        'title': 'Sales Tax List',
         'new_link': reverse_lazy('accounting:create-tax')
     }
 

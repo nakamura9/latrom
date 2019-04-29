@@ -9,13 +9,15 @@ export default class TransactionTable extends Component{
             contents: [],
             balanced: 0,
         }
+
+  
     
-    balance(){
+    balance =() =>{
         let i = 0;
         const transactions = this.state.contents;
         var debit =0;
         var credit = 0;
-        for(i in transactions){
+        for(i=0; i < transactions.length; i++){
             if(transactions[i].debit === "0"){
                 credit = credit + parseFloat(transactions[i].amount);
             }else{
@@ -29,30 +31,31 @@ export default class TransactionTable extends Component{
         }
         
     }
-    addHandler(data){
+    addHandler =(data) =>{
         let form = document.forms[0];
         //jquery replacement
-        let input = document.createElement("input")
         let newContents = this.state.contents;
-
         newContents.push(data);
-        this.balance();
+
+        let input = document.createElement("input");
         setMultipleAttrs(input, {
             type: 'hidden',
             id: 'item_' + this.state.contents.length,
             name: 'items[]',
             value: encodeURIComponent(JSON.stringify(data))
         })
-        form.appendChild(input)
-        this.setState({contents: newContents});
+        form.appendChild(input);
+
+        this.setState({contents: newContents}, this.balance);
     }
 
-    removeHandler(index){
+    removeHandler =(index) =>{
         let newContents = this.state.contents;
         newContents.splice(index, 1);
-        this.setState({contents: newContents});
-        this.balance();
         document.getElementById("item_" + (index + 1)).remove();
+
+        this.setState({contents: newContents}, this.balance);
+        
     }
     
     render(){
@@ -67,9 +70,9 @@ export default class TransactionTable extends Component{
                 </tr>
             </thead>
             <Content contents={this.state.contents}
-                removeHandler={this.removeHandler.bind(this)} />
+                removeHandler={this.removeHandler} />
             <EntryRow 
-                addHandler={this.addHandler.bind(this)}
+                addHandler={this.addHandler}
                 balanced={this.state.balanced}
                 list={[...this.state.contents]} />
         </table>
@@ -109,7 +112,7 @@ class EntryRow extends Component {
             }
         }
     
-    addHandler(){
+    addHandler = () =>{
         if(this.state.inputs.account === "" || 
                 this.state.inputs.amount === 0 ||
                     this.state.inputs.debit === ""){
@@ -189,7 +192,7 @@ class EntryRow extends Component {
                                         "Unbalanced"}</td>
                    <td>
                         <button className="btn btn-primary" type="button" 
-                            onClick={this.addHandler.bind(this)}>
+                            onClick={this.addHandler}>
                         Insert Transaction
                         </button>
                    </td>

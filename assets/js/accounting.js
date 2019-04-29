@@ -5,7 +5,6 @@ import CurrencyConverter from './accounting/currency/containers/root';
 
 const transactionTable = document.getElementById('transaction-table');
 const currency = document.getElementById('currency-converter');
-console.log(currency);
 if(transactionTable){
     ReactDOM.render(<TransactionTable />, transactionTable);
 }else if(currency){

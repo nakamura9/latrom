@@ -39,11 +39,11 @@ class CreditNote(models.Model):
     @property
     def tax_credit(self):
         return sum([(i.line.tax.rate * i.quantity) \
-            for i in self.creditnoteline_set.all() if i.line.tax] ,D(0))
+            for i in self.creditnoteline_set.all() if i.line.tax] ,0)
         
     @property
     def returned_total_with_tax(self):
-        return self.returned_total + self.tax_credit
+        return self.returned_total + D(self.tax_credit)
 
     @property
     def total(self):

@@ -547,7 +547,13 @@ class PayrollTaxViewTests(TestCase):
         resp = self.client.post('/employees/update-payroll-tax/1',
             data={
                 'name': 'OtherName',
-                'paid_by': 1
+                'paid_by': 1,
+                'brackets': urllib.parse.quote(json.dumps([{
+                    'lower_limit': 0,
+                    'upper_limit': 300,
+                    'rate': 10,
+                    'deduction': 0
+                }])),
             })
 
         self.assertEqual(resp.status_code, 302)

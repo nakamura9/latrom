@@ -44,16 +44,16 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Description</th>
                                             <th>Last Purchase Price</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for p in object.products %}
                                         <tr>
                                             <td>{{p.name}}</td>
-                                            <td>{{p.description}}</td>
                                             <td>{{p.unit_purchase_price}}</td>
+                                            <td><a href="{% url 'inventory:product-detail' pk=p.pk %}" class="btn btn-primary">Detail</a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -64,16 +64,16 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Description</th>
                                             <th>Last Purchase Price</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for p in object.consumables %}
                                         <tr>
                                             <td>{{p.name}}</td>
-                                            <td>{{p.description}}</td>
                                             <td>{{p.unit_purchase_price}}</td>
+                                            <td><a href="{% url 'inventory:consumable-detail' pk=p.pk %}" class="btn btn-primary">Detail</a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -85,16 +85,16 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Description</th>
                                             <th>Last Purchase Price</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for p in object.equipment %}
                                         <tr>
                                             <td>{{p.name}}</td>
-                                            <td>{{p.description}}</td>
                                             <td>{{p.unit_purchase_price}}</td>
+                                            <td><a href="{% url 'inventory:equipment-detail' pk=p.pk %}" class="btn btn-primary">Detail</a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>

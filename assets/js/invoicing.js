@@ -22,10 +22,12 @@ if(sales){
         resProcessor={(res) =>{
             console.log(res.data)
             // filter by lines which have a returned value less than 1
-            return res.data.invoiceline_set.map((line, i)=>({
+            const filtered = res.data.invoiceline_set.filter((line) => line.product)
+            console.log(filtered)
+            return filtered.map((line, i)=>({
                 product: line.id + " - " +line.product.product.name,
                 quantity: line.product.quantity,
-                unit_price: line.product.price,
+                unit_price: line.product.unit_price,
                 returned_quantity: line.product.returned_quantity
             }))
         }}

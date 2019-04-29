@@ -34,7 +34,7 @@ class InvoiceFilter(django_filters.FilterSet):
     class Meta:
         model = models.Invoice
         fields = {
-            'date': ['icontains'],
+            'date': ['exact'],
             'customer': ['exact'],
             'salesperson': ['exact'],
             'status': ['exact']

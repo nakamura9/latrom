@@ -48,7 +48,7 @@
         <tr>
             <td colspan="2">
                 <div>
-                    <table style=" border: 1px solid black;width:100% height:60%" >
+                    <table style=" border: 1px solid black;width:100%;min-height:600px;" >
                         <thead>
                             <tr style="background-color:black; color:white; padding:10px;">
                                 <th style="width:15%;padding:10px;">Date</th>
@@ -107,10 +107,13 @@
                 </div>
             </td>
         </tr>
-
     </tbody>
 </table>
+
 {% if pdf_link %}
-<a style="padding:10px;border-radius:10px;background-color:#f22;color:white;" href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
+<p>
+    <a style="padding:10px;border-radius:10px;background-color:#f22;color:white;" href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
+</p>
+
 {% endif %}
 {% endblock %}

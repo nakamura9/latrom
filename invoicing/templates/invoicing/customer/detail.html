@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-sm-12">
         <div class="card-deck">
-            <div class="card bg-primary text-white">
+            <div class="card bg-primary text-white" style="max-height:300px;">
                 <div class="card-body">
                     <h4 class="card-title">Customer Info</h4>
                     <p class="card-text">Name: {{object.name}}</p>
@@ -37,13 +37,73 @@
                     </ul>
                     <div class="tab-content">
                         <div id="invoices" class="tab-pane active">
-                            <h1>Invoices</h1>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in invoices %}
+                                    <tr>
+                                        <td>{{invoice.id}}</td>
+                                        <td>{{invoice.date}}</td>
+                                        <td>{{invoice.total}}</td>
+                                        <td><a href="{% url 'invoicing:invoice-details' pk=invoice.pk %}" class="btn btn-primary">Detail</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            
+                            </table>
                         </div>
                         <div id="quotations" class="tab-pane">
-                            <h1>Quotations</h1>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in quotations %}
+                                    <tr>
+                                        <td>{{invoice.id}}</td>
+                                        <td>{{invoice.date}}</td>
+                                        <td>{{invoice.total}}</td>
+                                        <td><a href="{% url 'invoicing:quotation-details' pk=invoice.pk %}" class="btn btn-primary">Detail</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            
+                            </table>
                         </div>
                         <div id="credit-notes" class="tab-pane">
-                            <h1>Credit Notes</h1>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for note in credit_notes %}
+                                    <tr>
+                                        <td>{{note.id}}</td>
+                                        <td>{{note.date}}</td>
+                                        <td>{{note.total}}</td>
+                                        <td><a href="{% url 'invoicing:credit-note-detail' pk=note.pk %}" class="btn btn-primary">Detail</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            
+                            </table>
                         </div>
                     </div>
                 </div>

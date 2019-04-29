@@ -212,6 +212,8 @@ class EmployeePortalForm(forms.ModelForm, BootstrapMixin):
                 'address':forms.Textarea(attrs={'rows':4, 'cols':15}), 
             }
 class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
+    brackets = forms.CharField(required=True, widget=forms.HiddenInput)
+    
     class Meta:
         model = models.PayrollTax
         fields = '__all__'
@@ -222,6 +224,7 @@ class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Payroll Tax Details',
+                    'brackets',
                     'name',
                     'paid_by',
                 ),

@@ -65,7 +65,7 @@
                 <table style="width:100%" id="item-table">
                     <thead>
                         <tr>
-                            <td style="width:60%">Description</td>
+                            <td style="width:80%">Description</td>
                             <td>Subtotal</td>
                         </tr>
                     </thead>
@@ -82,7 +82,28 @@
                             </tr>
                     </tbody>
                     {% if not page.has_next %}
-                    {% include "common_data/common/invoice_footer.html" %}
+                    <tfoot>
+    {% if object.tax %}
+    <tr>
+        <td>
+            <b>SubTotal:</b>
+        </td>
+        <td>{{object.subtotal | floatformat:2 }}</td>
+    </tr>
+    <tr>
+        <td>
+            <b>Tax Due @{{object.tax.rate}}%:</b>
+        </td>
+        <td>{{object.tax_amount | floatformat:2 }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td >
+            <b>Total:</b>
+        </td>
+        <td>{{object.total | floatformat:2 }}</td>
+    </tr>
+</tfoot>
                     {% endif %}
                     </table>
                     <p>{{page}}</p>

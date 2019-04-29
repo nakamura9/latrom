@@ -8,8 +8,7 @@ from django.db import models
 
 from latrom import settings
 import subprocess
-from django_q.tasks import schedule
-from django_q.models import Schedule
+##%%
 from common_data.utilities import db_util
 
 class Person(models.Model):
@@ -163,6 +162,14 @@ class GlobalConfig(SingletonModel):
         default="", 
         blank=True,
         max_length=255)
+    verification_task_id = models.CharField(
+        default="", 
+        blank=True,
+        max_length=255)
+    is_configured = models.BooleanField(
+        default=False
+    )
+    
     
     def generate_hardware_id(self):
         result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)
@@ -176,17 +183,7 @@ class GlobalConfig(SingletonModel):
         
         super().save(*args, **kwargs)
         
-        has_schedule = Schedule.objects.filter(
-                func='db_util.backup_db', 
-                schedule_type=self.backup_frequency).exists()
-        if not has_schedule and \
-                self.use_backups:
-            schedule('db_util.backup_db', schedule_type=self.backup_frequency)
-        
-        elif has_schedule and not self.use_backups:
-            Schedule.objects.get(
-                func='db_util.backup_db', 
-                schedule_type=self.backup_frequency).delete()
+        ##%% setup backups
 
 
         #setup hardware id

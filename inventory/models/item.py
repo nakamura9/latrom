@@ -124,7 +124,7 @@ class InventoryItem(SoftDeletionModel):
         )
 
         sold_quantity = sum(
-            [(i.product.quantity - i.product.returned_quantity) \
+            [(i.product.quantity - D(i.product.returned_quantity)) \
                 for i in total_product_sales])
 
         return current_total_product_quantity + float(sold_quantity) - ordered_quantity
@@ -189,7 +189,6 @@ class ProductComponent(models.Model):
     def unit_value(self):
         '''the value of inventory on a per item basis'''
         if self.inventoryitem.quantity  == 0 or self.stock_value == 0:
-            print('unit puchase price ', self.inventoryitem.unit_purchase_price)
             return self.inventoryitem.unit_purchase_price
         return self.stock_value / D(self.inventoryitem.quantity)
 

@@ -15,7 +15,7 @@ from rest_framework import viewsets
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from invoicing import filters, forms, serializers
-from invoicing.models import Customer
+from invoicing.models import Customer, Invoice, CreditNote
 from common_data.models import Individual, Organization
 
 
@@ -226,3 +226,19 @@ class CustomerDeleteView( DeleteView):
 class CustomerDetailView(DetailView):
     template_name = os.path.join('invoicing', 'customer', 'detail.html')
     model = Customer
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update({
+            'invoices': Invoice.objects.filter(
+                customer=self.object,
+                status='invoice'),
+            'quotations': Invoice.objects.filter(
+                customer=self.object,
+                status='quotation'),
+            'credit_notes': CreditNote.objects.filter(
+                invoice__customer=self.object
+            )
+        })
+
+        return context 

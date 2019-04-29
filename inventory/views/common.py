@@ -36,7 +36,7 @@ CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
 class InventoryControllerCreateView(ContextMixin, CreateView):
     form_class = forms.InventoryControllerForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     success_url =  reverse_lazy('inventory:inventory-controller-list')
     extra_context = {
         'title': 'Create Inventory Controller',

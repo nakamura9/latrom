@@ -276,10 +276,6 @@ class ProductInvoiceTests(TestCase):
         self.assertIsInstance(self.product_line, InvoiceLine)
         
     def test_set_value_of_goods(self):
-        print("troubleshooting product line")
-        print(f"Line value {self.product_line.value}")
-        print(f"Product unit value {self.product_line.product.product.unit_value}")
-        print(f"line quantity {self.product_line.quantity}")
         self.assertEqual(self.product_line.value, 10)
         
 

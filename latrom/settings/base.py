@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'wkhtmltopdf',
     'reversion',
-    'django_q',
+    'background_task',
     'dbbackup',
     'formtools'
     
@@ -90,7 +90,9 @@ Q_CLUSTER = {
     'orm': 'default',
     'timeout': 60,
     'queue_limit': 50,
-    'workers': 2
+    'workers': 2,
+    'catch_up': True,
+    'sync': True
 }
 
 TEMPLATES = [
@@ -190,3 +192,11 @@ EMAIL_HOST_PASSWORD = email_config['email_password']
 EMAIL_USE_TLS = True
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+CACHES = {
+    'default': {
+		'BACKEND': \
+			'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'djangoq-localmem',
+    }
+}

@@ -37,7 +37,7 @@ $(document).ready(function(){
             <li class="nav-item">
                 <a href="{% url 'messaging:inbox' %}" class="nav-link">
                     <i class="fas fa-envelope" style="font-size:24;"></i> 
-                    Inbox 
+                    Messaging 
                     <span class="badge badge-primary" id='id_message_count'>
                         {{request.user.inbox.total_in}}
                     </span>
