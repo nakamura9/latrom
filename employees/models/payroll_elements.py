@@ -159,7 +159,7 @@ class PayrollDate(models.Model):
         employees = list(self.employees.all())
 
         for department in self.departments.all():
-            employees += [employee for employee in department.employees \
+            employees += [employee for employee in department.employees.all() \
                 if employee not in employees]
 
         for grade in self.pay_grades.all():

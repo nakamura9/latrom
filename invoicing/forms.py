@@ -1,5 +1,5 @@
 
-from crispy_forms.bootstrap import Tab, TabHolder
+from crispy_forms.bootstrap import Tab, TabHolder, InlineRadios
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (HTML, 
                                 Fieldset, 
@@ -7,6 +7,7 @@ from crispy_forms.layout import (HTML,
                                 Row,
                                 Column, 
                                 Submit)
+
 from django import forms
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
 
@@ -19,7 +20,7 @@ from django.forms import ValidationError
 class SalesConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.SalesConfig
-        fields = "__all__"
+        exclude = "is_configured",
 
         widgets = {
             'default_invoice_comments':forms.Textarea(attrs={'rows':4, 'cols':15}),
@@ -75,16 +76,13 @@ class CustomerForm(BootstrapMixin, forms.Form):
 
     other_details=forms.CharField(widget=forms.Textarea, required=False)
 
-    
-
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout= Layout(
             TabHolder(
                 Tab('details',
-                'customer_type',
+                InlineRadios('customer_type'),
                 'name',
                     Row(
                         Column('address', css_class='form-group col-6'),

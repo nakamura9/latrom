@@ -14,11 +14,12 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
 from rest_framework import viewsets
-from formtools.wizard.views import SessionWizardView
 
 from accounting.models import Tax
-from common_data.utilities import ContextMixin, apply_style
+from common_data.utilities import ContextMixin, apply_style, ConfigWizardBase
 from common_data.views import PaginationMixin
+from common_data.models import SingletonModel
+from collections import OrderedDict
 
 from employees import filters, forms, models, serializers
 
@@ -196,27 +197,18 @@ class DepartmentAPIView(viewsets.ModelViewSet):
     queryset = models.Department.objects.all()
     serializer_class = serializers.DepartmentSerializer
 
-class ConfigWizard(SessionWizardView):
+
+class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('employees', 'wizard.html')
     form_list = [
         forms.PayrollDateForm, forms.PayGradeForm, forms.EmployeeForm, forms.PayrollOfficerForm, forms.EmployeesSettingsForm
     ]
-
-    def render_next_step(self, form, **kwargs):
-        form.save()
-        return super().render_next_step(form, **kwargs)
-
-
-    def done(self, form_list, **kwargs):
-        config = models.EmployeesSettings.objects.first()
-        config.is_configured = True
-        config.save()
-        return HttpResponseRedirect(reverse_lazy('employees:dashboard'))
+    success_url = reverse_lazy('employees:dashboard')
+    config_class = models.EmployeesSettings
 
 
     def get_form_initial(self, step):
         initial = super().get_form_initial(step)
-
         if step == '0':
             initial.update({'schedule': 1})
 

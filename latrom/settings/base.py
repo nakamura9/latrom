@@ -200,3 +200,5 @@ CACHES = {
         'LOCATION': 'djangoq-localmem',
     }
 }
+
+MAX_ATTEMPTS = 1

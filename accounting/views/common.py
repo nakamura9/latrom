@@ -21,24 +21,30 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from formtools.wizard.views import SessionWizardView
 
-from common_data.utilities import ContextMixin, apply_style
+from common_data.utilities import ContextMixin, apply_style, ConfigWizardBase
 from common_data.views import PaginationMixin
 from invoicing.models import Customer
 from accounting.util import AccountingTaskService
 from accounting import filters, forms, models, serializers
 from accounting.views.reports.balance_sheet import BalanceSheet
 from accounting.views.dash_plotters import expense_plot, revenue_vs_expense_plot
+from employees.forms import EmployeeForm
+from employees.models import Employee
+
 #constants
+
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 class Dashboard( TemplateView):
     template_name = os.path.join('accounting', 'dashboard.html')
 
     def get(self, *args, **kwargs):
-        config = AccountingSettings.objects.first()
+        config = models.AccountingSettings.objects.first()
         if config is None:
-            config = AccountingSettings.objects.create(is_configured = False)
+            config = models.AccountingSettings.objects.create(is_configured = False)
         if config.is_configured:
+            service = AccountingTaskService()
+            service.run()
             return super().get(*args, **kwargs)
         else:
             return HttpResponseRedirect(reverse_lazy('accounting:config-wizard'))
@@ -61,10 +67,6 @@ class Dashboard( TemplateView):
         return context
 
 
-    def get(self, *args, **kwargs):
-        service = AccountingTaskService()
-        service.run()
-        return super().get(*args, **kwargs)
 #############################################################
 #                 JournalEntry Views                         #
 #############################################################
@@ -596,18 +598,27 @@ def verify_entry(request, pk=None):
     entry.verify()
     return HttpResponseRedirect('/accounting/entry-detail/{}'.format(pk))
 
-class ConfigWizard(SessionWizardView):
+
+def employee_condition(self):
+    return Employee.objects.all().count() == 0
+
+
+def bookkeeper_condition(self):
+    return models.Bookkeeper.objects.all().count() == 0
+
+class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('accounting', 'wizard.html')
     form_list = [
-        forms.ConfigForm, forms.BookkeeperForm, forms.TaxForm
+        forms.ConfigForm, 
+        EmployeeForm,
+        forms.BookkeeperForm, 
+        forms.TaxForm
     ]
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
 
-    def done(self, form_list, **kwargs):
-        for form in form_list:
-            form.save()
+    condition_dict = {
+        '1': employee_condition,
+        '2': bookkeeper_condition
+    }
 
-        config = models.AccountingSettings.objects.first()
-        config.is_configured = True
-        config.save()
-        return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
+    config_class = models.AccountingSettings
+    success_url = reverse_lazy('accounting:dashboard')

@@ -5,7 +5,7 @@
 
 
 <div class="jumbotron">
-<h1 class="display-3">Welcome To The Invoice Section</h1>
+<h1 class="display-3">Welcome To The Accounting Module</h1>
 <p class="lead">To Proceed Please Fill In These Forms</p>
 <hr class="my-2">
 <p>Step {{wizard.steps.step1}} of {{wizard.steps.count}}.</p>
@@ -16,9 +16,14 @@
     }
 </style>
 <ul>
-    <li class="{% if wizard.steps.step1 == 1 %}li-focused{% endif%}" >Configure Your Accountng</li>
-    <li class="{% if wizard.steps.step1 == 2 %}li-focused{% endif%}">Create Your Bookkepper</li>
-    <li class="{% if wizard.steps.step1 == 3 %}li-focused{% endif%}">Create Your Sales Taxes</li>
+    <li class="{% if wizard.steps.current == '0' %}li-focused{% endif%}" >Configure the Accounts Settings</li>
+    {% if '1' in wizard.steps.all %}
+    <li class="{% if wizard.steps.current == '1' %}li-focused{% endif%}" >Add Employee</li>
+    {% endif %}
+    {% if '2' in wizard.steps.all %}
+    <li class="{% if wizard.steps.current == '2' %}li-focused{% endif%}">Create Your Bookkepper</li>
+    {% endif %}
+    <li class="{% if wizard.steps.current == '3' %}li-focused{% endif%}">Create Your Sales Taxes</li>
 </ul>
 </div>
 

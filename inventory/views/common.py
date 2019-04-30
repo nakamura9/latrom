@@ -29,8 +29,8 @@ from inventory.views.dash_plotters import stock_movement_plot
 from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-
-
+from employees.forms import EmployeeForm
+from employees.models import Employee
 
 CREATE_TEMPLATE =os.path.join("common_data", "create_template.html")
 
@@ -75,9 +75,7 @@ class InventoryControllerListView(ContextMixin,   PaginationMixin, FilterView):
     }
 
 
-class InventoryDashboard( 
-    InventoryConfigMixin, 
-    TemplateView):
+class InventoryDashboard(InventoryConfigMixin, TemplateView):
     template_name = os.path.join("inventory", "dashboard.html")
 
     def get(self, *args, **kwargs):
@@ -199,28 +197,28 @@ class CategoryListAPIView(ListAPIView):
     def get_queryset(self):
         return models.Category.objects.filter(parent=None)
 
-class ConfigWizard(SessionWizardView):
+
+
+def inventory_controller_condition(self):
+    return models.InventoryController.objects.all().count() == 0
+
+def employee_condition(self):
+    return Employee.objects.all().count() == 0
+
+class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('inventory', 'wizard.html')
     form_list = [
         forms.ConfigForm, 
+        EmployeeForm,
         forms.InventoryControllerForm,
         forms.WareHouseForm, 
         forms.SupplierForm, 
-        #forms.ProductForm
         ]
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
 
-    def done(self, form_list, **kwargs):
-        for form in form_list:
-            form.save()
-        
-        config = models.InventorySettings.objects.first()
-        config.is_configured = True
-        config.save()
-        return HttpResponseRedirect(reverse_lazy('inventory:home'))
-
-    def get_form_initial(self, step):
-        initial = self.initial_dict.get(step, {})
-        if step == '3':
-            initial.update({'type': 0})# for product
-        return initial
+    condition_dict = {
+        '1': employee_condition,
+        '2': inventory_controller_condition
+    }
+    config_class = models.InventorySettings
+    success_url = reverse_lazy('inventory:home')
+    file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)

@@ -68,14 +68,14 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     organization_website = forms.CharField(required=False)
     organization_business_partner_number = forms.CharField(required=False)
     use_backups = forms.BooleanField(label="Use backups?", required=False)
-    backup_location_type= forms.ChoiceField(
-            widget=forms.RadioSelect, choices=[
-                ('local', 'Local File System'),
-                ('network', 'Network Storage via FTP')
-                ], required=False)
+    #backup_location_type= forms.ChoiceField(
+    #        widget=forms.RadioSelect, choices=[
+    #            ('local', 'Local File System'),
+    #            ('network', 'Network Storage via FTP')
+    #            ], required=False)
     
     class Meta:
-        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization'
+        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization', "backup_location_type", "backup_location"
         model = models.GlobalConfig
 
         widgets = {
@@ -126,12 +126,35 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
                 Tab('Backups',
                     'use_backups',
                     'backup_frequency',
-                    'backup_location_type',
-                    'backup_location'
                 )
             )
         )
-        self.helper.add_input(Submit('submit', 'Submit')),
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+    def save(self, *args, **kwargs):
+        instance = super().save(*args, **kwargs)
+
+        if instance.organization:
+            org = instance.organization
+        else:
+            org = models.Organization()
+
+        print(self.cleaned_data)
+        org.legal_name = self.cleaned_data['organization_name'] 
+        org.business_address = self.cleaned_data['organization_address']
+        org.website = self.cleaned_data['organization_website']
+        org.bp_number = \
+            self.cleaned_data['organization_business_partner_number']
+        org.email = self.cleaned_data['organization_email']
+        org.phone = self.cleaned_data['organization_phone']
+        print(self.cleaned_data['organization_logo'])
+        org.logo = self.cleaned_data['organization_logo']
+
+        org.save()
+        instance.organization = org
+        instance.save()
+
+        return instance
 
 class SendMailForm(BootstrapMixin, forms.Form):
     recipient = forms.EmailField()

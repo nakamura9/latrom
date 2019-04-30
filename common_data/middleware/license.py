@@ -1,4 +1,5 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
 import json
 import hashlib
 import datetime
@@ -10,9 +11,12 @@ from common_data.models import GlobalConfig
 from latrom import settings
 ##%%
 import logging 
-from background_task import background
-
+import os
+from common_data.tasks import remote_license_verification
+from background_task.models import Task
+from background_task.models_completed import CompletedTask
 logger =logging.getLogger(__name__)
+
 
 class UserTrackerException(Exception):
     pass
@@ -88,7 +92,9 @@ class LicenseMiddleware(object):
             except UserTrackerException:
                 return HttpResponseRedirect('/base/license-error/users')
             
-            if  'api' in request.path:
+            if  'api' in request.path or \
+                request.path.startswith('/admin') or \
+                request.path.startswith('/base/reset-license-check'):
                 return self.get_response(request)
 
             license = None
@@ -115,6 +121,7 @@ class LicenseMiddleware(object):
             if (config.last_license_check == None or \
                     (datetime.date.today() - \
                     config.last_license_check).days > 2):
+                #print((datetime.date.today() - config.last_license_check).days)
                 # check if a pending task for verification has been generated
                 # there are 3 levels of verification id
                 # -1 pending
@@ -122,56 +129,32 @@ class LicenseMiddleware(object):
                 # failure
                 # empty string means a new task needts to be scheduled
                 print('checking ', config.verification_task_id)
-                if config.verification_task_id == '1':
-                    return HttpResponseRedirect(
-                            '/base/license-error-page')
-                elif config.verification_task_id == "0":
-                        config.verification_task_id = ""
-                        config.last_license_check = datetime.date.today()
-                        config.save()
-                elif config.verification_task_id == '':
+                
+                if config.verification_task_id == '':
                     # if not generate that task and store the task id
                     print('setup')
-                    remote_license_verification(license)
-                    config.verification_task_id = '-1'
+                    task = remote_license_verification(license)
+                    config.verification_task_id = task.task_hash
                     config.save()
-                elif config.verification_task_id == '-1':
-                    self.get_response(request)
+                    return self.get_response(request)
 
                 else:
-                    config.verification_task_id = ""
-                    config.save()
+                    print(config.verification_task_id)
+                    if CompletedTask.objects.filter(
+                            task_hash=config.verification_task_id).exists():
+                        task = CompletedTask.objects.filter(
+                            task_hash=config.verification_task_id).latest('pk')
+                        if task.attempts > 0:
+                            print('completed')
+                            return HttpResponseRedirect(
+                                '/base/license-error-page')
+                        else:
+                            print('no attempts')
+                            return self.get_response(request)
+                    else:
+                        print('no task')
+                        return self.get_response(request)
 
-        response = self.get_response(request)
+        return self.get_response(request)
 
-        return response
 
-@background(schedule=1)
-def remote_license_verification(license):
-    config = GlobalConfig.objects.first()
-    try:
-        print(license)
-        resp = requests.get('http://nakamura9.pythonanywhere.com/validate', 
-            params={
-            'info': urllib.parse.quote(json.dumps({
-                'customer_id': license['license']['customer'],
-                'signature': license['signature'],
-                'hardware_id': config.hardware_id
-            }))
-        })
-    except requests.ConnectionError:
-        logger.critical('the license check failed because of network '
-            'connectivity')
-        config.verification_task_id = "1"
-        config.save()
-       
-    if resp.status_code == 200 and \
-            json.loads(resp.content)['status'] == 'valid':
-        config.last_license_check = datetime.date.today()
-        config.verification_task_id = "0"
-        config.save()
-        
-    else:
-        logger.critical('license check failed from licensing server')
-        config.verification_task_id = "1"
-        config.save()

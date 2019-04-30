@@ -18,7 +18,7 @@ from . import models
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.AccountingSettings
-        fields = "__all__"
+        exclude = "is_configured",
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

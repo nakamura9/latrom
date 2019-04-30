@@ -10,13 +10,15 @@ from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework import viewsets
 
-from common_data.utilities import ContextMixin
+from common_data.utilities import ContextMixin, ConfigWizardBase
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
 from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect
+from employees.forms import EmployeeForm
+from employees.models import Employee
 
 
 
@@ -77,19 +79,20 @@ class ServiceAPIView(viewsets.ModelViewSet):
     queryset = models.Service.objects.all()
     serializer_class = serializers.ServiceSerializer
 
-class ConfigWizard(SessionWizardView):
+def employee_condition(self):
+    return Employee.objects.all().count() == 0
+
+class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('services', 'wizard.html')
     form_list = [
-        forms.ServiceForm, forms.ServicePersonForm
+        forms.ServiceForm, 
+        EmployeeForm,
+        forms.ServicePersonForm
     ]
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
 
-    def done(self, form_list, **kwargs):
-        for form in form_list:
-            form.save()
+    condition_dict = {
+        '1': employee_condition
+    }
 
-        config = models.ServicesSettings.objects.first()
-        print(f'config is {config}')
-        config.is_configured = True
-        config.save()
-        return HttpResponseRedirect(reverse_lazy('services:dashboard'))
+    config_class = models.ServicesSettings
+    success_url = reverse_lazy('services:dashboard')
