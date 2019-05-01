@@ -24,6 +24,7 @@ class AccountingSettings(SingletonModel):
         choices=ACCOUNTING_PERIODS, default=1)
     currency_exchange_table = models.ForeignKey('accounting.CurrencyConversionTable', default=1, on_delete=models.SET_NULL, null=True)
     default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True, blank=True, on_delete=models.SET_NULL)
+    is_configured = models.BooleanField(default=False)
 
 class Bookkeeper(SoftDeletionModel):
     '''
