@@ -18,14 +18,14 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rest_framework import generics, viewsets
 
 from accounting.forms import TaxForm
-from common_data.utilities import ContextMixin, ConfigMixin
+from common_data.utilities import ContextMixin, ConfigMixin, ConfigWizardBase
 from invoicing import filters, forms, serializers
 from invoicing.models import *
 from invoicing.views.report_utils import plotters
-from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-
+from employees.models import Employee
+from employees.forms import EmployeeForm
 
 class SalesConfigMixin(object):
     def get_context_data(self, **kwargs):
@@ -85,18 +85,23 @@ class ConfigAPIView(generics.RetrieveAPIView):
     queryset = SalesConfig.objects.all()
     serializer_class = serializers.ConfigSerializer
 
-class ConfigWizard(SessionWizardView):
+def employee_condition(self):
+    return Employee.objects.all().count() == 0
+
+class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('invoicing', 'wizard.html')
     form_list = [
-        forms.SalesConfigForm, forms.CustomerForm, forms.SalesRepForm
+        forms.SalesConfigForm, 
+        forms.CustomerForm, 
+        EmployeeForm,
+        forms.SalesRepForm
     ]
+
+    condition_dict = {
+        '2' : employee_condition
+    }
+
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
 
-    def done(self, form_list, **kwargs):
-        for form in form_list:
-            form.save()
-
-        config = SalesConfig.objects.first()
-        config.is_configured = True
-        config.save()
-        return HttpResponseRedirect(reverse_lazy('inventory:home'))
+    config_class = SalesConfig
+    success_url = reverse_lazy('inventory:home')

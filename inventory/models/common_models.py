@@ -12,6 +12,8 @@ from django.db.models import Q
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel, SoftDeletionModel
 from inventory.models.item import InventoryItem
+from inventory.schedules import run_inventory_service
+from background_task.models import Task
 
 
 class InventorySettings(SingletonModel):
@@ -58,6 +60,14 @@ class InventorySettings(SingletonModel):
     use_raw_materials_inventory = models.BooleanField(default=True)
     #TODO capitalization_limit = models.DecimalField(max_digits=6, decimal_places=2)
     is_configured = models.BooleanField(default=False)
+    service_hash = models.CharField(max_length=255, default="", blank=True)
+
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_configured and self.service_hash == "":
+            run_inventory_service(repeat=Task.DAILY)
+
 
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 

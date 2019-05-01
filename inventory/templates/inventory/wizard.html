@@ -16,10 +16,15 @@
     }
 </style>
 <ul>
-    <li class="{% if wizard.steps.step1 == 1 %}li-focused{% endif%}" >Configure the application</li>
-    <li class="{% if wizard.steps.step1 == 2 %}li-focused{% endif%}">Add Inventory Controller</li>
-    <li class="{% if wizard.steps.step1 == 3 %}li-focused{% endif%}">Create Warehouse</li>
-    <li class="{% if wizard.steps.step1 == 4 %}li-focused{% endif%}">Make First Supplier</li>
+    <li class="{% if wizard.steps.current == '0' %}li-focused{% endif%}" >Configure the application</li>
+    {% if '1' in wizard.steps.all %}
+    <li class="{% if wizard.steps.current == '1' %}li-focused{% endif%}">Add Employee</li>
+    {% endif %}
+    {% if '2' in wizard.steps.all %}
+    <li class="{% if wizard.steps.current == '2' %}li-focused{% endif%}">Add Inventory Controller</li>
+    {% endif %}
+    <li class="{% if wizard.steps.current == '3' %}li-focused{% endif%}">Create Warehouse</li>
+    <li class="{% if wizard.steps.current == '4' %}li-focused{% endif%}">Make First Vendor</li>
 </ul>
 </div>
 

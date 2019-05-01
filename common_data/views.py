@@ -21,14 +21,16 @@ from common_data.models import GlobalConfig, Organization
 from common_data.utilities import (ContextMixin, 
                                     apply_style, 
                                     MultiPageDocument, 
-                                    MultiPagePDFDocument)
+                                    MultiPagePDFDocument,
+                                    ConfigWizardBase)
 from invoicing.models import SalesConfig
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from django.contrib.auth.models import User
 from django.apps import apps
-from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from background_task.models_completed import CompletedTask
+
 
 class PaginationMixin(object):
     '''quick and dirty mixin to support pagination on filterviews '''
@@ -389,17 +391,33 @@ def get_model_latest(request, app=None, model_name=None):
     return JsonResponse({latest.pk: str(latest)})
 
 
-class ConfigWizard(SessionWizardView):
+class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('common_data', 'wizard.html')
     form_list = [forms.GlobalConfigForm]
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
+    config_class = GlobalConfig
+    success_url = reverse_lazy('base:workflow')
     
+    #TODO fix logo and file handling
     def done(self, form_list, **kwargs):
+        """Because there is only one form"""
+        print('saving')
         for form in form_list:
             form.save()
-            
-        config = GlobalConfig.objects.first()
-        config.is_configured = True
-        config.save()
-        return HttpResponseRedirect(reverse_lazy('base:workflow'))
+        return super().done(form_list, **kwargs)
+    
+
+def reset_license_check(request):
+    #delete the hash
+    print('resetting')
+    config = GlobalConfig.objects.first()
+    
+    #remove all the completed tasks
+    CompletedTask.objects.filter(
+        task_hash=config.verification_task_id).delete()
+
+    config.verification_task_id = ''
+    config.save()
+
+    return HttpResponseRedirect('/login')
 

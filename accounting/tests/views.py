@@ -60,7 +60,15 @@ class CommonViewTests(TestCase):
 
     def test_get_dashboard(self):
         resp = self.client.get(reverse('accounting:dashboard'))
+        self.assertTrue(resp.status_code==302)
+        config = AccountingSettings.objects.first()
+        config.is_configured=True
+        config.save()
+        resp = self.client.get(reverse('accounting:dashboard'))
         self.assertTrue(resp.status_code==200) 
+        config.is_configured=False
+        config.save()
+
 
     def test_get_transfer_form(self):
         resp = self.client.get(reverse('accounting:transfer'))

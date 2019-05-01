@@ -1,5 +1,10 @@
 from django.core.paginator import Paginator
 from django.views.generic.base import ContextMixin as CMixin
+from formtools.wizard.views import SessionWizardView
+from collections import OrderedDict
+from django.http import HttpResponseRedirect
+
+
 
 class MultiPageDocument(CMixin):
     '''This class enables long invoices and other lists of items to be rendered correctly over multiple pages.
@@ -61,3 +66,40 @@ class MultiPagePDFDocument(CMixin):
         return None
 
         
+
+class ConfigWizardBase(SessionWizardView):
+    '''This class saves instances of each model after each step
+    After all the forms are rendered, the application saves its config model'''
+    config_class = None
+    success_url = None
+
+    def render_next_step(self, form, **kwargs):
+        '''saves each instance of the form after rendering'''
+        form.save()
+        return super().render_next_step(form, **kwargs)
+
+    def render_done(self, form, **kwargs):
+        '''This method overrides form tools default to prevent revalitdation
+        on forms that have already been saved.'''
+        final_forms = OrderedDict()
+        # walk through the form list and try to validate the data again.
+        for form_key in self.get_form_list():
+            form_obj = self.get_form(
+                step=form_key,
+                data=self.storage.get_step_data(form_key),
+                files=self.storage.get_step_files(form_key)
+            )
+            
+            final_forms[form_key] = form_obj
+            done_response = self.done(final_forms.values(), 
+                form_dict=final_forms, **kwargs)
+            
+            self.storage.reset()
+            return done_response
+
+    def done(self, form_list, **kwargs):
+        config = self.config_class.objects.first()
+        config.is_configured = True
+        config.save()
+        return HttpResponseRedirect(self.success_url)
+

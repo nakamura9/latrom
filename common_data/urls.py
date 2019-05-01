@@ -41,6 +41,9 @@ urlpatterns = [
         name='license-error-users'),
     re_path(r'^api/users/?$', views.UserAPIView.as_view(), name='api-users'),
     re_path(r'^create-note/?$', views.create_note, name='create-note'),
+    re_path(r'^reset-license-check/?$', views.reset_license_check, 
+        name='reset-license-check'),
     re_path(r'^models/get-latest/(?P<app>[\w ]+)/(?P<model_name>[\w ]+)/?$', 
         views.get_model_latest, name='get-latest-model'),
+    
 ]

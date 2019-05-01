@@ -26,7 +26,7 @@ VALUATION_OPTIONS = [
     ]
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude = "is_configured",
         model = models.InventorySettings
        
         widgets = {
@@ -64,7 +64,7 @@ class SupplierForm(BootstrapMixin, forms.Form):
     vendor_type = forms.ChoiceField(widget=forms.RadioSelect, choices=[
         ('individual', 'Individual'),
         ('organization', 'Organization')
-        ])
+        ], required=True)
     name=forms.CharField()
     address=forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), 
                             required=False)
@@ -114,7 +114,7 @@ class SupplierForm(BootstrapMixin, forms.Form):
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
-
+        
         if cleaned_data['vendor_type'] == "individual":
             if " " not in cleaned_data['name']:
                 raise forms.ValidationError('The vendor name must have both a first and last name separated by a space.')
