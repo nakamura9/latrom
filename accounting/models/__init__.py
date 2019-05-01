@@ -12,6 +12,8 @@ from .assets import *
 from .books import *
 from .transactions import *
 from .accounts import *
+from accounting.schedules import run_accounting_service
+from background_task.models import Task
 
 class AccountingSettings(SingletonModel):
     ACCOUNTING_PERIODS = [
@@ -26,7 +28,12 @@ class AccountingSettings(SingletonModel):
     default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True,  
         blank=True, on_delete=models.SET_NULL)
     is_configured = models.BooleanField(default=False)
-    
+    service_hash = models.CharField(max_length=255, default="", blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_configured and self.service_hash == "":
+            run_accounting_service(repeat=Task.DAILY)
 
 class Bookkeeper(SoftDeletionModel):
     '''

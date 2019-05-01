@@ -1,5 +1,7 @@
 from django.db import models
 from common_data.models import SingletonModel, SoftDeletionModel
+from employees.schedules import run_payroll_service
+from background_task.models import Task
 
 class PayrollOfficer(models.Model):
     employee = models.OneToOneField('employees.Employee', 
@@ -29,3 +31,10 @@ class EmployeesSettings(SingletonModel):
         default=1000)
     payroll_counter = models.IntegerField(default=0)
     is_configured = models.BooleanField(default=False)
+    service_hash = models.CharField(max_length=255, default="", blank=True)
+
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_configured and self.service_hash == "":
+            run_payroll_service(repeat=Task.DAILY)

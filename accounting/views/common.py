@@ -24,7 +24,6 @@ from formtools.wizard.views import SessionWizardView
 from common_data.utilities import ContextMixin, apply_style, ConfigWizardBase
 from common_data.views import PaginationMixin
 from invoicing.models import Customer
-from accounting.util import AccountingTaskService
 from accounting import filters, forms, models, serializers
 from accounting.views.reports.balance_sheet import BalanceSheet
 from accounting.views.dash_plotters import expense_plot, revenue_vs_expense_plot
@@ -43,8 +42,6 @@ class Dashboard( TemplateView):
         if config is None:
             config = models.AccountingSettings.objects.create(is_configured = False)
         if config.is_configured:
-            service = AccountingTaskService()
-            service.run()
             return super().get(*args, **kwargs)
         else:
             return HttpResponseRedirect(reverse_lazy('accounting:config-wizard'))

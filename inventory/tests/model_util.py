@@ -3,6 +3,7 @@ from accounting.tests.model_util import AccountingModelCreator
 from employees.tests.model_util import EmployeeModelCreator
 from inventory import models 
 import datetime
+
 #change order status from order
 class InventoryModelCreator():
     def __init__(self, klass):

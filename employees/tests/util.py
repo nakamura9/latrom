@@ -1,5 +1,6 @@
 from django.test import Client, TestCase
-from employees.views import AutomatedPayrollService, ManualPayrollService
+from employees.services import AutomatedPayrollService
+from employees.views import  ManualPayrollService
 from employees.models import *
 from .models import create_test_employees_models
 import datetime

@@ -22,7 +22,6 @@ from common_data.models import GlobalConfig
 from common_data.utilities import *
 from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
-from inventory.views.util import InventoryService
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition, ConsumablesRequisition
 from inventory.views.dash_plotters import stock_movement_plot
@@ -81,7 +80,6 @@ class InventoryDashboard(InventoryConfigMixin, TemplateView):
     def get(self, *args, **kwargs):
         if models.InventorySettings.objects.first().is_configured:
             resp = super().get(*args, **kwargs)
-            InventoryService().run()
             return resp 
 
         else:

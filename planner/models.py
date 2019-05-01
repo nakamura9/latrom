@@ -9,7 +9,7 @@ from django.db import models
 from common_data.models import SingletonModel
 from common_data.utilities import time_choices
 from employees.models import Employee
-from inventory.models import Supplier
+import inventory
 from invoicing.models import Customer
 
 
@@ -103,7 +103,7 @@ class Event(models.Model):
             EventParticipant.objects.create(
                 event=self,
                 participant_type = evt_type,
-                supplier=Supplier.objects.get(pk=pk)
+                supplier=inventory.models.Supplier.objects.get(pk=pk)
             )
         else:
             raise Exception('no type was specified')

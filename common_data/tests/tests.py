@@ -78,10 +78,10 @@ class ModelTests(TestCase):
         
         self.assertEqual(org.members.count(), 1)
 
-    def test_config(self):
+    '''def test_config(self):
         #also validates singleton model
         obj = GlobalConfig.objects.create()
-        self.assertIsInstance(obj, GlobalConfig)
+        self.assertIsInstance(obj, GlobalConfig)'''
 
 
 class ViewTests(TestCase):

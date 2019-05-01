@@ -75,7 +75,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     #            ], required=False)
     
     class Meta:
-        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization', "backup_location_type", "backup_location"
+        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization', "backup_location_type", "backup_location", 'is_configured'
         model = models.GlobalConfig
 
         widgets = {

@@ -10,6 +10,9 @@ from latrom import settings
 import subprocess
 ##%%
 from common_data.utilities import db_util
+from common_data.schedules import backup_db
+from background_task.models import Task
+
 
 class Person(models.Model):
     first_name = models.CharField(max_length =32)
@@ -179,17 +182,42 @@ class GlobalConfig(SingletonModel):
 
         return id    
 
+    @property
+    def task_mapping(self):
+        mapping = {
+            'D': Task.DAILY,
+            'W': Task.WEEKLY,
+            'M': Task.EVERY_4_WEEKS,
+            '': 5
+        }
+        return mapping[self.backup_frequency]
+
     def save(self, *args, **kwargs):
         
         super().save(*args, **kwargs)
         
-        ##%% setup backups
+        if self.use_backups and self.backup_location == "":
+            task = backup_db(repeat=self.task_mapping)
+            #task = backup_db(repeat=10)
+            
+            self.backup_location = task.task_hash
+            super().save(*args, **kwargs)
 
+        print(self.backup_location)
+        if not self.use_backups and self.backup_location != "":
+            tasks = Task.objects.filter(task_hash=self.backup_location)
+            if tasks.exists():
+                tasks.delete()
+                print('deleting task')
+            
+            self.backup_location = ""
+            super().save(*args, **kwargs)
 
         #setup hardware id
         if self.hardware_id == "":
             self.hardware_id = self.generate_hardware_id()
-            self.save()
+            super().save(*args, **kwargs)
+
 
         #serialize and store in json file so settings.py can access
         json_config = os.path.join(settings.BASE_DIR, 'global_config.json')
@@ -199,6 +227,7 @@ class GlobalConfig(SingletonModel):
             del fields['last_license_check']
             del fields['_state']
             json.dump(fields, fil)
+
 
     @classmethod
     def logo_url(cls):

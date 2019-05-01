@@ -118,16 +118,10 @@ class LicenseMiddleware(object):
             #check with remote server every three days
             config = GlobalConfig.objects.get(pk=1)
             #if not settings.DEBUG and \
-            if (config.last_license_check == None or \
+            if not settings.DEBUG and (config.last_license_check == None or \
                     (datetime.date.today() - \
                     config.last_license_check).days > 2):
                 #print((datetime.date.today() - config.last_license_check).days)
-                # check if a pending task for verification has been generated
-                # there are 3 levels of verification id
-                # -1 pending
-                # 0 success
-                # failure
-                # empty string means a new task needts to be scheduled
                 print('checking ', config.verification_task_id)
                 
                 if config.verification_task_id == '':
