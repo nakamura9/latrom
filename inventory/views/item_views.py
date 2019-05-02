@@ -176,8 +176,9 @@ class EquipmentUpdateView( ContextMixin,
 
     def get_initial(self):
         initial = super().get_initial()
-        initial['asset_data'] = models.InventoryItem.objects.get(
-            pk=self.kwargs['pk']).equipment_component.asset_data.pk
+        item = models.InventoryItem.objects.get(pk=self.kwargs['pk'])
+        if item.equipment_component.asset_data:
+            initial['asset_data'] = item.equipment_component.asset_data.pk
         return initial
         
 class EquipmentDetailView( DetailView):
