@@ -170,6 +170,8 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
         return cleaned_data 
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
+    paygrade = forms.ModelChoiceField(models.PayGrade.objects.all(), 
+        required=False)
     class Meta:
         exclude="active", 'user','last_leave_day_increment'
         model = models.Employee

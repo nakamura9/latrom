@@ -86,7 +86,7 @@ class AutomatedPayrollService(object):
 
 
     def adjust_leave_days(self):
-        for employee in models.Employee.objects.all():
+        for employee in models.Employee.objects.filter(pay_grade__isnull=False):
             if employee.last_leave_day_increment is None  or \
                     (self.TODAY -  employee.last_leave_day_increment).days > 30:
                 employee.increment_leave_days(
