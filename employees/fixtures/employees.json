@@ -8,13 +8,6 @@
         }
     },
     {
-        "model": "employees.PayGrade",
-        "pk": 1,
-        "fields": {
-            "name": "Default"
-        }
-    },
-    {
         "model": "employees.PayrollSchedule",
         "pk": 1,
         "fields": {

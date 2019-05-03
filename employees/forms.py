@@ -20,6 +20,8 @@ from django.db.models import Q
 from django.forms import ValidationError
 from . import models
 
+
+
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     #when running payroll - a message must be raised that the hours of 
     #hourly workers must be calculated first
@@ -206,6 +208,20 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                     'uses_timesheet'
                     )))
         self.helper.add_input(Submit('submit', 'Submit'))
+
+    def save(self, *args, **kwargs):
+        '''The very first employee created in the application is automatically assigned a user.'''
+        resp = super().save(*args, **kwargs)
+        if models.Employee.objects.all().count() == 1:
+            user = User.objects.create(
+                username=self.instance.first_name,
+                password="1234"
+            )
+            self.instance.user = user
+            self.instance.save()
+            print('created user successfully %%')
+
+        return resp
 
 
 class EmployeePortalForm(forms.ModelForm, BootstrapMixin):

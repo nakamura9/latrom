@@ -15,6 +15,8 @@ from employees.models import Employee
 
 
 class ServiceForm(forms.ModelForm,BootstrapMixin):
+    category = forms.ModelChoiceField(models.ServiceCategory.objects.all(),
+        required=False)
     class Meta:
         fields = "__all__"
         model = models.Service
