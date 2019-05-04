@@ -617,6 +617,10 @@ class SupplierViewTests(TestCase):
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
 
+        cls.sup_ind = models.Supplier.objects.create(
+            individual=cls.individual,
+        )
+
 
         cls.SUPPLIER_DATA = {
             'vendor_type': 'individual',
@@ -635,6 +639,15 @@ class SupplierViewTests(TestCase):
             data=self.SUPPLIER_DATA)
         self.assertEqual(resp.status_code,  302)
 
+    def test_post_supplier_create_organization(self):
+        resp = self.client.post('/inventory/supplier/create',
+            data={
+                'vendor_type': 'organization',
+                'name': 'vendor',
+                'address': 'somewhere'
+            })
+        self.assertEqual(resp.status_code,  302)
+
     def test_get_supplier_list(self):
         resp = self.client.get('/inventory/supplier/list/')
         self.assertEqual(resp.status_code,  200)
@@ -646,11 +659,47 @@ class SupplierViewTests(TestCase):
             }))
         self.assertEqual(resp.status_code,  200)
 
-    def test_post_supplier_update(self):
+    def test_get_supplier_update_individual(self):
+        
+        resp = self.client.get(reverse('inventory:supplier-update',
+            kwargs={
+                'pk': self.sup_ind.pk
+            }))
+        self.assertEqual(resp.status_code,  200)
+
+    def test_post_supplier_update_no_swap_org(self):
+        resp = self.client.post(reverse('inventory:supplier-update',
+            kwargs={
+                'pk': self.supplier.pk
+            }), data={
+                "vendor_type": "organization",
+                "name": "other supplier"
+                })
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_supplier_update_no_swap_individual(self):
+        resp = self.client.post(reverse('inventory:supplier-update',
+            kwargs={
+                'pk': self.sup_ind.pk
+            }), data=self.SUPPLIER_DATA)
+        self.assertEqual(resp.status_code,  302)
+
+
+    def test_post_supplier_update_swap_org(self):
         resp = self.client.post(reverse('inventory:supplier-update',
             kwargs={
                 'pk': self.supplier.pk
             }), data=self.SUPPLIER_DATA)
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_supplier_update_swap_individual(self):
+        resp = self.client.post(reverse('inventory:supplier-update',
+            kwargs={
+                'pk': self.sup_ind.pk
+            }), data={
+                'vendor_type': 'organization',
+                'name': 'swapped'
+            })
         self.assertEqual(resp.status_code,  302)
 
     def test_get_supplier_delete(self):

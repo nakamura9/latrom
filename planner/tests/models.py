@@ -3,10 +3,12 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
 from planner.models import *
+from employees.models import Employee
 from employees.tests.models import create_test_employees_models
 from common_data.models import Organization
 from inventory.models import Supplier
 from invoicing.models import Customer
+from dateutil.relativedelta import relativedelta
 
 TODAY = datetime.date.today()
 class PlannerModelTests(TestCase):
@@ -27,7 +29,8 @@ class PlannerModelTests(TestCase):
             reminder=datetime.timedelta(hours=1),
             start_time=datetime.datetime.now().time(),
             end_time=datetime.datetime.now().time(),
-            owner=cls.usr
+            owner=cls.usr,
+            repeat_active=True
         )
 
         cls.organization = Organization.objects.create(
@@ -63,24 +66,33 @@ class PlannerModelTests(TestCase):
 
     def test_create_employee_participant(self):
         prev_count = Event.objects.first().participants.count()
-        self.evt.add_participant('employee', 1)
         
+        p = self.evt.add_participant('employee', 1)
+        self.assertIsInstance(str(p), str)
+        self.assertTrue(Employee.objects.filter(pk=p.participant_pk).exists())
         self.assertEqual(Event.objects.first().participants.count(),
             prev_count + 1)
 
     def test_create_event_customer_participant(self):
         prev_count = Event.objects.first().participants.count()
-        self.evt.add_participant('customer', 1)
+        
+        p = self.evt.add_participant('customer', 1)
+        self.assertIsInstance(str(p), str)
+        self.assertTrue(Customer.objects.filter(pk=p.participant_pk).exists())
         
         self.assertEqual(Event.objects.first().participants.count(),
             prev_count + 1)
     
     def test_create_event_supplier_participant(self):
         prev_count = Event.objects.first().participants.count()
-        self.evt.add_participant('supplier', 1)
         
+        p = self.evt.add_participant('supplier', 1)
+        self.assertIsInstance(str(p), str)
+        self.assertTrue(Supplier.objects.filter(pk=p.participant_pk).exists())
+
         self.assertEqual(Event.objects.first().participants.count(),
             prev_count + 1)
+        
 
     def test_create_planner_config(self):
         obj = PlannerConfig.objects.create(
@@ -98,3 +110,36 @@ class PlannerModelTests(TestCase):
 
         self.assertIsInstance(obj, EventParticipant)
         self.assertIsInstance(str(obj), str)
+
+    def test_event_repeat_string(self):
+        self.assertIsInstance(self.evt.repeat_string, str)
+
+    def test_repeat_on_date_before(self):
+        other = datetime.date.today() - datetime.timedelta(days=1)
+        self.assertFalse(self.evt.repeat_on_date(other))
+
+
+    def test_repeat_on_date_never(self):
+        other = datetime.date.today() + datetime.timedelta(days=1)
+        self.assertFalse(self.evt.repeat_on_date(other)) 
+
+
+    def test_repeat_on_date_daily(self):
+        self.evt.repeat = 1
+        self.evt.save()
+        other = datetime.date.today() + datetime.timedelta(days=1)
+        self.assertTrue(self.evt.repeat_on_date(other))
+
+
+    def test_repeat_on_date_weekly(self):
+        self.evt.repeat = 2
+        self.evt.save()
+        other = datetime.date.today() + datetime.timedelta(days=7)
+        self.assertTrue(self.evt.repeat_on_date(other))
+
+
+    def test_repeat_on_date_monthly(self):
+        self.evt.repeat = 3
+        self.evt.save()
+        other = datetime.date.today() + relativedelta(months=1)
+        self.assertTrue(self.evt.repeat_on_date(other))

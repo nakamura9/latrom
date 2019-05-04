@@ -39,9 +39,10 @@ class InvoiceListView( ContextMixin, PaginationMixin, FilterView):
                     "new_link": reverse_lazy("invoicing:create-invoice")}
     template_name = os.path.join("invoicing", "invoice","list.html")
     filterset_class = filters.InvoiceFilter
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
+        #Dead???
         return Invoice.objects.filter(active=True).order_by('date').reverse()
     
 

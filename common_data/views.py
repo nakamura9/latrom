@@ -30,6 +30,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from background_task.models_completed import CompletedTask
+import services
 
 
 class PaginationMixin(object):
@@ -45,7 +46,7 @@ class PaginationMixin(object):
         
         
         if not self.paginate_by:
-            self.paginate_by = 10
+            self.paginate_by = 20
 
         p = Paginator(object_list, self.paginate_by)
 
@@ -352,12 +353,18 @@ class LicenseFeaturesErrorPage(TemplateView):
 class UsersErrorPage(TemplateView):
     template_name = os.path.join('common_data', 'users_error.html')
 
-from services.models import ServiceWorkOrder
 NOTE_TARGET = {
-    'work_order': ServiceWorkOrder
+    'work_order': services.models.ServiceWorkOrder
 }
 
 def create_note(request):
+    global NOTE_TARGET 
+    '''This simple function allows a large variety of objects to support 
+    notes without modification. The global note target dictionary mapps 
+    strings of notes with their corresponding objects to which the notes are 
+    applied. Thus each note request must have an author, a message and 
+    identification for the target namely its classname and the objects primary 
+    key'''
     author = User.objects.get(pk=request.POST['author'])
     note = models.Note.objects.create(
         author = author,

@@ -346,6 +346,8 @@ class TestReportViews(TestCase):
         create_account_models(cls)
         create_test_inventory_models(cls)
         create_test_common_entities(cls)
+        cls.end = datetime.date.today()
+        cls.start = cls.end - datetime.timedelta(days=30)
 
     def setUp(self):
         #wont work in setUpClass
@@ -364,7 +366,38 @@ class TestReportViews(TestCase):
         resp = self.client.get(reverse('accounting:profit-and-loss-form'))
         self.assertEqual(resp.status_code, 200)
 
-    #income statement form view has no post
+    def test_get_balance_sheet_csv_report(self):
+        resp = self.client.get(reverse('accounting:balance-sheet-csv'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_trial_balance_csv(self):
+        resp = self.client.get(reverse('accounting:trial-balance-csv'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_profit_and_loss_csv(self):
+        
+        
+        resp = self.client.get(reverse('accounting:profit-and-loss-csv', kwargs={
+            'start': urllib.parse.quote(self.start.strftime("%d %B %Y")),
+            'end':urllib.parse.quote(self.end.strftime("%d %B %Y"))
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_account_csv(self):
+        resp = self.client.get(reverse('accounting:account-report-csv', kwargs={
+            'start': urllib.parse.quote(self.start.strftime("%d %B %Y")),
+            'end':urllib.parse.quote(self.end.strftime("%d %B %Y")),
+            'account': 1000
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_journal_csv_report(self):
+        resp = self.client.get(reverse('accounting:journal-report-csv', kwargs={
+            'start': urllib.parse.quote(self.start.strftime("%d %B %Y")),
+            'end':urllib.parse.quote(self.end.strftime("%d %B %Y")),
+            'journal': 1
+        }))
+        self.assertEqual(resp.status_code, 200)
 
     def test_get_trial_balance_page(self):
         resp = self.client.get(reverse('accounting:trial-balance'))

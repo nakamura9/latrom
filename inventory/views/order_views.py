@@ -144,7 +144,7 @@ class OrderUpdateView( ContextMixin,
 
 class OrderListView( ContextMixin, 
         PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.OrderFilter
     template_name = os.path.join("inventory", "order", "list.html")
     extra_context = {"title": "Purchase Order List",

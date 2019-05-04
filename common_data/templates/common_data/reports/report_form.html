@@ -21,7 +21,7 @@
                     <!-- The trick is making the form method GET-->
                     <form method="GET" action="{{action}}" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <table class="table">
+                        <table class="table table-sm">
                             {{form.as_p}}
                         </table>
                         <button class="btn btn-default pull-right" type="submit">View Report</button>

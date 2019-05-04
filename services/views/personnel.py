@@ -36,7 +36,7 @@ class ServicePersonUpdateView( ContextMixin, UpdateView):
 class ServicePersonListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'personnel', 'list.html')
     queryset = models.ServicePerson.objects.all()
-    paginate_by = 10
+    paginate_by = 20
     extra_context = {
         'title': 'Service Personnel List',
         'new_link': reverse_lazy('services:service-person-create')

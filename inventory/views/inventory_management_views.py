@@ -74,7 +74,7 @@ class InventoryCheckDetailView(DetailView):
     template_name = os.path.join('inventory', 'inventory_check', 'summary.html')
 
 class InventoryCheckListView(ContextMixin ,PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.InventoryCheckFilter
     template_name = os.path.join("inventory", "inventory_check", 'list.html')
     extra_context = {"title": "List of Inventory Checks"}
@@ -133,7 +133,7 @@ class TransferOrderCreateView(CreateView):
 class TransferOrderListView(ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.TransferOrderFilter
     template_name = os.path.join('inventory', 'transfer', 'list.html')
-    paginate_by =10
+    paginate_by = 20
     extra_context = {
         'title': 'List of Transfer Orders',
         

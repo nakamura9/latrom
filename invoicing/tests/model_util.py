@@ -17,6 +17,7 @@ class InvoicingModelCreator():
         self.create_expense_line()
         self.create_expense_line_component()
         self.create_invoice()
+        self.create_quotation()
         self.create_payment()
         self.create_sales_representative()
         self.create_product_line()
@@ -72,6 +73,32 @@ class InvoicingModelCreator():
             )
 
         return self.cls.invoice 
+
+    def create_quotation(self):
+        if hasattr(self.cls, 'quotation') and self.cls.invoice is not None:
+            return self.cls.invoice
+
+        if not hasattr(self.cls, 'customer_org'):
+            self.create_customer_org()
+
+        if not hasattr(self.cls, 'warehouse'):
+            imc = InventoryModelCreator(self.cls)
+            imc.create_warehouse()
+
+        if not hasattr(self.cls, 'sales_representative'):
+            self.create_sales_representative()
+
+        self.cls.quotation = Invoice.objects.create(
+            draft=False,
+            status='quotation',
+            quotation_date=datetime.date.today(),
+            quotation_valid=datetime.date.today(),
+            customer=self.cls.customer_org,
+            ship_from=self.cls.warehouse,
+            salesperson=self.cls.sales_representative
+            )
+
+        return self.cls.quotation
 
     def create_product_line_component(self):
         if not hasattr(self.cls, 'product'):

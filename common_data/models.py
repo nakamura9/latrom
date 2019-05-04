@@ -175,7 +175,8 @@ class GlobalConfig(SingletonModel):
     
     
     def generate_hardware_id(self):
-        result = subprocess.run('wmic csproduct get uuid'.split(), stdout=subprocess.PIPE)
+        result = subprocess.run('wmic csproduct get uuid', 
+            stdout=subprocess.PIPE, shell=True)
         _id = result.stdout.decode('utf-8')
         _id = _id[_id.find('\n') + 1:]
         id = _id[:_id.find(' ')]

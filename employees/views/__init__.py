@@ -39,8 +39,11 @@ class DashBoard( ContextMixin, TemplateView):
 
             config = models.EmployeesSettings.objects.create(is_configured = False)
         
-        print(config.is_configured)
         if config.is_configured:
+            ungraded = models.Employee.objects.filter(pay_grade__isnull=True).count()
+            if ungraded > 0:
+                messages.info(request, f'{ungraded} employees have no paygrades, please review the employees and assign paygrades to them for payroll to work')
+
             return super().get(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(reverse_lazy('employees:config-wizard'))

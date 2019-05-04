@@ -113,6 +113,19 @@
         
 </div>
 <script>
+    //iframe redirect detection
+    var timesLoaded = 0;
+
+    $("iframe").on('load', function(){
+        timesLoaded++;
+        if(timesLoaded > 2){
+            $("#id-my-modal").hide();
+            $('#popup-frame').empty();
+            timesLoaded = 0;
+        }
+    });
+
+
        $(".ui-date-picker").datepicker({
         changeYear: true,
         dateFormat: 'yy-mm-dd' 
@@ -150,13 +163,23 @@
             }
         })
     }
+    /*
+    function hasLatest(var model, var app, var id){
+        //checks if a select widget has the latest element
 
+    }
 
+    function insertLatest(var id, var value, var representation){
+        //appends the latest element to the select widget
+        $('#' + id).append("<option value='" + value + "'>" + representation + "</option>")
+    }
 
+    */
     $(document).ready(function(){
      if(inIframe()){
          $("#navbar").hide();
          $("#footer").hide();
+         $('a').each(function(){$(this).hide()})
      }
      var updater = setInterval(updateNotifications, 10000)   
      $('.notification-overlay').click(function(){

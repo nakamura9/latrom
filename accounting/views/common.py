@@ -87,7 +87,7 @@ class JournalEntryCreateView( ContextMixin, CreateView):
 
 class JournalEntryIframeView(ListView):
     template_name = os.path.join('accounting', 'journal', 'entry_list.html')
-    paginate_by =10
+    paginate_by = 20
     def get_queryset(self):
         return models.JournalEntry.objects.filter(
             journal= models.Journal.objects.get(pk=self.kwargs['pk'])
@@ -172,7 +172,7 @@ class AccountDetailView( DetailView):
 
 class AccountCreditIframeView(ListView):
     template_name = os.path.join('accounting', 'account', 'entry_list.html')
-    paginate_by =10
+    paginate_by = 20
     def get_queryset(self):
         return models.Credit.objects.filter(
             account= models.Account.objects.get(pk=self.kwargs['pk']),
@@ -182,7 +182,7 @@ class AccountCreditIframeView(ListView):
 
 class AccountDebitIframeView(ListView):
     template_name = os.path.join('accounting', 'account', 'entry_list.html')
-    paginate_by =10
+    paginate_by = 20
     def get_queryset(self):
         return models.Debit.objects.filter(
             account= models.Account.objects.get(pk=self.kwargs['pk']),
@@ -194,7 +194,7 @@ class AccountListView( PaginationMixin, FilterView,
         ContextMixin):
     template_name = os.path.join('accounting', 'account','list.html')
     filterset_class = filters.AccountFilter
-    paginate_by = 10
+    paginate_by = 20
     queryset = models.Account.objects.all()
     extra_context = {
         "title": "Chart of Accounts",
@@ -233,7 +233,7 @@ class TaxCreateView( ContextMixin, CreateView):
 class TaxListView( ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.TaxFilter
     template_name = os.path.join('accounting','tax_list.html')
-    paginate_by =10
+    paginate_by = 20
     model = models.Tax
     extra_context = {
         'title': 'Sales Tax List',
@@ -322,7 +322,7 @@ class JournalDetailView( DetailView):
 class JournalListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('accounting', 'journal', 'list.html')
     filterset_class = filters.JournalFilter
-    paginate_by = 10
+    paginate_by = 20
     extra_context = {
         "title": "Accounting Journals",
         'new_link': reverse_lazy('accounting:create-journal')
@@ -491,7 +491,7 @@ class BookkeeperUpdateView( UpdateView):
 
 class BookkeeperListView( PaginationMixin ,FilterView):
     queryset = models.Bookkeeper.objects.filter(active=True)
-    paginate_by=10
+    paginate_by = 20
     template_name = os.path.join('accounting', 'bookkeeper_list.html')
     extra_context = {
         'title': 'List of Bookkeepers',

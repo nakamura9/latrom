@@ -1,4 +1,5 @@
 from services.models import *
+import datetime
 
 class ServiceModelCreator():
     def __init__(self, klass):
@@ -35,3 +36,13 @@ class ServiceModelCreator():
             frequency='once',
             is_listed=True
         )
+
+
+    def create_service_work_order(self):
+        self.cls.service_work_order = ServiceWorkOrder.objects.create(
+            date = datetime.date.today(),
+            time=datetime.datetime.now().time(),
+            status='requested'
+        )
+
+        return self.cls.service_work_order

@@ -104,4 +104,4 @@ class ConfigWizard(ConfigWizardBase):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'logo'))
 
     config_class = SalesConfig
-    success_url = reverse_lazy('inventory:home')
+    success_url = reverse_lazy('invoicing:home')

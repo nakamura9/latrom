@@ -121,7 +121,6 @@ class LicenseMiddleware(object):
             if not settings.DEBUG and (config.last_license_check == None or \
                     (datetime.date.today() - \
                     config.last_license_check).days > 2):
-                #print((datetime.date.today() - config.last_license_check).days)
                 print('checking ', config.verification_task_id)
                 
                 if config.verification_task_id == '':

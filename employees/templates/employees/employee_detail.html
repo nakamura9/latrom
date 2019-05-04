@@ -11,6 +11,7 @@
         {% elif request.user.employee %}
         <a class="btn btn-primary btn-lg" href="{% url 'employees:employee-portal-update' pk=object.pk %}" role="button">Edit</a>
         {% endif %}
+        NB: The first user linked to an employee is assigned a default password of '1234'. Please change it at the first opportunity
     </p>
 </div>
 

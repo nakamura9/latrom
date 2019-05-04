@@ -85,7 +85,8 @@ class ServiceWorkOrder(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.works_request.update_status()
+        if self.works_request:
+            self.works_request.update_status()
 
     @property
     def number_of_employees(self):
