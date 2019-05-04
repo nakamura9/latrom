@@ -15,6 +15,9 @@ from employees.models import Employee
 
 
 class ServiceForm(forms.ModelForm,BootstrapMixin):
+
+    category = forms.ModelChoiceField(models.ServiceCategory.objects.all(), required=False)
+
     class Meta:
         fields = "__all__"
         model = models.Service
@@ -23,6 +26,7 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
                 'description':forms.Textarea(attrs={'rows':4, 'cols':15}), 
             }   
     
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
