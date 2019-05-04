@@ -212,7 +212,7 @@ class CustomerListView( ContextMixin, PaginationMixin, FilterView):
                         "invoicing:create-customer")}
     template_name = os.path.join("invoicing", "customer", "list.html")
     filterset_class = filters.CustomerFilter
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         return Customer.objects.all().order_by('pk')

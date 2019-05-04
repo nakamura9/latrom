@@ -22,9 +22,15 @@
     .btn-success{
         background-color: green;
     }
+
+    .actions{
+        background-color: #c5c5c5;
+        padding:30px;
+        margin:10px;
+    }
  
 </style>
-<table class="table" style="width:100%">
+<table class="table table-sm" style="width:100%">
     <tbody>
         <tr>
             <td style="width:50%">
@@ -47,7 +53,7 @@
         <tr>
             <td colspan="2">
                 {% for page in pages %}
-                <table style="width:100%;">
+                <table style="width:100%;" id="data-table">
                     <thead>
                         <tr>
                             <th>Account Code</th>
@@ -88,9 +94,22 @@
 
 <p>Inventory at {{date}} was valued at ${{inventory_value  | accounting}}</p>
 
-{% if pdf_link %}
-    <a href="{% url 'accounting:trial-balance-csv' %}" class="btn btn-success">Export as csv</a>
-    <a href="{% url 'accounting:trial-balance-pdf' %}" class="btn btn-danger">Generate PDF</a>
-{% endif %}
+
+
 
 {% endblock page_contents %}
+
+{% block pre_page %}
+
+<div class="actions">
+    {% if pdf_link %}
+    <div class="btn btn-group">
+        <a href="{% url 'accounting:trial-balance-csv' %}" class="btn btn-success">Export as csv</a>
+        <a href="{% url 'accounting:trial-balance-pdf' %}" class="btn btn-danger">Generate PDF</a>
+    </div>
+    
+{% endif %}
+
+</div>
+
+{% endblock pre_page %}

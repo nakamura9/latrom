@@ -146,7 +146,7 @@ class UnitDetailView( DetailView):
 class UnitListView(ContextMixin,  PaginationMixin, FilterView):
     filterset_class = filters.UnitFilter
     model = models.UnitOfMeasure
-    paginate_by = 10
+    paginate_by = 20
     template_name = os.path.join('inventory', 'unit', 'list.html')
     extra_context = {
         'title': 'List of Units',

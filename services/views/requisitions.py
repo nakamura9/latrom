@@ -73,7 +73,7 @@ class EquipmentRequisitionListView( ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.EquipmentRequisitionFilter
     queryset = models.EquipmentRequisition.objects.all().order_by(
         'date').reverse()
-    paginate_by = 10
+    paginate_by = 20
     template_name = os.path.join('services', 'requisitions', 'equipment', 'list.html')
 
     extra_context = {
@@ -190,7 +190,7 @@ class ConsumableRequisitionListView( ContextMixin, PaginationMixin, FilterView):
     queryset = models.ConsumablesRequisition.objects.all().order_by(
         'date').reverse()
     template_name = os.path.join('services', 'requisitions', 'consumables', 'list.html')
-    paginate_by = 10
+    paginate_by = 20
 
     extra_context = {
         'title': 'List of Consumables Requisitions'

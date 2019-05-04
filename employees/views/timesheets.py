@@ -81,7 +81,7 @@ class CreateTimeSheetView( TimeSheetMixin, CreateView):
 class ListTimeSheetView(ContextMixin,  PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'time_sheet_list.html')
     filterset_class = filters.TimeSheetFilter
-    paginate_by = 10
+    paginate_by = 20
     extra_context ={
         'title': 'Time Sheets',
         'new_link': reverse_lazy('employees:timesheet-create')

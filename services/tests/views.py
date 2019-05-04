@@ -623,16 +623,44 @@ class WorkOrderViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_work_order_complete_page(self):
-        resp = self.client.post('/services/work-order-complete/1', data={"service_time": ""})
+        resp = self.client.post('/services/work-order-complete/1', data={
+            "service_time": urllib.parse.quote(json.dumps([
+                {"employee": '1 -caleb',
+                "date": datetime.date.today().strftime("%Y-%m-%d"),
+                "normal_time": "05:00",
+                "overtime": "00:00"}
+            ])), 
+            "steps[]": ["1"] 
+            })
 
         self.assertEqual(resp.status_code, 302)
 
     def test_work_order_authorize(self):
-        #resp = self.client.post('/services/work-order-authorize/1',
-        #    data={
-        #        'status': 'completed',
-        #        'authorized_by': self.employee.pk,
-        #        'password': '123'
-        #    })
-        #self.assertEqual(resp.status_code, 302)
-        pass # TODO fix
+        self.employee.user = self.user
+        self.employee.save()
+        resp = self.client.post('/services/work-order-authorize/1',
+            data={
+                'status': 'completed',
+                'authorized_by': self.employee.pk,
+                'password': '123'
+            })
+        self.assertEqual(resp.status_code, 302)
+        
+    def test_get_work_order_costing_view(self):
+        resp = self.client.get('/services/work-order/costing/1')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_work_order_expense_view(self):
+        resp = self.client.get("/services/work-order/1/expense-create")
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_work_order_expense_view(self):
+        resp = self.client.post("/services/work-order/1/expense-create", data={
+            'description': 'description',
+            'category': 1,
+            'amount': 100,
+            'debit_account': 1000,
+            'date': datetime.date.today(),
+            'recorded_by': 1
+        })
+        self.assertEqual(resp.status_code, 302)

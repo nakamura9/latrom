@@ -42,7 +42,7 @@ class SalesRepListView( ContextMixin, PaginationMixin, FilterView):
                     "new_link": reverse_lazy("invoicing:create-sales-rep")}
     template_name = os.path.join("invoicing", "sales_rep_list.html")
     filterset_class = filters.SalesRepFilter
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         return SalesRepresentative.objects.all().order_by('pk')

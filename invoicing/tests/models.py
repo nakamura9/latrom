@@ -91,7 +91,7 @@ class CustomerModelTests(TestCase):
 
     def test_invoices_property(self):
         '''Invoice created in model creator'''
-        self.assertEqual(len([i for i in self.customer_org.invoices]), 1)
+        self.assertEqual(len([i for i in self.customer_org.invoices]), 2)
 
     def test_credit_invoices(self):        
         self.assertEqual(len(self.customer_org.credit_invoices), 1)
@@ -207,7 +207,7 @@ class ProductInvoiceTests(TestCase):
         self.invoice.status = 'quotation'
         self.invoice.save()
         self.invoice.set_quote_invoice_number()
-        self.assertEqual(self.invoice.quotation_number, 1)
+        self.assertEqual(self.invoice.quotation_number, 2)
         self.invoice.status = old_status
         self.invoice.save()
         self.invoice.set_quote_invoice_number()
@@ -298,6 +298,8 @@ class ProductInvoiceTests(TestCase):
         shortages = self.invoice.verify_inventory()
         self.assertEqual(len(shortages), 0)
 
+    def test_quotation_is_valid(self):
+        self.assertTrue(self.quotation.quotation_is_valid)
 
 
 class InvoiceModelTests(TestCase):

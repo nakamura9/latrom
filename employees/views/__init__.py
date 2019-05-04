@@ -39,7 +39,6 @@ class DashBoard( ContextMixin, TemplateView):
 
             config = models.EmployeesSettings.objects.create(is_configured = False)
         
-        print(config.is_configured)
         if config.is_configured:
             ungraded = models.Employee.objects.filter(pay_grade__isnull=True).count()
             if ungraded > 0:

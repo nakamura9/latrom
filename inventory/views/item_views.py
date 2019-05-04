@@ -57,7 +57,7 @@ class ProductDetailView( DetailView):
 
 
 class ProductListView( ContextMixin, PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
     extra_context = {
@@ -119,7 +119,7 @@ class ConsumableDetailView( DetailView):
 
 class ConsumableListView( ContextMixin, 
         PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', 'consumable','list.html')
     extra_context = {
@@ -188,7 +188,7 @@ class EquipmentDetailView( DetailView):
 
 class EquipmentListView( ContextMixin, 
         PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', 'equipment', 'list.html')
     extra_context = {
@@ -251,7 +251,7 @@ class RawMaterialDetailView( DetailView):
 
 class RawMaterialListView( ContextMixin, 
         PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', 'raw_material', 'list.html')
     extra_context = {

@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <form method="POST" action="" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <table class="table">
+                        <table class="table table-sm">
                             {{form.as_p}}
                         </table>
                         

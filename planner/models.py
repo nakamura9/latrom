@@ -87,26 +87,29 @@ class Event(models.Model):
             'customer': 1
         }
         evt_type = evt_mapping[evt_type]
+        participant = None 
         if evt_type == 0:
-            EventParticipant.objects.create(
+            participant = EventParticipant.objects.create(
                 event=self,
                 participant_type = evt_type,
                 employee=Employee.objects.get(pk=pk)
             )
         elif evt_type == 1:
-            EventParticipant.objects.create(
+            participant = EventParticipant.objects.create(
                 event=self,
                 participant_type = evt_type,
                 customer=Customer.objects.get(pk=pk)
             )
         elif evt_type == 2:
-            EventParticipant.objects.create(
+            participant = EventParticipant.objects.create(
                 event=self,
                 participant_type = evt_type,
                 supplier=inventory.models.Supplier.objects.get(pk=pk)
             )
         else:
             raise Exception('no type was specified')
+
+        return participant
 
     
     def complete(self):

@@ -277,7 +277,6 @@ class InvoiceViewTests(TestCase):
             'salesperson': 1,
             'due': TODAY.strftime('%m/%d/%Y'),
             'date': TODAY.strftime('%m/%d/%Y'),
-            'discount': 0,
             'ship_from': 1,
             'terms': 'Test Terms',
             'comments': 'test comments',
@@ -340,11 +339,22 @@ class InvoiceViewTests(TestCase):
 
     def test_post_invoice_update_page(self):
         simple_data = dict(self.DATA)
-        del simple_data['discount']
-        del simple_data['item_list']
         resp = self.client.post(reverse('invoicing:invoice-update',
             kwargs={'pk': 1}),
                 data=simple_data)
+        
+        self.assertEqual(resp.status_code, 302)
+
+
+    def test_post_invoice_update_page_as_draft(self):
+        simple_data = dict(self.DATA)
+        inv = Invoice.objects.first()
+        inv.draft=True
+        inv.save()
+        resp = self.client.post(reverse('invoicing:invoice-update',
+            kwargs={'pk': 1}),
+                data=simple_data)
+        
         
         self.assertEqual(resp.status_code, 302)
     
@@ -427,17 +437,27 @@ class InvoiceViewTests(TestCase):
         resp = self.client.get(reverse('invoicing:credit-note-list'))
         self.assertEqual(resp.status_code, 200)
 
-    '''
+    
     def test_verify_invoice(self):
         from django.contrib.auth.models import User
-        resp = self.client.post('/invoicing/invoice/verify/1',
+        resp = self.client.post('/invoicing/invoice/verify/' + \
+                str(self.invoice.pk),
             data={
                 'user': '1',
                 'password': '123'
             })
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(SalesInvoice.objects.get(pk=1).status, "quotation")
-    '''
+    
+    def test_verify_quotation(self):
+        from django.contrib.auth.models import User
+        resp = self.client.post('/invoicing/invoice/verify/' + \
+            str(self.quotation.pk),
+            data={
+                'user': User.objects.first().pk,
+                'password': '123'
+            })
+        self.assertEqual(resp.status_code, 302)
+
     
     def test_get_sales_invoice_expense_page(self):
         resp = self.client.get("/invoicing/invoice/shipping-costs/1")
@@ -448,10 +468,117 @@ class InvoiceViewTests(TestCase):
             'amount': 10,
             'description': 'description',
             'recorded_by': 1,
-            'date': datetime.date.today()
+            'date': datetime.date.today(),
+            'reference': 'ref'
         })
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)
 
     def test_get_shipping_expense_list(self):
         resp = self.client.get('/invoicing/invoice/shipping-costs/list/1')
         self.assertEqual(resp.status_code, 200)
+
+
+class QuotationViewTests(TestCase):
+    fixtures = ['common.json','accounts.json', 'employees.json', 
+        'journals.json','invoicing.json']
+    
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client=Client()
+        cls.DATA = {
+            'status': 'quotation',
+            'customer': cls.customer_org.pk,
+            'salesperson': 1,
+            'quotation_valid': TODAY.strftime('%m/%d/%Y'),
+            'quotation_date': TODAY.strftime('%m/%d/%Y'),
+            'ship_from': 1,
+            'terms': 'Test Terms',
+            'comments': 'test comments',
+            'item_list': json.dumps([
+                {   
+                    'type': 'product',
+                    'selected': '1 - item',
+                    'quantity': 1,
+                    'tax': '1 - Tax',
+                    'discount': '0'
+                },
+                {   
+                    'type': 'service',
+                    'selected': '1 - item',
+                    'hours': 1,
+                    'tax': '1 - tax',
+                    'discount': '0'
+                },
+                {   
+                    'type': 'expense',
+                    'selected': '1 - item',
+                    'tax': '1 - tax',
+                    'discount': '0'
+                }
+                ])
+        }
+
+    @classmethod
+    def setUpTestData(cls):
+        imc = InvoicingModelCreator(cls)
+        imc.create_all()
+        create_test_user(cls)
+        amc = AccountingModelCreator(cls).create_tax()
+        create_test_common_entities(cls)
+
+    def test_get_quotation_create_view(self):
+        resp = self.client.get(reverse('invoicing:create-quotation'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_quotation_create_view_with_customer(self):
+        resp = self.client.get(reverse('invoicing:create-quotation', kwargs={
+            'customer': 1
+        }))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_post_quotation_create_view(self):
+        resp = self.client.post(reverse('invoicing:create-quotation'), 
+            data=self.DATA)
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_quotation_update_view(self):
+        resp = self.client.get(reverse('invoicing:quotation-update', kwargs={
+            'pk': self.quotation.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_post_quotation_update_view(self):
+        self.quotation.draft=True
+        self.quotation.save()
+        resp = self.client.post(reverse('invoicing:quotation-update', kwargs={
+            'pk': self.quotation.pk
+        }), data=self.DATA)
+
+    def test_get_quotation_detail_view(self):
+        resp = self.client.get(reverse('invoicing:quotation-details', kwargs={
+            'pk': 1
+        }))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_make_invoice_from_quotation(self):
+        resp = self.client.get(reverse('invoicing:make-invoice', kwargs={
+            'pk': self.quotation.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
+        #self.assertEqual(Invoice.objects.get(pk=self.quotation.pk).status,     "invoice")
+
+        self.quotation.status = "quotation"
+        self.quotation.save()
+
+
+    def test_make_proforma_from_quotation(self):
+        resp = self.client.get(reverse('invoicing:make-proforma', kwargs={
+            'pk': self.quotation.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
+        #self.assertEqual(Invoice.objects.get(pk=self.quotation.pk).status,    "proforma")
+
+        self.quotation.status = "quotation"
+        self.quotation.save()
+    

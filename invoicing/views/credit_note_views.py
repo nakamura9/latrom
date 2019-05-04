@@ -106,7 +106,7 @@ class CreditNoteListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Credit Notes"}
     template_name = os.path.join("invoicing", "invoice", "credit_note", "list.html")
     filterset_class = filters.CreditNoteFilter
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         return CreditNote.objects.all().order_by('date').reverse()

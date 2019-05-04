@@ -4,12 +4,15 @@ import datetime
 from .test_models import create_test_user, create_test_common_entities
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import reverse
 import json
 from common_data.utilities import (
     ConfigMixin, 
     ContextMixin, 
     extract_period, 
     time_choices)
+
+import services
 
 class ModelTests(TestCase):
     @classmethod 
@@ -172,7 +175,7 @@ class ViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_send_mail_page(self):
-        # simulate email do research 
+        #TODO simulate email do research 
         self.assertTrue(True)
 
     def test_get_about_page(self):
@@ -210,6 +213,50 @@ class ViewTests(TestCase):
         
         self.assertEqual(resp.status_code, 302)
 
+    def test_get_global_config_page_with_organization(self):
+        #ensure that all links are shown
+        config = GlobalConfig.objects.first()
+        config.organization = self.organization
+        config.save()
+        resp = self.client.get('/base/config/1')
+        self.assertEqual(resp.status_code, 200)
+
+        config.organization = None
+        config.save()
+
+    def test_post_global_config_page_with_organization(self):
+        #ensure that all links are shown
+        config = GlobalConfig.objects.first()
+
+        config.organization = self.organization
+        config.save()
+        resp = self.client.post('/base/config/1',
+            data={
+                'email_user': 'username',
+                'backup_frequency': 'D',
+                'organization_name': 'latrom',
+                'organization_address': 'somewhere'
+            })
+        
+        self.assertEqual(resp.status_code, 302)
+        config.organization = None
+        config.save()
+
+    def test_reset_license_check(self):
+        resp = self.client.get(reverse('base:reset-license-check'))
+        #redirects
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_model_latest(self):
+        resp = self.client.get(reverse('base:get-latest-model', kwargs={
+            'model_name': 'organization',
+            'app': 'common_data'
+        }))
+        self.assertEqual(resp.status_code, 200)
+        org = Organization.objects.latest('pk')
+        data = json.loads(resp.content)
+        self.assertTrue(str(org) == data[str(org.pk)])
+
     def test_get_api_current_user(self):
         resp = self.client.get('/base/api/current-user')
         self.assertEqual(json.loads(resp.content)['name'], 'Testuser')
@@ -222,6 +269,20 @@ class ViewTests(TestCase):
     def test_get_authentication_view(self):
         resp = self.client.get('/base/authenticate')
         self.assertEqual(resp.status_code, 200)
+
+    def test_post_create_note(self):
+        services.tests.model_util.ServiceModelCreator(
+            self).create_service_work_order()
+
+        resp = self.client.post(reverse('base:create-note'), data={
+            'author': User.objects.first().pk,
+            'note': 'testing',
+            'target': 'work_order',
+            'target_id': 1
+        })
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        self.assertEqual(data['status'], 'ok')
 
 class UtilityTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 'invoicing.json']
@@ -264,4 +325,3 @@ class UtilityTests(TestCase):
         self.assertEqual(len(output), 12)
         time = datetime.datetime.strptime('11:30:00', "%H:%M:%S").time()
         self.assertEqual(output[11][0], time)
-

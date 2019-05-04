@@ -139,7 +139,6 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
         else:
             org = models.Organization()
 
-        print(self.cleaned_data)
         org.legal_name = self.cleaned_data['organization_name'] 
         org.business_address = self.cleaned_data['organization_address']
         org.website = self.cleaned_data['organization_website']
@@ -147,7 +146,6 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
             self.cleaned_data['organization_business_partner_number']
         org.email = self.cleaned_data['organization_email']
         org.phone = self.cleaned_data['organization_phone']
-        print(self.cleaned_data['organization_logo'])
         org.logo = self.cleaned_data['organization_logo']
 
         org.save()

@@ -48,7 +48,7 @@ class WareHouseUpdateView(ContextMixin, UpdateView):
 
 class WareHouseItemListView(ListView):
     template_name = os.path.join('inventory', 'warehouse', 'item_list.html')
-    paginate_by=10
+    paginate_by = 20
     def get_queryset(self):
         return models.WareHouseItem.objects.filter(
             warehouse=models.WareHouse.objects.get(pk=self.kwargs['pk']))
@@ -62,7 +62,7 @@ class WareHouseDetailView(InventoryConfigMixin, DetailView):
 class WareHouseListView(ContextMixin, ListView):
     template_name = os.path.join('inventory', 'warehouse', 'list.html')
     model = models.WareHouse
-    paginate_by = 10
+    paginate_by = 20
     extra_context = {
         'new_link': reverse_lazy('inventory:warehouse-create'),
         'title': 'List of  Warehouses'

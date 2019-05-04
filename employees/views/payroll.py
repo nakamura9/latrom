@@ -147,7 +147,7 @@ class PayGradeUpdateView( RevisionMixin ,ContextMixin, UpdateView):
 
 class PayGradeListView( PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'pay_grade_list.html')
-    paginate_by = 10
+    paginate_by = 20
     queryset =  models.PayGrade.objects.all()
     filterset_class = filters.PayGradeFilter
     extra_context = {
@@ -173,7 +173,7 @@ class PayslipListView(
         FilterView):
     filterset_class = filters.PayslipFilter
     template_name = os.path.join('employees', 'payslip', 'list.html')
-    paginate_by = 10
+    paginate_by = 20
     extra_context = {
         'title': 'List of Payslips',
         'new_link': '/employees/manual-config'
@@ -189,7 +189,7 @@ class EmployeePayslipListView(
         FilterView):
     filterset_class = filters.PayslipFilter
     template_name = os.path.join('employees', 'portal', 'payslip_list.html')
-    paginate_by = 10
+    paginate_by = 20
     extra_context = {
         'title': 'List of Payslips',
     }
@@ -432,7 +432,7 @@ class PayrollDateListView(ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'payroll_date_list.html')
     filterset_class = filters.PayrollDateFilter
     queryset = models.PayrollDate.objects.all()
-    paginate_by = 10
+    paginate_by = 20
 
     extra_context = {
         'title': 'List of Payroll Dates',

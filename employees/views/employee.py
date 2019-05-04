@@ -75,7 +75,7 @@ class EmployeePortalUpdateView( ContextMixin, UpdateView):
 class EmployeeListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'employee_list.html')
     filterset_class = filters.EmployeeFilter
-    paginate_by = 10
+    paginate_by = 20
     extra_context = {
         'title': 'List of Employees',
         'new_link': reverse_lazy('employees:create-employee')
@@ -112,7 +112,7 @@ class PayrollOfficerUpdateView( ContextMixin, UpdateView):
 
 class PayrollOfficerListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'payroll_officer_list.html')
-    paginate_by=10
+    paginate_by = 20
     queryset = models.PayrollOfficer.objects.all()
     filterset_class = filters.PayrollOfficerFilter
     extra_context = {

@@ -202,7 +202,7 @@ class SupplierUpdateView(ContextMixin, FormView):
 
 class SupplierListView( ContextMixin, 
         PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.SupplierFilter
     template_name = os.path.join("inventory", "supplier", "list.html")
     extra_context = {"title": "Vendor List",

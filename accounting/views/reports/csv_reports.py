@@ -10,6 +10,8 @@ from .trial_balance import TrialBalance
 from .profit_and_loss import ProfitAndLossReport
 from .account import AccountReport
 from .journal import JournalReport
+from accounting.models import Account
+from django.db.models import Q
 
 def balance_sheet_csv(request):
     response = HttpResponse(content_type="text/csv")
@@ -33,18 +35,16 @@ def trial_balance_csv(request):
     response['Content-Disposition'] = 'attachment; filename="trial_balance.csv"'
     
     writer = csv.writer(response)
-    string =render_to_string(
-        TrialBalance.template_name, TrialBalance.common_context({}))
     
-    soup = BeautifulSoup(string)
-    data = soup.find_all('table')[1]
-
-    rows = data.find_all('tr')
-
     #for headings 
-    writer.writerow([i.string for i in rows[0].find_all('th')])
-    for row in rows[1:]:
-        writer.writerow([i.string for i in row.find_all('td')])
+    qs = Account.objects.all().exclude(
+            Q(balance=0.0) & Q(control_account=False)).exclude(
+                parent_account__isnull=False).order_by('pk')
+
+    
+    writer.writerow(['Account Code', 'Account Title', 'Debit', 'Credit'])
+    for acc in qs:
+        writer.writerow([acc.pk, acc.name, acc.debit, acc.credit])
 
     return response 
 

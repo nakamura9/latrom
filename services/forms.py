@@ -109,18 +109,17 @@ class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
         model = models.ServiceWorkOrder
 
 
-class ServiceWorkOrderAuthorizationForm(forms.ModelForm, BootstrapMixin):
+class ServiceWorkOrderAuthorizationForm(BootstrapMixin, forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
-    class Meta:
-        fields = ["authorized_by", "status"]
-        model = models.ServiceWorkOrder
+    authorized_by = forms.ModelChoiceField(Employee.objects.all())
+    status = forms.ChoiceField(choices=models.ServiceWorkOrder.STATUS_CHOICES)
 
-    def clean(self):
-        cleaned_data = super().clean()
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
         password = cleaned_data['password']
-        user = cleaned_data['authorized_by']
+        employee = cleaned_data['authorized_by']
 
-        if not authenticate(username=user.user.username, password=password):
+        if not authenticate(username=employee.user.username, password=password):
             raise forms.ValidationError('The password supplied is incorrect.')
 
         return cleaned_data

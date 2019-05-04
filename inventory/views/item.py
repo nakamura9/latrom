@@ -47,7 +47,7 @@ class InventoryItemDetailView( DetailView):
 
 
 class InventoryItemListView( ContextMixin, PaginationMixin, FilterView):
-    paginate_by = 10
+    paginate_by = 20
     filterset_class = filters.InventoryItemFilter
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
     extra_context = {
