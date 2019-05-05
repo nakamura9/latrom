@@ -208,7 +208,8 @@ class ViewTests(TestCase):
                 'email_user': 'username',
                 'backup_frequency': 'D',
                 'organization_name': 'latrom',
-                'organization_address': 'somewhere'
+                'organization_address': 'somewhere',
+                'logo_aspect_ratio': 0
             })
         
         self.assertEqual(resp.status_code, 302)
@@ -235,7 +236,8 @@ class ViewTests(TestCase):
                 'email_user': 'username',
                 'backup_frequency': 'D',
                 'organization_name': 'latrom',
-                'organization_address': 'somewhere'
+                'organization_address': 'somewhere',
+                'logo_aspect_ratio': 0
             })
         
         self.assertEqual(resp.status_code, 302)
