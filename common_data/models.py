@@ -120,6 +120,13 @@ class GlobalConfig(SingletonModel):
         ('M', 'Monthly'),
         ('W', 'Weekly')
         ]
+
+    LOGO_CHOICES = [
+        (0, '3:2 (Medium rectangle)'),
+        (1, '1:1 (Square)'),
+        (2, '4:3 (Narrower Rectangle)'),
+        (3, ':16:9 (Wide Rectangle)'),
+    ]
     # TODO personalize email settings for each user
     email_host = models.CharField(max_length=32, blank=True, default="")
     email_port = models.IntegerField(null=True, blank=True)
@@ -172,6 +179,9 @@ class GlobalConfig(SingletonModel):
     is_configured = models.BooleanField(
         default=False
     )
+    logo_aspect_ratio = models.PositiveSmallIntegerField(
+        default=0, 
+        choices=LOGO_CHOICES)
     
     
     def generate_hardware_id(self):
@@ -229,6 +239,19 @@ class GlobalConfig(SingletonModel):
             del fields['_state']
             json.dump(fields, fil)
 
+
+    @property
+    def logo_width(self):
+        '''All logos share a heigh of 100 px, width is calculated as a ratio
+        relative to this value.'''
+        mapping = {
+            0: 1.5,
+            1: 1,
+            2: 1.33,
+            3: 1.78
+        }
+
+        return mapping[self.logo_aspect_ratio] * 100
 
     @classmethod
     def logo_url(cls):

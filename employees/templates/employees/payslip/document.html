@@ -1,27 +1,33 @@
 <table style="height:25%">
-        <tbody>
-            <tr>
-                <td style="width:60%">
-                    <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
-                </td>
-                <td>
-                    <h1>Pay Slip</h1>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <h4>
-                        <b>{{business_name}}</b>
-                    </h4>
-                </td>
-                <td>
-                    <p>
-                        <b>Start Period:</b> {{object.start_period}}</p>
-                    <p>
-                        <b>Period:</b> {{object.end_period}}</p>
-                </td>
-            </tr>
-        </tbody>
+    <tbody>
+        <tr>
+            <td style="width:60%">
+                {% if logo.name != "False" %}
+                <img width="300" height="100" src="/media/{{logo}}" alt="Logo">
+                {% else %}
+                <div style="padding:40px;color:white;background-color:black;margin:0px 50px;">
+                    No Logo
+                </div>
+                {% endif %}
+            </td>
+            <td>
+                <h1>Pay Slip</h1>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h4>
+                    <b>{{business_name}}</b>
+                </h4>
+            </td>
+            <td>
+                <p>
+                    <b>Start Period:</b> {{object.start_period}}</p>
+                <p>
+                    <b>Period:</b> {{object.end_period}}</p>
+            </td>
+        </tr>
+    </tbody>
 </table>
 <div>
     <table>
@@ -47,9 +53,9 @@
                 <td>{{object.employee.deductions_YTD | floatformat:2}}</td>
             </tr>
             <tr>
-                    <th>Leave Days:</th>
-                    <td>{{object.employee.leave_days}}</td>
-                </tr>
+                <th>Leave Days:</th>
+                <td>{{object.employee.leave_days}}</td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -75,9 +81,9 @@
                             <td>{{object.normal_pay | floatformat:2}}</td>
                         </tr>
                         <tr>
-                                <th>Overtime Hourly Income</th>
-                                <td>{{object.overtime_pay | floatformat:2}}</td>
-                            </tr>
+                            <th>Overtime Hourly Income</th>
+                            <td>{{object.overtime_pay | floatformat:2}}</td>
+                        </tr>
                         <tr style="border-bottom: 2px solid black;">
                             <th>Total Benefits(breakdown below)</th>
                             <td>{{object.total_allowances | floatformat:2}}</td>
@@ -113,7 +119,7 @@
                         <tr>
                             <th colspan=2>Deductions</th>
                         </tr>
-                        
+
                         <tr style="border-bottom: 2px solid black;">
                             <th>Total Deductions(breakdown below)</th>
                             <td>{{object.total_deductions | floatformat:2}}</td>
@@ -143,7 +149,7 @@
                     </tfoot>
                 </table>
             </td>
-            </tr>
+        </tr>
     </tbody>
     <tfoot>
         <tr style="border:3px solid black;">

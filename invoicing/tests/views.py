@@ -527,26 +527,31 @@ class QuotationViewTests(TestCase):
         amc = AccountingModelCreator(cls).create_tax()
         create_test_common_entities(cls)
 
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
     def test_get_quotation_create_view(self):
         resp = self.client.get(reverse('invoicing:create-quotation'))
-        self.assertEqual(resp.status_code, 302)
+
+        self.assertEqual(resp.status_code, 200)
 
     def test_get_quotation_create_view_with_customer(self):
         resp = self.client.get(reverse('invoicing:create-quotation', kwargs={
             'customer': 1
         }))
-        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 200)
 
     def test_post_quotation_create_view(self):
         resp = self.client.post(reverse('invoicing:create-quotation'), 
             data=self.DATA)
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_quotation_update_view(self):
         resp = self.client.get(reverse('invoicing:quotation-update', kwargs={
             'pk': self.quotation.pk
         }))
-        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 200)
 
     def test_post_quotation_update_view(self):
         self.quotation.draft=True
@@ -554,19 +559,20 @@ class QuotationViewTests(TestCase):
         resp = self.client.post(reverse('invoicing:quotation-update', kwargs={
             'pk': self.quotation.pk
         }), data=self.DATA)
+        self.assertEqual(resp.status_code, 302)
 
     def test_get_quotation_detail_view(self):
         resp = self.client.get(reverse('invoicing:quotation-details', kwargs={
             'pk': 1
         }))
-        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 200)
 
     def test_make_invoice_from_quotation(self):
         resp = self.client.get(reverse('invoicing:make-invoice', kwargs={
             'pk': self.quotation.pk
         }))
         self.assertEqual(resp.status_code, 302)
-        #self.assertEqual(Invoice.objects.get(pk=self.quotation.pk).status,     "invoice")
+        self.assertEqual(Invoice.objects.get(pk=self.quotation.pk).status,     "invoice")
 
         self.quotation.status = "quotation"
         self.quotation.save()
@@ -577,7 +583,7 @@ class QuotationViewTests(TestCase):
             'pk': self.quotation.pk
         }))
         self.assertEqual(resp.status_code, 302)
-        #self.assertEqual(Invoice.objects.get(pk=self.quotation.pk).status,    "proforma")
+        self.assertEqual(Invoice.objects.get(pk=self.quotation.pk).status,    "proforma")
 
         self.quotation.status = "quotation"
         self.quotation.save()

@@ -1,7 +1,18 @@
 <table style="height:25%;width:100%;">
         <tbody>
             <tr>
-                <td style="width:60%"><img width="300" height="100" src="/media/{{logo}}" alt="Logo"></td>
+                <td style="width:60%">
+                {% if logo.name != "False" %}
+                <div style="margin:auto;width:{{logo_width}}px;height:100px;">
+                    <img width="{{logo_width}}" height="100" src="/media/{{logo}}" alt="Logo" >
+                </div>
+                
+                {% else %}
+                <div style="width:{{logo_width}}px;height:100px;padding:40px;color:white;background-color:black;margin:auto;">
+                    <p style="margin:auto;text-align:center;">No Logo</p>
+                </div>
+                {% endif %}
+                </td>
                 <td>
                     <h4>{{business_name}}</h4>
                     <p>{{business_address | linebreaks }}</p>

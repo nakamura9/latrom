@@ -16,9 +16,10 @@ class ConfigMixin(object):
         context = super().get_context_data(*args, **kwargs)
         config = models.GlobalConfig.objects.first()
         context.update(config.__dict__)
-        
+        print('logo %%', config.logo.name)
         context.update({
             'logo': config.logo,
+            'logo_width': config.logo_width,
             'business_name': config.business_name,
             'business_address': config.business_address
         })

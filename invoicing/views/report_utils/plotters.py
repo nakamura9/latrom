@@ -1,4 +1,3 @@
-from common_data.plot_utility import svgString
 import datetime
 from invoicing.models.invoice import Invoice
 from dateutil import relativedelta
@@ -89,36 +88,3 @@ def pygal_date_formatter(start, end):
 
     return [d.strftime(formatter) for d in dates]
 
-
-
-def get_date_tuples(start, end):
-    '''No more than 10 pieces of data must be displayed at any time'''
-    date_range = abs((end- start).days)
-
-    if date_range > 70:
-        #months 
-        delta = relativedelta.relativedelta(months=1)
-        locator = mpl.dates.MonthLocator()
-        formatter = mpl.dates.DateFormatter("%B  %Y")
-    elif date_range > 10:
-        delta = datetime.timedelta(days=7)
-        locator = mpl.dates.WeekdayLocator(mpl.dates.MO)
-        formatter = mpl.dates.DateFormatter("%d/%m/%y")
-    else:
-        delta = datetime.timedelta(days=1)
-        locator = mpl.dates.DayLocator()
-        formatter =mpl.dates.DateFormatter("%d %B '%y")
-
-    curr_date = start
-    prev_date = None
-    dates = []
-
-    while curr_date < end:
-        prev_date = curr_date
-        curr_date = curr_date + delta
-        dates.append((prev_date, curr_date))
-
-    if curr_date != end:
-        dates.append((prev_date, end))
-
-    return dates, locator, formatter

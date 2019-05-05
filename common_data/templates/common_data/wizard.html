@@ -12,7 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12 shadow">
-        <form action="" method="POST">
+        <form action="" method="POST"  enctype="multipart/form-data">
         
             {{wizard.management_form}}
 
@@ -35,6 +35,31 @@
 </div>
 
 <script type="text/javascript">
+    $("#id_0-logo_aspect_ratio").change(function(evt){
+                    console.log('changed')
+                    var input_val = evt.target.value
+                    var value;
+                    switch(input_val){
+                        case '0':
+                            value = 1.5 * 200;
+                            break;
+                        case '1':
+                            value = 1 * 200;
+                            break;
+                        case '2':
+                            value = 1.33 * 200;
+                            break;
+                        case '3':
+                            value = 1.78 * 200;
+                            break
+                    }
+                    console.log(value)
+                    console.log(input_val)
+                    $('#id-logo-preview').attr('width', value)
+
+                })
+
+
     $(document).ready(function () {
         $.ajax({
             url: "/base/logo-url",

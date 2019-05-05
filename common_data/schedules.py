@@ -9,3 +9,9 @@ def backup_db():
     ret = subprocess.run(['python', 'manage.py', 'dbbackup', '-z'])
     if ret.returncode != 0:
         raise Exception('Failed to backup db')
+
+    if os.path.exists('debug.log'):
+        try:
+            os.remove('debug.log')
+        except:
+            pass

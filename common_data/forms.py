@@ -97,6 +97,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
                     'organization_business_partner_number',
                     Row(
                         Column('organization_logo',
+                                'logo_aspect_ratio',
                             css_class='form-group col-6'),
                         Column(
                             HTML("""
