@@ -4,114 +4,119 @@
     <p class="lead">Information concerning stock items. </p>
     <hr class="my-2">
     <p class="lead">
-        <a class="btn btn-success btn-lg" href="{% url 'inventory:equipment-update' pk=object.pk %}" role="button">Edit</a>
+        <a class="btn btn-success btn-lg" href="{% url 'inventory:equipment-update' pk=object.pk %}"
+            role="button">Edit</a>
     </p>
 </div>
 
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Item Image</h4>
-                    </div>
-                    <div class="card-body">
-                        {% if object.image %}
-                            <img width="300" height="300"  src="{{object.image.url}}" alt="Item Image" />
-                        {% else %}  
-                            <i class="fas fa-image" style="font-size:256;"></i>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Basic Information</h4>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">Name: {{object.name}}</p>
-                        <p class="card-text">Code: {{object.id}}</p>
-                        <p class="card-text">Category: {{object.category}}</p>
-                        <p class="card-text">Description: {{object.description}}</p>
-                        
-                        <p class="card-text">Purchase Price: {{object.unit_purchase_price}}</p>
-                    </div>
-                </div>
-
-            </div>
-            <hr class="my-4">
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Supplier Information</h4>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">Name: {{object.supplier}}</p>
-                        <p class="card-text">Address: {{object.supplier.physical_address}}</p>
-                    </div>
-                </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Stock Information</h4>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">Stock Quantity: {{object.quantity}}</p>
-                    </div>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="card-header">
-                                <h4 class="card-title">Equipment Requisition History</h4>    
+            <nav class="nav nav-tabs nav-stacked">
+                <a href="#basic" class="nav-link active" data-toggle="tab">Basic</a>
+                <a href="#locations" class="nav-link" data-toggle="tab">Locations</a>
+            </nav>
+            <div class="tab-content panel-body">
+                <div class="tab-pane active" id="basic">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div>
+                                <h4 class="card-title">Item Image</h4>
+                                {% if object.image %}
+                                <img width="300" height="300" src="{{object.image.url}}" alt="Item Image" />
+                                {% else %}
+                                <i class="fas fa-image" style="font-size:256px;"></i>
+                                {% endif %}
+                            </div>
                         </div>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Date</th>
-                                    <th>Requested By</th>
-                                    <th>Returned Condition</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- populate later -->
-                            </tbody>
-                        </table>
+                        <div class="col-sm-8">
+                            <div class="card bg-primary text-white">
+                                <div class="card-header">
+                                    <h4 class="card-title">Basic Information</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Name: {{object.name}}</p>
+                                    <p class="card-text">Code: {{object.id}}</p>
+                                    <p class="card-text">Category: {{object.category}}</p>
+                                    <p class="card-text">Description: {{object.description}}</p>
+
+                                    <p class="card-text">Purchase Price: {{object.unit_purchase_price}}</p>
+                                </div>
+                            </div>
+                            <hr class="my-2">
+                            {% if object.asset_data %}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Asset Information</h4>
+                                    <p class="card-text">Name: {{object.asset_data.name}}</p>
+                                    <p class="card-text">Category: {{object.asset_data.category}}</p>
+                                    <p class="card-text">Current Value: {{object.asset_data.current_value}}</p>
+                                    <p class="card-text">Disposal Date: {{object.asset_data.disposal_date}}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                        <h4 class="card-title">Product Locations</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-default">
-                            <thead>
-                                <th>Warehouse</th>
-                                <th>Location</th>
-                                <th>Quantity</th>
-                                <th>Actions</th>
-                            </thead>
-                            <tbody style="max-height:200px; overflow-y:auto;">
-                                {% for l in object.locations %}
-                                    <tr>
-                                        <td>{{l.warehouse}}</td>
-                                        <td>{{l.location}}</td>
-                                        <td>{{l.quantity}}</td>
-                                        <td>
-                                            <a class="btn" style="color:white;" href="{% url 'inventory:storage-media-detail' pk=l.location.pk %}"> Detail</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="tab-pane" id="locations">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-header">
+                                    <h4 class="card-title">Supplier Information</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Name: {{object.supplier}}</p>
+                                    <p class="card-text">Address: {{object.supplier.physical_address}}</p>
+                                </div>
+                            </div>
+                            <hr class="my-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Stock Information</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Stock Quantity: {{object.quantity}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Equipment Locations</h4>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-default">
+                                    <thead>
+                                        <th>Warehouse</th>
+                                        <th>Location</th>
+                                        <th>Quantity</th>
+                                        <th>Actions</th>
+                                    </thead>
+                                    <tbody style="max-height:200px; overflow-y:auto;">
+                                        {% for l in object.locations %}
+                                        <tr>
+                                            <td>{{l.warehouse}}</td>
+                                            <td>{{l.location}}</td>
+                                            <td>{{l.quantity}}</td>
+                                            <td>
+                                                <a class="btn" style="color:white;"
+                                                    href="{% url 'inventory:storage-media-detail' pk=l.location.pk %}">
+                                                    Detail</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
-
-
+</div>
+</div>
+</div>
 {% endblock content %}
