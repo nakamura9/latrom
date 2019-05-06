@@ -16,7 +16,7 @@ from invoicing.models import *
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 from inventory.tests.model_util import InventoryModelCreator
-from accounting.tests.model_util import AccountingModelCreator
+import accounting
 TODAY = datetime.date.today()
 
 def create_test_invoicing_models(cls):
@@ -105,6 +105,7 @@ class CustomerModelTests(TestCase):
         self.invoice.save()
         self.assertEqual(self.customer_org.age_list, [0, 1, 0, 0, 0, 0])
 
+
 class PaymentModelTests(TestCase):
     fixtures = ['common.json','accounts.json', 'journals.json', 'employees.json','invoicing.json', 'inventory']
         
@@ -144,6 +145,7 @@ class SalesRepModelTests(TestCase):
         self.assertEqual(self.sales_representative.sales(TODAY, TODAY), D(210))
         self.invoice.status='invoice'
         self.invoice.save()
+
 
 class CreditNoteModelTests(TestCase):
     fixtures = ['common.json','accounts.json', 'journals.json', 'employees.json','invoicing.json', 'inventory.json']
@@ -188,7 +190,7 @@ class ProductInvoiceTests(TestCase):
         invmc.create_orderitem()
         cls.imc = InvoicingModelCreator(cls)
         cls.imc.create_all()
-        AccountingModelCreator(cls).create_tax()
+        accounting.tests.model_util.AccountingModelCreator(cls).create_tax()
 
     def test_create_invoice(self):
         self.assertIsInstance(self.invoice, Invoice)

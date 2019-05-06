@@ -20,7 +20,9 @@ WEBPACK_LOADER = {
     }
 }
 
-WKHTMLTOPDF_CMD = os.path.abspath(os.path.join(BASE_DIR, '..', 'bin', 'wkhtmltopdf', 'bin'))
+#WKHTMLTOPDF_CMD = os.path.abspath(os.path.join(BASE_DIR, '..', 'bin', 'wkhtmltopdf', 'bin'))
+
+WKHTMLTOPDF_DEBUG = True
 
 DBBACKUP_STORAGE_OPTIONS = {
     'location': os.path.join(BASE_DIR, '..', 'database')

@@ -14,6 +14,7 @@ from accounting.models import *
 from common_data.tests import create_account_models, create_test_user, create_test_common_entities
 from inventory.tests import create_test_inventory_models
 from latrom import settings
+from employees.models import Employee 
 
 TODAY = datetime.date.today()
 
@@ -248,6 +249,7 @@ class AccountViewTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client()
+        
 
     @classmethod
     def setUpTestData(cls):
@@ -263,6 +265,9 @@ class AccountViewTests(TestCase):
                 'description': 'Test Description',
                 'balance_sheet_category': 'expense'
             }
+
+        cls.end = datetime.date.today()
+        cls.start = cls.end - datetime.timedelta(days=30)
 
     def setUp(self):
         #wont work in setUpClass
@@ -321,6 +326,22 @@ class AccountViewTests(TestCase):
         resp = self.client.get(reverse('accounting:account-debits', 
             kwargs={'pk': 1000}))
         self.assertTrue(resp.status_code==200)
+
+    def test_account_pdf_view(self):
+        start = urllib.parse.quote(self.start.strftime("%d %B %Y"))
+        end = urllib.parse.quote(self.end.strftime("%d %B %Y"))
+        account = Account.objects.get(pk=1000)
+        print("%%%%")
+        print(start)
+        print(end)
+        print(account)
+        resp = self.client.get(reverse('accounting:account-report-pdf', kwargs={
+            'start': start,
+            'end': end,
+            'account': 1000
+        }))
+
+        self.assertEqual(resp.status_code, 200)
 
 
 class TestReportViews(TestCase):
@@ -563,3 +584,64 @@ class TestCurrencyViews(TestCase):
             'reference_currency': self.currency.pk,
         })
         self.assertEqual(resp.status_code, 301)
+
+
+class AccountingWizardTests(TestCase):
+    fixtures = ['accounts.json', 'settings.json', 'journals.json', 'common.json', 'employees.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client = Client()
+        create_test_user(cls)
+
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_accounting_wizard(self):
+        config_data = {
+            '0-start_of_financial_year': datetime.date.today(),
+            '0-default_accounting_period': 0,
+            '0-currency_exchange_table': 1,
+            'config_wizard-current_step': 0,
+        }
+
+        employee_data = {
+            '1-first_name': 'first',
+            '1-last_name': 'last',
+            '1-hire_date': datetime.date.today(),
+            '1-title': "title",
+            '1-leave_days': 1,
+            '1-pin': 1000,
+            'config_wizard-current_step': 1,
+        }
+
+        bookkeeper_data = {
+            '2-employee': 1,
+            'config_wizard-current_step': 2,
+        }
+
+        tax_data = {
+            '3-name': 'name',
+            '3-rate': 10,
+            'config_wizard-current_step': 3,
+
+        }
+
+        data_list = [config_data, employee_data, bookkeeper_data, tax_data]
+
+        for step, data in enumerate(data_list, 1):
+            try:
+                resp = self.client.post(reverse('accounting:config-wizard'), data=data)
+                if step == len(data_list):
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    self.assertEqual(resp.status_code, 200)
+
+            except ValueError:
+                pass                

@@ -601,6 +601,7 @@ class OrderViewTests(TestCase):
     #order pdf assume that the detail view covers it
     #order emaiL only use the get view
 
+
 class SupplierViewTests(TestCase):
     fixtures = ['accounts.json','employees.json','common.json', 
     'invoicing.json','journals.json', 'inventory.json']
@@ -918,3 +919,80 @@ class TransferViewTests(TestCase):
         resp = self.client.get(reverse('inventory:receive-transfer', 
             kwargs={'pk': 1}), data=self.RECEIVE_DATA)
         self.assertEqual(resp.status_code, 200)
+
+
+class ConfigWizardTests(TestCase):
+    fixtures = ['common.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client = Client()
+        
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser(username="Testuser", email="admin@test.com", password="123")
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_inventory_wizard(self):
+        config_data = {
+            'config_wizard-current_step': 0,
+            '0-inventory_check_date': 5,
+            '0-inventory_check_frequency': 1,
+            '0-default_product_sales_pricing_method': 1,
+            '0-inventory_valuation_method': 1
+        }
+
+        employee_data = {
+            '1-first_name': 'first',
+            '1-last_name': 'last',
+            '1-hire_date': datetime.date.today(),
+            '1-title': "title",
+            '1-leave_days': 1,
+            '1-pin': 1000,
+            'config_wizard-current_step': 1,
+        }
+
+        controller_data = {
+            'config_wizard-current_step': 2,
+            '2-employee': 1
+        }
+
+        warehouse_data = {
+            'config_wizard-current_step': 3,
+            '3-name': 'name',
+            '3-address': 'address',
+            '3-length': 0,
+            '3-width': 0,
+            '3-height': 0,
+        }
+
+        supplier_data = {
+            'config_wizard-current_step': 4,
+            '4-vendor_type': 'individual',
+            '4-name': 'caleb kandoro'
+        }
+
+        data_list = [config_data, employee_data, controller_data, 
+            warehouse_data, supplier_data]
+
+        for step, data in enumerate(data_list, 1):
+
+            try:
+                resp = self.client.post(reverse('inventory:config-wizard'), 
+                    data=data)
+
+                if step == len(data_list):
+
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    self.assertEqual(resp.status_code, 200)
+                    if resp.context.get('form'):
+                        if hasattr(resp.context['form'], 'errors'):
+                            print(resp.context['form'].errors)
+            except ValueError:
+                pass

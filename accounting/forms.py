@@ -84,7 +84,6 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
                     ),
                     'category',
                     'recorded_by',
-                    'cycle',
                 ),
                 Tab('description',
                     'description',

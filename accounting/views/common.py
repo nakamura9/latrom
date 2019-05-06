@@ -599,7 +599,6 @@ def verify_entry(request, pk=None):
 def employee_condition(self):
     return Employee.objects.all().count() == 0
 
-
 def bookkeeper_condition(self):
     return models.Bookkeeper.objects.all().count() == 0
 

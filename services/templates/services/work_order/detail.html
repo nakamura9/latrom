@@ -65,10 +65,12 @@
             </div>
             
             <div class="col-sm-4">
-                {% if request.user.is_superuser and object.status != 'authorized' %}
+                
+                {% if object.status != 'authorized' %}
                 <h5>Authorization Form</h5>
                 <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
                     {% csrf_token %}
+                    {{authorization_form.errors}}
                     {{authorization_form}}
                     <button class="btn btn-primary">Authorize</button>
                 </form>

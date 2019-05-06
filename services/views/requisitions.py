@@ -243,8 +243,7 @@ def consumable_requisition_release(request, pk=None):
     return HttpResponseRedirect(redirect_path)
 
 
-class EquipmentReturnView( FormView):
-    #TODO test
+class EquipmentReturnView(FormView):
     template_name = os.path.join('services', 'requisitions', 'equipment', 
         'return.html')
     form_class = forms.EquipmentReturnForm
@@ -258,27 +257,13 @@ class EquipmentReturnView( FormView):
 
         return context
 
+    def get_initial(self):
+        return {
+            'requisition': self.kwargs['pk']
+        }
+
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
-        #checks for the login
-        usr = authenticate(
-            username=request.POST['received_by'],
-            password=request.POST['password'])
-        
-        if not usr or not hasattr(usr, 'employee'):
-            messages.info(request, 
-                '''The username or password provided were incorrect.''')
-            return HttpResponseRedirect('/services/equipment-return/{}'.format(
-                self.kwargs['pk']))
-
-        requisition = get_object_or_404(models.EquipmentRequisition, 
-            pk=self.kwargs['pk'])
-
-        requisition.received_by = usr.employee
-        requisition.returned_date = datetime.datetime.strptime(request.POST['return_date'], "%m/%d/%Y")
-        requisition.save()
-
-
         #setting line values
         fields = dict(request.POST).keys()
 

@@ -1,2 +1,15 @@
-from .models import *
-from .views import *
+from .models import (create_test_inventory_models, 
+    CommonModelTests, 
+    ItemManagementModelTests, 
+    ItemModelTests, 
+    WarehouseModelTests)
+from .views import (ConfigWizardTests, 
+    CommonViewTests, 
+    InventoryManagementViewTests, 
+    ItemViewTests, 
+    OrderViewTests, 
+    SupplierViewTests, 
+    OrderViewTests, 
+    WarehouseViewTests, 
+    ReportViewTests, 
+    TransferViewTests)

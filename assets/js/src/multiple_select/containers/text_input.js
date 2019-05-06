@@ -82,6 +82,7 @@ class SearchableTextInputWidget extends Component{
         return(<div style={containerStyle}>
             <div>
                 <input 
+                onFocus={() => this.setState({optionsHidden: false})}
                 placeholder="Select item..."
                 value={this.state.inputValue}
                 onChange={this.inputChangeHandler}

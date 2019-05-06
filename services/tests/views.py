@@ -7,6 +7,7 @@ import urllib
 import json
 import datetime
 from common_data.tests import create_test_common_entities
+from django.shortcuts import reverse
 
 
 TODAY = datetime.date.today()
@@ -171,8 +172,7 @@ class ServicePersonnelViewTests(TestCase):
     def test_get_service_team_list_page(self):
         resp = self.client.get('/services/team-list')
         self.assertEqual(resp.status_code, 200)
-
-        
+     
 
 class ServiceProcedureViewTests(TestCase):
     fixtures = ['common.json','inventory.json']
@@ -424,7 +424,8 @@ class RequisitionViewTests(TestCase):
 
     def test_post_equipment_return_page(self):
         resp = self.client.post('/services/equipment-return/1', data={
-            "received_by": "Testuser",
+            "received_by": self.employee.pk,
+            "requisition": 1,
             "password": "123",
             "return_date": TODAY,
             "work_order": 1
@@ -434,6 +435,7 @@ class RequisitionViewTests(TestCase):
     def test_get_equipment_detail_page(self):
         resp = self.client.get('/services/equipment-requisition-detail/1')
         self.assertEqual(resp.status_code, 200)
+
 
 class ServiceViewTests(TestCase):
     fixtures = ['common.json','inventory.json']
@@ -513,6 +515,7 @@ class ServiceViewTests(TestCase):
             'is_listed': False
         })
         self.assertEqual(resp.status_code, 302)
+
 
 class WorkOrderViewTests(TestCase):
     fixtures = ['common.json','inventory.json']
@@ -664,3 +667,68 @@ class WorkOrderViewTests(TestCase):
             'recorded_by': 1
         })
         self.assertEqual(resp.status_code, 302)
+
+
+class ConfigWizardTests(TestCase):
+    fixtures = ['common.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+        
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser(username="Testuser", email="admin@test.com", password="123")
+        cls.settings = ServicesSettings.objects.create()
+
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_inventory_wizard(self):
+        service_data = {
+            '0-name': 'name',
+            '0-description': 'name',
+            '0-hourly_rate': 5,
+            '0-flat_fee': 200,
+            '0-name': 'name',
+            '0-frequency': 'once',
+            'config_wizard-current_step': 0
+        }
+
+        employee_data = {
+            '1-first_name': 'first',
+            '1-last_name': 'last',
+            '1-hire_date': datetime.date.today(),
+            '1-title': "title",
+            '1-leave_days': 1,
+            '1-pin': 1000,
+            'config_wizard-current_step': 1,
+        }
+
+        sp_data = {
+            'config_wizard-current_step': 2,
+            '2-employee': 1
+        }
+
+        data_list = [service_data, employee_data, sp_data]
+
+
+        for step, data in enumerate(data_list, 1):
+
+            try:
+                resp = self.client.post(reverse('services:config-wizard'), 
+                    data=data)
+
+                if step == len(data_list):
+
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    self.assertEqual(resp.status_code, 200)
+                    if resp.context.get('form'):
+                        if hasattr(resp.context['form'], 'errors'):
+                            print(resp.context['form'].errors)
+            except ValueError:
+                pass

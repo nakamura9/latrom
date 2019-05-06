@@ -250,7 +250,7 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 
 class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     type=forms.CharField(widget=forms.HiddenInput)
-    asset_data = forms.ModelChoiceField(Asset.objects.all())
+    asset_data = forms.ModelChoiceField(Asset.objects.all(), required=False)
     def __init__(self, *args, **kwargs):
         super(EquipmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()

@@ -15,7 +15,7 @@ from accounting.models import *
 from employees import models as employee_models
 from common_data.tests import create_account_models, create_test_user
 from employees.tests.models import create_test_employees_models
-from inventory.tests import create_test_inventory_models
+from inventory.tests.models import create_test_inventory_models
 from latrom import settings
 from django.contrib.auth.models import User
 
@@ -149,6 +149,7 @@ class SimpleModelTests(TestCase):
             created_by=self.bookkeeper
         )
 
+
 class AssetTests(TestCase):
     # use fixtures later
     fixtures = ['accounts.json', 'journals.json']
@@ -210,7 +211,6 @@ class AssetTests(TestCase):
         self.assertEqual(self.old_asset.current_value, 68)
 
 
-
 class ExpenseModelTests(TestCase):
     # use fixtures later
     fixtures = ['accounts.json', 'journals.json']
@@ -270,6 +270,7 @@ class ExpenseModelTests(TestCase):
     def test_recurring_expense_related_payments(self):
         self.recurring_entry.create_standalone_expense()
         self.assertTrue(self.recurring_entry.related_payments.count() != 0)
+
 
 class JournalEntryModelTests(TestCase):
     # use fixtures later
@@ -416,6 +417,7 @@ class JournalEntryModelTests(TestCase):
     def test_entry_post(self):
         self.assertIsNone(self.entry.post)
         # TODO add post for alternative execution
+
 
 class AccountModelTests(TestCase):
     # use fixtures later

@@ -61,6 +61,7 @@ class GenericPageTests(TestCase):
         resp = self.client.get(reverse('employees:manual-config'))
         self.assertTrue(resp.status_code == 200)
 
+
 class PayGradePageTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json']
 
@@ -644,6 +645,7 @@ class PayrollOfficerViewTests(TestCase):
             })
         self.assertEqual(resp.status_code, 302)
 
+
 class LeaveViewTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json']
 
@@ -735,6 +737,7 @@ class LeaveViewTests(TestCase):
         resp = self.client.get('/employees/api/year/2018')
         self.assertEqual(resp.status_code, 200)
 
+
 class TimesheetViewTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json']
 
@@ -811,3 +814,74 @@ class TimesheetViewTests(TestCase):
             'pin': 1000
         })
         self.assertEqual(resp.status_code, 302)
+
+
+class EmployeeWizardTests(TestCase):
+    fixtures = ['common.json','accounts.json', 'journals.json', 'settings.json', 'employees.json']
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client = Client()
+        
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser(username="Testuser", email="admin@test.com", password="123")
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_employees_wizard(self):
+        date_data = {
+            'config_wizard-current_step': 0,
+            '0-date': 5,
+            '0-schedule': 1
+
+        }
+
+        grade_data = {
+            '1-name': 'name',
+            '1-monthly_leave_days': 1.5,
+            '1-salary': 100,
+            '1-pay_frequency': 2,
+            '1-hourly_rate': 1.5,
+            '1-overtime_rate': 2,
+            '1-overtime_two_rate': 4,
+            '1-lunch_duration': '0:15:00',
+            'config_wizard-current_step': 1
+        }
+
+        employee_data = {
+            '2-first_name': 'name',
+            '2-last_name': 'last',
+            '2-hire_date': datetime.date.today(),
+            '2-title': 'mr',
+            '2-leave_days': 1,
+            '2-pin': 2000,
+            'config_wizard-current_step': 2
+        }
+
+        payroll_officer_data = {
+            '3-employee': 1,
+            'config_wizard-current_step': 3
+        }
+
+        settings_data = {
+            '4-payroll_account': 1000,
+            '4-payroll_counter': 10,
+            'config_wizard-current_step': 4
+        }
+
+        data_list = [date_data, grade_data, employee_data, 
+            payroll_officer_data, settings_data]
+
+        for step, data in enumerate(data_list, 1):
+            resp = self.client.post(reverse('employees:config-wizard'), 
+                data=data)
+
+            if step == len(data_list):
+                self.assertEqual(resp.status_code, 302)
+            else:
+
+                self.assertEqual(resp.status_code, 200)

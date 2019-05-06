@@ -1,2 +1,15 @@
-from .models import *
-from .views import *
+from .models import (create_test_invoicing_models, 
+    CommonModelTests, 
+    CustomerModelTests, 
+    PaymentModelTests, 
+    SalesRepModelTests, 
+    CreditNoteModelTests, 
+    ProductInvoiceTests, 
+    InvoiceModelTests)
+from .views import (ConfigWizardTests,
+    CommonViewsTests, 
+    ReportViewsTests, 
+    CustomerViewsTests, 
+    SalesRepViewsTests, 
+    InvoiceViewTests, 
+    QuotationViewTests)

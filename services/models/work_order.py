@@ -81,7 +81,10 @@ class ServiceWorkOrder(models.Model):
 
     @property
     def procedure_pk(self):
-        return self.works_request.service.procedure.pk
+        if self.works_request.service.procedure:
+            return self.works_request.service.procedure.pk
+        
+        return None
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

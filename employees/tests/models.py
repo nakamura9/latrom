@@ -108,6 +108,7 @@ class CommonModelTests(TestCase):
         )
         self.assertIsInstance(obj, EmployeesSettings)
 
+
 class TimesheetTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
 
@@ -170,6 +171,7 @@ class TimesheetTests(TestCase):
     def test_line_overtime(self):
         self.assertEqual(self.line.overtime, datetime.timedelta(0))
 
+
 class EmployeeModelTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
 
@@ -219,6 +221,7 @@ class AllowanceModelTest(TestCase):
             amount=50
         )
         self.assertIsInstance(allowance, Allowance)
+
 
 class DeductionModelTest(TestCase):
     fixtures = ['accounts.json', 'employees.json']
@@ -307,7 +310,6 @@ class PayGradeModelTests(TestCase):
         self.assertIsInstance(obj, PayGrade)
 
     
-
 class PaySlipModelTests(TestCase):
     fixtures = ['common.json', 'accounts.json', 'journals.json',
          'employees.json','inventory.json', 'invoicing.json']
@@ -456,6 +458,7 @@ class PaySlipModelTests(TestCase):
         self.slip.create_entry()
         self.assertIsInstance(self.slip.entry, JournalEntry)
 
+
 class TaxBracketModelTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
 
@@ -493,6 +496,7 @@ class TaxBracketModelTests(TestCase):
         self.assertEqual(self.prt.list_brackets.count(), 2)
         TaxBracket.objects.latest('pk').delete()
         
+
 class LeaveModelTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
 

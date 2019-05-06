@@ -201,7 +201,11 @@ class DepartmentAPIView(viewsets.ModelViewSet):
 class ConfigWizard(ConfigWizardBase):
     template_name = os.path.join('employees', 'wizard.html')
     form_list = [
-        forms.PayrollDateForm, forms.PayGradeForm, forms.EmployeeForm, forms.PayrollOfficerForm, forms.EmployeesSettingsForm
+        forms.PayrollDateForm, 
+        forms.PayGradeForm, 
+        forms.EmployeeForm, 
+        forms.PayrollOfficerForm, 
+        forms.EmployeesSettingsForm
     ]
     success_url = reverse_lazy('employees:dashboard')
     config_class = models.EmployeesSettings

@@ -292,6 +292,7 @@ class CommonModelTests(TestCase):
         self.assertEqual(parent_one_child.siblings.count(), 0)
         self.assertEqual(parent_two_child.siblings.count(), 1)
 
+
 class ItemManagementModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json']
 
@@ -634,6 +635,7 @@ class ItemModelTests(TestCase):
     def test_inventory_on_date(self):
         quantity = self.product.quantity_on_date(datetime.date.today())
         self.assertEqual(quantity, 10)
+
 
 class WarehouseModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json',]

@@ -14,8 +14,9 @@ from latrom import settings
 from inventory.tests import create_test_inventory_models
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
-from accounting.tests.model_util import AccountingModelCreator
+import accounting
 from common_data.tests import create_test_common_entities
+import copy
 
 TODAY = datetime.datetime.today()
 
@@ -75,7 +76,6 @@ class CommonViewsTests(TestCase):
         }))
         self.assertIsInstance(json.loads(resp.content), dict)
 
-    
 
 class ReportViewsTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 
@@ -126,6 +126,7 @@ class ReportViewsTests(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
 
+
 class CustomerViewsTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 
         'invoicing.json']
@@ -157,6 +158,19 @@ class CustomerViewsTests(TestCase):
         resp = self.client.get(reverse('invoicing:create-customer'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_post_customer_create_page_individual(self):
+        new_data = copy.deepcopy(self.CUSTOMER_DATA)
+        new_data.update({
+                    'name': 'cust omer',
+                    'customer_type': 'individual'
+                })
+        resp = self.client.post(
+            reverse('invoicing:create-customer'),
+                data=new_data)
+        self.assertEqual(resp.status_code, 302)
+
+
+
     def test_post_customer_create_page(self):
         resp = self.client.post(
             reverse('invoicing:create-customer'),
@@ -176,10 +190,39 @@ class CustomerViewsTests(TestCase):
         resp = self.client.post(
             reverse('invoicing:update-customer',
                 kwargs={
-                'pk': 1
+                'pk': self.customer_org.pk
             }), data=self.CUSTOMER_DATA,
         )
         self.assertEqual(resp.status_code, 302)
+
+    def test_post_customer_update_page_switch_to_org(self):
+        resp = self.client.post(
+            reverse('invoicing:update-customer',
+                kwargs={
+                'pk': self.customer_ind.pk
+            }), data=self.CUSTOMER_DATA,
+        )
+        self.assertEqual(resp.status_code, 302)
+
+        #create ind customer again
+        InvoicingModelCreator(self).create_customer_ind()
+
+    def test_post_customer_update_page_switch_to_ind(self):
+        new_data = copy.deepcopy(self.CUSTOMER_DATA)
+        new_data.update({
+                    'name': 'cust omer',
+                    'customer_type': 'individual'
+                })
+        resp = self.client.post(
+            reverse('invoicing:update-customer',
+                kwargs={
+                'pk': self.customer_org.pk
+            }), data=new_data,
+        )
+        self.assertEqual(resp.status_code, 302)
+        #revert
+        InvoicingModelCreator(self).create_customer_org()
+
 
     def test_get_delete_customer_page(self):
         resp = self.client.get(reverse('invoicing:delete-customer', 
@@ -200,6 +243,12 @@ class CustomerViewsTests(TestCase):
 
     def test_get_customer_list_page(self):
         resp = self.client.get(reverse('invoicing:customers-list'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_customer_detail_page(self):
+        resp = self.client.get(reverse('invoicing:customer-details', kwargs={
+            'pk': 1
+        }))
         self.assertEqual(resp.status_code, 200)
 
 
@@ -309,7 +358,7 @@ class InvoiceViewTests(TestCase):
         imc = InvoicingModelCreator(cls)
         imc.create_all()
         create_test_user(cls)
-        amc = AccountingModelCreator(cls).create_tax()
+        amc = accounting.tests.model_util.AccountingModelCreator(cls).create_tax()
         create_test_common_entities(cls)
 
             
@@ -524,7 +573,7 @@ class QuotationViewTests(TestCase):
         imc = InvoicingModelCreator(cls)
         imc.create_all()
         create_test_user(cls)
-        amc = AccountingModelCreator(cls).create_tax()
+        amc = accounting.tests.model_util.AccountingModelCreator(cls).create_tax()
         create_test_common_entities(cls)
 
     def setUp(self):
@@ -587,4 +636,71 @@ class QuotationViewTests(TestCase):
 
         self.quotation.status = "quotation"
         self.quotation.save()
+
+
+class ConfigWizardTests(TestCase):
+    fixtures = ['common.json', 'invoicing.json', 'accounts.json', 'journals.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client = Client()
+        
+
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth.models import User
+
+        cls.user = User.objects.create_superuser(username="Testuser", email="admin@test.com", password="123")
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
     
+
+    def test_config_wizard(self):
+        config_data = {
+            'config_wizard-current_step': 0,
+            '0-next_invoice_number': 10,
+            '0-next_quotation_number': 10
+        }
+
+        customer_data = {
+            'config_wizard-current_step': 1,
+            '1-customer_type': 'individual',
+            '1-name': 'some one'
+        }
+
+        employee_data = {
+            '2-first_name': 'first',
+            '2-last_name': 'last',
+            '2-hire_date': datetime.date.today(),
+            '2-title': "title",
+            '2-leave_days': 1,
+            '2-pin': 1000,
+            'config_wizard-current_step': 2,
+        }
+
+        rep_data = {
+            'config_wizard-current_step': 3,
+            '3-employee': 1
+        }
+
+        data_list = [config_data, customer_data, employee_data, rep_data]
+
+        for step, data in enumerate(data_list, 1):
+
+            try:
+                resp = self.client.post(reverse('invoicing:config-wizard'), 
+                    data=data)
+
+                if step == len(data_list):
+
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    self.assertEqual(resp.status_code, 200)
+                    if resp.context.get('form'):
+                        if hasattr(resp.context['form'], 'errors'):
+                            print(resp.context['form'].errors)
+            except ValueError:
+                pass

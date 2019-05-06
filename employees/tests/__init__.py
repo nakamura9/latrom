@@ -1,5 +1,24 @@
-from .models import *
-from .views import *
-from .util import *
-
-
+from .models import (create_test_employees_models, 
+    CommonModelTests, 
+    TimesheetTests,
+    EmployeeModelTests, 
+    AllowanceModelTest, 
+    DeductionModelTest,
+    CommissionRuleModelTest,
+    PayGradeModelTests, 
+    PaySlipModelTests, 
+    TaxBracketModelTests, 
+    LeaveModelTests)
+from .views import (GenericPageTests, 
+    PayGradePageTests, 
+    PaySlipPageTests, 
+    EmployeePageTests, 
+    BenefitsPageTests, 
+    CommissionPageTests, 
+    DeductionPageTests, 
+    PayrollTaxViewTests, 
+    PayrollOfficerViewTests, 
+    LeaveViewTests, 
+    TimesheetViewTests, 
+    EmployeeWizardTests)
+from .util import AutomatedServiceTests, ManualServiceTests

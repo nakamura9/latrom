@@ -110,8 +110,10 @@ class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
 
 
 class ServiceWorkOrderAuthorizationForm(BootstrapMixin, forms.Form):
+    '''Authorization handled in the functional view work_order_authorize'''
+    
+    authorized_by = forms.ModelChoiceField(Employee.objects.filter(serviceperson__isnull=False))
     password = forms.CharField(widget=forms.PasswordInput)
-    authorized_by = forms.ModelChoiceField(Employee.objects.all())
     status = forms.ChoiceField(choices=models.ServiceWorkOrder.STATUS_CHOICES)
 
     def clean(self, *args, **kwargs):
@@ -265,6 +267,23 @@ class ServiceProcedureForm(forms.ModelForm, BootstrapMixin):
 
 
 class EquipmentReturnForm(BootstrapMixin, forms.Form):
-    received_by = forms.CharField()
+    received_by = forms.ModelChoiceField(Employee.objects.filter(inventorycontroller__isnull=False))
     password = forms.CharField(widget=forms.PasswordInput)
     return_date = forms.DateField()
+    requisition = forms.ModelChoiceField(models.EquipmentRequisition.objects.all(), widget=forms.HiddenInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        usr = authenticate(
+            username=cleaned_data['received_by'].user.username,
+            password=cleaned_data['password'])
+
+        if not usr:
+            raise forms.ValidationError(
+                'The Inventory Controller password is incorrect.')
+            
+        requisition = cleaned_data['requisition']
+        requisition.received_by = cleaned_data['received_by']
+        requisition.returned_date = cleaned_data['return_date']
+        requisition.save()
+        return cleaned_data

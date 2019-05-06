@@ -27,7 +27,7 @@ class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     #hourly workers must be calculated first
     class Meta:
         model = models.EmployeesSettings
-        exclude = "last_payroll_date", 'is_configured'
+        exclude = "last_payroll_date", 'is_configured', 'service_hash'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -170,7 +170,7 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
         return cleaned_data 
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
-    paygrade = forms.ModelChoiceField(models.PayGrade.objects.all(), 
+    pay_grade = forms.ModelChoiceField(models.PayGrade.objects.all(), 
         required=False)
     class Meta:
         exclude="active", 'user','last_leave_day_increment'

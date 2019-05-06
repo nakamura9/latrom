@@ -19,7 +19,6 @@ from wkhtmltopdf.views import PDFTemplateView
 from accounting import forms, models
 
 from django.test import Client
-from bs4 import BeautifulSoup
 import csv
 
 class AccountReportFormView(ContextMixin, FormView):

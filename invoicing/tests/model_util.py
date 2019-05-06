@@ -2,7 +2,7 @@ from invoicing.models import *
 from common_data.tests.model_util import CommonModelCreator
 from services.tests.model_util import ServiceModelCreator
 from inventory.tests.model_util import InventoryModelCreator
-from accounting.tests.model_util import AccountingModelCreator
+import accounting
 from employees.tests.model_util import EmployeeModelCreator
 
 class InvoicingModelCreator():
@@ -128,7 +128,7 @@ class InvoicingModelCreator():
 
     def create_expense_line_component(self):
         if not hasattr(self.cls, 'expense'):
-            amc = AccountingModelCreator(self.cls)
+            amc = accounting.tests.model_util.AccountingModelCreator(self.cls)
             amc.create_expense()
 
         self.cls.expense_line_component = ExpenseLineComponent.objects.create(
