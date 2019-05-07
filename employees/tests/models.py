@@ -64,16 +64,24 @@ def create_test_employees_models(cls):
     with reversion.create_revision():
         cls.grade.save()
 
-    cls.employee = Employee.objects.create(
-            first_name = 'First',
-            last_name = 'Last',
-            address = 'Model test address',
-            email = 'test@mail.com',
-            phone = '1234535234',
-            hire_date=TODAY,
-            title='test role',
-            pay_grade = cls.grade
-        )
+    if not hasattr(cls, 'employee'):
+        cls.employee = Employee.objects.create(
+                first_name = 'First',
+                last_name = 'Last',
+                address = 'Model test address',
+                email = 'test@mail.com',
+                phone = '1234535234',
+                hire_date=TODAY,
+                title='test role',
+                pay_grade = cls.grade
+            )
+
+    if not cls.employee.user:
+        usr = User.objects.create_user('name1994')
+        usr.set_password('password')
+        usr.save()
+        cls.employee.user = usr
+        cls.employee.save()
 
     cls.slip = Payslip.objects.create(
         start_period=TODAY,
@@ -99,6 +107,11 @@ def create_test_employees_models(cls):
     )
     cls.pay_date.employees.add(cls.employee)
     cls.pay_date.save()
+
+    if not hasattr(cls, 'officer'):
+        cls.officer = PayrollOfficer.objects.create(
+            employee=cls.employee
+        )
 
 class CommonModelTests(TestCase):
     def test_create_employee_settings(self):
@@ -450,7 +463,7 @@ class PaySlipModelTests(TestCase):
         settings = EmployeesSettings.objects.first()
         self.employee.user = self.user
         self.employee.save()
-        settings.payroll_officer = self.employee
+        settings.payroll_officer = self.officer
         settings.save()
 
         self.slip.status = 'verified'

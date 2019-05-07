@@ -45,6 +45,13 @@ class PeriodReportForm(BootstrapMixin, forms.Form):
     start_period = forms.DateField(required=False)
     end_period = forms.DateField(required=False)
 
+    def clean(self):
+        data = super().clean()
+        if data['default_periods'] == 0 and (data['start_period'] == "" or \
+                data['end_period'] == ""):
+            raise forms.ValidationError('Select either a default period or select a custom start and end periods')
+
+        return data
 
 class OrganizationForm(forms.ModelForm, BootstrapMixin):
     class Meta:

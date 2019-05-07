@@ -15,6 +15,7 @@ from common_data.tests import create_account_models, create_test_user, create_te
 from inventory.tests import create_test_inventory_models
 from latrom import settings
 from employees.models import Employee 
+from django.contrib.auth.models import User
 
 TODAY = datetime.date.today()
 
@@ -240,6 +241,12 @@ class JournalEntryViewTests(TestCase):
                 'pk': self.journal.pk
             }))
         self.assertEqual(resp.status_code, 200)
+
+    def test_verify_journal_entry(self):
+        resp = self.client.get(reverse('accounting:verify-entry', kwargs={
+            'pk': self.entry.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
         
 
 class AccountViewTests(TestCase):
@@ -327,7 +334,23 @@ class AccountViewTests(TestCase):
             kwargs={'pk': 1000}))
         self.assertTrue(resp.status_code==200)
 
-    def test_account_pdf_view(self):
+    def test_get_account_report_form(self):
+        resp = self.client.get(reverse('accounting:account-report-form', kwargs={
+            'pk': 1000
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_account_report_view(self):        
+        resp = self.client.get(reverse('accounting:account-report'), data={
+            'default_periods': 3,
+            'start_period': "",
+            'end_period': "",
+            'account': 1000
+        })
+
+        self.assertEqual(resp.status_code, 200)
+
+    '''def test_account_pdf_view(self):
         start = urllib.parse.quote(self.start.strftime("%d %B %Y"))
         end = urllib.parse.quote(self.end.strftime("%d %B %Y"))
         account = Account.objects.get(pk=1000)
@@ -341,7 +364,7 @@ class AccountViewTests(TestCase):
             'account': 1000
         }))
 
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200)'''
 
 
 class TestReportViews(TestCase):
@@ -585,6 +608,15 @@ class TestCurrencyViews(TestCase):
         })
         self.assertEqual(resp.status_code, 301)
 
+    def test_currency_exchange_table_conversion_line(self):
+        resp = self.client.post('/accounting/api/create-conversion-line', data={
+            'table_id': self.currency_table.pk,
+            'currency_id': self.currency.pk,
+            'rate': 4.5
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(json.loads(resp.content)['status'], 'ok')
+
 
 class AccountingWizardTests(TestCase):
     fixtures = ['accounts.json', 'settings.json', 'journals.json', 'common.json', 'employees.json']
@@ -644,4 +676,217 @@ class AccountingWizardTests(TestCase):
                     self.assertEqual(resp.status_code, 200)
 
             except ValueError:
-                pass                
+                pass
+
+class AssetViewTests(TestCase):
+    fixtures = ['common.json', 'settings.json', 'accounts.json', 'journals.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        create_test_user(cls)
+
+        cls.asset = Asset.objects.create(
+            name='Test Asset',
+            description='Test description',
+            category = 0,
+            initial_value = 100,
+            credit_account = Account.objects.get(pk=1000),
+            depreciation_period = 5,
+            init_date = datetime.date.today(),
+            depreciation_method = 0,
+            salvage_value = 20,
+        )
+        cls.data = {
+            'name': 'name',
+            'description': 'description',
+            'category': 0,
+            'initial_value': 100,
+            'credit_account':1000,
+            'depreciation_period': 5,
+            'init_date': datetime.date.today(),
+            'depreciation_method': 0,
+            'salvage_value': 0,
+            'created_by': cls.user.pk
+        }
+
+    def setUp(self):
+        self.client.login(username="Testuser", password="123")
+
+    def test_get_asset_create_view(self):
+        resp = self.client.get(reverse('accounting:asset-create'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_asset_create_view(self):
+        resp = self.client.post(reverse('accounting:asset-create'), data=self.data)
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_asset_update_view(self):
+        resp = self.client.get(reverse('accounting:asset-update',
+            kwargs={'pk': 1}))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_asset_update_view(self):
+        resp = self.client.post(reverse('accounting:asset-update',
+            kwargs={'pk': 1}),data=self.data)
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_asset_list(self):
+        resp = self.client.get(reverse('accounting:asset-list'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_asset_detail(self):
+        resp = self.client.get(reverse('accounting:asset-detail', kwargs={
+            'pk': 1
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+class ExpesnseViewTests(TestCase):
+    fixtures = ['common.json', 'accounts.json', 'journals.json', 'settings.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client=Client()
+
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser('Testuser', 'test@gmail.com', '123')
+        create_account_models(cls)
+        cls.recurring = RecurringExpense.objects.create(
+            cycle=7,
+            expiration_date=datetime.date.today(),
+            start_date=datetime.date.today(),
+            description = 'Test Description',
+            category=0,
+            amount=100,
+            debit_account=cls.account_d
+        )
+    
+
+    def setUp(self):
+        self.client.login(username="Testuser", password='123')
+
+    
+    def test_get_expense_create_view(self):
+        resp = self.client.get(reverse('accounting:expense-create'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_expense_create_view(self):
+        resp = self.client.post(reverse('accounting:expense-create'), data={
+            'description': 'description',
+            'date': datetime.date.today(),
+            'category': 1,
+            'amount': 10,
+            'debit_account': 1000,
+            'recorded_by': self.user.pk
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_expense_list_view(self):
+        resp = self.client.get(reverse('accounting:expense-list'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_expense_detail_view(self):
+        resp = self.client.get(reverse('accounting:expense-detail', kwargs={
+            'pk': self.expense.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_expense_delete_view(self):
+        resp = self.client.get(reverse('accounting:expense-delete', kwargs={
+            'pk': self.expense.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+    
+    def test_post_expense_delete_view(self):
+
+        exp = Expense.objects.create(
+            date=datetime.date.today(),
+            description = 'Test Description',
+            category=0,
+            amount=100,
+            billable=False,
+            debit_account=self.account_d
+        )
+        resp = self.client.post(reverse('accounting:expense-delete', kwargs={
+            'pk': exp.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_recurring_expense_create_view(self):
+        resp = self.client.get(reverse('accounting:recurring-expense-create'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_recurring_expense_create_view(self):
+        resp = self.client.post(reverse('accounting:recurring-expense-create'), data={
+            'description': 'description',
+            'start_date': datetime.date.today(),
+            'expiration_date': datetime.date.today(),
+            'category': 1,
+            'cycle':1,
+            'amount': 10,
+            'debit_account': 1000,
+            'recorded_by': self.user.pk
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_recurring_expense_update_view(self):
+        resp = self.client.get(reverse('accounting:recurring-expense-update', kwargs={
+            'pk': self.recurring.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_recurring_expense_update_view(self):
+        resp = self.client.post(reverse('accounting:recurring-expense-update', 
+            kwargs={
+            'pk': self.recurring.pk
+        }), data={
+            'description': 'description',
+            'start_date': datetime.date.today(),
+            'expiration_date': datetime.date.today(),
+            'category': 1,
+            'cycle':1,
+            'amount': 10,
+            'debit_account': 1000,
+            'recorded_by': self.user.pk
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_recurring_expense_list_view(self):
+        resp = self.client.get(reverse('accounting:recurring-expense-list'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_recurring_expense_detail_view(self):
+        resp = self.client.get(reverse('accounting:recurring-expense-detail', kwargs={
+            'pk': self.recurring.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_recurring_expense_delete_view(self):
+
+        resp = self.client.get(reverse('accounting:expense-delete', kwargs={
+            'pk': self.expense.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+    
+    def test_post_recurring_expense_delete_view(self):
+
+        exp = RecurringExpense.objects.create(
+            cycle=7,
+            expiration_date=datetime.date.today(),
+            start_date=datetime.date.today(),
+            description = 'Test Description',
+            category=0,
+            amount=100,
+            debit_account=self.account_d
+        )
+        resp = self.client.post(reverse('accounting:recurring-expense-delete', kwargs={
+            'pk': exp.pk
+        }))
+        self.assertEqual(resp.status_code, 302)

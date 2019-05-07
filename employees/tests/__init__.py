@@ -20,5 +20,7 @@ from .views import (GenericPageTests,
     PayrollOfficerViewTests, 
     LeaveViewTests, 
     TimesheetViewTests, 
-    EmployeeWizardTests)
+    EmployeeWizardTests,
+    PayrollDateViewTests,
+    DepartmentViewTests)
 from .util import AutomatedServiceTests, ManualServiceTests

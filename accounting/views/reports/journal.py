@@ -11,7 +11,10 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponseRedirect
 
 from common_data.forms import PeriodReportForm
-from common_data.utilities import ContextMixin, extract_period, ConfigMixin
+from common_data.utilities import (ContextMixin, 
+                                    extract_period, 
+                                    PeriodReportMixin, 
+                                    ConfigMixin)
 from invoicing import models as inv
 from inventory import models as inventory_models
 from wkhtmltopdf.views import PDFTemplateView
@@ -34,7 +37,7 @@ class JournalFormView(ContextMixin, FormView):
             'journal': self.kwargs['pk']
         }
 
-class JournalReport(ConfigMixin,TemplateView):
+class JournalReport(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join('accounting', 'reports', 
         'journal.html')
 

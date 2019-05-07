@@ -11,7 +11,8 @@ from .views import (CommonViewTests,
     AccountViewTests, 
     TestReportViews, 
     TestCurrencyViews, 
-    AccountingWizardTests)
+    AccountingWizardTests,
+    AssetViewTests,ExpesnseViewTests)
 
 from .model_util import AccountingModelCreator
 

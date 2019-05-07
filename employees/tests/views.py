@@ -183,7 +183,7 @@ class PaySlipPageTests(TestCase):
 
     def test_execute_payroll(self):
         settings = EmployeesSettings.objects.first()
-        settings.payroll_officer = Employee.objects.first()
+        settings.payroll_officer = self.officer
         settings.save()
 
         prev_entry_count = JournalEntry.objects.all().count()
@@ -275,20 +275,33 @@ class EmployeePageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_employees_create_user_page_post(self):
-        resp = self.client.post('/employees/employee/create-user/1',
+        obj = Employee.objects.create(
+            first_name = 'Fi23rst',
+            last_name = 'Last',
+            address = 'Model test address',
+            email = 'test@mail.com',
+            phone = '1234535234',
+            hire_date=TODAY,
+            title='test role',
+            pay_grade = self.grade
+        )
+        resp = self.client.post('/employees/employee/create-user/' + str(obj.pk),
             data={
-                'employee': 1,
-                'username': 'name',
+                'employee':  obj.pk,
+                'username': 'name22',
                 'password': 'password',
                 'confirm_password': 'password'
             })
+        
         self.assertEqual(resp.status_code, 302)
+        obj.delete()
 
     def test_employees_create_user_page_post_with_error(self):
+        
         resp = self.client.post('/employees/employee/create-user/1',
             data={
                 'employee': 1,
-                'username': 'name',
+                'username': 'name2',
                 'password': 'passw0rd',
                 'confirm_password': 'password'
             })
@@ -300,12 +313,6 @@ class EmployeePageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_employees_reset_password_page_post(self):
-        if not self.employee.user:
-            usr = User.objects.create_user('name')
-            usr.set_password('password')
-            usr.save()
-        self.employee.user = usr
-        self.employee.save()
         resp = self.client.post('/employees/employee/user/reset-password/1',
             data={
                 'employee': 1,
@@ -572,10 +579,6 @@ class PayrollTaxViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_payroll_tax_delete_page_get(self):
-        resp = self.client.get('/employees/payroll-tax-delete/1')
-        self.assertEqual(resp.status_code, 200)
-
-    def test_payroll_tax_delete_page_get(self):
         other_prt = PayrollTax.objects.create(
             name="name",
             paid_by=0
@@ -614,11 +617,22 @@ class PayrollOfficerViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_create_payroll_officer_page(self):
+        obj = Employee.objects.create(
+            first_name = '23First',
+            last_name = 'Last',
+            address = 'Model test address',
+            email = 'test@mail.com',
+            phone = '1234535234',
+            hire_date=TODAY,
+            title='test role',
+            pay_grade = self.grade
+        )
         resp = self.client.post('/employees/payroll-officer/create',
             data={
-                'employee': 1
+                'employee': obj.pk
             })
         self.assertEqual(resp.status_code, 302)
+        obj.delete()
 
     def test_get_payroll_officer_list_page(self):
         resp = self.client.get('/employees/payroll-officer/list')
@@ -673,13 +687,7 @@ class LeaveViewTests(TestCase):
             category=1
             )
 
-        if not cls.employee.user:
-            usr = User.objects.create_user('name')
-            usr.set_password('password')
-            usr.save()
-        cls.employee.user = usr
-        cls.employee.save()
-        cls.officer = PayrollOfficer.objects.create(employee=Employee.objects.first())
+        
         
 
 
@@ -715,13 +723,11 @@ class LeaveViewTests(TestCase):
 
     def test_post_leave_authorization_page(self):
         self.assertTrue(True)
-        return 
-        # TODO fix
         data = {
                 'status': 1,
                 'notes': 'Note',
                 'password': 'password',
-                'authorized_by': self.employee.user.pk,
+                'authorized_by': self.officer.pk,
                 'leave_request': 1
             }
         resp = self.client.post('/employees/leave-authorization/1',
@@ -885,3 +891,133 @@ class EmployeeWizardTests(TestCase):
             else:
 
                 self.assertEqual(resp.status_code, 200)
+
+
+class PayrollDateViewTests(TestCase):
+    fixtures = ['common.json', 'accounts.json', 'settings.json', 'journals.json', 'employees.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser('TestUser', 'admin@mail.com', '123')
+
+        cls.date = PayrollDate.objects.create(
+            date=1
+        )
+        create_test_employees_models(cls)
+       
+
+    def setUp(self):
+        self.client.login(username='TestUser', password='123')
+
+    def test_get_payroll_date_create_view(self):
+        resp = self.client.get(reverse('employees:payroll-date-create'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_payroll_date_create_view(self):
+        resp = self.client.post(reverse('employees:payroll-date-create'), data={
+            'date': 2,
+            'schedule': 1
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_payroll_date_update_view(self):
+        resp = self.client.get(reverse('employees:payroll-date-update', kwargs={
+            'pk': self.date.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_payroll_date_update_view(self):
+        resp = self.client.post(reverse('employees:payroll-date-update',
+            kwargs={'pk': 1}), data={
+            'date': 2,
+            'schedule': 1
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_payroll_date_delete_view(self):
+        resp = self.client.get(reverse('employees:payroll-date-delete', kwargs={
+            'pk': self.date.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_payroll_date_delete_view(self):
+        obj = PayrollDate.objects.create(date=4)
+        resp = self.client.post(reverse('employees:payroll-date-delete', kwargs={
+            'pk': obj.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
+
+
+    def test_get_payroll_date_detail_view(self):
+        resp = self.client.get(reverse('employees:payroll-date-detail', kwargs={
+            'pk': self.date.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_payroll_date_list_view(self):
+        resp = self.client.get(reverse('employees:payroll-date-list'))
+        self.assertEqual(resp.status_code, 200)
+
+
+class DepartmentViewTests(TestCase):
+    fixtures = ['common.json','accounts.json','journals.json', 'employees.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        User.objects.create_superuser('Testuser', 'admin@mail.com', '123')
+        cls.dept = Department.objects.create(name='dept')
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_get_department_create_view(self):
+        resp = self.client.get(reverse('employees:department-create'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_department_list_view(self):
+        resp = self.client.get(reverse('employees:department-list'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_department_update_view(self):
+        resp = self.client.get(reverse('employees:department-update', kwargs={
+            'pk':self.dept.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_department_detail_view(self):
+        resp = self.client.get(reverse('employees:department-detail', kwargs={
+            'pk': self.dept.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_department_create_view(self):
+        resp = self.client.post(reverse('employees:department-create'), data={
+            'name': 'other dept',
+            'manager': self.employee.pk,
+            'employees': [1]
+        })
+
+        self.assertEqual(resp.status_code, 302)
+
+    def test_post_department_update_view(self):
+        resp = self.client.post(reverse('employees:department-update', kwargs={
+            'pk': 1
+        }), data={
+            'name': 'other dept',
+            'manager': self.employee.pk,
+            'employees': [1]
+
+        })
+
+        self.assertEqual(resp.status_code, 302)

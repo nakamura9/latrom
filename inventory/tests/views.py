@@ -18,6 +18,7 @@ from .model_util import InventoryModelCreator
 from employees.tests.model_util import EmployeeModelCreator
 from inventory import models
 from employees.models import Employee
+import copy
 
 TODAY = datetime.date.today()
         
@@ -243,10 +244,7 @@ class InventoryManagementViewTests(TestCase):
             kwargs={'pk': 1}))
         self.assertEqual(resp.status_code, 200)
 
-    def test_get_inventory_scrapping_page(self):
-        resp = self.client.get(reverse('inventory:scrap-inventory', 
-            kwargs={'pk': 1}))
-        self.assertEqual(resp.status_code, 200)
+    
 
     def test_post_inventory_scrapping_page(self):
         resp = self.client.post(reverse('inventory:scrap-inventory', 
@@ -496,9 +494,31 @@ class OrderViewTests(TestCase):
         resp = self.client.get(reverse('inventory:order-create'))
         self.assertEqual(resp.status_code,  200)
 
+    def test_get_order_form_with_supplier(self):
+        resp = self.client.get(reverse('inventory:order-create', kwargs={
+            'supplier': self.supplier.pk
+        }))
+        self.assertEqual(resp.status_code,  200)
+
     def test_post_order_form(self):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
+
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_order_form_with_error(self):
+        data = copy.deepcopy(self.ORDER_DATA)
+        data['items'] = ""
+        resp = self.client.post(reverse('inventory:order-create'), 
+        data=data)
+
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_order_form_with_payment(self):
+        data = copy.deepcopy(self.ORDER_DATA)
+        data['payment'] = True
+        resp = self.client.post(reverse('inventory:order-create'), 
+        data=data)
 
         self.assertEqual(resp.status_code,  302)
 
@@ -597,6 +617,35 @@ class OrderViewTests(TestCase):
     def test_debit_note_detail_view(self):
         resp = self.client.get('/inventory/debit-note/detail/1')
         self.assertEqual(resp.status_code, 200)
+
+    def test_get_order_payment_view(self):
+        resp = self.client.get(reverse('inventory:order-payment', kwargs={
+            'pk': self.order.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_order_payment_view(self):
+        resp = self.client.post(reverse('inventory:order-payment', kwargs={
+            'pk': self.order.pk
+        }), data={
+            'order': self.order.pk,
+            'amount': 100,
+            'date': datetime.date.today(),
+            'comments': 'comments'
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_order_payment_list_view(self):
+        resp = self.client.get(reverse('inventory:order-payment-list', kwargs={
+            'pk': self.order.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_verify_order_view(self):
+        resp = self.client.get(reverse('inventory:verify-order', kwargs={
+            'pk': self.order.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
 
     #order pdf assume that the detail view covers it
     #order emaiL only use the get view

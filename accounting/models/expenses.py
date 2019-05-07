@@ -79,6 +79,8 @@ class Expense(AbstractExpense):
     customer = models.ForeignKey('invoicing.Customer', on_delete=models.SET_NULL, null=True,
         blank=True)
     
+    def __str__(self):
+        return f"{self.date}: {self.reference}"
 
     def create_entry(self):
         if self.entry:
@@ -105,6 +107,23 @@ class Expense(AbstractExpense):
             raise ValueError('A billable expense needs a customer')
         
         super(Expense, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        '''Create a reversing entry for expenses'''
+        j = accounting.models.transactions.JournalEntry.objects.create(
+            date=self.date,
+            memo=f"Reversing transaction for expense with id {self.pk}",
+            journal=accounting.models.books.Journal.objects.get(pk=2),# cash disbursements
+            created_by=self.recorded_by,
+            draft= False
+        )
+
+        j.credit(self.amount, self.expense_account)
+        j.debit(self.amount, 
+            accounting.models.accounts.Account.objects.get(pk=1000))
+
+        super().delete(*args, **kwargs)
+
 
 
 class RecurringExpense(AbstractExpense):

@@ -9,7 +9,7 @@ from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import FormView
 
 from common_data.forms import PeriodReportForm
-from common_data.utilities import ContextMixin, extract_period, ConfigMixin
+from common_data.utilities import ContextMixin, ConfigMixin
 from invoicing import models as inv
 from inventory import models as inventory_models
 from .util import net_profit_calculator

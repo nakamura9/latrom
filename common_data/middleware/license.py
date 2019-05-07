@@ -29,7 +29,7 @@ class UserInfo(object):
 
     def verify_request(self, request):
         now = time.time()
-        if now - self.last_request > 300:
+        if now - self.last_request > 60:
             self.source_ip = request.META['REMOTE_ADDR']
             self.last_request = now
         else:
@@ -121,7 +121,7 @@ class LicenseMiddleware(object):
             if not settings.DEBUG and (config.last_license_check == None or \
                     (datetime.date.today() - \
                     config.last_license_check).days > 2):
-                print('checking ', config.verification_task_id)
+                print('checking %%', config.verification_task_id)
                 
                 if config.verification_task_id == '':
                     # if not generate that task and store the task id

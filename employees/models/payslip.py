@@ -241,13 +241,13 @@ class Payslip(models.Model):
                 self.status != 'verified':
             #only work on verified payslips
             return
-
+        
         j = accounting.models.JournalEntry.objects.create(
                 memo= 'Auto generated entry from verified payslip. ',
                 date=datetime.date.today(),
                 journal =accounting.models.Journal.objects.get(
                     pk=2),#Cash disbursements Journal
-                created_by = settings.payroll_officer.user,
+                created_by = settings.payroll_officer.employee.user,
                 draft=False
         )
         j.credit(self.gross_pay, settings.payroll_account)#default cash account

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client 
 from inventory.tests.models import create_test_inventory_models
 from employees.tests.models import create_test_employees_models
+from employees.models import Employee
 from services.models import *
 import urllib
 import json
@@ -105,13 +106,24 @@ class ServicePersonnelViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_service_person_creation_page(self):
+        obj = Employee.objects.create(
+                first_name = 'First',
+                last_name = 'Last',
+                address = 'Model test address',
+                email = 'test@mail.com',
+                phone = '1234535234',
+                hire_date=TODAY,
+                title='test role',
+                pay_grade = self.grade
+            )
         resp = self.client.post('/services/service-person-create', 
             data={
-                'employee': 1,
+                'employee': obj.pk,
                 'is_manager': True,
                 'can_authorize_equipment_requisitions': True,
                 'can_authorize_consumables_requisitions': True,
             })
+        obj.delete()
         self.assertEqual(resp.status_code, 302)
 
     def test_get_service_person_update_page(self):

@@ -408,22 +408,19 @@ class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
         ])
     notes = forms.CharField(widget=forms.Textarea, required=False)    
     
-    authorized_by = forms.ModelChoiceField(
-        models.Employee.objects.filter(payrollofficer__isnull=False))
+    authorized_by = forms.ModelChoiceField(models.PayrollOfficer.objects.all())
     password = forms.CharField(widget=forms.PasswordInput)
     
 
     def clean(self):
         cleaned_data = super().clean()
-        usr = cleaned_data['authorized_by'].user
+        usr = cleaned_data['authorized_by'].employee.user
         if not usr:
             raise forms.ValidationError('The officer selected has no user profile')
 
-        authenticated = authenticate(
-            username=usr.username,
-            password=cleaned_data['password']
-        )
-        if not authenticated:
+         
+        if not authenticate(username=usr.username,
+                password=cleaned_data['password']):
             raise forms.ValidationError('You entered an incorrect password for this form')
 
         return cleaned_data

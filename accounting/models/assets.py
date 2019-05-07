@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 import accounting
 from calendar import monthrange
+from django.shortcuts import reverse
 
 
 DEPRECIATION_METHOD = [
@@ -38,6 +39,10 @@ class Asset(models.Model):
     depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
     salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
     created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
+
+    def get_absolute_url(self):
+        return reverse("accounting:asset-detail", kwargs={"pk": self.pk})
+    
 
     def create_entry(self):
         '''debits the debit account and credits the appropriate asset account'''

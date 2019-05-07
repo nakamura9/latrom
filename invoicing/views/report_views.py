@@ -4,14 +4,16 @@ import os
 from decimal import Decimal as D
 from functools import reduce
 from django.db.models import Q
+from django.http import HttpResponse
 from django.urls import reverse_lazy
+from django.contrib import messages
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, FormView
 from wkhtmltopdf.views import PDFTemplateView
 import urllib
 
 
-from common_data.utilities import ContextMixin, extract_period, ConfigMixin
+from common_data.utilities import ContextMixin, extract_period,  PeriodReportMixin,ConfigMixin, PeriodReportMixin
 from invoicing import forms, models
 from invoicing.models.invoice import Invoice
 from .report_utils.plotters import plot_sales
@@ -35,7 +37,7 @@ class CustomerReportFormView(ContextMixin, FormView):
         return {}
 
 
-class CustomerStatement(ConfigMixin, TemplateView):
+class CustomerStatement(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'customer_statement.html')
 
     @staticmethod 
@@ -63,10 +65,13 @@ class CustomerStatement(ConfigMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(CustomerStatement, self).get_context_data(*args, **kwargs)
+
         kwargs = self.request.GET
         customer = models.Customer.objects.get(
             pk=kwargs['customer'])
+        
         start, end = extract_period(kwargs)
+        
         context['pdf_link'] = True
         return CustomerStatement.common_context(context, customer, start, end)
         
@@ -119,7 +124,7 @@ class SalesReportFormView(ContextMixin, FormView):
     }
 
 # TODO test
-class SalesReportView(ConfigMixin, TemplateView):
+class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join("invoicing", "reports", "sales_report.html")
 
     @staticmethod
