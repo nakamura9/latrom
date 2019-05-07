@@ -21,7 +21,7 @@ $(document).ready(function(){
             <!--{% url 'base:workflow' %}-->
             <a class="navbar-brand" href="/base/workflow"  >SBT</a>
             {% if request.user %}
-            <li class="nav-item">
+            <li class="nav-item" id="planner">
                 <a href="{% url 'planner:dashboard' %}" class="nav-link">
                     <i class="fas fa-calendar-alt" style="font-size:24;">
                     </i> Planner
@@ -34,7 +34,7 @@ $(document).ready(function(){
                     </span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="inbox">
                 <a href="{% url 'messaging:inbox' %}" class="nav-link">
                     <i class="fas fa-envelope" style="font-size:24;"></i> 
                     Messaging 
@@ -61,7 +61,7 @@ $(document).ready(function(){
             {% endif %}
             
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
-            <li class="nav-item active">
+            <li class="nav-item" id='sales'>
                 <a class="nav-link" href="{% url 'invoicing:home' %}">
                     <i class="fas fa-cash-register" style="font-size:24;"></i> Sales
                 </a>
@@ -69,7 +69,7 @@ $(document).ready(function(){
             {% endif %}
             
             {% if request.user.is_superuser or request.user.employee.is_inventory_controller %}
-            <li class="nav-item">
+            <li class="nav-item" id="inventory">
                 <a class="nav-link" href="{% url 'inventory:home' %}">
                     <i class="fas fa-warehouse" style="font-size:24;"></i> 
                     Inventory
@@ -77,7 +77,7 @@ $(document).ready(function(){
             </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_sales_rep %}
-            <li class="nav-item">
+            <li class="nav-item" id="accounting">
                 <a class="nav-link" href="{% url 'accounting:dashboard' %}">
                     <i class="fas fa-dollar-sign" style="font-size:24;"></i> 
                         Accounting
@@ -85,12 +85,12 @@ $(document).ready(function(){
             </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_serviceperson %}
-            <li class="nav-item">
+            <li class="nav-item" id="services">
                 <a href="{% url 'services:dashboard' %}" class="nav-link"><i class="fas fa-toolbox" style="font-size:24;"></i> Services</a>
             </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.employee.is_payroll_officer %}
-            <li class="nav-item">
+            <li class="nav-item" id="employees">
                 <a class="nav-link" href="{% url 'employees:dashboard' %}">
                     <i class="fas fa-users" style="font-size:24;"></i> Employees
                 </a>

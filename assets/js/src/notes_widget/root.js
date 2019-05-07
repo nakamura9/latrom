@@ -47,8 +47,8 @@ class NotesWidget extends Component{
         const containerStyle ={
             margin: "5px",
             padding: "10px",
-            borderRadius: "10px",
-            backgroundColor: "#07f",
+            borderRadius: "5px",
+            backgroundColor: "#007bff",
             color: 'white'
         };
 
@@ -73,7 +73,7 @@ class NotesWidget extends Component{
                 value={this.state.note}></textarea>
             </div>
             {/* May eliminate this button, Make a prop? */}
-            <button onClick={this.submitHandler} type="button">Submit</button>
+            <button onClick={this.submitHandler} type="button" className="btn">Submit</button>
         </div>)
     }
 }
