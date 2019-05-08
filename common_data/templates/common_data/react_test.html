@@ -1,10 +1,21 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
+<style>
+    .full{
+        height:100%;
+        min-height:100%;
+        width: 100%;
+        min-width:100%
+    }
+</style>
+
+<div class="full jumbo-gradient">
+<p>1</p>
+</div>
 
 
 
 
-{% render_bundle "widgets" %}
 
 {% endblock %}

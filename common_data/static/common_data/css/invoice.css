@@ -97,3 +97,8 @@ li.active .nav-link{
     background: rgb(176,224,230);
 background: linear-gradient(90deg, rgba(176,224,230,1) 0%, rgba(0,123,255,1) 100%, rgba(0,0,0,1) 100%);
 }
+
+.jumbo-gradient-reverse{
+    background: rgb(0,123,255);
+background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100%);
+}
