@@ -13,7 +13,7 @@ import accounting
 import invoicing
 from employees.models.payslip import Payslip
 from employees.models.misc import PayrollOfficer
-
+from django.shortcuts import reverse
 
 
 class Employee(Person, SoftDeletionModel):
@@ -54,6 +54,10 @@ class Employee(Person, SoftDeletionModel):
     id_number = models.CharField(max_length=64, blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     
+    def get_absolute_url(self):
+        return reverse("employees:employee-detail", kwargs={"pk": self.pk})
+    
+
     def increment_leave_days(self, days):
         self.leave_days += days
         self.last_leave_day_increment = datetime.date.today()

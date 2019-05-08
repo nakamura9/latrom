@@ -142,11 +142,11 @@ class Supplier(SoftDeletionModel):
 
     @property
     def consumables(self):
-        return InventoryItem.objects.filter(type=0, supplier=self)
+        return InventoryItem.objects.filter(type=2, supplier=self)
 
     @property
     def equipment(self):
-        return InventoryItem.objects.filter(type=0, supplier=self)
+        return InventoryItem.objects.filter(type=1, supplier=self)
 
     def create_account(self):
         if self.account is None:

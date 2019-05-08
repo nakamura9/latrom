@@ -102,6 +102,39 @@ class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
         fields = ['date', 'time', 'expected_duration', 'team', 'status', 'description', 'works_request' ]
         model = models.ServiceWorkOrder
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Form',
+                    Row(
+                        Column('date', css_class="form group col-6"),
+                        Column('time', css_class="form group col-6"),
+                    ),
+                    'internal',
+                    'works_request',
+                    'description',
+                    'completed',
+                    'expected_duration',
+                    'status',
+                    'authorized_by',
+                    'team',
+                    'progress',
+                ),
+                Tab('Service People',
+                    HTML(
+                        """
+                        <div id="work-order-persons">
+
+            </div>      
+                        """
+                    ),
+                ),
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+        
 class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
     progress = forms.CharField(widget=forms.HiddenInput, required=False)
     service_time = forms.CharField(widget=forms.HiddenInput, required=False)

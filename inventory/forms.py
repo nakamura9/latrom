@@ -631,7 +631,40 @@ class StorageMediaForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.StorageMedia
 
+        widgets = {
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Basic',
+                    'name',
+                    Row(
+                        Column('length', css_class="form group col-4"),
+                        Column('width', css_class="form group col-4"),
+                        Column('height', css_class="form group col-4"),
+                    ),
+                    'capacity',
+                ),
+                Tab('description',
+                    'description',
+                    'unit',
+                    'warehouse',
+                    'location',
+                ),
+                Tab('Parent Storage Medium',
+                    HTML(
+                        """
+                        <div id="storage-media-select-widget"></div>                        
+                        """
+                    ),
+                ),
+            ),
+        )        
+        self.helper.add_input(Submit('submit', 'Submit'))
 class AutoStorageMedia(BootstrapMixin, forms.Form):
     warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), widget=forms.HiddenInput)
     number_of_corridors = forms.CharField(widget=forms.NumberInput)

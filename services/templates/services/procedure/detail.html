@@ -7,58 +7,84 @@
     <hr class="my-2">
     <p>More info</p>
     <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:procedure-update' pk=object.pk %}" role="button">Edit</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'services:procedure-update' pk=object.pk %}"
+            role="button">Edit</a>
     </p>
 </div>
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h4 class="card-title">Summary Details</h4>
-                    <p class="card-text">Name: {{object.name}}</p>
-                    <p class="card-text">Reference: {{object.reference}}</p>
-                    <p class="card-text">Description: {{object.description}}</p>
-                    
+        <div class="col-sm-12">
+            <nav class="nav nav-tabs nav-staccked">
+                <a href="#summary" class="nav-link active" data-toggle="tab">Summary</a>
+                <a href="#procedure" class="nav-link" data-toggle="tab">Requirements</a>
+            </nav>
+
+            <div class="tab-content panel-body">
+                <div class="tab-pane active" id="summary">
+                    <div class="row shadow">
+                        <div class="card bg-primary text-white col-4">
+                            <div class="card-body">
+                                <h4 class="card-title">Summary Details</h4>
+                                <p class="card-text">Name: {{object.name}}</p>
+                                <p class="card-text">Reference: {{object.reference}}</p>
+                                <p class="card-text">Description: {{object.description}}</p>
+                            </div>
+                        </div>
+                        <div class="card col-8">
+                            <div class="card-body">
+                                <h4>Procedure Stages</h4>
+                                <ol>
+                                    {% if object.tasl_set.all.count == 0%}
+                                    <li colspan-"3"><b>No Data To Display</b></li>
+                                    {% else %}
+                                    {% for step in object.task_set.all %}
+                                    <li>{{step}}</li>
+                                    {% endfor %}
+                                    {% endif %}
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4>Procedure Stages</h4>
-                    <ol>
-                        {% for step in object.task_set.all %}
-                            <li>{{step}}</li>
-                        {% endfor %}
-                    </ol>
+                <div class="tab-pane" id="procedure">
+                    <div class="row shadow">
+                        <div class="col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>Equipment:</h4>
+                                    <ul>
+                                        {% if object.required_equipment.all.count == 0 %}
+                                        <li><b>No Data To Display</b></li>
+                                        {% else %}
+                                        {% for item in object.required_equipment.all %}
+                                        <li>{{item}}</li>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card col-6">
+
+                            <div class="card-body">
+                                <h4>Consumables:</h4>
+                                <ul>
+                                    {% if object.required_equipment.all.count == 0 %}
+                                    <li><b>No Data To Display</b></li>
+                                    {% else %}
+                                    {% for item in object.required_consumables.all %}
+                                    <li>{{item}}</li>
+                                    {% endfor %}
+                                    {% endif %}
+
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4>Required Equipment:</h4>
-                    <ul>
-                        {% for item in object.required_equipment.all %}
-                        <li>{{item}}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <hr>
-            <div class="card">
-              <div class="card-body">
-              <h4>Required Consumables:</h4>
-                    <ul>
-                            {% for item in object.required_consumables.all %}
-                            <li>{{item}}</li>
-                            {% endfor %}
-                    </ul>
-              </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock content %}
+    {% endblock content %}
