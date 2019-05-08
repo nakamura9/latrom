@@ -735,7 +735,7 @@ class ConfigWizardTests(TestCase):
                     data=data)
 
                 if step == len(data_list):
-
+                    #print(resp.context['form'].errors)
                     self.assertEqual(resp.status_code, 302)
                 else:
                     self.assertEqual(resp.status_code, 200)

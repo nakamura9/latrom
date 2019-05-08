@@ -145,7 +145,8 @@ class PayrollDate(models.Model):
     employees = models.ManyToManyField('employees.employee')
     departments = models.ManyToManyField('employees.department')
     pay_grades = models.ManyToManyField('employees.paygrade')
-    schedule = models.ForeignKey('employees.payrollschedule', default=1, on_delete=models.SET_DEFAULT)
+    schedule = models.ForeignKey('employees.payrollschedule', default=1, 
+        on_delete=models.SET_DEFAULT)
 
     def __str__(self):
         return f"{self.schedule.name}: {self.date}"

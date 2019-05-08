@@ -1,1 +1,57 @@
-some detail {{object.pk}}
+{% extends 'window.html' %}
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Department Details</h1>
+    <p class="lead">Lists all employees and other departmental features</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'employees:department-update' pk=object.pk %}" role="button">Update</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card shadow text-left">
+              <div class="card-body">
+                <h4 class="card-title">Department Info</h4>
+                <p class="card-text">Name: {{object.name}}</p>
+                <p class="card-text"># Employees: {{object.employees.all.count}}</p>
+                <p class="card-text">Manager: {{object.manager}}</p>
+                <p class="card-text">Parent Department: {{object.parent_department}}</p>
+                <p class="card-text"><b>Subdepartments:</b> </p>
+                {% if object.children.count == 0 %}
+                    <p class="card-text"><b>None</b></p>
+                {% endif %}
+                <ul>
+                    {% for i in object.children %}
+                    <li>{{i}}</li>
+                    {% endfor %}
+
+                </ul>
+                <p class="card-text"><b>Description:</b></p>
+                <p class="card-text">{{object.description}}</p>
+              </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card text-left">
+              <div class="card-body">
+                <h4 class="card-title">Employees</h4>
+                <div class="card-text">
+                    <ul>
+                        {% for i in object.employees.all %}
+                        <li>{{i}}</li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

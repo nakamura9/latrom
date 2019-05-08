@@ -43,7 +43,7 @@ class Employee(Person, SoftDeletionModel):
     hire_date = models.DateField()
     title = models.CharField(max_length=32)
     pay_grade = models.ForeignKey('employees.PayGrade', 
-        on_delete=models.CASCADE,default=1)
+        on_delete=models.CASCADE, blank=True, null=True)
     leave_days = models.FloatField(default=0)
     last_leave_day_increment = models.DateField(null=True)
     uses_timesheet = models.BooleanField(default=False, blank=True)

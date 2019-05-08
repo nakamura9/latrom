@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 import accounting
 from common_data.models import SoftDeletionModel
-
+from django.shortcuts import reverse
 
 class Journal(SoftDeletionModel):
     '''
@@ -33,6 +33,10 @@ class Journal(SoftDeletionModel):
         return accounting.models.transactions.JournalEntry.objects.filter(Q(journal=self) 
             & Q(date__gte=start)
             & Q(date__lte=end))
+
+    def get_absolute_url(self):
+        return reverse("accounting:journal-detail", kwargs={"pk": self.pk})
+    
 
 
 
