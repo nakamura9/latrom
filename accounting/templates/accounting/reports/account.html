@@ -1,6 +1,14 @@
 {% extends 'common_data/page/pdf_page.html' %}
 
 {% block page_contents %}
+
+{% block pre_page %}
+<div class="jumbotron">
+<h4 class="bold">Actions</h4>
+<a href="{% url 'inventory:inventory-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
+</div>
+{% endblock  %}
+
 {% include "common_data/common/business_information.html" %}
 <style>
 h5, h3 {
@@ -59,8 +67,8 @@ th {
 
 {% if pdf_link %}
 
-<a href="/accounting/csv/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-success">Generate CSV</a>
-<a href="/accounting/pdf/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-danger"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
+<a href="/accounting/csv/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-primary">Generate CSV</a>
+<a href="/accounting/pdf/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-primary"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
 
 {% endif %}
 

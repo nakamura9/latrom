@@ -14,7 +14,38 @@
 <p>1</p>
 </div>
 
-
+<ul class="nav nav-tabs">
+                        <li class="nav-item"><a class="nav-link active" href="#lines" data-toggle="tab">Invoice Lines</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#comments-terms" data-toggle="tab">T's & C's</a></li>
+                    </ul>
+                    <div class="tab-content panel-body">
+                        <div id="lines" class="tab-pane active">
+                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
+                                    Invoice Lines</label>
+                                <div id="invoice-table"></div>
+                            </div>
+                        </div>
+                        <div id="comments-terms" class="tab-pane">
+                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
+                                    Terms and Comments</label>
+                                <div class="{{style}}-footer-cell">
+                                    <div class="{{style}}-footer-cell-heading">
+                                            Terms:
+                                    </div>
+                                    <div class="{{style}}-footer-cell-contents">
+                                            {{form.terms}}
+                                    </div>
+                                </div>
+                                <div class="{{style}}-footer-cell">
+                                    <div class="{{style}}-footer-cell-heading">
+                                            Comments:
+                                    </div>
+                                    <div class="{{style}}-footer-cell-contents">
+                                            {{form.comments}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
 

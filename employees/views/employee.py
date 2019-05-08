@@ -32,7 +32,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
 class EmployeeCreateView( ContextMixin, CreateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
     extra_context = {
         'title': 'Create Employee',
@@ -53,7 +52,6 @@ class EmployeeCreateView( ContextMixin, CreateView):
 
 class EmployeeUpdateView( ContextMixin, UpdateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = reverse_lazy('employees:dashboard')
     form_class = forms.EmployeeForm
     model = models.Employee
     extra_context = {

@@ -1,4 +1,13 @@
-{% extends "common_data/page/pdf_page.html" %} {% block page_contents %}
+{% extends "common_data/page/pdf_page.html" %} 
+
+{% block pre_page %}
+<div class="jumbotron">
+<h4 class="bold">Actions</h4>
+<a href="{% url 'inventory:inventory-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
+</div>
+{% endblock  %}
+
+{% block page_contents %}
 
 <table class="table table-sm" style="width:100%">
     <tbody>
@@ -42,7 +51,6 @@
     </tbody>
 </table>
 {% if pdf_link %}
-<a href="{% url 'inventory:inventory-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
 
 {% endif %}
 {% endblock %}

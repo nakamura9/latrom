@@ -352,6 +352,8 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
     )
     make_payment= forms.BooleanField(initial=False, required=False)
     status = forms.CharField(widget=forms.HiddenInput)
+    ship_to = forms.ModelChoiceField(models.WareHouse.objects.all(), label='Ship To Warehouse')
+
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
@@ -359,10 +361,14 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Basic',
-                    'date',
-                    'expected_receipt_date',
-                    'supplier',
-                    'ship_to',
+                Row(
+                    Column('date', css_class='form group col-6'),
+                    Column('expected_receipt_date', css_class='form group col-6'),
+                ),
+                Row(
+                    Column('supplier', css_class='form group col-6'),
+                    Column('ship_to', css_class='form group col-6'),
+                ),
                     'issuing_inventory_controller'
                     ),
                 Tab('Payment',
@@ -375,6 +381,11 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     'tracking_number',
                     'supplier_invoice_number',
                     'notes'),
+            ),
+            HTML(
+                """
+                <div id="order-root"></div>
+                """
             ),
             HTML("""
                 <div class="dropdown open">
@@ -620,7 +631,40 @@ class StorageMediaForm(forms.ModelForm, BootstrapMixin):
         fields = "__all__"
         model = models.StorageMedia
 
+        widgets = {
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}),
+            }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Basic',
+                    'name',
+                    Row(
+                        Column('length', css_class="form group col-4"),
+                        Column('width', css_class="form group col-4"),
+                        Column('height', css_class="form group col-4"),
+                    ),
+                    'capacity',
+                ),
+                Tab('description',
+                    'description',
+                    'unit',
+                    'warehouse',
+                    'location',
+                ),
+                Tab('Parent Storage Medium',
+                    HTML(
+                        """
+                        <div id="storage-media-select-widget"></div>                        
+                        """
+                    ),
+                ),
+            ),
+        )        
+        self.helper.add_input(Submit('submit', 'Submit'))
 class AutoStorageMedia(BootstrapMixin, forms.Form):
     warehouse = forms.ModelChoiceField(models.WareHouse.objects.all(), widget=forms.HiddenInput)
     number_of_corridors = forms.CharField(widget=forms.NumberInput)

@@ -7,61 +7,122 @@
     <hr class="my-2">
     <p>Actions</p>
     <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:work-order-update' pk=object.pk  %}" role="button">Update</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'services:work-order-update' pk=object.pk  %}"
+            role="button">Update</a>
     </p>
 </div>
 
 <div class="container">
     <div class="row">
-            <div class="col-sm-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Work Order Details</h4>
-                        <p class="card-text">Date: {{object.date}}</p>
-                        <p class="card-text">Time: {{object.time}}</p>
-                        <p class="card-text">Status: {{object.status}}</p>
-                        <p class="card-text">Description: {{object.description}}</p>
-                        <h4>Resolvers</h4>
-                        <h6>Team</h6>
-                        <p class="card-text">Team Name: {{object.team}}</p>
-                        <ul>
-                            {% for tm in object.team.members.all %}
-                            <li>{{tm}}</li>
-                            {% endfor %}
-                        </ul>
-                        <h6>Service People</h6>
-                        <ul>
-                            {% for sp in object.service_people.all %}
-                            <li>{{sp}}</li>
-                            {% endfor %}
-                        </ul>
+        <div class="col-sm-8">
+            <nav class="nav nav-tabs nav-stacked">
+                <a href="#work" class="nav-link active" data-toggle="tab">Work Order Details</a>
+                <a href="#procedure" class="nav-link" data-toggle="tab">Service Procedure</a>
+                <a href="#expenses" class="nav-link" data-toggle="tab">Expenses</a>
+                <a href="#service" class="nav-link" data-toggle="tab">Service Time</a>
+            </nav>
+        </div>
+        <div class="col-sm-4">
+            {% if request.user.is_superuser and object.status != 'authorized' %}
+            <h5>Authorization Form</h5>
+            <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
+                {% csrf_token %}
+                {{authorization_form}}
+                <button class="btn btn-primary">Authorize</button>
+            </form>
+            {% else  %}
+            {% if object.status == 'authorized' %}
+            {% else %}
+            <h6>Login as a super user to authorize this work order.</h6>
+            {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 shadow">
+            <div class="tab-content panel-body">
+                <div class="tab-pane active" id="work">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">Date: {{object.date}}</p>
+                            <p class="card-text">Time: {{object.time}}</p>
+                            <p class="card-text">Status: {{object.status}}</p>
+                            <p class="card-text">Description: {{object.description}}</p>
+                            <h4>Resolvers</h4>
+                            <h6>Team</h6>
+                            <p class="card-text">Team Name: {{object.team}}</p>
+                            <ul>
+                                {% for tm in object.team.members.all %}
+                                <li>{{tm}}</li>
+                                {% endfor %}
+                            </ul>
+                            <h6>Service People</h6>
+                            <ul>
+                                {% for sp in object.service_people.all %}
+                                <li>{{sp}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Service Procedure</h4>
-                        <p class="card-text">Description: {{object.works_request.service.procedure.description}}</p>
-                        <hr class="my-2">
-                        <h5>Stages</h5>
-                        <hr class="my-2">
-                        <ol>
-                            {% for step in object.works_request.service.procedure.steps %}
+                <div class="tab-pane" id="procedure">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-text">Description:
+                                {{object.works_request.service.procedure.description}}
+                            </h6>
+                            <hr class="my-2">
+                            <h6>Stages</h6>
+                            <hr class="my-2">
+                            <ol>
+                                {% for step in object.works_request.service.procedure.steps %}
                                 <li>{{step}}</li>
-                            {% endfor %}
-                        </ol>
-                        <hr class="my-4">
-                        <h4 class="card-title">Notes</h4>
-                        <hr class="my-4">
-                        <ul>
-                            {% for note in object.notes.all %}
+                                {% endfor %}
+                            </ol>
+                            <hr class="my-4">
+                            <h6 class="card-title">Notes</h6>
+                            <hr class="my-4">
+                            <ul>
+                                {% for note in object.notes.all %}
                                 <li>{{note}}</li>
-                            {% endfor  %}
-                        </ul>
-                        
+                                {% endfor  %}
+                            </ul>
+
+                        </div>
                     </div>
+
+
                 </div>
+                <div class="tab-pane" id="expenses">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th>Expense ID</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if object.expenses.all.count == 0 %}
+                            <tr>
+                                <td colspan="3"><b>No data to display</b></td>
+                            </tr>
+                            {% else %}
+                            {% for exp in object.expenses %}
+                            <tr>
+                                <td><a class="btn btn-primary"
+                                        href="{% url 'accounting:expense-detail' pk=exp.expense.pk %}">{{exp.expense.pk}}</a>
+                                </td>
+                                <td>{{exp.expense.category_string}}</td>
+                                <td>{{exp.expense.amount}}</td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
             </div>
             
             <div class="col-sm-4">
@@ -81,56 +142,37 @@
                 {% endif %}
                 {% endif %}
 
+                </div>
+                <div class="tab-pane" id="service">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th>Employee</th>
+                                <th>Normal Time</th>
+                                <th>Overtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if object.time_logs.all.count == 0 %}
+                            <tr>
+                                <td colspan="3"><b>No Data To Be Displayed</b></td>
+                            </tr>
+                            {% else %}
+                            {% for time in object.time_logs %}
+                            <tr>
+                                <td>{{time.employee}}</td>
+                                <td>{{time.normal_time}}</td>
+                                <td>{{time.overtime}}</td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-                <h4>Expenses</h4>
-            <hr class="my-4">
-
-                <table class="table table-sm">
-                    <thead>
-                        <tr class="bg-primary">
-                            <th>Expense ID</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for exp in object.expenses %}
-                        <tr>
-                            <td><a class="btn btn-primary" href="{% url 'accounting:expense-detail' pk=exp.expense.pk %}">{{exp.expense.pk}}</a></td>
-                            <td>{{exp.expense.category_string}}</td>
-                            <td>{{exp.expense.amount}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-        </div>
-        <div class="col-sm-6">
-            <h4 class="card-title">Service Time</h4>
-                <hr class="my-4">
-                <table class="table table-sm">
-                    <thead>
-                        <tr class="bg-primary">
-                            <th>Employee</th>
-                            <th>Normal Time</th>
-                            <th>Overtime</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for time in object.time_logs %}
-                        <tr>
-                            <td>{{time.employee}}</td>
-                            <td>{{time.normal_time}}</td>
-                            <td>{{time.overtime}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
         </div>
     </div>
-
 </div>
-
+</div>
+</div>
 {% endblock %}

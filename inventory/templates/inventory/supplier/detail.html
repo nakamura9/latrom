@@ -31,14 +31,13 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item"><a href="#invoices" class="nav-link active"
-                                    data-toggle="tab">Products</a></li>
-                            <li class="nav-item"><a href="#quotations" class="nav-link" data-toggle="tab">Consumables</a>
-                            </li>
-                            <li class="nav-item"><a href="#credit-notes" class="nav-link" data-toggle="tab">Equipment</a></li>
-                        </ul>
-                        <div class="tab-content">
+                        <nav class="nav nav-tabs nav-stacled">
+                            <a href="#invoices" class="nav-link active"
+                                    data-toggle="tab">Products</a>
+                            <a href="#quotations" class="nav-link" data-toggle="tab">Consumables</a>
+                            <a href="#credit-notes" class="nav-link" data-toggle="tab">Equipment</a></li>
+                        </nav>
+                        <div class="tab-content panel-body">
                             <div id="invoices" class="tab-pane active">
                                 <table class="table table-sm">
                                     <thead>
@@ -80,7 +79,6 @@
                                 </table>
                             </div>
                             <div id="credit-notes" class="tab-pane">
-                                <h4>Equipment</h4>
                                 <table class="table table-sm">
                                     <thead>
                                         <tr>

@@ -68,26 +68,30 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
         exclude = "entry", 
         model = models.Expense
 
+        widgets = {
+            'description':forms.Textarea(attrs={'rows':4, 'cols':15}),           
+        }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('basic',
-                    Row(
-                        Column('customer', css_class='form-group col-6'),
-                        Column('date', css_class='form-group col-6'),
-                    ),
+                Tab('Basic',
+                    'date',
                     Row(
                         Column('amount', css_class='form-group col-6'),
                         Column('debit_account', css_class='form-group col-6'),                        
                     ),
-                    'category',
-                    'recorded_by',
-                ),
-                Tab('description',
                     'description',
-                    'reference',
+                    'category',
+                    Row(
+                        Column('recorded_by', css_class='form-group col-6'),                        
+                        Column('reference', css_class='form-group col-6'),                        
+                    )
+                ),
+                Tab('Billing',
+                    'billable',
+                    'customer',
                 ),
             )
         )
