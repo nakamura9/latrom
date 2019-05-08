@@ -15,7 +15,7 @@ class AutomatedServiceTests(TestCase):
     def setUpTestData(cls):
         create_test_employees_models(cls)
         cls.settings = EmployeesSettings.objects.first()
-        cls.settings.payroll_officer=cls.employee
+        cls.settings.payroll_officer=cls.officer
         cls.service = AutomatedPayrollService()
 
     def test_create_service(self):
@@ -69,7 +69,7 @@ class ManualServiceTests(TestCase):
     def setUpTestData(cls):
         create_test_employees_models(cls)
         cls.settings = EmployeesSettings.objects.first()
-        cls.settings.payroll_officer =cls.employee
+        cls.settings.payroll_officer =cls.officer
         cls.settings.save()
         
         cls.usr = User.objects.create_superuser(

@@ -19,11 +19,10 @@ class EmployeesSettings(SingletonModel):
         default=True
         )
     salary_follows_profits = models.BooleanField(default=True)
-    payroll_officer = models.ForeignKey("employees.Employee", 
+    payroll_officer = models.ForeignKey("employees.PayrollOfficer", 
         on_delete=models.SET_NULL, null=True,
         related_name="payroll_officer",
-        blank=True, 
-        limit_choices_to={'payrollofficer__isnull': False}
+        blank=True
     )
     payroll_account = models.ForeignKey(
         'accounting.account',

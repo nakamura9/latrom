@@ -64,16 +64,24 @@ def create_test_employees_models(cls):
     with reversion.create_revision():
         cls.grade.save()
 
-    cls.employee = Employee.objects.create(
-            first_name = 'First',
-            last_name = 'Last',
-            address = 'Model test address',
-            email = 'test@mail.com',
-            phone = '1234535234',
-            hire_date=TODAY,
-            title='test role',
-            pay_grade = cls.grade
-        )
+    if not hasattr(cls, 'employee'):
+        cls.employee = Employee.objects.create(
+                first_name = 'First',
+                last_name = 'Last',
+                address = 'Model test address',
+                email = 'test@mail.com',
+                phone = '1234535234',
+                hire_date=TODAY,
+                title='test role',
+                pay_grade = cls.grade
+            )
+
+    if not cls.employee.user:
+        usr = User.objects.create_user('name1994')
+        usr.set_password('password')
+        usr.save()
+        cls.employee.user = usr
+        cls.employee.save()
 
     cls.slip = Payslip.objects.create(
         start_period=TODAY,
@@ -100,6 +108,11 @@ def create_test_employees_models(cls):
     cls.pay_date.employees.add(cls.employee)
     cls.pay_date.save()
 
+    if not hasattr(cls, 'officer'):
+        cls.officer = PayrollOfficer.objects.create(
+            employee=cls.employee
+        )
+
 class CommonModelTests(TestCase):
     def test_create_employee_settings(self):
         obj = EmployeesSettings.objects.create(
@@ -107,6 +120,7 @@ class CommonModelTests(TestCase):
             salary_follows_profits = True
         )
         self.assertIsInstance(obj, EmployeesSettings)
+
 
 class TimesheetTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
@@ -170,6 +184,7 @@ class TimesheetTests(TestCase):
     def test_line_overtime(self):
         self.assertEqual(self.line.overtime, datetime.timedelta(0))
 
+
 class EmployeeModelTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
 
@@ -219,6 +234,7 @@ class AllowanceModelTest(TestCase):
             amount=50
         )
         self.assertIsInstance(allowance, Allowance)
+
 
 class DeductionModelTest(TestCase):
     fixtures = ['accounts.json', 'employees.json']
@@ -307,7 +323,6 @@ class PayGradeModelTests(TestCase):
         self.assertIsInstance(obj, PayGrade)
 
     
-
 class PaySlipModelTests(TestCase):
     fixtures = ['common.json', 'accounts.json', 'journals.json',
          'employees.json','inventory.json', 'invoicing.json']
@@ -448,13 +463,14 @@ class PaySlipModelTests(TestCase):
         settings = EmployeesSettings.objects.first()
         self.employee.user = self.user
         self.employee.save()
-        settings.payroll_officer = self.employee
+        settings.payroll_officer = self.officer
         settings.save()
 
         self.slip.status = 'verified'
         self.slip.save()
         self.slip.create_entry()
         self.assertIsInstance(self.slip.entry, JournalEntry)
+
 
 class TaxBracketModelTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
@@ -493,6 +509,7 @@ class TaxBracketModelTests(TestCase):
         self.assertEqual(self.prt.list_brackets.count(), 2)
         TaxBracket.objects.latest('pk').delete()
         
+
 class LeaveModelTests(TestCase):
     fixtures = ['accounts.json', 'employees.json']
 

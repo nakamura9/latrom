@@ -152,7 +152,6 @@ class AccountCreateView( ContextMixin, CreateView):
     template_name = os.path.join('common_data','crispy_create_template.html')
     model = models.Account
     form_class = forms.AccountForm
-    success_url = reverse_lazy('accounting:dashboard')
     extra_context = {
         "title": "Create New Account",
         'description': "Use accounts to manage income and expenses in an intuitive way. A default chart of expenses is already implemented."}
@@ -161,7 +160,6 @@ class AccountUpdateView( ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
     form_class = forms.AccountUpdateForm
-    success_url = reverse_lazy('accounting:dashboard')
     extra_context = {"title": "Update Existing Account"}
 
 
@@ -352,7 +350,6 @@ class CustomerExpenseAPIView(generics.ListAPIView):
 class AssetCreateView(ContextMixin,  CreateView):
     form_class = forms.AssetForm
     template_name = os.path.join('common_data','crispy_create_template.html')
-    success_url = "/accounting/"
     extra_context = {
         'title': 'Register New Asset',
         'description': 'Used to formally record valuable property belonging to the organization'
@@ -368,7 +365,6 @@ class AssetCreateView(ContextMixin,  CreateView):
 class AssetUpdateView(ContextMixin,  UpdateView):
     form_class = forms.AssetForm
     template_name = CREATE_TEMPLATE
-    success_url = "/accounting/"
     extra_context = {
         'title': 'Update Asset Data'
     }
@@ -598,7 +594,6 @@ def verify_entry(request, pk=None):
 
 def employee_condition(self):
     return Employee.objects.all().count() == 0
-
 
 def bookkeeper_condition(self):
     return models.Bookkeeper.objects.all().count() == 0

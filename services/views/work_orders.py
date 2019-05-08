@@ -121,7 +121,14 @@ class WorkOrderDetailView( DetailView):
     template_name = os.path.join('services', 'work_order', 'detail.html')
     model = models.ServiceWorkOrder
 
+    def get_context_data(self, **kwargs):
+        context= super().get_context_data(**kwargs)
+        context['authorization_form'] = \
+            forms.ServiceWorkOrderAuthorizationForm(initial={
+                'order': self.object.pk
+            })
 
+        return context
 class WorkOrderListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('services', 'work_order', 'list.html')
     filterset_class = filters.WorkOrderFilter
@@ -167,7 +174,7 @@ class WorkOrderRequestDetailView(DetailView):
     model = models.WorkOrderRequest
 
 class WorkOrderExpenseCreateView(ContextMixin, CreateView):
-    template_name = os.path.join("common_data", "create_template.html")
+    template_name = os.path.join("common_data", "crispy_create_template.html")
     form_class = ExpenseForm
     model = Expense
     extra_context = {

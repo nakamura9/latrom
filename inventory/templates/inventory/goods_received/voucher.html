@@ -1,18 +1,13 @@
 {% extends "common_data/page/pdf_page.html" %}
 
 {% block page_contents %}
-<center>
-    <h3>Goods Received Note</h3>
-</center>
+
 <div class="row">
-    <div style="float:left;width:50%" >
-        <img  src="/media/{{logo}}" alt="Logo" width="300" height="200">
-    </div>
-    <div style="float:left">
-        <h4>{{business_name}}</h4>
-        <p>{{business_address}}</p>
-    </div>
+    {% include "common_data/common/business_information.html"%}
 </div>
+<center>
+    <h2>Goods Received Note</h2>
+</center>
 <div class="row" style="width:100%;">
     <div style="float:left;width:50%">
         <h5>Supplier:</h5>

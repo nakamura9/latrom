@@ -179,9 +179,11 @@
      if(inIframe()){
          $("#navbar").hide();
          $("#footer").hide();
-         $('a').each(function(){$(this).hide()})
+         $('a.btn').each(function(){$(this).hide()})
+         updateNotifications()
+         setInterval(updateNotifications, 60000)
      }
-     var updater = setInterval(updateNotifications, 10000)   
+     
      $('.notification-overlay').click(function(){
          $('.notification-overlay').hide()
      })

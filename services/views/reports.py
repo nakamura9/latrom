@@ -4,7 +4,7 @@ import urllib
 
 from services.models import TimeLog
 from django.views.generic import TemplateView
-from common_data.utilities import extract_period
+from common_data.utilities import extract_period, PeriodReportMixin, PeriodSelectionException
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -24,7 +24,7 @@ class ServicePersonUtilizationFormView(ContextMixin, FormView):
         'action':reverse_lazy('services:reports-service-person-utilization'),
     }
 
-class ServicePersonUtilizationReport(TemplateView):
+class ServicePersonUtilizationReport( PeriodReportMixin, TemplateView):
     template_name = os.path.join('services', 'reports', 'service_person_utilization.html')
 
     @staticmethod
@@ -64,6 +64,8 @@ class ServicePersonUtilizationReport(TemplateView):
         context['pdf_link'] = True
         return ServicePersonUtilizationReport.common_context(context, start, 
             end)
+
+    
 
 
 class ServicePersonUtilizationReportPDFView(PDFTemplateView):

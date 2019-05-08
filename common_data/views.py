@@ -406,10 +406,15 @@ class ConfigWizard(ConfigWizardBase):
     success_url = reverse_lazy('base:workflow')
     
     #TODO fix logo and file handling
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+
+        return super().post(request, *args, **kwargs)
     def done(self, form_list, **kwargs):
         """Because there is only one form"""
         print('saving')
         for form in form_list:
+            print(form.files)
             form.save()
         return super().done(form_list, **kwargs)
     

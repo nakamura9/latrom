@@ -16,6 +16,8 @@ form li {
         <p>Actions</p>
             
             <script>
+               
+
                 function linkClickHandler(link){
                     /*
                     window.open(link ,'popup','width=900,height=480');
@@ -59,6 +61,31 @@ form li {
 
 </div>
 <script type="text/javascript">
+
+     $("#id_logo_aspect_ratio").change(function(evt){
+                    console.log('changed')
+                    var input_val = evt.target.value
+                    var value;
+                    switch(input_val){
+                        case '0':
+                            value = 1.5 * 200;
+                            break;
+                        case '1':
+                            value = 1 * 200;
+                            break;
+                        case '2':
+                            value = 1.33 * 200;
+                            break;
+                        case '3':
+                            value = 1.78 * 200;
+                            break
+                    }
+                    console.log(value)
+                    console.log(input_val)
+                    $('#id-logo-preview').attr('width', value)
+
+                })
+
     $(document).ready(function () {
         $.ajax({
             url: "/base/logo-url",

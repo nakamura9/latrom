@@ -118,6 +118,4 @@ def create_account_models(cls):
             employee=employees.models.Employee.objects.first()
         )
 
-class ViewTests(TestCase):
-    pass
     

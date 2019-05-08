@@ -168,9 +168,9 @@ LOGIN_REDIRECT_URL = '/base/workflow'
 #change for each installation
 #WKHTMLTOPDF_CMD = os.path.join(BASE_DIR, 'wkhtmltopdf', 'bin')
 
-WKHTMLTOPDF_CMD_OPTIONS = {
+'''WKHTMLTOPDF_CMD_OPTIONS = {
     'quiet': True,
-}
+}'''
 
 #EMAIL
 try:
@@ -203,26 +203,3 @@ CACHES = {
 
 MAX_ATTEMPTS = 1
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-        },
-    },
-    'loggers': {
-        'django.db.backends.schema': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}

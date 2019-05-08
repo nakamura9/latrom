@@ -8,6 +8,7 @@ from reversion.views import RevisionMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -475,7 +476,21 @@ class CreatePayrollDateView(ContextMixin, CreateView):
             return resp
 
         today = datetime.date.today()
+
+        #the app always has at least one payroll officer 
+        settings = models.EmployeesSettings.objects.first()
+        if not settings.payroll_officer:
+            officer = models.PayrollOfficer.objects.first()
+            if not officer.employee.user:
+                user = User.objects.create_user(
+                    officer.employee.first_name, password='1234')
+                officer.employee.user = user
+                officer.save()
+            settings.payroll_officer = officer 
+            settings.save()
+
         
+            
         Event.objects.create(
             date = datetime.date(today.year, today.month, self.object.date),
             reminder = datetime.timedelta(days=1),
@@ -489,7 +504,7 @@ class CreatePayrollDateView(ContextMixin, CreateView):
             repeat_active=True,
             label="Payroll Date",
             icon="calendar",
-            owner=models.EmployeesSettings.objects.first().payroll_officer.user
+            owner=models.EmployeesSettings.objects.first().payroll_officer.employee.user
         )
         
         return resp

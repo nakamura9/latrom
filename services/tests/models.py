@@ -199,7 +199,6 @@ class ServiceModelTests(TestCase):
         
         self.assertEqual(obj.steps.count(), 1)
 
-    
 
 class WorkOrderModelTests(TestCase):
     fixtures = ['common.json','inventory.json', 

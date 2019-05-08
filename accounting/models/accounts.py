@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 from common_data.models import SoftDeletionModel
 from accounting.models.transactions import Credit, Debit
+from django.shortcuts import reverse
 
 #Choices for the account model
 TYPE_CHOICES = [
@@ -54,6 +55,9 @@ class AbstractAccount(SoftDeletionModel):
     balance_sheet_category = models.CharField(max_length=16, 
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
     
+    def get_absolute_url(self):
+        return reverse("accounting:account-detail", kwargs={"pk": self.pk})
+
     def __str__(self):
         return str(self.pk) + "-" + self.name
 

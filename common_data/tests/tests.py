@@ -208,7 +208,8 @@ class ViewTests(TestCase):
                 'email_user': 'username',
                 'backup_frequency': 'D',
                 'organization_name': 'latrom',
-                'organization_address': 'somewhere'
+                'organization_address': 'somewhere',
+                'logo_aspect_ratio': 0
             })
         
         self.assertEqual(resp.status_code, 302)
@@ -235,7 +236,8 @@ class ViewTests(TestCase):
                 'email_user': 'username',
                 'backup_frequency': 'D',
                 'organization_name': 'latrom',
-                'organization_address': 'somewhere'
+                'organization_address': 'somewhere',
+                'logo_aspect_ratio': 0
             })
         
         self.assertEqual(resp.status_code, 302)
@@ -284,6 +286,7 @@ class ViewTests(TestCase):
         data = json.loads(resp.content)
         self.assertEqual(data['status'], 'ok')
 
+
 class UtilityTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 'invoicing.json']
 
@@ -325,3 +328,34 @@ class UtilityTests(TestCase):
         self.assertEqual(len(output), 12)
         time = datetime.datetime.strptime('11:30:00', "%H:%M:%S").time()
         self.assertEqual(output[11][0], time)
+
+
+class CommonDataWizardTests(TestCase):
+    fixtures = ['common.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client = Client()
+        create_test_user(cls)
+
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_global_config_wizard(self):
+        config_data = {
+            'config_wizard-current_step': 0,
+            '0-organization_name': 'name',
+            '0-organization_address': 'address',
+            '0-backup_frequency': "D",
+            '0-logo_aspect_ratio': 0
+
+        }
+
+        resp = self.client.post(reverse('base:config-wizard'), data=config_data)
+        self.assertEqual(resp.status_code, 302)

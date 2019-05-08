@@ -71,7 +71,7 @@ class ReportTests(TestCase):
         cls.employee.user = cls.usr 
         cls.employee.save()
         es = EmployeesSettings.objects.first()
-        es.payroll_officer = cls.employee
+        es.payroll_officer = cls.officer
         es.save()
 
 

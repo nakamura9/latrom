@@ -11,7 +11,7 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponseRedirect
 
 from common_data.forms import PeriodReportForm
-from common_data.utilities import ContextMixin, extract_period, ConfigMixin
+from common_data.utilities import ContextMixin, extract_period, PeriodReportMixin, ConfigMixin
 from invoicing import models as inv
 from inventory import models as inventory_models
 from wkhtmltopdf.views import PDFTemplateView
@@ -29,7 +29,7 @@ class ProfitAndLossFormView(ContextMixin, FormView):
         'action': reverse_lazy('accounting:profit-and-loss'),
     }
 
-class ProfitAndLossReport(ConfigMixin,TemplateView):
+class ProfitAndLossReport(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join('accounting', 'reports', 
         'profit_and_loss.html')
 

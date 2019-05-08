@@ -250,7 +250,9 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude="active",
         model = models.Account
-    
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4})
+        }
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -263,6 +265,7 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
                         Column('balance_sheet_category', css_class='form-group col-6'),
                         Column('type', css_class='form-group col-6'),
                     ),
+                    'description'
                 ),
                 Tab('account',
                     'bank_account_number',

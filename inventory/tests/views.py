@@ -18,6 +18,7 @@ from .model_util import InventoryModelCreator
 from employees.tests.model_util import EmployeeModelCreator
 from inventory import models
 from employees.models import Employee
+import copy
 
 TODAY = datetime.date.today()
         
@@ -243,10 +244,7 @@ class InventoryManagementViewTests(TestCase):
             kwargs={'pk': 1}))
         self.assertEqual(resp.status_code, 200)
 
-    def test_get_inventory_scrapping_page(self):
-        resp = self.client.get(reverse('inventory:scrap-inventory', 
-            kwargs={'pk': 1}))
-        self.assertEqual(resp.status_code, 200)
+    
 
     def test_post_inventory_scrapping_page(self):
         resp = self.client.post(reverse('inventory:scrap-inventory', 
@@ -496,9 +494,31 @@ class OrderViewTests(TestCase):
         resp = self.client.get(reverse('inventory:order-create'))
         self.assertEqual(resp.status_code,  200)
 
+    def test_get_order_form_with_supplier(self):
+        resp = self.client.get(reverse('inventory:order-create', kwargs={
+            'supplier': self.supplier.pk
+        }))
+        self.assertEqual(resp.status_code,  200)
+
     def test_post_order_form(self):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
+
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_order_form_with_error(self):
+        data = copy.deepcopy(self.ORDER_DATA)
+        data['items'] = ""
+        resp = self.client.post(reverse('inventory:order-create'), 
+        data=data)
+
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_order_form_with_payment(self):
+        data = copy.deepcopy(self.ORDER_DATA)
+        data['payment'] = True
+        resp = self.client.post(reverse('inventory:order-create'), 
+        data=data)
 
         self.assertEqual(resp.status_code,  302)
 
@@ -598,8 +618,38 @@ class OrderViewTests(TestCase):
         resp = self.client.get('/inventory/debit-note/detail/1')
         self.assertEqual(resp.status_code, 200)
 
+    def test_get_order_payment_view(self):
+        resp = self.client.get(reverse('inventory:order-payment', kwargs={
+            'pk': self.order.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_order_payment_view(self):
+        resp = self.client.post(reverse('inventory:order-payment', kwargs={
+            'pk': self.order.pk
+        }), data={
+            'order': self.order.pk,
+            'amount': 100,
+            'date': datetime.date.today(),
+            'comments': 'comments'
+        })
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_order_payment_list_view(self):
+        resp = self.client.get(reverse('inventory:order-payment-list', kwargs={
+            'pk': self.order.pk
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_verify_order_view(self):
+        resp = self.client.get(reverse('inventory:verify-order', kwargs={
+            'pk': self.order.pk
+        }))
+        self.assertEqual(resp.status_code, 302)
+
     #order pdf assume that the detail view covers it
     #order emaiL only use the get view
+
 
 class SupplierViewTests(TestCase):
     fixtures = ['accounts.json','employees.json','common.json', 
@@ -918,3 +968,80 @@ class TransferViewTests(TestCase):
         resp = self.client.get(reverse('inventory:receive-transfer', 
             kwargs={'pk': 1}), data=self.RECEIVE_DATA)
         self.assertEqual(resp.status_code, 200)
+
+
+class ConfigWizardTests(TestCase):
+    fixtures = ['common.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client = Client()
+        
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser(username="Testuser", email="admin@test.com", password="123")
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_inventory_wizard(self):
+        config_data = {
+            'config_wizard-current_step': 0,
+            '0-inventory_check_date': 5,
+            '0-inventory_check_frequency': 1,
+            '0-default_product_sales_pricing_method': 1,
+            '0-inventory_valuation_method': 1
+        }
+
+        employee_data = {
+            '1-first_name': 'first',
+            '1-last_name': 'last',
+            '1-hire_date': datetime.date.today(),
+            '1-title': "title",
+            '1-leave_days': 1,
+            '1-pin': 1000,
+            'config_wizard-current_step': 1,
+        }
+
+        controller_data = {
+            'config_wizard-current_step': 2,
+            '2-employee': 1
+        }
+
+        warehouse_data = {
+            'config_wizard-current_step': 3,
+            '3-name': 'name',
+            '3-address': 'address',
+            '3-length': 0,
+            '3-width': 0,
+            '3-height': 0,
+        }
+
+        supplier_data = {
+            'config_wizard-current_step': 4,
+            '4-vendor_type': 'individual',
+            '4-name': 'caleb kandoro'
+        }
+
+        data_list = [config_data, employee_data, controller_data, 
+            warehouse_data, supplier_data]
+
+        for step, data in enumerate(data_list, 1):
+
+            try:
+                resp = self.client.post(reverse('inventory:config-wizard'), 
+                    data=data)
+
+                if step == len(data_list):
+
+                    self.assertEqual(resp.status_code, 302)
+                else:
+                    self.assertEqual(resp.status_code, 200)
+                    if resp.context.get('form'):
+                        if hasattr(resp.context['form'], 'errors'):
+                            print(resp.context['form'].errors)
+            except ValueError:
+                pass

@@ -36,15 +36,60 @@ class MessagingViewTests(TestCase):
         self.client.login(username='User', password='123')
 
     def test_get_inbox(self):
-        resp = self.client.get('/messaging/inbox')
-        self.assertEqual(resp.status_code, 301)
+        resp = self.client.get('/messaging/inbox/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_get_message_detail_page(self):
         resp = self.client.get('/messaging/message-detail/1')
         self.assertEqual(resp.status_code, 200)
 
+
+    def test_get_message_compose_page(self):
+        resp = self.client.get('/messaging/create-message')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_message_compose_view(self):
+        resp = self.client.post('/messaging/create-message', data={
+            'copy': [],
+            'recipient': 1,
+            'subject': 'sub',
+            'body': 'body',
+            'sender': 1
+        })
+
+        self.assertEqual(resp.status_code, 302)
+
     def test_get_notification_detail_page(self):
         resp = self.client.get('/messaging/notification/1')
+
+    def test_get_notification_service(self):
+        resp = self.client.get('/messaging/api/notifications')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(json.loads(resp.content)['unread'], 0)
+
+    def test_get_notification_service(self):
+        obj = Notification.objects.create(
+            user=self.usr, 
+            title='title',
+            message= 'message')
+        resp = self.client.get('/messaging/api/notifications')
+        
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(json.loads(resp.content)['unread'], 2)
+
+        obj.delete()
+
+    def test_mark_notification_read(self):
+        obj = Notification.objects.create(
+            user=self.usr, 
+            title='title',
+            message= 'message')
+        resp = self.client.get('/messaging/api/notifications/mark-read/' + \
+            str(obj.pk))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(Notification.objects.get(pk=obj.pk).read)
+
+        obj.delete()
 
 class MessagingAPIViewTests(TestCase):
     fixtures = ['common.json']

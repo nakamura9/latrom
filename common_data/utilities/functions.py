@@ -11,6 +11,8 @@ def apply_style(context):
     context['style'] = styles[context["document_theme"]]
     return context 
 
+class PeriodSelectionException(Exception):
+    pass
 
 def extract_period(kwargs):
     n = kwargs.get('default_periods', None)
@@ -26,10 +28,18 @@ def extract_period(kwargs):
         start = end - datetime.timedelta(
                 days=deltas[n])
     else:
-        start = datetime.datetime.strptime(
-            kwargs['start_period'], "%m/%d/%Y")
-        end = datetime.datetime.strptime(
-            kwargs['end_period'], "%m/%d/%Y")
+        if kwargs['start_period'] == "" or kwargs['end_period'] == "":
+            raise PeriodSelectionException('The form requires either a the first field be filled or the last two.')
+        if '-' in kwargs['start_period']:
+            start = datetime.datetime.strptime(
+                kwargs['start_period'], "%Y-%m-%d")
+            end = datetime.datetime.strptime(
+                kwargs['end_period'], "%Y-%m-%d")
+        else:
+            start = datetime.datetime.strptime(
+                kwargs['start_period'], "%m/%d/%Y")
+            end = datetime.datetime.strptime(
+                kwargs['end_period'], "%m/%d/%Y")
 
     return (start, end)
 

@@ -123,6 +123,24 @@
                             {% endif %}
                         </tbody>
                     </table>
+            </div>
+            
+            <div class="col-sm-4">
+                
+                {% if object.status != 'authorized' %}
+                <h5>Authorization Form</h5>
+                <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
+                    {% csrf_token %}
+                    {{authorization_form.errors}}
+                    {{authorization_form}}
+                    <button class="btn btn-primary">Authorize</button>
+                </form>
+                {% else  %}
+                {% if object.status == 'authorized' %}
+                {% else %}
+                <h6>Login as a super user to authorize this work order.</h6>
+                {% endif %}
+                {% endif %}
 
                 </div>
                 <div class="tab-pane" id="service">

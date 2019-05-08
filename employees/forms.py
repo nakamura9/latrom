@@ -27,7 +27,7 @@ class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
     #hourly workers must be calculated first
     class Meta:
         model = models.EmployeesSettings
-        exclude = "last_payroll_date", 'is_configured'
+        exclude = "last_payroll_date", 'is_configured', 'service_hash'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -170,7 +170,7 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
         return cleaned_data 
 
 class EmployeeForm(forms.ModelForm, BootstrapMixin):
-    paygrade = forms.ModelChoiceField(models.PayGrade.objects.all(), 
+    pay_grade = forms.ModelChoiceField(models.PayGrade.objects.all(), 
         required=False)
     class Meta:
         exclude="active", 'user','last_leave_day_increment'
@@ -408,22 +408,19 @@ class LeaveAuthorizationForm(BootstrapMixin, forms.Form):
         ])
     notes = forms.CharField(widget=forms.Textarea, required=False)    
     
-    authorized_by = forms.ModelChoiceField(
-        models.Employee.objects.filter(payrollofficer__isnull=False))
+    authorized_by = forms.ModelChoiceField(models.PayrollOfficer.objects.all())
     password = forms.CharField(widget=forms.PasswordInput)
     
 
     def clean(self):
         cleaned_data = super().clean()
-        usr = cleaned_data['authorized_by'].user
+        usr = cleaned_data['authorized_by'].employee.user
         if not usr:
             raise forms.ValidationError('The officer selected has no user profile')
 
-        authenticated = authenticate(
-            username=usr.username,
-            password=cleaned_data['password']
-        )
-        if not authenticated:
+         
+        if not authenticate(username=usr.username,
+                password=cleaned_data['password']):
             raise forms.ValidationError('You entered an incorrect password for this form')
 
         return cleaned_data
