@@ -59,17 +59,16 @@ class PricingWidget extends Component{
                     <table>
                         <thead>
                             <tr>
-                                <th className="bg-primary text-white" 
-                                    style={cellStyle}>Pricing Method</th>
-                                <th className="bg-primary text-white" 
-                                    style={cellStyle}>Value</th>
+                                <td colSpan={2}  
+                                    style={cellStyle}>Pricing Method:</td>
                             </tr>
                         </thead>
                         <thead>
                             <tr>
-                                <td>
+                                <td style={cellStyle}>
                                     <label>
                                         <input type="radio" 
+                                        
                                             name="pricing_method"
                                             value={0}
                                             checked={this.state.selected === "0"}
@@ -77,19 +76,24 @@ class PricingWidget extends Component{
                                         Direct
                                     </label>
                                 </td>
-                                <td>
+                                <td >
+                                
                                     <input type="number"
                                         style={this.state.selected === "0" ? null: readOnlyStyle} 
                                         name="direct_price"
+                                        className="form-control input-sm"
+
                                         value={this.state.directValue}
                                         onChange={this.textInputHandler}
                                         readOnly={!(this.state.selected === "0")}/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                            <td style={cellStyle}>
+                                
                                     <label>
                                         <input type="radio" 
+                                        
                                             name="pricing_method" 
                                             value={1}
                                             checked={this.state.selected === "1"}
@@ -101,6 +105,8 @@ class PricingWidget extends Component{
                                 <td>
                                     <input type="number" 
                                         name="margin"
+                                        className="form-control input-sm"
+
                                         onChange={this.textInputHandler}
                                         value={this.state.marginValue}
                                         style={this.state.selected === "1" ? null: readOnlyStyle}
@@ -108,7 +114,8 @@ class PricingWidget extends Component{
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                            <td style={cellStyle}>
+                               
                                     <label>
                                         <input type="radio" 
                                             name="pricing_method" 
@@ -121,6 +128,7 @@ class PricingWidget extends Component{
                                 <td>
                                     <input type="number" 
                                         name="markup"
+                                        className="form-control input-sm"
                                         style={this.state.selected === "2" ? null: readOnlyStyle}
                                         value={this.state.markupValue}
                                         onChange={this.textInputHandler}

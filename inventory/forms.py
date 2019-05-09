@@ -91,11 +91,11 @@ class SupplierForm(BootstrapMixin, forms.Form):
         self.helper.layout= Layout(
             TabHolder(
                 Tab('details',
-                    'vendor_type',
                     Row(
-                        Column('name', css_class='form-group col-6'),
-                        Column('email', css_class='form-group col-6'),
+                        Column('vendor_type', css_class='form-group col-3'),
+                        Column('name', css_class='form-group col-9'),
                     ),
+                    'email',
                     Row(
                         Column('address', css_class='form-group col-6'),
                         Column('banking_details', css_class='form-group col-6'),
@@ -483,7 +483,7 @@ class StockReceiptForm(forms.ModelForm, BootstrapMixin):
 
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "active",
+        exclude = "active", 'eval_string'
         model = models. UnitOfMeasure
 
 

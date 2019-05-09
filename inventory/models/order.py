@@ -13,6 +13,7 @@ from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel, SoftDeletionModel
 
 from .warehouse_models import StorageMedia, WareHouseItem
+from django.shortcuts import reverse
 
 # TODO i need to separate the order types into product, consumable and 
 # equipment orders. Each order has its own entries 
@@ -73,6 +74,10 @@ class Order(SoftDeletionModel):
          blank=True, on_delete=models.SET_NULL, null=True, related_name="order_entry")
     shipping_cost_entries = models.ManyToManyField('accounting.JournalEntry', 
         related_name="shipping_cost_entries")
+
+    def get_absolute_url(self):
+        return reverse("inventory:order-detail", kwargs={"pk": self.pk})
+    
 
     @property
     def total_shipping_costs(self):

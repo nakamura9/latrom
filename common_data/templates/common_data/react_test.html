@@ -1,6 +1,18 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
+<style>
+    .full{
+        height:100%;
+        min-height:100%;
+        width: 100%;
+        min-width:100%
+    }
+</style>
+
+<div class="full jumbo-gradient">
+<p>1</p>
+</div>
 
 <ul class="nav nav-tabs">
                         <li class="nav-item"><a class="nav-link active" href="#lines" data-toggle="tab">Invoice Lines</a></li>
@@ -36,6 +48,5 @@
                         </div>
 
 
-{% render_bundle "widgets" %}
 
 {% endblock %}

@@ -68,11 +68,12 @@ class TextBoxListWidget extends Component{
     render(){
         const containerStyle= {
             display: "block",
+            'color': 'white',
             clear: 'both',
-            width: "350px",
-            backgroundColor: "#9cd",
-            borderRadius: "20px",
-            padding: "20px",
+            width: "100%",
+            backgroundColor: "#007bff",
+            borderRadius: "5px",
+            padding: "15px",
             margin: "5px"
         };
         const textAreaStyle = {
@@ -81,7 +82,7 @@ class TextBoxListWidget extends Component{
             padding: "3px"};
         return(
             <div style={containerStyle}>
-                <div>
+                <div style={{maxHeight: "350px", overflowY: 'auto'}}>
                     <h4>{this.props.title}</h4>
                     {this.state.items.map((item, i) => {
                         return(<ListTextBox 
@@ -100,12 +101,13 @@ class TextBoxListWidget extends Component{
                     <textarea 
                         style={textAreaStyle}
                         name="textInput"
-                        rows={5}
+                        rows={4}
                         value={this.state.value}
                         onChange={this.inputHandler}></textarea>
                         <br />
                     <button 
                         className="btn"
+                        type="button"
                         onClick={this.addHandler}>Insert</button>
                 </div>
             </div>
@@ -117,14 +119,13 @@ const ListTextBox = (props) => {
     const containerStyle = {
         width: "90%",
         margin: "10px auto",
-        border: "2px solid #07f",
+        borderBottom: "2px solid white",
         padding: "10px",
-        borderRadius: "3px"
     };
 
 
     const buttonStyle ={
-        color: "#07f",
+        color: "white",
         border: "0px",
         backgroundColor: "rgba(0,0,0,0)"
     }
@@ -136,12 +137,13 @@ const ListTextBox = (props) => {
                     <span style={{float: "right"}}>
                         <button 
                         style={buttonStyle}
+                        type="button"
                         onClick={() => props.handler(props.index)}>
                             <i className="fas fa-times"></i>
                         </button>
                         <button 
                         style={buttonStyle}
-                        
+                        type="button"
                         onClick={() => props.editHandler(props.index)}>
                             <i className="fas fa-edit"></i>
                         </button>

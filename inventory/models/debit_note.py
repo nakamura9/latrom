@@ -4,7 +4,9 @@ from django.db import models
 from decimal import Decimal as D
 
 from accounting.models import Account, Journal, JournalEntry
-# TODO test
+from django.shortcuts import reverse
+
+
 class DebitNote(models.Model):
     """A document sent by a business to a supplier notifying them
     that inventory has been returned for some reason. Linked to Orders. Stores a list of products returned.
@@ -22,6 +24,10 @@ class DebitNote(models.Model):
     order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, 
         null=True)
     comments = models.TextField()#never allow blank comments
+
+    def get_absolute_url(self):
+        return reverse("inventory:debit-note-detail", kwargs={"pk": self.pk})
+    
 
     @property
     def returned_items(self):

@@ -179,6 +179,10 @@ class Account(AbstractAccount):
     @property
     def transactions(self):
         return chain(self.credit_transactions, self.debit_transactions)
+
+    def get_absolute_url(self):
+        return reverse("accounting:account-detail", kwargs={"pk": self.pk})
+    
     
 
 class InterestBearingAccount(AbstractAccount):

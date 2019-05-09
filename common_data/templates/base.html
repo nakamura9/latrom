@@ -13,6 +13,8 @@
     
     <link rel="stylesheet" type="text/css" 
         href="{% static 'common_data/assets/css/all.min.css' %}" />
+    <link rel="stylesheet" type="text/css" 
+        href="{% static 'common_data/css/hover-min.css' %}" />
     
     
     <link rel="stylesheet" type='text/css' href="{% static 'common_data/css/invoice.css' %}">
@@ -175,13 +177,35 @@
     }
 
     */
+    function setNavbarActive(){
+        console.log('hello')
+        var url = window.location.href;
+        if(url.search('invoicing') !== -1){
+            $("#sales").addClass('active')
+        }else if(url.search('inventory') !== -1){
+            $("#inventory").addClass('active')
+        }else if(url.search('services') !== -1){
+            $("#services").addClass('active')
+        }else if(url.search('accounting') !== -1){
+            $("#accounting").addClass('active')
+        }else if(url.search('employees') !== -1){
+            $("#employees").addClass('active')
+        }else if(url.search('messaging') !== -1){
+            $("#inbox").addClass('active')
+        }else if(url.search('planner') !== -1){
+            $("#planner").addClass('active')
+        }
+    }
+
     $(document).ready(function(){
+        setNavbarActive()
+        updateNotifications();
+        setInterval(updateNotifications, 60000)
      if(inIframe()){
          $("#navbar").hide();
          $("#footer").hide();
          $('a.btn').each(function(){$(this).hide()})
-         updateNotifications()
-         setInterval(updateNotifications, 60000)
+         
      }
      
      $('.notification-overlay').click(function(){

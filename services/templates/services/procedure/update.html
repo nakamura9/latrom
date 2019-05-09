@@ -1,6 +1,7 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
+{% load crispy_forms_tags %}
 
 <div class="jumbotron">
     <h1 class="display-3">Update  Procedure</h1>
@@ -10,25 +11,12 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card text-left">
+        <div class="col-sm-12">
+            <div class="shadow card text-left">
               <div class="card-body">
-                <h4 class="card-title">Procedure Details</h4>
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    {{form.as_p}}
-                    <button class="btn btn-primary">Submit</button>
-                </form>
+                    {% crispy form %}
               </div>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div id="procedure-widgets">
-
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div id="inventory-widgets" ></div>
         </div>
     </div>
 </div>

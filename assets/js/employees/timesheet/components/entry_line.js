@@ -9,16 +9,19 @@ const entryLine = (props) => {
            <td>{props.data.breaksTaken}</td>
            <td>{props.data.workingTime}</td>
            <td>
-                <button 
-                    className="btn btn-info"
-                    onClick={() => props.editHandler(props.index)}>
-                    <i className="fas fa-edit"></i>
-                </button>
-                <button 
-                    className="btn btn-danger"
-                    onClick={() => props.deleteHandler(props.index)}>
-                    <i className="fas fa-trash"></i>
-                </button>
+                <div className="button-group">
+                        <button 
+                        className="btn btn-info btn-sm"
+                        onClick={() => props.editHandler(props.index)}>
+                        <i className="fas fa-edit"></i>
+                    </button>
+                    <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() => props.deleteHandler(props.index)}>
+                        <i className="fas fa-trash"></i>
+                    </button>
+                </div>
+                
            </td>
         </tr>
     )

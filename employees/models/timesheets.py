@@ -11,6 +11,7 @@ from common_data.models import Person, SingletonModel, SoftDeletionModel
 import planner
 import accounting
 import invoicing
+from django.shortcuts import reverse
 
 
 class EmployeeTimeSheet(models.Model):
@@ -43,6 +44,10 @@ class EmployeeTimeSheet(models.Model):
             total += line.overtime
 
         return total
+
+    def get_absolute_url(self):
+        return reverse("employees:timesheet-detail", kwargs={"pk": self.pk})
+    
 
 
 class AttendanceLine(models.Model):

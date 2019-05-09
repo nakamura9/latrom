@@ -9,7 +9,6 @@ import time
 import urllib
 from common_data.models import GlobalConfig
 from latrom import settings
-##%%
 import logging 
 import os
 from common_data.tasks import remote_license_verification
@@ -117,7 +116,6 @@ class LicenseMiddleware(object):
 
             #check with remote server every three days
             config = GlobalConfig.objects.get(pk=1)
-            #if not settings.DEBUG and \
             if not settings.DEBUG and (config.last_license_check == None or \
                     (datetime.date.today() - \
                     config.last_license_check).days > 2):

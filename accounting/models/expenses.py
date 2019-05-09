@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 import accounting
+from django.shortcuts import reverse
 
 
 expense_choices = [
@@ -124,6 +125,8 @@ class Expense(AbstractExpense):
 
         super().delete(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("accounting:expense-detail", kwargs={"pk": self.pk})
 
 
 class RecurringExpense(AbstractExpense):
@@ -168,3 +171,7 @@ class RecurringExpense(AbstractExpense):
 
     def __str__(self):
         return "{} - {} Expense".format(self.pk, self.category_string)
+
+    def get_absolute_url(self):
+        return reverse("accounting:recurring-expense-detail", kwargs={"pk": self.pk})
+    

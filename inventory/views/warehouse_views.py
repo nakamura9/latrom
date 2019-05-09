@@ -30,7 +30,6 @@ from .common import CREATE_TEMPLATE
 class WareHouseCreateView(ContextMixin, CreateView):
     template_name = os.path.join('common_data','crispy_create_template.html')
     form_class = forms.WareHouseForm
-    success_url = reverse_lazy('inventory:warehouse-list')
     extra_context = {
         'title': 'Create  Warehouse',
         'description': 'Register a new location as a warehouse for storing inventory. Further detail regarding inventory location is provided by the storage media model.'
@@ -41,7 +40,6 @@ class WareHouseUpdateView(ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.WareHouse
     form_class = forms.WareHouseForm
-    success_url = reverse_lazy('inventory:warehouse-list')
     extra_context = {
         'title': 'Update Warehouse Location Details'
     }

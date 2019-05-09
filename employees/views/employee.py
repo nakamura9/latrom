@@ -93,7 +93,6 @@ class EmployeeDeleteView( DeleteView):
 class PayrollOfficerCreateView( ContextMixin, CreateView):
     template_name = os.path.join('common_data', 'crispy_create_template.html')
     form_class = forms.PayrollOfficerForm
-    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Add Payroll Officer',
         'description': 'Payroll officers are employees assigned to manage employee data such as income and vacation time as well as the roles of users within the system.'
@@ -103,7 +102,6 @@ class PayrollOfficerUpdateView( ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.PayrollOfficerUpdateForm
     queryset = models.PayrollOfficer.objects.all()
-    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Update Payroll Officer'
     }
@@ -170,16 +168,14 @@ def remove_employee_user(request, pk=None):
 class DepartmentCreateView(ContextMixin, CreateView):
     template_name = os.path.join('common_data','crispy_create_template.html')
     form_class = forms.DepartmentForm
-    success_url = "/employees/"
     extra_context = {
         'title': 'Create New Department'
     }
 
 class DepartmentUpdateView(ContextMixin, UpdateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     form_class = forms.DepartmentForm
     model = models.Department
-    success_url = "/employees/"
     extra_context = {
         'title': 'Update Department Details'
     }

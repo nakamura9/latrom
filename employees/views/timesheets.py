@@ -76,7 +76,6 @@ class TimeSheetMixin(object):
 class CreateTimeSheetView( TimeSheetMixin, CreateView):
     template_name = os.path.join('employees', 'timesheet_create_update.html')
     form_class = forms.TimesheetForm
-    success_url = reverse_lazy('employees:dashboard')
 
 class ListTimeSheetView(ContextMixin,  PaginationMixin, FilterView):
     template_name = os.path.join('employees', 'time_sheet_list.html')
@@ -99,7 +98,6 @@ class TimeSheetUpdateView(TimeSheetMixin,  UpdateView):
     template_name = os.path.join('employees', 'timesheet_create_update.html')
     form_class = forms.TimesheetForm
     queryset = models.EmployeeTimeSheet.objects.all()
-    success_url = reverse_lazy('employees:dashboard')
 
 class TimeSheetViewset(viewsets.ModelViewSet):
     queryset = models.EmployeeTimeSheet.objects.all()

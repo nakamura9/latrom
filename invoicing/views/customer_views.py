@@ -37,8 +37,12 @@ class CustomerCreateView( ContextMixin,
         ' products to your records',
         }
     template_name = os.path.join("invoicing", "customer", "create.html")
-    success_url = reverse_lazy("invoicing:home")
     form_class = forms.CustomerForm
+
+    def get_success_url(self):
+        return reverse_lazy('invoicing:customer-details', kwargs={
+            'pk': Customer.objects.latest('pk').pk + 1
+        })
 
     def get_initial(self):
         return {
@@ -88,7 +92,12 @@ class CustomerUpdateView( ContextMixin, FormView):
     extra_context = {"title": "Update Existing Customer"}
     template_name = os.path.join("invoicing", "customer", "create.html")
     form_class = forms.CustomerForm
-    success_url = reverse_lazy("invoicing:home")
+
+
+    def get_success_url(self):
+        return reverse_lazy('invoicing:customer-details', kwargs={
+            'pk': self.kwargs['pk']
+            })
 
     def get_initial(self):
         customer = Customer.objects.get(pk=self.kwargs['pk'])

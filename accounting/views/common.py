@@ -105,13 +105,10 @@ class ComplexEntryView( ContextMixin, CreateView):
     form_class= forms.ComplexEntryForm
 
     def post(self, request, *args, **kwargs):
-        j = models.JournalEntry.objects.create(
-                memo = request.POST['memo'],
-                date = request.POST['date'],
-                journal = models.Journal.objects.get(
-                    pk=request.POST['journal']),
-                created_by = request.user
-            )
+        resp = super().post(request, *args, **kwargs)
+        if not self.object:
+            return resp
+
         for item in request.POST.getlist('items[]'):
             item_data = json.loads(urllib.parse.unquote(item))
             amount = decimal.Decimal(item_data['amount'])
@@ -121,11 +118,11 @@ class ComplexEntryView( ContextMixin, CreateView):
                     pk=int(pk))
             #make sure
             if int(item_data['debit']) == 1:
-                j.debit(amount, account)
+                self.object.debit(amount, account)
             else:
-                j.credit(amount, account)
+                self.object.credit(amount, account)
 
-        return HttpResponseRedirect(reverse_lazy('accounting:dashboard'))
+        return resp
 
 class JournalEntryDetailView( DetailView):
     template_name = os.path.join('accounting', 'transaction_detail.html')
@@ -249,9 +246,14 @@ class DirectPaymentFormView( ContextMixin, FormView):
     '''
     form_class = forms.DirectPaymentForm
     template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = reverse_lazy('accounting:dashboard')
+    
     extra_context = {'title': 'Create Direct Payment'}
 
+    def get_success_url(self, *args, **kwargs):
+        return reverse_lazy('accounting:entry-detail', kwargs={
+            'pk': models.JournalEntry.objects.latest('pk').pk + 1})
+
+            
     def get_initial(self):
         if self.kwargs.get('supplier', None):
             return {
@@ -308,7 +310,6 @@ class JournalCreateView( ContextMixin, CreateView):
     template_name = CREATE_TEMPLATE
     model = models.Journal
     form_class = forms.JournalForm
-    success_url = reverse_lazy('accounting:dashboard')
     extra_context = {
         "title": "Create New Journal",
         "description": 'A virtual document used to record all financial transactions in a business.'}
@@ -364,7 +365,7 @@ class AssetCreateView(ContextMixin,  CreateView):
         
 class AssetUpdateView(ContextMixin,  UpdateView):
     form_class = forms.AssetForm
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     extra_context = {
         'title': 'Update Asset Data'
     }
@@ -389,7 +390,6 @@ class AssetDetailView( DetailView):
 class ExpenseCreateView(ContextMixin,  CreateView):
     form_class = forms.ExpenseForm
     template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = "/accounting/"
     extra_context = {
         'title': 'Record Expense',
         'description': 'Record costs incurred in the process of running a business.'
@@ -425,7 +425,6 @@ class RecurringExpenseCreateView(ContextMixin,
         CreateView):
     form_class = forms.RecurringExpenseForm
     template_name = os.path.join('common_data','crispy_create_template.html')
-    success_url = "/accounting/"
     extra_context = {
         'title': 'Record Recurring Expense',
         'description': 'Record costs that occur periodically'
@@ -434,8 +433,7 @@ class RecurringExpenseCreateView(ContextMixin,
 class RecurringExpenseUpdateView(ContextMixin,  
         UpdateView):
     form_class = forms.RecurringExpenseForm
-    template_name = CREATE_TEMPLATE
-    success_url = "/accounting/"
+    template_name = os.path.join('common_data','crispy_create_template.html')
     extra_context = {
         'title': 'Update Recurring Expense'
     }

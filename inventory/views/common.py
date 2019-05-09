@@ -123,7 +123,6 @@ class InventoryDashboard(InventoryConfigMixin, TemplateView):
 class UnitCreateView(ContextMixin,  CreateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
-    success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
     extra_context = {
         'title':'Create New Unit of measure'
@@ -132,7 +131,6 @@ class UnitCreateView(ContextMixin,  CreateView):
 class UnitUpdateView(ContextMixin,  UpdateView):
     form_class = forms.UnitForm
     model = models.UnitOfMeasure
-    success_url = reverse_lazy('inventory:unit-list')
     template_name = CREATE_TEMPLATE
     extra_context = {
         'title':'Update Unit of measure'
@@ -173,13 +171,11 @@ class ConfigView( UpdateView):
 class CategoryCreateView( CreateView):
     form_class = forms.CategoryForm
     model = models.Category
-    success_url = reverse_lazy('inventory:category-list')
     template_name = os.path.join('inventory', 'category', 'create.html')
 
 class CategoryUpdateView( UpdateView):
     form_class = forms.CategoryForm
     model = models.Category
-    success_url = reverse_lazy('inventory:category-list')
     template_name = os.path.join('inventory', 'category','update.html')
 
 class CategoryListView( TemplateView):

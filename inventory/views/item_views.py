@@ -42,7 +42,6 @@ class ProductDeleteView( DeleteView):
 class ProductUpdateView( ContextMixin, UpdateView):
     form_class = forms.ProductForm
     model = models.InventoryItem
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Product"}
     
@@ -72,7 +71,6 @@ class ProductListView( ContextMixin, PaginationMixin, FilterView):
 class ProductCreateView( ContextMixin, 
         CreateView):
     form_class = forms.ProductForm
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {
         "title": "Create New Product",
@@ -107,7 +105,6 @@ class ConsumableUpdateView( ContextMixin,
         UpdateView):
     form_class = forms.ConsumableForm
     model = models.InventoryItem
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Consumable Inventory"}
 
@@ -134,7 +131,6 @@ class ConsumableListView( ContextMixin,
 class ConsumableCreateView( ContextMixin, 
         CreateView):
     form_class = forms.ConsumableForm
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {
         "title": "Create New Consumable",
@@ -170,7 +166,6 @@ class EquipmentUpdateView( ContextMixin,
         UpdateView):
     form_class = forms.EquipmentForm
     model = models.InventoryItem
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {"title": "Update Existing Equipment Details"}
 
@@ -203,7 +198,6 @@ class EquipmentListView( ContextMixin,
 class EquipmentCreateView( ContextMixin, 
         CreateView):
     form_class = forms.EquipmentForm
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("common_data", "crispy_create_template.html")
     extra_context = {
         "title": "Add New Equipment",

@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from accounting.models.books import Post
+from django.shortcuts import reverse
 
     
 class Transaction(models.Model):
@@ -118,6 +119,10 @@ class JournalEntry(models.Model):
     created_by = models.ForeignKey('auth.user', 
         default=1, 
         on_delete=models.SET_NULL, null=True)
+
+    def get_absolute_url(self):
+        return reverse("accounting:entry-detail", kwargs={"pk": self.pk})
+    
 
     def __str__(self):
         return "{}: {}".format(self.pk, self.str_total)

@@ -41,6 +41,12 @@ input:required, textarea:required, select:required {
     text-align:center;
 }
 
+.white-on-blue {
+    background-color: white;
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+
 .entry-style td{
     padding: 0px;
     border: 0px;
@@ -81,4 +87,24 @@ input:required, textarea:required, select:required {
     border: 1px solid grey;
     padding: 40px ;
     box-shadow: 5px 10px 30px powderblue;
+}
+
+nav .nav-link:hover{
+    color: white;
+    background-color: #007bff;
+}
+
+li.active .nav-link{
+    color: white;
+    background-color: #007bff;
+}
+
+.jumbo-gradient{
+    background: rgb(176,224,230);
+background: linear-gradient(90deg, rgba(176,224,230,1) 0%, rgba(0,123,255,1) 100%, rgba(0,0,0,1) 100%);
+}
+
+.jumbo-gradient-reverse{
+    background: rgb(0,123,255);
+background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100%);
 }

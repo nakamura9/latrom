@@ -14,6 +14,7 @@ from common_data.models import SingletonModel, SoftDeletionModel
 from inventory.models.item import InventoryItem
 from inventory.schedules import run_inventory_service
 from background_task.models import Task
+from django.shortcuts import reverse
 
 
 class InventorySettings(SingletonModel):
@@ -168,7 +169,6 @@ class Supplier(SoftDeletionModel):
         super().save(*args, **kwargs)
 
 
-
 class UnitOfMeasure(SoftDeletionModel):
     '''Class for arepresenting units of inventory.
     can be a base unit where no calculations are required.
@@ -186,6 +186,9 @@ class UnitOfMeasure(SoftDeletionModel):
     def derived_units(self):
         return UnitOfMeasure.objects.filter(base_unit=self)
 
+    def get_absolute_url(self):
+        return reverse("inventory:unit-detail", kwargs={"pk": self.pk})
+    
 
 class Category(models.Model):
     '''Used to organize inventory'''
@@ -193,6 +196,9 @@ class Category(models.Model):
     parent = models.ForeignKey('inventory.Category', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(default="")
 
+    def get_absolute_url(self):
+        return reverse("inventory:category-detail", kwargs={"pk": self.pk})
+    
 
     def __str__(self):
         return self.name

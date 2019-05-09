@@ -3,15 +3,9 @@
     .card th {
         color: white;
     }
-
-    .white-on-blue {
-        background-color: white;
-        border: 1px solid #007bff;
-        color: #007bff;
-    }
 </style>
-<div class="jumbotron">
-    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128;"></i> Inventory Dashboard</h1>
+<div class="jumbotron jumbo-gradient">
+    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128px;"></i> Inventory Dashboard</h1>
     <p class="lead">Manage inventory items and warehouses</p>
     <hr class="my-2">
 
@@ -28,10 +22,11 @@
                     <div class="card-deck">
                         {% if use_warehousing_model %}
                         <div class="card bg-primary text-white">
-                            <div class="card-body">
-                                <div class="card-header">
-                                    <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouse Management</h4>
+                            <div class="card-header">
+                                    <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouses</h4>
                                 </div>
+                            <div class="card-body">
+                                
                                 <ul class="list-group">
                                     <li class="list-group-item">
                                         <a href="{% url 'inventory:warehouse-create' %}">Add Warehouse</a>
@@ -144,15 +139,19 @@
                                         <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables
                                             Requisitions</a>
                                     </li>
+                                    <li class="list-group-item">...</li>
+
                                 </ul>
                             </div>
                         </div>
                         {% endif %}
                         <div class="card bg-primary text-white">
-                            <div class="card-body">
-                                <div class="card-header">
+                            <div class="card-header">
                                     <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
                                 </div>
+                            
+                            <div class="card-body">
+                                
                                 <ul class="list-group">
 
                                     <li class="list-group-item">
@@ -163,6 +162,8 @@
                                         <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
                                             Report</a>
                                     </li>
+                                    <li class="list-group-item">...</li>
+
                                 </ul>
                             </div>
                         </div>

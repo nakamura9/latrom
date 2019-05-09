@@ -11,7 +11,7 @@ from common_data.utilities import time_choices
 from employees.models import Employee
 import inventory
 from invoicing.models import Customer
-
+from django.shortcuts import reverse
 
 
 
@@ -75,6 +75,10 @@ class Event(models.Model):
     owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
     reminder_notification = models.ForeignKey('messaging.notification', 
         blank=True, null=True, on_delete=models.SET_NULL)
+
+    def get_absolute_url(self):
+        return reverse("planner:event-detail", kwargs={"pk": self.pk})
+    
 
     @property
     def participants(self):
@@ -175,11 +179,11 @@ class EventParticipant(models.Model):
 
     def __str__(self):
         if self.participant_type == 0:
-            return str(self.employee)
+            return f"Employee: {str(self.employee)}"
         if self.participant_type == 1:
-            return str(self.customer)
+            return f"Customer: {str(self.customer)}"
         if self.participant_type == 2:
-            return str(self.supplier)
+            return f"Vendor: {str(self.supplier)}"
 
     @property
     def participant_pk(self):

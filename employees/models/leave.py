@@ -11,7 +11,7 @@ from common_data.models import Person, SingletonModel, SoftDeletionModel
 import planner
 import accounting
 import invoicing
-
+from django.shortcuts import reverse
 
 class Leave(models.Model):
     LEAVE_CATEGORIES = [
@@ -60,3 +60,7 @@ class Leave(models.Model):
 
     def __str__(self):
         return self.employee.__str__()
+
+    def get_absolute_url(self):
+        return reverse("employees:leave-detail", kwargs={"pk": self.pk})
+    

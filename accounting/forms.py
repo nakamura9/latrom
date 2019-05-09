@@ -101,6 +101,11 @@ class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "last_created_date", 'entry'
         model = models.RecurringExpense
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'rows': 4
+            })
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -109,20 +114,20 @@ class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('basic',
                     Row(
-                        Column('start_date', css_class='form-group col-6'),
-                        Column('expiration_date', css_class='form-group col-6'),
+                        Column('start_date', css_class='form-group col-4'),
+                        Column('expiration_date', css_class='form-group col-4'),
+                        Column('cycle', css_class="form-group col-4")
                     ),
                     Row(
                         Column('amount', css_class='form-group col-6'),
                         Column('debit_account', css_class='form-group col-6'),
                     ),
-                    'category',
-                    'recorded_by',
-                    'cycle',
-                ),
-                Tab('description',
                     'description',
-                    'reference',
+                    Row(
+                        Column('category', css_class='form-group col-6'),
+                        Column('recorded_by', css_class='form-group col-6'),
+                    ),
+                    'reference'
                 ),
             )
         )
@@ -138,7 +143,7 @@ class DirectPaymentForm(BootstrapMixin, forms.Form):
         ('ecocash', 'Ecocash')])
     amount = forms.CharField(widget=forms.NumberInput)
     reference = forms.CharField()
-    notes = forms.CharField(widget=forms.Textarea)
+    notes = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -156,9 +161,7 @@ class DirectPaymentForm(BootstrapMixin, forms.Form):
                         Column('amount', css_class='form-group col-6'),                
                         ),
                         'reference',
-                ),
-                Tab('notes',
-                    'notes',
+                        'notes'
                 ),
             )
             

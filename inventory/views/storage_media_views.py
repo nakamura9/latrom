@@ -15,7 +15,6 @@ from common_data.utilities import ContextMixin
 class StorageMediaCreateView( CreateView):
     template_name = os.path.join('inventory', 'storage_media', 'create.html')
     form_class = forms.StorageMediaForm
-    success_url = reverse_lazy('inventory:warehouse-list')
 
     def get_initial(self):
         return {
@@ -34,10 +33,6 @@ class StorageMediaUpdateView( UpdateView):
     model = models.StorageMedia
     template_name = os.path.join('inventory', 'storage_media','update.html')
 
-    def get_success_url(self):
-        return reverse_lazy('inventory:storage-media-list', kwargs={
-            'pk': self.object.warehouse.pk
-        })
 class StorageMediaListView( TemplateView):
     template_name = os.path.join('inventory', 'storage_media', 'list.html')
 

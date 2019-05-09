@@ -11,23 +11,41 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4">
-            <div class="card">
+        <div class="col-sm-6">
+            <div class="card shadow">
                 <div class="card-body">
                     <h4 class="card-title">Details</h4>
-                    <p class="card-text">Name:</p>
-                    <p class="card-text">{{object.name}}</p>
-                    <p class="card-text">Description:</p>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    
+
+                    <p class="card-text">Flat fee: {{object.flat_fee}}</p>
+                    <p class="card-text">Hourly rate: {{object.hourly_rate}}</p>
+                    <p class="card-text"><b>Description</b>:</p>
                     <p class="card-text">{{object.description}}</p>
-                    <p class="card-text">Flat fee:</p>
-                    <p class="card-text">{{object.flat_fee}}</p>
-                    <p class="card-text">Hourly rate:</p>
-                    <p class="card-text">{{object.hourly_rate}}</p>
                 </div>
             </div>
         </div>
-        <div class="col-sm-4"></div>
+        <div class="col-sm-6">
+            {% if object.procedure %}
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Procedure</h4>
+                    <p class="card-text">Author: {{object.procedure.author}}</p>
+                    <p class="card-text">Reference: {{object.procedure.reference}}</p>
+                    <p class="card-text"><b>Description</b>:</p>
+                    <p class="card-text">{{object.procedure.description}}</p>
+                    <h4>Steps</h4>
+                    <p class="card-text">
+                        <ol>
+                            {% for step in object.procedure.steps %}
+                            <li>{{step}}</li>
+                            {% endfor %}
+                        </ol>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 

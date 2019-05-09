@@ -14,6 +14,7 @@ import inventory
 import invoicing
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel, SoftDeletionModel
+from django.shortcuts import reverse
 
 
 class InventoryItem(SoftDeletionModel):
@@ -68,6 +69,16 @@ class InventoryItem(SoftDeletionModel):
 
 
         raise AttributeError()
+
+    def get_absolute_url(self):
+        if self.type == 0:
+            return reverse("inventory:product-detail", kwargs={"pk": self.pk})
+        elif self.type == 1:
+            return reverse("inventory:equipment-detail", kwargs={"pk": self.pk})
+        else:
+            return reverse("inventory:consumable-detail", kwargs={"pk": self.pk})
+            
+
 
     def __str__(self):
         return str(self.id) + " - " + self.name

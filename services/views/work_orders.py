@@ -46,7 +46,6 @@ class WorkOrderCreateView( WorkOrderCRUDMixin, ContextMixin,
         CreateView):
     template_name = os.path.join('services', 'work_order', 'create.html')
     form_class = forms.ServiceWorkOrderForm
-    success_url = reverse_lazy('services:work-order-list')
     extra_context = {
         'related_links': [
             {
@@ -65,14 +64,12 @@ class WorkOrderCreateView( WorkOrderCRUDMixin, ContextMixin,
 class WorkOrderUpdateView( WorkOrderCRUDMixin, UpdateView):
     template_name = os.path.join('services', 'work_order', 'update.html')
     form_class = forms.ServiceWorkOrderForm
-    success_url = reverse_lazy('services:work-order-list')
     model = models.ServiceWorkOrder
 
 
 class WorkOrderCompleteView( UpdateView):
     template_name = os.path.join('services', 'work_order', 'complete.html')
     form_class = forms.ServiceWorkOrderCompleteForm
-    success_url = reverse_lazy('services:work-order-list')
     model = models.ServiceWorkOrder
 
     def post(self, request, *args, **kwargs):

@@ -21,29 +21,8 @@
                 <a href="#expenses" class="nav-link" data-toggle="tab">Expenses</a>
                 <a href="#service" class="nav-link" data-toggle="tab">Service Time</a>
             </nav>
-        </div>
-        <div class="col-sm-4">
-            {% if request.user.is_superuser and object.status != 'authorized' %}
-            <h5>Authorization Form</h5>
-            <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
-                {% csrf_token %}
-                {{authorization_form}}
-                <button class="btn btn-primary">Authorize</button>
-            </form>
-            {% else  %}
-            {% if object.status == 'authorized' %}
-            {% else %}
-            <h6>Login as a super user to authorize this work order.</h6>
-            {% endif %}
-            {% endif %}
 
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="col-sm-8 shadow">
-            <div class="tab-content panel-body">
+            <div class="tab-content panel-body shadow">
                 <div class="tab-pane active" id="work">
                     <div class="card">
                         <div class="card-body">
@@ -123,25 +102,6 @@
                             {% endif %}
                         </tbody>
                     </table>
-            </div>
-            
-            <div class="col-sm-4">
-                
-                {% if object.status != 'authorized' %}
-                <h5>Authorization Form</h5>
-                <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
-                    {% csrf_token %}
-                    {{authorization_form.errors}}
-                    {{authorization_form}}
-                    <button class="btn btn-primary">Authorize</button>
-                </form>
-                {% else  %}
-                {% if object.status == 'authorized' %}
-                {% else %}
-                <h6>Login as a super user to authorize this work order.</h6>
-                {% endif %}
-                {% endif %}
-
                 </div>
                 <div class="tab-pane" id="service">
                     <table class="table table-sm">
@@ -171,8 +131,23 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-4">
+            {% if request.user.is_superuser and object.status != 'authorized' %}
+            <h5>Authorization Form</h5>
+            <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
+                {% csrf_token %}
+                {{authorization_form}}
+                <button class="btn btn-primary">Authorize</button>
+            </form>
+            {% else  %}
+            {% if object.status == 'authorized' %}
+            {% else %}
+            <h6>Login as a super user to authorize this work order.</h6>
+            {% endif %}
+            {% endif %}
+
+        </div>
     </div>
 </div>
-</div>
-</div>
+
 {% endblock %}

@@ -11,6 +11,7 @@ from common_data.models import Person, SingletonModel, SoftDeletionModel
 import planner
 import accounting
 import invoicing
+from django.shortcuts import reverse
 
 class Allowance(SoftDeletionModel):
     '''simple object that tracks a fixed benefit or allowance granted as 
@@ -20,7 +21,7 @@ class Allowance(SoftDeletionModel):
     taxable = models.BooleanField(default=True)
     def __str__(self):
         return self.name
-    
+    #no detail view
 
 class Deduction(SoftDeletionModel):
     '''
@@ -74,6 +75,8 @@ class Deduction(SoftDeletionModel):
         else:
             return self.amount
 
+    #no detail view
+
 
 class CommissionRule(SoftDeletionModel):
     '''simple model for giving sales representatives commission based on 
@@ -85,6 +88,8 @@ class CommissionRule(SoftDeletionModel):
 
     def __str__(self):
         return self.name
+
+    #no detail view
 
 
 class PayrollTax(models.Model):
@@ -125,12 +130,17 @@ class PayrollTax(models.Model):
     def list_brackets(self):
         return TaxBracket.objects.filter(payroll_tax =self).order_by('upper_boundary')
 
+    #no detail view
+
+
 class TaxBracket(models.Model):
     payroll_tax = models.ForeignKey('employees.PayrollTax', on_delete=models.SET_NULL, null=True)
     lower_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     upper_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     rate = models.DecimalField(max_digits=5, decimal_places=2)
     deduction = models.DecimalField(max_digits=9, decimal_places=2)
+
+
 
 class PayrollSchedule(SingletonModel):
     '''A container for payroll dates'''
@@ -145,7 +155,8 @@ class PayrollDate(models.Model):
     employees = models.ManyToManyField('employees.employee')
     departments = models.ManyToManyField('employees.department')
     pay_grades = models.ManyToManyField('employees.paygrade')
-    schedule = models.ForeignKey('employees.payrollschedule', default=1, on_delete=models.SET_DEFAULT)
+    schedule = models.ForeignKey('employees.payrollschedule', default=1, 
+        on_delete=models.SET_DEFAULT)
 
     def __str__(self):
         return f"{self.schedule.name}: {self.date}"
@@ -172,3 +183,7 @@ class PayrollDate(models.Model):
     def date_suffix(self):
         suffices = ['st', 'nd', 'rd'] + ['th' for i in range(3, 29)]
         return suffices[self.date -1]
+
+    def get_absolute_url(self):
+        return reverse("employees:payroll-date-detail", kwargs={"pk": self.pk})
+    

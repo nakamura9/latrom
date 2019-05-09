@@ -1,0 +1,57 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Payroll Date Details</h1>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'employees:payroll-date-update' pk=object.pk %}" role="button">Update</a>
+    </p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-heading">Day: {{object.date}}</h4>
+                    <p class="cart-text"># of Employees: {{object.number_of_employees}}</p>
+                    <p class="cart-text"><b>Departments:</b></p>
+                    {% if object.departments.all.count == 0 %}
+                        <p><b>None</b></p>
+                    {% endif %}
+                    <ul>
+                        {% for i in object.departments.all %}
+                        <li>{{i}}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="cart-text"><b>Pay Grades:</b></p>
+                    {% if object.pay_grades.all.count == 0 %}
+                        <p><b>None</b></p>
+                    {% endif %}
+                    <ul>
+                        {% for i in object.pay_grades.all %}
+                        <li>{{i}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Employees</h4>
+                    <p class="card-text">
+                        <ol>
+                            {% for i in object.all_employees %}
+                            <li>{{i}}</li>
+                            {% endfor %}
+                        </ol>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
