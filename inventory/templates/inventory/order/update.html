@@ -1,6 +1,7 @@
 {% extends "window.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
+{% load crispy_forms_tags %}
 
 
 <div class="jumbotron">
@@ -17,7 +18,7 @@
                 <form method="POST" action="" enctype="multipart/form-data" >
                 {% csrf_token %}
                 <table class="table table-sm">
-                    {{form.as_table}}
+                    {{form.as_p}}
                 </table>
                 <input type="hidden" name="items" id="id_items">
                 <button class="btn btn-primary pull-right" type="submit">Submit</button>

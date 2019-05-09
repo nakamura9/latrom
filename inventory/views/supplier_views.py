@@ -8,7 +8,7 @@ import urllib
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, reverse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
@@ -28,7 +28,6 @@ from .common import CREATE_TEMPLATE
 
 class SupplierCreateView(ContextMixin, FormView):
     form_class = forms.SupplierForm
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join('inventory', 'supplier', 'create.html')
     extra_context = {
         "title": "Add Vendor",
@@ -39,6 +38,12 @@ class SupplierCreateView(ContextMixin, FormView):
         return {
             'vendor_type': 'individual'
         }
+
+    def get_success_url(self):
+        return reverse("inventory:supplier-detail", kwargs={
+            "pk": models.Supplier.objects.latest('pk').pk + 1
+            })
+        
 
     def form_valid(self, form, *args, **kwargs):
         resp = super().form_valid(form, *args, **kwargs)
@@ -83,8 +88,12 @@ class SupplierCreateView(ContextMixin, FormView):
 class SupplierUpdateView(ContextMixin, FormView):
     form_class = forms.SupplierForm
     template_name = os.path.join('inventory', 'supplier', 'create.html')
-    success_url = reverse_lazy('inventory:home')
     extra_context = {"title": "Update Existing Vendor"}
+
+    def get_success_url(self):
+        return reverse('inventory:supplier-detail', 
+            kwargs={'pk': self.kwargs['pk']
+        })
 
     def get_initial(self):
         vendor = models.Supplier.objects.get(pk=self.kwargs['pk'])

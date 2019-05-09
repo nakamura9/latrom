@@ -14,6 +14,8 @@ import planner
 import accounting
 import invoicing
 from employees.models.payroll_elements import PayrollDate
+from employees.models.employee import Employee
+from django.shortcuts import reverse
 
 @reversion.register()    
 class PayGrade(models.Model):
@@ -34,13 +36,15 @@ class PayGrade(models.Model):
         (datetime.timedelta(hours=1), '1 hr.')
 
     ]
-    name = models.CharField(max_length=16)
-    salary = models.FloatField(default=0)
-    pay_frequency = models.PositiveSmallIntegerField(default=2, choices=[
+
+    PAY_FREQUENCIES = [
         (0, 'Weekly'),
         (1, 'Bi-Monthly'),
         (2, 'Monthly')
-    ])
+    ]
+    name = models.CharField(max_length=16)
+    salary = models.FloatField(default=0)
+    pay_frequency = models.PositiveSmallIntegerField(default=2, choices=PAY_FREQUENCIES)
     monthly_leave_days = models.FloatField(default=0)
     hourly_rate = models.FloatField(default=0)
     overtime_rate = models.FloatField(default=0)
@@ -58,4 +62,15 @@ class PayGrade(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def employees(self):
+        return Employee.objects.filter(pay_grade=self)
+
+    def frequency_string(self):
+        mapping = dict(self.PAY_FREQUENCIES)
+        return mapping[self.pay_frequency]
+    
+    def get_absolute_url(self):
+        return reverse("employees:pay-grade-detail", kwargs={"pk": self.pk})
     

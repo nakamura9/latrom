@@ -42,7 +42,6 @@ class CreditNoteCreateView( ContextMixin, CreateView):
         "credit_note", "create.html")
     model = CreditNote
     form_class = forms.CreditNoteForm
-    success_url = reverse_lazy("invoicing:invoices-list")
 
     def get_initial(self):
         return {
@@ -81,7 +80,6 @@ class CreditNoteUpdateView( ContextMixin, UpdateView):
     template_name = os.path.join("invoicing", "create_credit_note.html")
     model = CreditNote
     form_class = forms.CreditNoteForm
-    success_url = reverse_lazy("invoicing:home")
 
 
 class CreditNoteDetailView( ConfigMixin, MultiPageDocument, DetailView):

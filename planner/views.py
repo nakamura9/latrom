@@ -90,7 +90,6 @@ class EventParticipantMixin():
 class EventCreateView(LoginRequiredMixin, EventParticipantMixin, CreateView):
     template_name = os.path.join('planner', 'events','create.html')
     form_class = forms.EventForm
-    success_url = reverse_lazy('planner:event-list')
 
     def get_initial(self):
         return {
@@ -101,7 +100,6 @@ class EventCreateView(LoginRequiredMixin, EventParticipantMixin, CreateView):
 class EventUpdateView(LoginRequiredMixin, EventParticipantMixin, UpdateView):
     template_name = os.path.join('planner', 'events', 'update.html')
     form_class = forms.EventForm
-    success_url = reverse_lazy('planner:event-list')
     model = models.Event
 
 

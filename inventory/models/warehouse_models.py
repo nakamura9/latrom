@@ -11,7 +11,7 @@ from django.db.models import Q
 
 from accounting.models import Account, Journal, JournalEntry
 from common_data.models import SingletonModel
-
+from django.shortcuts import reverse
 
 class WarehouseExeption(Exception):
     pass
@@ -27,6 +27,10 @@ class WareHouse(models.Model):
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
     last_inventory_check_date = models.DateField(blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse("inventory:warehouse-detail", kwargs={"pk": self.pk})
+    
 
     
     @property
@@ -181,6 +185,10 @@ class StorageMedia(models.Model):
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
     capacity = models.FloatField(default=0.0)
+
+    def get_absolute_url(self):
+        return reverse("inventory:storage-media-detail", kwargs={"pk": self.pk})
+    
 
     @property
     def children(self):

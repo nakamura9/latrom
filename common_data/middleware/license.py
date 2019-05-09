@@ -9,7 +9,6 @@ import time
 import urllib
 from common_data.models import GlobalConfig
 from latrom import settings
-##%%
 import logging 
 import os
 from common_data.tasks import remote_license_verification

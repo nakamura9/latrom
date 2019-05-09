@@ -8,7 +8,6 @@ from django.db import models
 
 from latrom import settings
 import subprocess
-##%%
 from common_data.utilities import db_util
 from common_data.schedules import backup_db
 from background_task.models import Task

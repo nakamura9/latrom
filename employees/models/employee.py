@@ -155,6 +155,10 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("employees:department-detail", kwargs={"pk": self.pk})
+    
+
     @property
     def children(self):
         return Department.objects.filter(parent_department=self)

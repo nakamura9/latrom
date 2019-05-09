@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
 from common_data.utilities import time_choices
-
+from django.shortcuts import reverse
 
 class Task(models.Model):
     procedure = models.ForeignKey('services.ServiceProcedure', 
@@ -29,6 +29,9 @@ class ServiceProcedure(models.Model):
         related_name="consumables", 
         blank=True)
 
+    def get_absolute_url(self):
+        return reverse("services:procedure-details", kwargs={"pk": self.pk})
+    
 
     @property
     def steps(self):

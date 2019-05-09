@@ -10,7 +10,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-4 shadow">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Requisition Details</h4>
@@ -20,10 +20,59 @@
                     <p class="card-text">Requested By: {{object.requested_by}}</p>
                 </div>
             </div>
+            <div class="card">
+                <div class="card-body">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#authorize">Authorize</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#release">Release</a></li>
+                    </ul>
+                    <div class="tab-content panel-body">
+                        <div class="tab-pane active" id="authorize">
+                            {% if request.user.is_superuser and object.authorized_by is None %}
+                            <form action="{% url 'services:consumable-requisition-authorize' pk=object.pk %}"
+                                method="POST">
+                                {% csrf_token %}
+                                {{authorize_form.as_p}}
+                                <button class="btn">Submit</button>
+                            </form>
+                            {% elif object.authorized_by is not None %}
+                            <h5>
+                                The Requisition has been authorized by {{object.authorized_by}}
+                            </h5>
+                            {% else %}
+                            <h5>
+                                To authorize this requisition, please login with the proper credentials. <a
+                                    href="/login">Login</a>
+                            </h5>
+                            {% endif %}
+
+                        </div>
+                        <div class="tab-pane " id="release">
+                            {% if request.user.is_superuser and object.released_by is None %}
+                            <form action="{% url 'services:consumable-requisition-release' pk=object.pk %}"
+                                method="POST">
+                                {% csrf_token %}
+                                {{authorize_form.as_p}}
+                                <button class="btn btn-primary">Submit</button>
+                            </form>
+                            {% elif object.released_by is not None %}
+                            <h5>
+                                The Requisition has been released by {{object.released_by}}
+                            </h5>
+                            {% else %}
+                            <h5>
+                                To release this inventory, please login with the proper credentials. <a
+                                    href="/login">Login</a>
+                            </h5>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="col-sm-8">
             <h4>Requested Items</h4>
-            
+
             <table class="table table-sm  table-hover ">
                 <thead>
                     <tr class="bg-primary">
@@ -44,38 +93,8 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {% if request.user.is_superuser and object.authorized_by is None %}
-            <h4>Authorize Requisition</h4>
-                <form action="{% url 'services:consumable-requisition-authorize' pk=object.pk %}" method="POST">
-                    {% csrf_token %}
-                    {{authorize_form.as_p}}
-                    <button class="btn">Submit</button>
-                </form>
-            {% elif object.authorized_by is not None %}
-            <h5>
-                The Requisition has been authorized by {{object.authorized_by}}
-            </h5>
-            {% else %}
-            <h5>
-                    To authorize this requisition, please login with the proper credentials. <a href="/login">Login</a>
-                </h5>
-            {% endif %}
-            {% if request.user.is_superuser and object.released_by is None %}
-            <h4>Release requested Items</h4>
-            <form action="{% url 'services:consumable-requisition-release' pk=object.pk %}" method="POST">
-                    {% csrf_token %}
-                    {{authorize_form.as_p}}
-                    <button class="btn">Submit</button>
-                </form>
-                {% elif object.released_by is not None %}
-                <h5>
-                    The Requisition has been released by {{object.released_by}}
-                </h5>
-                {% else %}
-                <h5>
-                        To release this inventory, please login with the proper credentials. <a href="/login">Login</a>
-                    </h5>
-            {% endif %}
+
+
         </div>
     </div>
 </div>

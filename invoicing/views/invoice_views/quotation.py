@@ -43,7 +43,6 @@ class QuotationCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
             
     template_name = os.path.join("invoicing","quotation", "create.html")
     form_class = forms.QuotationForm
-    success_url = reverse_lazy("invoicing:invoices-list")
 
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
@@ -68,7 +67,6 @@ class QuotationCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
 
 class QuotationUpdateView(UpdateView):
     template_name = os.path.join('invoicing', 'quotation', 'create.html')
-    success_url = reverse_lazy('invoicing:invoices-list')
     model =Invoice
     form_class = forms.QuotationForm
     

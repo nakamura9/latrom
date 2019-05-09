@@ -187,27 +187,26 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('Personal information', 
+                Tab('Basic', 
                     Row(
                         Column('first_name', css_class='form-group col-6'),
                         Column('last_name', css_class='form-group col-6'),
+                    ), 
+                    Row(
+                        Column('hire_date', 'title', css_class='form-group col-6'),
+                        Column('address', css_class='form-group col-6'),
                     ),
-                    'address',
                     'email',
                     'phone'
                     ),
-                    Tab('private',
+                    Tab('Other',
                         'date_of_birth',
                         'id_number',
-                        'gender'
-                    ),
-                Tab('Employee Details', 
-                    'hire_date',
-                    'title',
-                    'pay_grade',
-                    'leave_days',
-                    'pin',
-                    'uses_timesheet'
+                        'gender',
+                        'pay_grade',
+                        'leave_days',
+                        'pin',
+                        'uses_timesheet'
                     )))
         self.helper.add_input(Submit('submit', 'Submit'))
 
@@ -221,7 +220,6 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
             )
             self.instance.user = user
             self.instance.save()
-            print('created user successfully %%')
 
         return resp
 
@@ -451,7 +449,19 @@ class PayrollDateForm(forms.ModelForm, BootstrapMixin):
         
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            
+            TabHolder(
+                Tab('(Employees)',
+                    'schedule',
+                    'date',
+                    'employees'
+                ),
+                Tab('(Departments)',
+                    'departments'
+                ),
+                Tab('(Pay Grades)',
+                    'pay_grades'
+                ),
+            )
         )
 
         self.helper.add_input(Submit('submit', 'Submit'))
@@ -475,12 +485,13 @@ class DepartmentForm(forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('basic',
                     'name',
-                    'description',
                     'manager',
+                    'description',
                     'parent_department',
+
                 ),
-                Tab('employees',
-                    'employees',
+                Tab('members',
+                    'employees'
                 ),
             )
         )

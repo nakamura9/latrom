@@ -73,7 +73,6 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
             
     template_name = os.path.join("invoicing","invoice", "create.html")
     form_class = forms.InvoiceForm
-    success_url = reverse_lazy("invoicing:invoices-list")
 
     def get_initial(self):
         initial = {}
@@ -98,7 +97,6 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
 
 class InvoiceUpdateView(ContextMixin, UpdateView):
     template_name = os.path.join('invoicing', 'invoice', 'create.html')
-    success_url = reverse_lazy('invoicing:invoices-list')
     model =Invoice
     form_class = forms.InvoiceUpdateForm
     extra_context = {

@@ -82,8 +82,10 @@ class CustomerForm(BootstrapMixin, forms.Form):
         self.helper.layout= Layout(
             TabHolder(
                 Tab('details',
-                InlineRadios('customer_type'),
-                'name',
+                Row(
+                        Column('customer_type', css_class='form-group col-3'),
+                        Column('name', css_class='form-group col-9'),
+                    ),
                     Row(
                         Column('address', css_class='form-group col-6'),
                         Column('banking_details', css_class='form-group col-6'),

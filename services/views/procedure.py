@@ -54,7 +54,6 @@ class ProcedureCreateView( ProcedureCRUDMixin, ContextMixin,
         CreateView):
     form_class = forms.ServiceProcedureForm
     template_name = os.path.join('services', 'procedure', 'create.html')
-    success_url = reverse_lazy('services:list-procedures')
     extra_context = {
         'related_links': [
             {
@@ -71,7 +70,6 @@ class ProcedureCreateView( ProcedureCRUDMixin, ContextMixin,
 class ProcedureUpdateView( ProcedureCRUDMixin, UpdateView):
     form_class = forms.ServiceProcedureForm
     template_name = os.path.join('services', 'procedure', 'update.html')
-    success_url = reverse_lazy('services:list-procedures')
     model = models.ServiceProcedure
 
 class ProcedureDetailView( DetailView):

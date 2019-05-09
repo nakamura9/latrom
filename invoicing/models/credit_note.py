@@ -4,6 +4,7 @@ from django.db import models
 from decimal import Decimal as D
 
 from accounting.models import Account, Journal, JournalEntry
+from django.shortcuts import reverse
 
 
 class CreditNote(models.Model):
@@ -27,6 +28,10 @@ class CreditNote(models.Model):
     invoice = models.ForeignKey('invoicing.Invoice', 
             on_delete=models.SET_NULL, null=True)
     comments = models.TextField()#never allow blank comments
+
+    def get_absolute_url(self):
+        return reverse("invoicing:credit-note-detail", kwargs={"pk": self.pk})
+    
 
     @property
     def returned_products(self):

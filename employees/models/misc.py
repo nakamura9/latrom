@@ -2,6 +2,7 @@ from django.db import models
 from common_data.models import SingletonModel, SoftDeletionModel
 from employees.schedules import run_payroll_service
 from background_task.models import Task
+from django.shortcuts import reverse
 
 class PayrollOfficer(models.Model):
     employee = models.OneToOneField('employees.Employee', 
@@ -12,6 +13,11 @@ class PayrollOfficer(models.Model):
     can_create_payroll_elements = models.BooleanField(default=False, blank=True)
     can_register_new_employees = models.BooleanField(default=False, blank=True)
 
+    def get_absolute_url(self):
+        return reverse("employees:payroll-officer-detail", kwargs={"pk": self.pk})
+
+    def __str__(self):
+        return str(self.employee)
 
 class EmployeesSettings(SingletonModel):
     last_payroll_date = models.DateField(blank=True, null=True)

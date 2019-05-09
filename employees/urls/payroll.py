@@ -28,6 +28,8 @@ pay_urls = [
         name='create-pay-grade'),
     re_path(r'^update-pay-grade/(?P<pk>[\w]+)/?$', 
         views.PayGradeUpdateView.as_view(), name='update-pay-grade'),
+    re_path(r'^pay-grade-detail/(?P<pk>[\w]+)/?$', 
+        views.PayGradeDetailView.as_view(), name='pay-grade-detail'),
     re_path(r'^list-pay-grades/?$', views.PayGradeListView.as_view(), 
         name='list-pay-grades'),
     re_path(r'^list-pay-slips/?$', views.PayslipListView.as_view(), 

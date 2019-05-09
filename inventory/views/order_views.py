@@ -102,7 +102,6 @@ class OrderCreateView( ContextMixin,
     list of 'items[]'. '''
     form_class = forms.OrderForm
     model = models.Order
-    success_url = reverse_lazy('inventory:order-list')
     template_name = os.path.join("inventory", "order", "create.html")
     extra_context = {
         "title": "Create Purchase Order",
@@ -137,7 +136,6 @@ class OrderUpdateView( ContextMixin,
         OrderPOSTMixin,UpdateView):
     form_class = forms.OrderUpdateForm
     model = models.Order
-    success_url = reverse_lazy('inventory:home')
     template_name = os.path.join("inventory", "order", "update.html")
     extra_context = {"title": "Update Existing Purchase Order"}
 
@@ -314,7 +312,6 @@ class DebitNoteCreateView(CreateView):
     form_class = forms.DebitNoteForm
     template_name = os.path.join("inventory", "order", "debit_note", "create.html")
     model = models.DebitNote
-    success_url = reverse_lazy('inventory:order-list')
 
     def get_initial(self):
         return {

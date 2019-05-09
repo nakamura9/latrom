@@ -114,6 +114,13 @@ class PayGradePageTests(TestCase):
         }))
         self.assertEqual(resp.status_code, 200)
 
+    def test_get__pay_grade_detail_page(self):
+        resp = self.client.get(reverse('employees:pay-grade-detail', kwargs={
+            'pk': 1
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+
     def test_post_update_pay_grade_page(self):
         resp = self.client.post(reverse('employees:update-pay-grade', kwargs={
             'pk': 1

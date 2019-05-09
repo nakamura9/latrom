@@ -7,6 +7,7 @@ from django.db.models import Q
 from common_data.utilities import time_choices
 from functools import reduce
 from decimal import Decimal as D
+from django.shortcuts import reverse 
 
 class WorkOrderRequest(models.Model):
     invoice = models.ForeignKey('invoicing.invoice', 
@@ -40,6 +41,11 @@ class WorkOrderRequest(models.Model):
     @property
     def work_orders(self):
         return self.serviceworkorder_set.all()
+
+    def get_absolute_url(self):
+        return reverse("services:work-order-request-detail", 
+            kwargs={"pk": self.pk})
+    
 
 class ServiceWorkOrder(models.Model):
     STATUS_CHOICES = [
@@ -136,6 +142,10 @@ class ServiceWorkOrder(models.Model):
     def total_overtime(self):
         return reduce(lambda x, y: x + y,
             [i.overtime for i in self.time_logs], datetime.timedelta(seconds=0))
+
+    def get_absolute_url(self):
+        return reverse("services:work-order-detail", kwargs={"pk": self.pk})
+
 
 class TimeLog(models.Model):
     work_order = models.ForeignKey('services.serviceworkorder', null=True, 

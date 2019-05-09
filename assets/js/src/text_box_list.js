@@ -107,6 +107,7 @@ class TextBoxListWidget extends Component{
                         <br />
                     <button 
                         className="btn"
+                        type="button"
                         onClick={this.addHandler}>Insert</button>
                 </div>
             </div>
@@ -124,7 +125,7 @@ const ListTextBox = (props) => {
 
 
     const buttonStyle ={
-        color: "#07f",
+        color: "white",
         border: "0px",
         backgroundColor: "rgba(0,0,0,0)"
     }
@@ -136,12 +137,13 @@ const ListTextBox = (props) => {
                     <span style={{float: "right"}}>
                         <button 
                         style={buttonStyle}
+                        type="button"
                         onClick={() => props.handler(props.index)}>
                             <i className="fas fa-times"></i>
                         </button>
                         <button 
                         style={buttonStyle}
-                        
+                        type="button"
                         onClick={() => props.editHandler(props.index)}>
                             <i className="fas fa-edit"></i>
                         </button>

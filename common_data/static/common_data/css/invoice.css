@@ -41,6 +41,12 @@ input:required, textarea:required, select:required {
     text-align:center;
 }
 
+.white-on-blue {
+    background-color: white;
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+
 .entry-style td{
     padding: 0px;
     border: 0px;

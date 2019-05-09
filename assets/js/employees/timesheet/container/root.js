@@ -130,7 +130,7 @@ export default class TimeSheet extends Component{
             </tbody>
         }
         return(
-            <table className="table">
+            <table className="table table-sm">
                 <thead>
                     <tr className="bg-primary">
                         <th>Date</th>

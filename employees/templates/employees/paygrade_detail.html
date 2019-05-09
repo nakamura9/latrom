@@ -1,0 +1,65 @@
+{% extends 'window.html' %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">Pay Grade Details</h1>
+    <p class="lead">View features of a paygrade as well as a list of the employees under it.</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'employees:update-pay-grade' pk=object.pk %}" role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title">Features</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Basic Salary: {{object.salary}}</p>
+                    <p class="card-text">Overtime Rate: {{object.overtime_rate}}</p>
+                    <p class="card-text">Double Time Rate: {{object.overtime_two_rate}}</p>
+                    <p class="card-text">Pay Frequency: {{object.frequency_string}}</p>
+                    <p class="card-text">Lunch Duration: {{object.lunch_duration}}</p>
+                    <p class="card-text">Commission: {{object.commission}}</p>
+                    <p class="card-text"><h5>Benefits</h5>
+                        <ul>
+                            {% for i in object.allowances.all %}
+                                <li>{{i}}</li>
+                            {% endfor %}
+                        </ul>
+                    </p>
+                    <p class="card-text"><h5>Deductions:</h5>
+                        <ul>
+                            {% for i in object.deductions.all %}
+                                <li>{{i}}</li>
+                            {% endfor %}
+                        </ul></p>
+                    <p class="card-text"><h5>Payroll Taxes:</h5> 
+                        <ul>
+                            {% for i in object.payroll_taxes.all %}
+                                <li>{{i}}</li>
+                            {% endfor %}
+                        </ul></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Employees</h4>
+                    <p class="card-text">Total Employees: {{object.employees.count}}</p>
+                    <ol>
+                        {% for i in object.employees %}
+                            <li>{{i}}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

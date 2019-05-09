@@ -251,7 +251,7 @@ class DirectPaymentFormView( ContextMixin, FormView):
 
     def get_success_url(self, *args, **kwargs):
         return reverse_lazy('accounting:entry-detail', kwargs={
-            'pk': models.JournalEntry.objects.latest('pk').pk})
+            'pk': models.JournalEntry.objects.latest('pk').pk + 1})
 
             
     def get_initial(self):

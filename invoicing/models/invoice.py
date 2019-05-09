@@ -15,6 +15,7 @@ from common_data.models import SoftDeletionModel
 import inventory
 from services.models import WorkOrderRequest
 from invoicing.models.credit_note import CreditNoteLine
+from django.shortcuts import reverse 
 
 class Invoice(SoftDeletionModel):
     '''An invoice is a document that represents a sale. Because of the complexity of the object, both a quotation and an invoice are represented by the same model. The document starts as a quotation and then can move to a proforma invoice culminating in the creation of an invoice.
@@ -104,6 +105,14 @@ class Invoice(SoftDeletionModel):
     entry = models.ForeignKey('accounting.JournalEntry', 
         on_delete=models.SET_NULL,  blank=True, null=True)
     
+    def get_absolute_url(self):
+        if self.status in ['invoice', 'paid', 'paid-partially']:
+            return reverse("invoicing:invoice-details", kwargs={"pk": self.pk})
+        else:
+            return reverse("invoicing:quotation-details", kwargs={
+                'pk': self.pk
+            })
+
     def add_line(self, data):
         '''Takes a dictionary that represents the invoice line and create
         the appropriate objects to match the provided data'''

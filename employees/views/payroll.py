@@ -113,7 +113,6 @@ class CommissionDeleteView( DeleteView):
 class PayGradeCreateView( ContextMixin, CreateView):
     form_class = forms.PayGradeForm
     template_name = os.path.join('common_data', 'crispy_create_template.html')
-    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Add Pay Grade',
         'description': 'Use pay grades to group employees on the same income level. Apply commission rules, benefits, deductions and taxes to each unique grade.',
@@ -137,10 +136,13 @@ class PayGradeCreateView( ContextMixin, CreateView):
         ] 
     }
 
+class PayGradeDetailView(DetailView):
+    model = models.PayGrade
+    template_name=os.path.join('employees', 'paygrade_detail.html')
+
 class PayGradeUpdateView( RevisionMixin ,ContextMixin, UpdateView):
     form_class = forms.PayGradeForm
-    template_name =CREATE_TEMPLATE
-    success_url = reverse_lazy('employees:list-pay-grades')
+    template_name =os.path.join('common_data', 'crispy_create_template.html')
     extra_context = {
         'title': 'Edit existing Pay Grade'
     }
@@ -444,10 +446,9 @@ class PayrollDateListView(ContextMixin, PaginationMixin, FilterView):
         return super().get_context_data(**kwargs)
 
 class PayrollDateUpdateView(ContextMixin, UpdateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     form_class = forms.PayrollDateForm
     model = models.PayrollDate
-    success_url = "/employees/"
     extra_context = {
         'title': 'Update Payroll Date Features'
     }
@@ -462,9 +463,8 @@ class PayrollDateDetailView(DetailView):
     template_name = os.path.join('employees', 'payroll_date_detail.html')
 
 class CreatePayrollDateView(ContextMixin, CreateView):
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
     form_class = forms.PayrollDateForm
-    success_url = "/employees/"
     extra_context = {
         'title': 'Create Payroll Date'
     }
