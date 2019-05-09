@@ -5,6 +5,7 @@ from crispy_forms.layout import (Fieldset,
                                 Submit, 
                                 HTML,
                                 Row,
+                                Div,
                                 Column)
 from django import forms
 from django.contrib.auth import authenticate
@@ -178,39 +179,48 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     direct_price = forms.CharField(widget=forms.NumberInput, required=False)
     type=forms.CharField(widget=forms.HiddenInput)
     tax=forms.ModelChoiceField(Tax.objects.all())
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), required=False)    
+
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('Description', 
+                Tab('Main', 
                     'name',
-                    'unit_purchase_price',
+                    Row(
+                        Column(
+                            Div('unit_purchase_price'),
+                            Div('tax'),
+                            Div('initial_quantity'), 
+                            css_class="form-group col-sm-6"),
+                        Column(
+                            HTML("<div id='pricing-widget' style='margin:30px auto;'></div>"), css_class="form-group col-sm-6"),
+                    ),
+                    Row(
+                        Column('minimum_order_level', css_class="form-group col-6"),
+                        Column('maximum_stock_level', css_class="form-group col-6"),
+                    ),
+                    'type',#hidden field
+                    ),
+                Tab('Details', 
                     'description',
-                    'type',
-                    ),
-                Tab('Pricing', 
                     'unit',
-                    'tax',
-                    HTML("<div id='pricing-widget'></div>")
+                    Row(
+                        Column('length', css_class="form group col-4"),
+                        Column('width', css_class="form group col-4"),
+                        Column('height', css_class="form group col-4"),
                     ),
-                Tab('Stocking Information',
-                    'minimum_order_level',
-                    'maximum_stock_level',
-                    'supplier'),
-                Tab('Categories', 
-                    'category'),
-                Tab('Dimensions', 
-                    'length', 
-                    'width',
-                    'height'),
-                Tab('Initial Inventory', 
-                    'initial_quantity', 
-                    'warehouse',
+                    Row(
+                        Column('supplier', css_class="form group col-6"),
+                        Column('warehouse', css_class="form group col-6"),
                     ),
-                Tab('Image', 'image',
-                ),
-            )
+                    Row(
+                        Column('category', css_class="form group col-6"),
+                        Column('image', css_class="form group col-6"),
+                    ),
+                    ),
+                )
             )
         self.helper.add_input(Submit('submit', 'Submit'))
 
@@ -251,35 +261,39 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     type=forms.CharField(widget=forms.HiddenInput)
     asset_data = forms.ModelChoiceField(Asset.objects.all(), required=False)
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), required=False)    
     def __init__(self, *args, **kwargs):
         super(EquipmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('Description', 
+                Tab('Main', 
                     'name',
-                    'description',
                     'unit_purchase_price',
-                    'type'
-                    ),
-                Tab('Ordering Information',
-                    'supplier'),
-                Tab('Purchase Information', 
-                    'unit',
-                    'asset_data'),
-                Tab('Categories', 
-                    'category'),
-                Tab('Dimensions', 
-                    'length', 
-                    'width',
-                    'height'),
-                Tab('Initial Inventory', 
+                    'type',
                     'initial_quantity', 
-                    'warehouse',
+                    'unit',
+                    'description',
                     ),
-                Tab('Image', 'image'),
+                Tab('Details',
+                    
+                    Row(
+                        Column('length', css_class='form group col-4'),
+                        Column('width', css_class='form group col-4'),
+                        Column('height', css_class='form group col-4'),
+                    ),
+                    Row(
+                        Column('supplier', css_class='form group col-6'),
+                        Column('warehouse', css_class='form group col-6'),
+                    ),
+                    Row(
+                        Column('category', css_class='form group col-6'),
+                        Column('image', css_class='form group col-6'),
+                    ),
+                    'asset_data', 
+                ),
             )
-            )
+        )
         self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
@@ -306,37 +320,43 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 
 class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     type=forms.CharField(widget=forms.HiddenInput, )
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), required=False)    
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('Description', 
+                Tab('Main', 
                     'name',
-                    'description',
-                    'unit_purchase_price',),
-                Tab('Ordering Information',
-                    'minimum_order_level',
-                    'maximum_stock_level',
-                    'supplier',
-                    'type'),
-                Tab('Purchase Information', 
+                    'unit_purchase_price',
+                    'initial_quantity',
                     'unit',
+                    'description', 
+            ),
+                Tab('Details',
+                    Row(
+                        Column('minimum_order_level', css_class="form-group col-sm-6"),
+                        Column('maximum_stock_level', css_class="form-group col-sm-6"),
                     ),
-                Tab('Categories', 
-                    'category'),
-                Tab('Dimensions', 
-                    'length', 
-                    'width',
-                    'height'),
-                Tab('Initial Inventory', 
-                    'initial_quantity', 
-                    'warehouse',
+                    Row(
+                        Column('length', css_class="form-group col-sm-4"),
+                        Column('width', css_class="form-group col-sm-4"),
+                        Column('height', css_class="form-group col-sm-4"),
                     ),
-                Tab('Image', 'image'),
+                    Row(
+                        Column('supplier', css_class="form-group col-sm-6"),
+                        Column('warehouse', css_class="form-group col-sm-6"),
+                    ),
+                    Row(
+                        Column('category', css_class="form-group col-sm-6"),
+                        Column('image', css_class="form-group col-sm-6"),
+                    ),
+                    'type', 
+                )
             )
-            )
+        )
         self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
