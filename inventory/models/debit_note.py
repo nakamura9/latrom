@@ -24,7 +24,8 @@ class DebitNote(models.Model):
     order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, 
         null=True)
     comments = models.TextField()#never allow blank comments
-
+    entry = models.ForeignKey('accounting.JournalEntry', null=True, 
+        on_delete=models.SET_NULL)
     def get_absolute_url(self):
         return reverse("inventory:debit-note-detail", kwargs={"pk": self.pk})
     
@@ -51,6 +52,8 @@ class DebitNote(models.Model):
             self.order.supplier.account,
             Account.objects.get(pk=4002))# sales returns 
 
+        self.entry = j
+        self.save()
         
 class DebitNoteLine(models.Model):
     item = models.ForeignKey('inventory.OrderItem', null=True, 

@@ -28,6 +28,8 @@ class CreditNote(models.Model):
     invoice = models.ForeignKey('invoicing.Invoice', 
             on_delete=models.SET_NULL, null=True)
     comments = models.TextField()#never allow blank comments
+    entry = models.ForeignKey("accounting.JournalEntry", null=True,
+        on_delete=models.SET_NULL)
 
     def get_absolute_url(self):
         return reverse("invoicing:credit-note-detail", kwargs={"pk": self.pk})
@@ -44,11 +46,11 @@ class CreditNote(models.Model):
     @property
     def tax_credit(self):
         return sum([(i.line.tax.rate * i.quantity) \
-            for i in self.creditnoteline_set.all() if i.line.tax] ,0)
+            for i in self.creditnoteline_set.all() if i.line and i.line.tax] ,0)
         
     @property
     def returned_total_with_tax(self):
-        return self.returned_total + D(self.tax_credit)
+        return D(self.returned_total) + D(self.tax_credit)
 
     @property
     def total(self):
@@ -64,7 +66,7 @@ class CreditNote(models.Model):
 
     def create_entry(self):
         j = JournalEntry.objects.create(
-            memo="Auto generated journal entry from credit note",
+            memo=f"Journal entry for credit note #{self.pk}. From Invoice #{self.invoice.invoice_number}",
             date=self.date,
             journal=Journal.objects.get(pk=3),
             draft=False,
@@ -74,6 +76,8 @@ class CreditNote(models.Model):
             self.returned_total_with_tax,
             self.invoice.customer.account,
             Account.objects.get(pk=4002))# sales returns 
+        self.entry = j
+        self.save()
 
 #TODO test
 class CreditNoteLine(models.Model):
@@ -89,7 +93,11 @@ class CreditNoteLine(models.Model):
     @property
     def returned_value(self):
         '''Factors for line by line discount'''
-        discount =  self.line.product.nominal_price * \
-            (self.line.discount / D(100))
-        discounted_price = self.line.product.nominal_price - discount
-        return D(self.quantity) * discounted_price
+        # support other kinds of objects
+        if self.line and self.line.product:
+            discount =  self.line.product.nominal_price * \
+                (self.line.discount / D(100))
+            discounted_price = self.line.product.nominal_price - discount
+            return D(self.quantity) * discounted_price
+
+        return 0.0

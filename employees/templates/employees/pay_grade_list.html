@@ -13,7 +13,7 @@
         <tr>
             <td>{{item.name}}</td>
         <td>{{item.employee_set.all.count}}</td>
-        <td>{{item.monthly_salary}}</td>
+        <td>{{item.salary}}</td>
         <td>
             <a href="{% url 'employees:update-pay-grade' pk=item.pk %}" class="btn btn-success">Update</a>
         </td>

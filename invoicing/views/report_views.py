@@ -11,6 +11,7 @@ from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, FormView
 from wkhtmltopdf.views import PDFTemplateView
 import urllib
+from accounting.models import Credit, Debit
 
 
 from common_data.utilities import ContextMixin, extract_period,  PeriodReportMixin,ConfigMixin, PeriodReportMixin
@@ -19,7 +20,6 @@ from invoicing.models.invoice import Invoice
 from .report_utils.plotters import plot_sales
 
 import pygal
-
 
 class CustomerReportFormView(ContextMixin, FormView):
     extra_context = {
@@ -42,22 +42,21 @@ class CustomerStatement(ConfigMixin, PeriodReportMixin, TemplateView):
 
     @staticmethod 
     def common_context(context, customer, start, end):
-        invoices = Invoice.objects.filter(Q(Q(status='invoice') | 
-            Q(status='paid')) &
-            Q(Q(date__gte=start) & 
-            Q(date__lte = end)))
-        
-        payments = models.Payment.objects.filter( Q(date__gte=start)
-            & Q(date__lte = end)
-        )
-        invoices = sorted(invoices,
-            key=lambda inv: inv.date)
+        credits = Credit.objects.filter(
+            Q(entry__date__gte=start) & 
+            Q(entry__date__lte=end) &
+            Q(account=customer.account)
+        ).order_by('pk')
+        debits = Debit.objects.filter(
+            Q(entry__date__gte=start) & 
+            Q(entry__date__lte=end) &
+            Q(account=customer.account)
+        ).order_by('pk')
         context.update({
             'customer': customer,
             'start': start.strftime("%d %B %Y"),
             'end': end.strftime("%d %B %Y"),
-            'invoices': invoices,
-            'payments': payments,
+            'transactions': itertools.chain(credits, debits),
             'balance_brought_forward': customer.account.balance_on_date(start),
             'balance_at_end_of_period': customer.account.balance_on_date(end)
         })
@@ -115,7 +114,6 @@ class InvoiceAgingPDFView(ConfigMixin, PDFTemplateView):
         context = super().get_context_data(**kwargs)
         return InvoiceAgingReport.common_context(context)
 
-# TODO test
 class SalesReportFormView(ContextMixin, FormView):
     template_name = os.path.join('common_data', 'reports', 'report_template.html')
     form_class = forms.SalesReportForm
@@ -123,14 +121,18 @@ class SalesReportFormView(ContextMixin, FormView):
         "action": reverse_lazy("invoicing:sales-report")
     }
 
-# TODO test
 class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join("invoicing", "reports", "sales_report.html")
 
     @staticmethod
     def common_context(context, start, end):
 
-        total_sales = sum([i.subtotal for i in Invoice.objects.filter(Q(date__gte=start) & Q(date__lte=end))])
+        total_sales = sum([i.subtotal for i in Invoice.objects.filter(Q(date__gt=start) & Q(date__lte=end) & Q(
+            Q(status='invoice') | 
+            Q(status='paid') | 
+            Q(status='paid-partially')) & 
+            Q(draft=False))
+            ])
         average_sales  = total_sales / D(abs((end - start).days))
 
         context["total_sales"] = total_sales

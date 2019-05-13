@@ -88,16 +88,16 @@ class Customer(SoftDeletionModel):
         age_list = [0, 0, 0, 0, 0, 0]
         for inv in self.credit_invoices:
             if inv.overdue == 0:
-                age_list[0] += 1
+                age_list[0] += inv.total
             elif inv.overdue < 8:
-                age_list[1] += 1 
+                age_list[1] += inv.total
             elif inv.overdue < 15:
-                age_list[2] += 1
+                age_list[2] += inv.total
             elif inv.overdue < 31:
-                age_list[3] += 1 
+                age_list[3] += inv.total
             elif inv.overdue < 61:
-                age_list[4] += 1
+                age_list[4] += inv.total
             else:
-                age_list[5] += 1
+                age_list[5] += inv.total
         
         return age_list

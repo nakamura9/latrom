@@ -194,8 +194,10 @@ class Invoice(SoftDeletionModel):
 
     @property
     def overdue(self):
-        '''returns boolean'''
-        return self.overdue_days > 0
+        '''returns boolean only if it is a valid invoice'''
+        if self.status in ['invoice', 'paid-partially'] and not self.draft:
+            return self.overdue_days > 0
+        return False
 
     @property
     def overdue_days(self):
@@ -276,7 +278,7 @@ class Invoice(SoftDeletionModel):
             account as well as crediting the tax account'''
         
         j = JournalEntry.objects.create(
-                memo= 'Auto generated entry from invoice.',
+                memo= f'Journal entry for invoice #{self.invoice_number}.',
                 date=self.date,
                 journal =Journal.objects.get(pk=1),#Cash receipts Journal
                 created_by = self.salesperson.employee.user,

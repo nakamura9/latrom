@@ -66,8 +66,8 @@
                         {% for c in customers %}
                             <tr>
                                 <td>{{c}}</td>
-                            {% for count in c.age_list %}
-                                <td>{{count}}</td>
+                            {% for amount in c.age_list %}
+                                <td>${{amount |floatformat:2}}</td>
                             {% endfor %}
                             </tr>
                         {% endfor %}

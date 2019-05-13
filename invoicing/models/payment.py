@@ -44,7 +44,7 @@ class Payment(SoftDeletionModel):
     def create_entry(self):
         '''payment entries credit the customer account and debits the cash book'''
         j = JournalEntry.objects.create(
-                memo= 'Auto generated journal entry from payment.',
+                memo= f'Journal entry for payment #{self.pk} from invoice #{self.invoice.invoice_number}.',
                 date=self.date,
                 journal =Journal.objects.get(pk=3),
                 created_by = self.sales_rep.employee.user,
@@ -64,5 +64,6 @@ class Payment(SoftDeletionModel):
             self.invoice.status = "paid"
         else:
             self.invoice.status = "paid-partially"
-        
+        self.entry = j
+        self.save()
         self.invoice.save()

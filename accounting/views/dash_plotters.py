@@ -47,7 +47,11 @@ def revenue_vs_expense_plot():
 
     dates = pygal_date_formatter(start, today)
     # get invoice totals for each week
-    inv_query_list = get_queryset_list(Invoice, start, today, 7)
+    inv_query_list = get_queryset_list(Invoice, start, today, 7, filters=Q(
+            Q(status='invoice') | 
+            Q(status='paid') | 
+            Q(status='paid-partially')) & 
+            Q(draft=False))
     revenue = [get_sales_totals(q) for q in inv_query_list]
     #get expense totals for each week
     expense_query_list = get_queryset_list(Expense, start, today, 7)

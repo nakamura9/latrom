@@ -31,7 +31,6 @@ input:required, textarea:required, select:required {
 }
 
 .dashbox {
-    border-radius: 25px;
     margin: 10px;
     padding: 30px;
     width: 300px;

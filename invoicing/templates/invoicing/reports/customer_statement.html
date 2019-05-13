@@ -1,4 +1,21 @@
-{% extends "common_data/page/pdf_page.html" %} {% block page_contents %}
+{% extends "common_data/page/pdf_page.html" %} 
+
+{% block pre_page %}
+
+<div class="jumbotron">
+<p>Actions:</p>
+{% if pdf_link %}
+<p>
+    <a style="padding:10px;border-radius:10px;background-color:#f22;color:white;" href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
+</p>
+
+{% endif %}
+
+</div>
+
+{% endblock  %}
+
+{% block page_contents %}
 {% load accounting %}
 <style>
     .cell {
@@ -52,7 +69,7 @@
                         <thead>
                             <tr style="background-color:black; color:white; padding:10px;">
                                 <th style="width:15%;padding:10px;">Date</th>
-                                <th style="width:15%;padding:10px;">Due Date</th>
+                                
                                 <th style="width:25%;padding:10px;">Description</th>
                                 <th style="width:15%;padding:10px;">Credit</th>
                                 <th style="width:15%;padding:10px;">Debit</th>
@@ -61,35 +78,25 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border-bottom: 1px solid black;" class="cell" colspan="5">Balance Brought Forward: </td>
+                                <td style="border-bottom: 1px solid black;" class="cell" colspan="4">Balance Brought Forward: </td>
                                 <td style="border-bottom: 1px solid black;" class="cell">{{balance_brought_forward | accounting }}</td>
                             </tr>
-                            {% for inv in invoices %}
+                            {% for t in transactions %}
                             <tr>
-                                <td class="cell">{{inv.date}}</td>
-                                <td class="cell">{{inv.due}}</td>
-                                <td class="cell">{{inv}}</td>
-                                <td class="cell">{{inv.total | floatformat:2}}</td>
+                                <td class="cell">{{t.entry.date}}</td>
+                                <td class="cell">{{t.entry.memo}}</td>
+                                <td class="cell">{% if t.is_credit %} {{t.amount}} {% endif %}</td>
+                                <td class="cell"> {% if t.is_debit %} {{t.amount}} {% endif %}</td>
                                 <td class="cell">
-                                    {% if inv.type_of_invoice == 'cash' %} {{inv.total | floatformat:2}} {% else %} 0.00 {% endif %}
-
-                                </td>
-                                <td class="cell">
-                                    {% if inv.type_of_invoice == 'cash' %} 0.00 {% else %} ({{inv.total | floatformat:2}}) {% endif %}
+                                {% if t.is_credit %}
+                                ({{t.amount | floatformat:2}})
+                                {% else %}
+                                {{t.amount | floatformat:2}}
+                                {% endif %}
                                 </td>
                             </tr>
-                            {% endfor %} {% for pay in payments %}
-                            <tr>
-                                <td class="cell">{{pay.date}}</td>
-                                <td class="cell">{{pay.pk | stringformat:"06d"}}</td>
-                                <td class="cell">Payment for Invoice #:{{pay.invoice.pk}}</td>
-                                <td class="cell">0.00</td>
-                                <td class="cell">{{pay.amount | floatformat:2}}</td>
-                                <td class="cell">{{pay.amount | floatformat:2}}</td>
-                            </tr>
-                            {% endfor %}
+                            {% endfor %} 
                             <tr style="height:100%">
-                                <td class="cell"></td>
                                 <td class="cell"></td>
                                 <td class="cell"></td>
                                 <td class="cell"></td>
@@ -99,7 +106,7 @@
                         </tbody>
                         <tfoot>
                             <tr style="border-top: 1mm solid black;">
-                                <td colspan="5">Remaining Balance:</td>
+                                <td colspan="4">Remaining Balance:</td>
                                 <td>{{balance_at_end_of_period | accounting}}</td>
                             </tr>
                         </tfoot>
@@ -110,10 +117,5 @@
     </tbody>
 </table>
 
-{% if pdf_link %}
-<p>
-    <a style="padding:10px;border-radius:10px;background-color:#f22;color:white;" href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
-</p>
 
-{% endif %}
 {% endblock %}

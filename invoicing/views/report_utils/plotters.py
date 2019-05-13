@@ -1,13 +1,11 @@
 import datetime
 from invoicing.models.invoice import Invoice
 from dateutil import relativedelta
+from django.db.models import Q
 
-# TODO test
 import pygal
 
-
 def plot_sales(start, end):
-    
 
     #set deltas
     y = None
@@ -25,7 +23,11 @@ def plot_sales(start, end):
 
         delta = 1
 
-    y_query = get_queryset_list(Invoice, start, end, delta)
+    y_query = get_queryset_list(Invoice, start, end, delta, filters=Q( 
+            Q(status='invoice') | 
+            Q(status='paid') | 
+            Q(status='paid-partially')) & 
+            Q(draft=False))
 
     y = [get_sales_totals(q) for q in y_query]
 
@@ -45,7 +47,7 @@ def get_sales_totals(queryset):
 
     return total
 
-def get_queryset_list(obj, start, end, delta):
+def get_queryset_list(obj, start, end, delta, filters=Q()):
     curr_date = start
     prev_date = start
     query_list = []
@@ -53,8 +55,8 @@ def get_queryset_list(obj, start, end, delta):
     while curr_date < end:
         curr_date  = curr_date + datetime.timedelta(days=delta)
         query_list.append(obj.objects.filter(
-            date__gt=prev_date, date__lte=curr_date
-        ))
+            Q(date__gt=prev_date) & 
+            Q(date__lte=curr_date) & filters))
         prev_date = curr_date
 
 

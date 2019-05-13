@@ -66,14 +66,14 @@
                     <thead>
                         <tr>
                             <td style="width:80%">Description</td>
-                            <td>Subtotal</td>
+                            <td>Subtotal ($)</td>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in page %}
                             <tr>
                                 <td>{{item}}</td>
-                                <td>{{item.returned_value}}</td>
+                                <td>{{item.returned_value | floatformat:2}}</td>
                             </tr>
                             {% endfor %}
                             <tr style="height:100%">

@@ -6,7 +6,7 @@ import axios from 'axios';
 class Month extends Component{
     state = {
         weeks: [],
-        period: ""
+        period: "",
     }
 
     componentDidMount(){

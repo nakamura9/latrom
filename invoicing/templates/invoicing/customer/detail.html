@@ -42,7 +42,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Date</th>
-                                        <th>Amount</th>
+                                        <th>Amount ($)</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -51,7 +51,7 @@
                                     <tr>
                                         <td>{{invoice.id}}</td>
                                         <td>{{invoice.date}}</td>
-                                        <td>{{invoice.total}}</td>
+                                        <td>{{invoice.total | floatformat:2}}</td>
                                         <td><a href="{% url 'invoicing:invoice-details' pk=invoice.pk %}" class="btn btn-primary">Detail</a></td>
                                     </tr>
                                     {% endfor %}
@@ -65,7 +65,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Date</th>
-                                        <th>Amount</th>
+                                        <th>Amount ($)</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -74,7 +74,7 @@
                                     <tr>
                                         <td>{{invoice.id}}</td>
                                         <td>{{invoice.date}}</td>
-                                        <td>{{invoice.total}}</td>
+                                        <td>{{invoice.total | floatformat:2}}</td>
                                         <td><a href="{% url 'invoicing:quotation-details' pk=invoice.pk %}" class="btn btn-primary">Detail</a></td>
                                     </tr>
                                     {% endfor %}
@@ -88,7 +88,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Date</th>
-                                        <th>Amount</th>
+                                        <th>Amount ($)</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -97,7 +97,7 @@
                                     <tr>
                                         <td>{{note.id}}</td>
                                         <td>{{note.date}}</td>
-                                        <td>{{note.total}}</td>
+                                        <td>{{note.total | floatformat:2}}</td>
                                         <td><a href="{% url 'invoicing:credit-note-detail' pk=note.pk %}" class="btn btn-primary">Detail</a></td>
                                     </tr>
                                     {% endfor %}

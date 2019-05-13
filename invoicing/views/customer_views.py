@@ -214,7 +214,6 @@ class CustomerUpdateView( ContextMixin, FormView):
         return resp
 
 
-
 class CustomerListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Customers",
                     "new_link": reverse_lazy(
