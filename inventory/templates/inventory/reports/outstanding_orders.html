@@ -1,9 +1,19 @@
-{% extends "common_data/page/pdf_page.html" %} 
+{% extends "common_data/page/pdf_page.html" %}
 
 {% block pre_page %}
 <div class="jumbotron">
-<h4 class="bold">Actions</h4>
-<a href="{% url 'inventory:inventory-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a href="{% url 'inventory:inventory-report-pdf' %}" class="dropdown-item"><i class="fas fa-file-pdf"></i>
+                Generate PDF</a>
+        </div>
+
+    </div>
+    
 </div>
 {% endblock  %}
 
@@ -26,7 +36,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <table>
+                <table class="table table-sm">
                     <thead>
                         <tr>
                             <th>Supplier</th>
@@ -37,16 +47,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                            {% for order in orders %}
-                            {% if not order.fully_received %}
-                            <tr>
-                                <td>{{order.supplier}}</td>
-                                <td>{{order.pk | stringformat:"06d"}}</td>
-                                <td>{{order.total}}</td>
-                                <td>{{order.expected_receipt_date}}</td>
-                                <td>{{order.percent_received}}</td>
-                                </tr>
-                            {% endif %}
+                        {% for order in orders %}
+                        {% if not order.fully_received %}
+                        <tr>
+                            <td>{{order.supplier}}</td>
+                            <td>{{order.pk | stringformat:"06d"}}</td>
+                            <td>{{order.total}}</td>
+                            <td>{{order.expected_receipt_date}}</td>
+                            <td>{{order.percent_received}}</td>
+                        </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
@@ -54,8 +64,4 @@
         </tr>
     </tbody>
 </table>
-{% if pdf_link %}
-<a href="{% url 'inventory:outstanding-orders-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
-
-{% endif %}
 {% endblock %}
