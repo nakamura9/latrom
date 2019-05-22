@@ -11,7 +11,9 @@ from rest_framework.generics import RetrieveAPIView
 import datetime 
 from messaging import models, forms, serializers
 
-
+class Dashboard(LoginRequiredMixin, TemplateView):
+    template_name = os.path.join('messaging', 'dashboard.html')
+    
 class InboxView(LoginRequiredMixin, DetailView):
     # a list of threads not messages 
     # includes a panel for notifications 

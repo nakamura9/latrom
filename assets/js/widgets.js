@@ -3,15 +3,10 @@ import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
 import axios from 'axios';
 import MessageDetail from '../js/messaging/container/root';
-import MultipleSelectWidget from "./src/multiple_select/containers/root";
-import PaginatedList from '../js/src/paginated_list/containers/root';
 import PricingWidget from "../js/inventory/pricing_widget";
-import MutableTable from "../js/src/mutable_table/container/root";
-import GenericTable from '../js/src/generic_list/containers/root';
-import TimeField from '../js/src/components/time_field';
-import NoteWidget from '../js/src/notes_widget/root';
-import SearchableWidget from '../js/src/components/searchable_widget';
 import InvoiceTable from '../js/invoices/invoice';
+import EmailEditor from '../js/messaging/components/rich_text';
+
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -20,6 +15,7 @@ const storageMediaView = document.getElementById('storage-media-tree-view');
 const threadView = document.getElementById('thread-widget');
 const testView = document.getElementById('test');
 const pricing = document.getElementById('pricing-widget');
+const rich_text = document.getElementById('message-field');
 const depts = document.getElementById('department-list');
 const dataMapper = (node, i) =>{
     
@@ -83,4 +79,7 @@ if(storageMedia){
         url='/employees/api/department'
         externalFormFieldName='parent_department'//not important
         dataMapper={dataMapper}/>, depts);
+}else if(rich_text){
+    console.log('rich');
+    ReactDOM.render(<EmailEditor />, rich_text);
 }

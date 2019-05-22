@@ -1,5 +1,6 @@
 {% extends "window.html" %}
 {% block content %}
+{% load render_bundle from webpack_loader %}
 <style>
     #div_id_copy li{
         list-style-type: none;
@@ -13,9 +14,7 @@
 
 
 <div class="jumbotron">
-    <h1 class="display-3">New message</h1>
-    <p class="lead">Internal messaging platform</p>
-    <hr class="my-2">
+    <h3 class="display-3">New Email</h3>
 </div>
 
 <div class="container">
@@ -49,7 +48,7 @@
                 </div>
                 <div id="div_id_body" class="form-group"> <label for="id_body" class="col-form-label  requiredField">
                         Body<span class="asteriskField">*</span> </label>
-                    {{form.body}}
+                    <div id="message-field"></div>
                 </div>
                 {{form.sender}}
                 <div class="form-group">
@@ -58,5 +57,7 @@
         </div>
     </div>
 </div>
+
+{% render_bundle "widgets"%}
 
 {% endblock content %}

@@ -35,6 +35,10 @@ module.exports = {
                 query: {
                     presets: ['stage-2','react']//stage 2 for class level attrs and autobind
                 }
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
             }
         ]
     },

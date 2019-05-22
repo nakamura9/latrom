@@ -39,6 +39,10 @@ class MessagingViewTests(TestCase):
         resp = self.client.get('/messaging/inbox/')
         self.assertEqual(resp.status_code, 200)
 
+    def test_get_dashboard(self):
+        resp = self.client.get('/messaging/dashboard/')
+        self.assertEqual(resp.status_code, 200)
+
     def test_get_message_detail_page(self):
         resp = self.client.get('/messaging/message-detail/1')
         self.assertEqual(resp.status_code, 200)

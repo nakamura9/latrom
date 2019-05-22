@@ -6,6 +6,7 @@ urlpatterns = [
     path('message-detail/<int:pk>', views.MessageDetailView.as_view(), 
         name='message-detail'),
     path('inbox/', views.InboxView.as_view(), name='inbox'),
+    path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     path('notification/<int:pk>', views.NotificationDetailView.as_view(), 
         name='notification'),
     path('create-message', views.ComposeMessageView.as_view(), 
