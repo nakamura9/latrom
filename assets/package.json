@@ -42,8 +42,11 @@
   "dependencies": {
     "axios": "^0.18.0",
     "child-process": "^1.0.2",
+    "draft-js": "^0.10.5",
     "python-shell": "^1.0.7",
+    "radium": "^0.25.1",
     "react-router": "^4.3.1",
-    "react-router-dom": "^4.3.1"
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^3.0.1"
   }
 }

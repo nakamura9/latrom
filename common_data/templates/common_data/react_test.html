@@ -3,50 +3,34 @@
 {% block content %}
 <style>
     .full{
-        height:100%;
-        min-height:100%;
         width: 100%;
         min-width:100%
     }
+    .side {
+        width: 49%;
+        height:100vh;
+        display:inline-block;
+    }
+    .login {
+        
+    }
 </style>
 
-<div class="full jumbo-gradient">
-<p>1</p>
+<div class="full ">
+<div class="side jumbo-gradient"></div>
+<div class="side jumbo-gradient">
+<div><div class="login shadow">
+        <h4>Sign In</h4>
+        <form action="">
+            <label for="name">Username</label>
+            <input type="text" class="form-control">
+            <label for="password">Password</label>
+            <input type="password" class="form-control">
+        </form>
+    
+    </div></div>
 </div>
-
-<ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link active" href="#lines" data-toggle="tab">Invoice Lines</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#comments-terms" data-toggle="tab">T's & C's</a></li>
-                    </ul>
-                    <div class="tab-content panel-body">
-                        <div id="lines" class="tab-pane active">
-                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                    Invoice Lines</label>
-                                <div id="invoice-table"></div>
-                            </div>
-                        </div>
-                        <div id="comments-terms" class="tab-pane">
-                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                    Terms and Comments</label>
-                                <div class="{{style}}-footer-cell">
-                                    <div class="{{style}}-footer-cell-heading">
-                                            Terms:
-                                    </div>
-                                    <div class="{{style}}-footer-cell-contents">
-                                            {{form.terms}}
-                                    </div>
-                                </div>
-                                <div class="{{style}}-footer-cell">
-                                    <div class="{{style}}-footer-cell-heading">
-                                            Comments:
-                                    </div>
-                                    <div class="{{style}}-footer-cell-contents">
-                                            {{form.comments}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+</div>
 
 
 {% endblock %}

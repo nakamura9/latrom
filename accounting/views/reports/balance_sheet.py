@@ -56,7 +56,7 @@ class BalanceSheet(ConfigMixin,TemplateView):
 
 
         inventory = inventory_models.InventoryItem.total_inventory_value()
-        
+        print(current_assets)
         current_assets_total = sum(
             [i.control_balance for i in current_assets] 
         ) + inventory

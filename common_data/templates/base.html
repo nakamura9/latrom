@@ -20,6 +20,7 @@
     <link rel="stylesheet" type='text/css' href="{% static 'common_data/css/invoice.css' %}">
     <script type="text/javascript" src="{% static 'common_data/js/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/popper.js' %}"></script>
+    
     <script type="text/javascript" src="{% static 'common_data/js/jquery-ui-1.12.1.custom/jquery-ui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/css/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/jquery.form.min.js' %}"></script>
@@ -41,6 +42,7 @@
         {% endif %}
     </div>
     {% block window %}{% endblock %}
+    <script type="text/javascript" src="{% static 'common_data/js/async_select.js' %}"></script>
 <style>
     .my-modal{
         display: none;
@@ -165,20 +167,7 @@
             }
         })
     }
-    /*
-    function hasLatest(var model, var app, var id){
-        //checks if a select widget has the latest element
-
-    }
-
-    function insertLatest(var id, var value, var representation){
-        //appends the latest element to the select widget
-        $('#' + id).append("<option value='" + value + "'>" + representation + "</option>")
-    }
-
-    */
     function setNavbarActive(){
-        console.log('hello')
         var url = window.location.href;
         if(url.search('invoicing') !== -1){
             $("#sales").addClass('active')

@@ -7,7 +7,7 @@ const sidebar = (props) =>{
         backgroundColor: "#07f",
         display: "inline-block",
         float: 'left',
-        'minHeight':'500px',
+        'height':'100vh',
         width: '250px',
         padding: '30px'
         

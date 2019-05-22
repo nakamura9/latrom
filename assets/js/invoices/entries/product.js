@@ -103,6 +103,8 @@ class ProductEntry extends Component{
                                     dataURL="/inventory/api/product/"
                                     displayField="name"
                                     idField="id"
+                                    model="inventoryitem"
+                                    app="inventory"
                                     canCreateNewItem={true}
                                     newLink='/inventory/product-create/'
                                     onSelect={this.handleProductSelect}

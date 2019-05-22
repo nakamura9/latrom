@@ -14,7 +14,6 @@ class Totals extends Component{
     
     setInitialTax = () =>{
         const tax = document.getElementById('id_tax').value;
-        console.log(tax);
         const taxField = document.getElementsByName('total_tax');
         taxField[0].value = tax;
     }

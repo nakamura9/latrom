@@ -121,7 +121,14 @@ class OrderCreateView( ContextMixin,
                 'url': '/inventory/consumable-create/'
             },
 
-        ]
+        ],
+        'box_array': urllib.parse.quote(json.dumps(
+            [{
+                'model': 'supplier',
+                'app': 'inventory',
+                'id': 'id_supplier'
+            }
+            ]))
         }
 
     def get_initial(self):

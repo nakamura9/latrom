@@ -3,6 +3,7 @@ import SearchableWidget from '../../src/components/searchable_widget';
 import AsyncSelect from '../../src/components/async_select';
 import axios from 'axios';
 
+//!! Important, should not set up create new button as there is no way of filtering billable expenses for now
 class ExpenseEntry extends Component{
     state = {
         tax: 0,
@@ -102,6 +103,9 @@ class ExpenseEntry extends Component{
                                     widgetID="expense-widget"
                                     dataURL={`/accounting/api/expense/customer/${document.getElementById('id_customer').value}`}
                                     onSelect={this.handleBillable}
+                                    //newLink="/accounting/expense/create"
+                                    model="expense"
+                                    app="accounting"
                                     onClear={this.clearHandler}
                                     idField="id"
                                     displayField="description" />

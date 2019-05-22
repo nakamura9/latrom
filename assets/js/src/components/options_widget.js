@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-
+import Radium from 'radium';
 class OptionsWidget extends Component{
     
     openPopup = () =>{
@@ -16,7 +16,13 @@ class OptionsWidget extends Component{
         if(this.props.choices.length > 0){
             rendered = this.props.choices.map((item, i) => {
                 //always display id and display field
-                return(<div style={{color: "black"}} key={i} onClick={() => this.props.onSelectValue(i)}>
+                return(<div style={{
+                    color: "black",
+                    ":hover": {
+                        'color':'white',
+                        'backgroundColor':'blue'
+                    }
+                }} key={i} onClick={() => this.props.onSelectValue(i)}>
                         {item}
                     </div>)
             });
@@ -27,6 +33,7 @@ class OptionsWidget extends Component{
         const linkStyle = {
             padding: "5px 2px",
             color: "#007bff",
+            borderBottom: '1px solid #aaa'
         }
         return(
             <div style={{
@@ -35,9 +42,8 @@ class OptionsWidget extends Component{
                 position:"absolute",
                 width: "100%",
                 zIndex: 1,
+                boxShadow: "0px 5px 20px grey",
                 backgroundColor: "#fff",
-                maxHeight: "150px",
-                overflowY: "auto",
                 maxWidth: "300px",
                 minWidth: "150px"
             }}>
@@ -46,11 +52,16 @@ class OptionsWidget extends Component{
                 <div onClick={this.openPopup} style={linkStyle}>Create new</div>
                 : null
             }
+                <div style={{
+                    maxHeight: "150px",
+                    overflowY: "auto",}}>
                 {rendered}
+                    
+                </div>
             </div>
         )
     }
 }
 
 
-export default OptionsWidget;
+export default Radium(OptionsWidget);

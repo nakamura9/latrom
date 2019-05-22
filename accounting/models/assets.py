@@ -12,8 +12,8 @@ from django.shortcuts import reverse
 
 DEPRECIATION_METHOD = [
     (0, 'Straight Line'),
-    (1, 'Sum of years digits'),
-    (2, 'Double Declining balance')
+    #(1, 'Sum of years digits'),
+    #(2, 'Double Declining balance')
 ]
 asset_choices = ['Land', 'Buildings', 'Vehicles', 'LeaseHold Improvements',
     'Furniture and Fixtures', 'Equipment']
@@ -36,7 +36,7 @@ class Asset(models.Model):
         on_delete=models.SET_DEFAULT, default=1000)
     depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
-    depreciation_method = models.IntegerField(choices=DEPRECIATION_METHOD)
+    depreciation_method = models.IntegerField(default=0, choices=DEPRECIATION_METHOD)
     salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
     created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
 

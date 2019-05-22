@@ -49,7 +49,12 @@ class InventoryControllerCreateView(ContextMixin, CreateView):
         'related_links': [{
             'name': 'Create Employee',
             'url': '/employees/create-employee/'
-        }]
+        }],
+        'box_array':  urllib.parse.quote(json.dumps([{
+                "model": "employee",
+                "app": "employees",
+                "id": "id_employee",
+            }]))
     }
 
     

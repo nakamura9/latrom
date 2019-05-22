@@ -21,10 +21,10 @@
                         <h4 class="card-title">Invoice Details</h4>
                         <p class="card-text">Invoice Number: {{invoice.id}}</p>
                         <p class="card-text">Invoice Date: {{invoice.date}}</p>
-                        <p class="card-text">Invoice Due: {{invoice.due}}</p>
-                        <p class="card-text">Invoice Total: {{invoice.total}}</p>
-                        <p class="card-text">Total Paid: {{invoice.total_paid}}</p>
-                        <p class="card-text">Total Due: {{invoice.total_due}}</p>
+                        <p class="card-text">Invoice Due: {{invoice.due | floatformat:2}}</p>
+                        <p class="card-text">Invoice Total: {{invoice.total | floatformat:2}}</p>
+                        <p class="card-text">Total Paid: {{invoice.total_paid | floatformat:2}}</p>
+                        <p class="card-text">Total Due: {{invoice.total_due | floatformat:2}}</p>
                     </div>
                 </div>
             </div>
@@ -42,14 +42,14 @@
                             <tr>
                                 <td>{{payment.date}}</td>
                                 <td>{{payment.sales_rep}}</td>
-                                <td>{{payment.amount}}</td>
+                                <td>{{payment.amount | floatformat:2}}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
                             <th colspan="2">Total</th>
-                            <td>{{invoice.total_paid}}</td>
+                            <td>{{invoice.total_paid | floatformat:2}}</td>
                         </tr>
                     </tfoot>
                 </table>

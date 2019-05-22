@@ -31,7 +31,6 @@ export default class InvoiceTable extends Component{
                  url: '/invoicing/api/invoice/' + tail,
                  method: 'GET',
              }).then(res =>{
-                console.log(res.data); 
                 let itemList = res.data.invoiceline_set.map((line) =>{
                     let lineMappings = {
                         1: 'product',
@@ -159,7 +158,6 @@ const SaleLine = (props) =>{
     const taxRate = parseFloat(props.tax.split('@')[1])
     const tax = (subtotal - discount) * (taxRate /100.0) 
     const total = subtotal - discount + tax
-    console.log(props)
     return(
         <tr>
             <td>
@@ -180,7 +178,6 @@ const SaleLine = (props) =>{
 }
 
 const ServiceLine = (props) =>{
-    console.log(props)
     const subtotal = (parseFloat(props.hours) * parseFloat(props.rate)) +
          parseFloat(props.fee);
     const discount =  subtotal * (props.discount / 100.0)

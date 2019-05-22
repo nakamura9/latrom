@@ -107,6 +107,8 @@ class ServiceEntry extends Component{
                                     idField="id"
                                     canCreateNewItem={true}
                                     newLink='/services/create-service'
+                                    model="service"
+                                    app="services"
                                     onSelect={this.selectHandler}
                                     onClear={this.clearHandler} />
                             </td>

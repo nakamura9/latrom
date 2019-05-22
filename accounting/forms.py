@@ -225,7 +225,7 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
         model = models.JournalEntry
 
         widgets = {
-            'memo':forms.Textarea(attrs={'rows':4, 'cols':15}),           
+            'memo':forms.Textarea(attrs={'rows':6, 'cols':15}),           
         }
 
     def __init__(self, *args, **kwargs):
@@ -233,12 +233,10 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('date', css_class='form group col-10'),
-                Column('draft', css_class='form group col-2'),
-            ),
-            'memo',
-            'journal',
-            'created_by',
+                Column('date','journal', 'created_by',
+                    css_class='form group col-6'),
+                Column('draft','memo', css_class='form group col-6'),
+            ),            
             HTML(
                 """
                 <div id="transaction-table">
@@ -268,7 +266,8 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
                         Column('balance_sheet_category', css_class='form-group col-6'),
                         Column('type', css_class='form-group col-6'),
                     ),
-                    'description'
+                    'description',
+                    'balance_sheet_category'
                 ),
                 Tab('account',
                     'bank_account_number',

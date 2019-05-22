@@ -9,7 +9,7 @@ def stock_movement_plot():
     dates.reverse()
     
     stock = [InventoryItem.total_inventory_quantity_on_date(i) for i in dates]
-    chart = pygal.Line()
+    chart = pygal.Line(fill=True)
     chart.add('Product quantity', stock)
     chart.x_labels = [i.strftime('%d/%m/%Y') for i in dates]
 

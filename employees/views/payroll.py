@@ -133,7 +133,13 @@ class PayGradeCreateView( ContextMixin, CreateView):
                 'name': 'Add Tax',
                 'url': '/employees/create-payroll-tax/'
             }
-        ] 
+        ],
+        'box_array': 
+            urllib.parse.quote(json.dumps([{
+                "model": "commissionrule",
+                "app": "employees",
+                "id": "id_commission",
+            }]))
     }
 
 class PayGradeDetailView(DetailView):

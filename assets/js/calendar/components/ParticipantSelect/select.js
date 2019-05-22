@@ -87,6 +87,7 @@ class ParticipantSelectWidget extends Component{
                         return(<SelectedItem 
                             index={i}
                             key={i}
+                            participantType={item.type}
                             handler={this.removeHandler}
                             name = {item.name}/>)
                     })}
@@ -232,6 +233,8 @@ class ParticipantEntry extends Component{
 
 const SelectedItem = (props) => {
     let divStyle = {
+        color: "black",
+        backgroundColor: "white",
         margin: "2px",
         padding: "5px",
         borderTop: "1px solid #fff"
@@ -242,11 +245,11 @@ const SelectedItem = (props) => {
         padding: "0px 5px"
     }
     return(
-        <div style={divStyle}>
+        <div style={divStyle} >
             <DeleteButton 
                 index={props.index}
                 handler={props.handler}/>
-            <span style={spanStyle}>{props.name}</span>   
+            <span style={spanStyle}>{`[${props.participantType}]: ${props.name}`}</span>   
         </div>
     );
 }

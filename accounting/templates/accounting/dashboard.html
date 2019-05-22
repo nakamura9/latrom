@@ -42,6 +42,34 @@
                         </div>
                         <div class="card bg-primary text-white">
                             <div class="card-header">
+                                <h4 class="card-title"><i class=" fas fa-balance-scale" style=" font-size:28;"></i>
+                                    Accounts + Assets</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                                    </li>
+                                    <!--
+                            <li class="list-group-item">
+                                <a onclick="return false" style="color:grey;" href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="" onclick="return false" style="color:grey;">
+                                    Manage Interest bearing Accounts</a>
+                            </li> -->
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'accounting:asset-list' %}">Manage Assets</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card bg-primary text-white">
+                            <div class="card-header">
                                 <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i> Expenses
                                 </h4>
                             </div>
@@ -61,26 +89,7 @@
                             </div>
                         </div>
 
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class=" fas fa-handshake" style=" font-size:28;"></i>
-                                    Interactions </h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <a href="{% url 'invoicing:customers-list' %}"> Customers</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'inventory:supplier-list' %} ">Vendors </a>
-                                    </li>
-
-                                    <li class="list-group-item">
-                                        <a href="{% url 'accounting:asset-list' %}">Manage Assets</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        
                     </div>
 
                     <hr />
@@ -107,26 +116,20 @@
                         </div>
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class=" fas fa-balance-scale" style=" font-size:28;"></i>
-                                    Accounts</h4>
+                                <h4 class="card-title"><i class=" fas fa-handshake" style=" font-size:28;"></i>
+                                    Interactions </h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                                        <a href="{% url 'invoicing:customers-list' %}"> Customers</a>
                                     </li>
-                                    <!--
-                            <li class="list-group-item">
-                                <a onclick="return false" style="color:grey;" href="{% url 'accounting:journal-list' %}">Reconcile Accounts</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="" onclick="return false" style="color:grey;">
-                                    Manage Interest bearing Accounts</a>
-                            </li> -->
                                     <li class="list-group-item">
-                                        <a href="{% url 'accounting:transfer' %}">Transfer Between Accounts</a>
+                                        <a href="{% url 'inventory:supplier-list' %} ">Vendors </a>
                                     </li>
+                                    <li class="list-group-item">...</li>
 
+                                    
                                 </ul>
                             </div>
                         </div>

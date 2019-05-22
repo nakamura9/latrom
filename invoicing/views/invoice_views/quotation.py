@@ -34,7 +34,10 @@ def process_data(items, inv):
             inv.add_line(item)
             
 
-class QuotationCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
+class QuotationCreateView(ContextMixin,
+        InvoiceCreateMixin, 
+        ConfigMixin, 
+        CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -43,7 +46,15 @@ class QuotationCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
             
     template_name = os.path.join("invoicing","quotation", "create.html")
     form_class = forms.QuotationForm
-
+    extra_context = {
+        'box_array': 
+            urllib.parse.quote(json.dumps([{
+                "model": "customer",
+                "app": "invoicing",
+                "id": "id_customer"
+            }]))
+        
+    }
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
         

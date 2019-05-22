@@ -257,7 +257,7 @@ class ViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         org = Organization.objects.latest('pk')
         data = json.loads(resp.content)
-        self.assertTrue(str(org) == data[str(org.pk)])
+        self.assertTrue(len(data['data']) == 2)
 
     def test_get_api_current_user(self):
         resp = self.client.get('/base/api/current-user')

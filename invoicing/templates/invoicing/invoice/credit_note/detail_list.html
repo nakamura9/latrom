@@ -19,9 +19,9 @@
                         <h4 class="card-title">Invoice Details</h4>
                         <p class="card-text">Invoice Number: {{invoice.id}}</p>
                         <p class="card-text">Invoice Date: {{invoice.date}}</p>
-                        <p class="card-text">Invoice Due: {{invoice.due}}</p>
-                        <p class="card-text">Invoice Total: {{invoice.total}}</p>
-                        <p class="card-text">Total Returned: {{invoice.returned_total}}</p></p>
+                        <p class="card-text">Invoice Due: {{invoice.due | floatformat:2}}</p>
+                        <p class="card-text">Invoice Total: {{invoice.total | floatformat:2}}</p>
+                        <p class="card-text">Total Returned: {{invoice.returned_total | floatformat:2}}</p></p>
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                                 <td>{{return.date}}</td>
                                 <td>{{return.id | stringformat:'06d' }}</td>
                                 <td>{{return.returned_items.count}}</td>
-                                <td>{{return.returned_total}}</td>
+                                <td>{{return.returned_total | floatformat:2}}</td>
                                 <td>
                                     <div class="dropdown">
                                         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
@@ -63,7 +63,7 @@
                     <tfoot>
                         <tr>
                             <th colspan="3">Total</th>
-                            <td>{{invoice.returned_total}}</td>
+                            <td>{{invoice.returned_total | floatformat:2}}</td>
                         </tr>
                     </tfoot>
                 </table>

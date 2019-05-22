@@ -14,6 +14,7 @@ class  MiniCalendar extends Component{
                 method: 'GET',
                 url: `/planner/api/calendar/month/${this.props.year}/${this.props.month}`
             }).then(res =>{
+                console.log(res.data)
                 this.setState({
                     weeks: res.data.weeks,
                     period: res.data.period_string
@@ -34,13 +35,13 @@ class  MiniCalendar extends Component{
             }}>
                 <tbody>
                     <tr>
-                        <th>M</th>
-                        <th>T</th>
-                        <th>W</th>
-                        <th>T</th>
-                        <th>F</th>
-                        <th>S</th>
-                        <th>S</th>
+                        <th>Mo</th>
+                        <th>Tu</th>
+                        <th>We</th>
+                        <th>Th</th>
+                        <th>Fr</th>
+                        <th>Sa</th>
+                        <th>Su</th>
                     </tr>
                     {this.state.weeks.length === 0
                         ? <tr>
@@ -50,8 +51,9 @@ class  MiniCalendar extends Component{
                     }
                     {this.state.weeks.map((week, i) =>(
                         <tr key={i}>
-                            {week.map((day, i) =>(
-                                <td key={i} style={{padding:'3px'}}>
+
+                            {week.map((day, j) =>(
+                                <td key={j} style={{padding:'3px'}}>
                                     <a 
                                         href={`/calendar/day/${day.date}`}
                                         style={{

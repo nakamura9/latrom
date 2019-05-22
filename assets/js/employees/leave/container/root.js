@@ -19,7 +19,6 @@ class LeaveCalendar extends Component{
 
     setLinks = () =>{
         const splitURL = window.location.href.split("/");
-        console.log(splitURL);
         const type = splitURL[5];
         const year = parseInt(splitURL[6]);
         let month = 1;
@@ -42,7 +41,6 @@ class LeaveCalendar extends Component{
             year: year,
             month: month
         });
-        console.log('updating links')
     }
 
     render(){

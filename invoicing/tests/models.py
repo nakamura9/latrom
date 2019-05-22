@@ -103,7 +103,7 @@ class CustomerModelTests(TestCase):
     def test_age_list(self):
         self.invoice.due = TODAY - datetime.timedelta(days=8)
         self.invoice.save()
-        self.assertEqual(self.customer_org.age_list, [0, 1, 0, 0, 0, 0])
+        self.assertEqual(self.customer_org.age_list, [0, D(210.0), 0, 0, 0, 0])
 
 
 class PaymentModelTests(TestCase):

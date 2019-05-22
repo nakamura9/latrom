@@ -2,7 +2,7 @@
 Usage:
 ========
     python manage.py shell
-    >>> exec(open("reset_accounts.py").read())
+    >>> exec(open("dev_tools/reset_accounts.py").read())
 '''
 
 from accounting.models import (Account, 

@@ -105,7 +105,6 @@ export default class ExchangeTable extends Component{
     toggleCreateRateMode = () =>{
         if(this.state.createRateMode){
             //form with currency, exchange rate and exchang_table
-            console.log(this.state.newRateData)
             $.ajax({
                 method: 'POST',
                 url: '/accounting/api/create-conversion-line/',

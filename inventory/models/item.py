@@ -68,7 +68,7 @@ class InventoryItem(SoftDeletionModel):
                 return getattr(self.product_component, name)
 
 
-        raise AttributeError()
+        raise AttributeError(f'{type(self)} has no attribute {name}')
 
     def get_absolute_url(self):
         if self.type == 0:

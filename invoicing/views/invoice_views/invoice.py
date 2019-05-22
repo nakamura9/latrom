@@ -64,7 +64,7 @@ class InvoiceDetailView(ContextMixin, ConfigMixin, MultiPageDocument, DetailView
         return InvoiceLine.objects.filter(invoice=Invoice.objects.get(pk=self.kwargs['pk']))
 
         
-class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
+class InvoiceCreateView(ContextMixin, InvoiceCreateMixin, ConfigMixin, CreateView):
     '''Quotes and Invoices are created with React.js help.
     data is shared between the static form and django by means
     of a json urlencoded string stored in a list of hidden input 
@@ -73,6 +73,15 @@ class InvoiceCreateView( InvoiceCreateMixin, ConfigMixin, CreateView):
             
     template_name = os.path.join("invoicing","invoice", "create.html")
     form_class = forms.InvoiceForm
+    extra_context = {
+        'box_array': 
+            urllib.parse.quote(json.dumps([{
+                "model": "customer",
+                "app": "invoicing",
+                "id": "id_customer"
+            }]))
+        
+    }
 
     def get_initial(self):
         initial = {}

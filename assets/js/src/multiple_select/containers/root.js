@@ -19,7 +19,6 @@ class MultipleSelectWidget extends Component{
     }
 
     updateForm =() =>{
-        console.log("form updated");
         $('#id_'+ this.props.inputField).val(
             encodeURIComponent(
                 JSON.stringify(this.state.selectedItems)
@@ -42,7 +41,6 @@ class MultipleSelectWidget extends Component{
                 method: 'GET'
             }).then((res) =>{
                 const dataList = this.props.resProcessor(res);
-                console.log(dataList);
                 this.setState({selectedItems: dataList}, () =>{
                     //this.removeDuplicates();
                     this.updateForm();
