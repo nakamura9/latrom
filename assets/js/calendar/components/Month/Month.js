@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Week from '../Week/Week';
 import {Aux} from '../../../src/common';
 import axios from 'axios';
+import styles from './month.css';
 
 class Month extends Component{
     state = {
@@ -24,17 +25,7 @@ class Month extends Component{
     }
 
     render(){
-        const cellStyle = {
-            borderCollapse:"collapse",
-            border:"1px solid black"
-        };
-        const headStyle = {
-            ...cellStyle,
-            color: "white",
-            backgroundColor: "#07f",
-            padding: "10px"
-            
-        };
+        
         let contents = null;
         if(this.state.weeks.length === 0){
             contents = <h3>Loading Data...</h3>
@@ -42,13 +33,13 @@ class Month extends Component{
             contents = (<table>
                 <thead>
                     <tr>
-                        <th style={headStyle}>Monday</th>
-                        <th style={headStyle}>Tuesday</th>
-                        <th style={headStyle}>Wednesday</th>
-                        <th style={headStyle}>Thursday</th>
-                        <th style={headStyle}>Friday</th>
-                        <th style={headStyle}>Saturday</th>
-                        <th style={headStyle}>Sunday</th>
+                        <th className={styles.header}>Monday</th>
+                        <th className={styles.header}>Tuesday</th>
+                        <th className={styles.header}>Wednesday</th>
+                        <th className={styles.header}>Thursday</th>
+                        <th className={styles.header}>Friday</th>
+                        <th className={styles.header}>Saturday</th>
+                        <th className={styles.header}>Sunday</th>
                     </tr>
                 </thead>
                 <tbody>

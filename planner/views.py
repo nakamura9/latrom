@@ -96,14 +96,16 @@ class EventCreateView(LoginRequiredMixin, EventParticipantMixin, CreateView):
             'owner': self.request.user 
         }
 
-
 class EventUpdateView(LoginRequiredMixin, EventParticipantMixin, UpdateView):
     template_name = os.path.join('planner', 'events', 'update.html')
     form_class = forms.EventForm
     model = models.Event
 
 
-class EventListView(ContextMixin, LoginRequiredMixin, PaginationMixin, FilterView):
+class EventListView(ContextMixin, 
+        LoginRequiredMixin, 
+        PaginationMixin, 
+        FilterView):
     template_name = os.path.join('planner', 'events', 'list.html')
     filterset_class = filters.EventFilter
     extra_context = {
@@ -118,6 +120,11 @@ class EventListView(ContextMixin, LoginRequiredMixin, PaginationMixin, FilterVie
 class EventDetailView(LoginRequiredMixin, DetailView):
     model = models.Event 
     template_name = os.path.join('planner', 'events', 'detail.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['date_string'] = self.object.date.strftime('%Y/%m/%d')
+        return context
 
 class EventDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Event 

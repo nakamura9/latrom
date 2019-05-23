@@ -4,10 +4,11 @@
     <p class="lead">View Event Details</p>
     <hr class="my-2">
     <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'planner:event-update' pk=object.pk %}" role="button">Edit</a>
-        <a class="btn btn-danger" href="{% url 'planner:event-delete' pk=object.pk %}">Delete</a>
+    <p class="lead btn-group">
+        <a class="btn btn-primary" href="{% url 'planner:event-update' pk=object.pk %}" role="button">Edit</a>
+        <a class="btn btn-primary" href="/calendar/day/{{date_string}}" role="button">View In Calendar</a>
         <a class="btn btn-success" href="{% url 'planner:event-complete' pk=object.pk %}">Complete</a>
+        <a class="btn btn-danger" href="{% url 'planner:event-delete' pk=object.pk %}">Delete</a>
     </p>
 </div>
 

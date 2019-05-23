@@ -1,0 +1,10 @@
+.miniTable {
+    border: 1px solid white;
+    margin: 5px auto;
+    padding:5px;
+    color: white;
+}
+.title{
+    color: white;
+    text-align: center;
+}

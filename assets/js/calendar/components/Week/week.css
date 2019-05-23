@@ -1,16 +1,20 @@
 .cellStyle {
     border-collapse: collapse;
-    border:1px solid black;
+    border:1px solid #aaaaaa;
+    padding: 0px;
 }
 
 .headStyle {
     border-collapse: collapse;
-    border:1px solid black;
+    border:1px solid #aaaaaa;
     color: white;
-    background-color: #07f;
-    padding: 10px   
+    background-color: #007bff;
+    padding: 0.5rem;   
 }
-
+.cellStyle {
+    border-collapse: collapse;
+    border: 1px solid #aaaaaa;
+}
 .titleStyle {
     color: white;
     background-color: #07f;
@@ -20,4 +24,12 @@
 .dayWrapper {
     max-height: 500px;
     overflow-y: auto
+}
+
+.weekHeader {
+    color: white;
+    margin: 0px;
+    width: 79vw;
+    padding:0.5rem;
+    background-color: #007bff;
 }

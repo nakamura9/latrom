@@ -1,17 +1,28 @@
 import React from 'react';
 import Event from '../Event';
+import styles from './Day.css';
 
 const dayMonth = (props) => {
     //calculate the dimensions of the day
+    const windowWidth = document.documentElement.clientWidth;
+    const sidebarWidth = document.getElementById('sidebar').offsetWidth;
+    const calendarWidth = windowWidth - sidebarWidth;
+    const cellWidth = (calendarWidth - 15 /**8-5 + !!2 */) / 7;
+
+    const daysLabelHeight = 32;
+    const navBarHeight = document.getElementById('navbar').offsetHeight;
+    const windowHeight = document.documentElement.clientHeight;
+    const contentHeight = windowHeight - daysLabelHeight - navBarHeight;
+    const cellHeight = (contentHeight -5)/ 5;
+
     let labelStyle = {
         clear:'both',
         width:'100%',
         height:'30px',
         };
     let dayWrapper={
-            minWidth: `${props.width}px`,//here
-            minHeight: `${props.height}px`,
-            padding:"5px"
+            width: `${cellWidth}px`,//here
+            height: `${cellHeight}px`,
         };
     
 
@@ -26,17 +37,17 @@ const dayMonth = (props) => {
             <div style={labelStyle}>
                 <span style={{
                     float:'right'
-                }}><h4>
+                }}><h5>
                         <a href={`/calendar/day/${props.data.date}`}>
                             {props.data.day}</a> 
-                    </h4>
+                    </h5>
                 </span>
             </div>
             <div 
                 style={{
                     position: "relative",
-                    width: `${props.width}px`,//here
-                    height:`${props.height}px`
+                    width: `100%`,//here
+                    height:`2rem`
                 }}>
             {eventList.length < 2 ? 
                 eventList.map((event, i) =>(
@@ -47,11 +58,7 @@ const dayMonth = (props) => {
                         view={props.view}/>
                 ))
                 :
-                    <div style={{
-                        padding: '5px',
-                        backgroundColor: '#007bff',
-                        width: '100%',
-                    }}>
+                    <div className={styles.eventBox}>
                     <a style={{
                         textDecoration: 'none',
                         color: 'white'

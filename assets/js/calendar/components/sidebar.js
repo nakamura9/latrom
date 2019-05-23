@@ -1,19 +1,15 @@
 import React from 'react';
 import MiniCalendar from '../components/mini_calendar';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import styles from './sidebar.css';
 
 const sidebar = (props) =>{
-    const sidebarStyle = {
-        backgroundColor: "#07f",
-        display: "inline-block",
-        float: 'left',
-        'height':'100vh',
-        width: '250px',
-        padding: '30px'
-        
-    };
+    const navHeight = document.getElementById('navbar').offsetHeight;
+    const height = document.documentElement.clientHeight - navHeight -2;
     return(
-        <div style={sidebarStyle}>
+        <div id="sidebar" className={styles.sidebar} style={{height:height}}>
+        <a href="/planner/event-create/"
+        className="btn btn-primary btn-block"> <i className="fas fa-plus"></i> Create New Event</a>
             <div className="btn-group">            
                 <Link className="btn btn-primary" 
                     to={`/calendar/month/${props.calendarState.year}/${props.calendarState.month}`}><i className="fa fas-calendar"></i> Month</Link>
@@ -39,8 +35,7 @@ const sidebar = (props) =>{
                     year={props.calendarState.year}
                     month={props.calendarState.month} />
             </div>
-            <a href="/planner/event-create/"
-               className="btn btn-primary">Create New Event</a>    
+            
         </div>
     );
 }

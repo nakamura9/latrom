@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Event from '../Event';
 import axios from 'axios';
 import Day from './Day';
+import styles from './Day.css';
 
 class DayView extends Component{
     state = {
@@ -22,7 +23,10 @@ class DayView extends Component{
                 date: res.data.date
             })
         })
-        this.setState({width: window.screen.width - 250})
+        const windowWidth = document.documentElement.clientWidth;
+        const sidebarWidth = document.getElementById('sidebar').offsetWidth;
+        const calendarWidth = windowWidth - sidebarWidth - 5;
+        this.setState({width: calendarWidth})
     }
 
     render(){
@@ -35,9 +39,10 @@ class DayView extends Component{
     // options
     const hourByHour = 
         (<table style={{
-            width: `${this.state.width - 20}px`,
+            width: `${this.state.width - 40}px`,
             position: "absolute",
-            top:  "90px" 
+            top:  "90px",
+            left: "0px"
         }}>
             <tbody>
                 {intervals.map((time, i) =>(
@@ -45,7 +50,7 @@ class DayView extends Component{
                         height={20}
                         key={i} 
                         style={{
-                        borderTop: "1px solid black",
+                        borderTop: "1px solid #aaaaaa",
                         minHeight: "20px",
                         
                     }}>
@@ -59,10 +64,10 @@ class DayView extends Component{
         </table>);
     
         const dayWrapper = {
-            width: `${this.state.width}px`,
+            width: `${this.state.width - 20}px`,
             height: '500px',
-            margin: 'auto',
-            padding: '10px',
+           
+            padding: '0px',
             overflowY: 'auto'
         } 
         const dayLabel = 
@@ -88,7 +93,7 @@ class DayView extends Component{
             <div 
                 style={{
                     position: "relative",
-                    width: `${this.state.width}px`,//here
+                    width: `${this.state.width -40}px`,//here
                     height:  "640px",
                 }}>
             {hourByHour}

@@ -1,0 +1,8 @@
+.sidebar {
+    background-color: #007bff;
+    display: inline-block;
+    float: left;
+    width: 20vw;
+    padding: 30px;
+    box-sizing: border-box;
+}
