@@ -1,6 +1,9 @@
 from django.db import models
 from django.db.models import Q
 import datetime
+import os 
+from latrom.settings import MEDIA_ROOT
+from django.shortcuts import reverse 
 
 class Dispatcher(object):
     '''An instance of this class takes a message as an argument and 
@@ -169,3 +172,70 @@ class Inbox(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+
+class Bubble(models.Model):
+    sender = models.ForeignKey('auth.user', 
+        on_delete=models.SET_NULL, null=True)
+    created_timestamp = models.DateTimeField(null=True, blank=True)
+    opened_timestamp = models.DateTimeField(blank=True, null=True)
+    message_text = models.TextField()
+    attachment = models.FileField(upload_to=os.path.join(MEDIA_ROOT, 
+        'messaging'), blank=True, null=True)
+    chat = models.ForeignKey('messaging.Chat', 
+        on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey('messaging.Group', 
+        on_delete=models.CASCADE, null=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.created_timestamp:
+            self.created_timestamp = datetime.datetime.now()
+            self.save()
+
+
+class Chat(models.Model):
+    sender = models.ForeignKey("auth.user", 
+        on_delete=models.SET_NULL, 
+        null=True,
+        related_name='chat_sender')
+    receiver = models.ForeignKey("auth.user", 
+        on_delete=models.SET_NULL, 
+        null=True,
+        related_name='chat_receiver')
+    archived = models.BooleanField(default=False)
+
+    @staticmethod
+    def user_chats(user):
+        return Chat.objects.filter(
+            Q(sender=user) | Q(receiver=user)
+        )
+    
+    @property
+    def messages(self):
+        return Bubble.objects.filter(Q(
+            chat=self
+        )).order_by('pk')
+
+class Group(models.Model):
+    admin = models.ForeignKey('auth.user', 
+        null=True, 
+        on_delete=models.SET_NULL,
+        related_name='admin')
+    participants = models.ManyToManyField('auth.user',
+        related_name='group_participants')
+    created = models.DateTimeField(auto_now=True)
+    name = models.CharField(blank=True, default="", max_length=255)
+    icon = models.ImageField(upload_to=os.path.join(MEDIA_ROOT, 'chat'), 
+        null=True)
+    active = models.BooleanField(default=True)
+
+    @property
+    def messages(self):
+        return Bubble.objects.filter(Q(
+            group=self
+        )).order_by('pk')
+        
+    def get_absolute_url(self):
+        return reverse("messaging:group", kwargs={"pk": self.pk})
+    

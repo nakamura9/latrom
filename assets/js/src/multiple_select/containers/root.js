@@ -10,7 +10,6 @@ import $ from "jquery";
  *  populatedURL - string
  *  resProcessor -function
  *  dataURL -string 
- *  title - string
  */
 
 class MultipleSelectWidget extends Component{
@@ -62,23 +61,16 @@ class MultipleSelectWidget extends Component{
     }
     
     render(){
-        const containerStyle = {
-            padding: "10px", 
-            borderRadius: "10px",
-            minHeight:"220px",
-            margin: "5px",
-            backgroundColor: "#07f"
-        };
+        
         return(
-            <div style={containerStyle}>
-                <h5 style={{color: "white"}}>{this.props.title}</h5>
-                <hr className="my-2" style={{color: "white"}}/>
+            <div>
+                <SearchableTextInputWidget
+                    nameField={this.props.nameField}
+                    dataURL={this.props.dataURL} 
+                    addItem={this.addItem}/>
                 <SelectedItemsListWidget 
                     removeHandler={this.removeHandler}
                     selectedItems={this.state.selectedItems}/>
-                <SearchableTextInputWidget
-                    dataURL={this.props.dataURL} 
-                    addItem={this.addItem}/>
             </div>
         )
     }

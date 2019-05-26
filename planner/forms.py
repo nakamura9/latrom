@@ -32,8 +32,6 @@ class EventForm(forms.ModelForm, BootstrapMixin):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            TabHolder(
-                Tab('data',
                     Row(
                         Column('date', css_class='form-group col-6'),
                         Column('reminder', css_class='form-group col-6'),
@@ -46,21 +44,20 @@ class EventForm(forms.ModelForm, BootstrapMixin):
                         Column('label', css_class='form-group col-6'),
                         Column('icon', css_class='form-group col-6'),
                     ),
-                    'description',
-                    'priority',
-                    'repeat',
+                    Row(
+                        Column('description', 'priority', 'repeat',
+                            css_class='form-group col-6'),
+                        Column(
+                            HTML(
+                                """
+                                <p>Participants:</p>
+                                <div id="participant-select">
+                                </div>
+                                """
+                            ), css_class="form-group col-6")
+                    ),
                     'repeat_active',
                     'owner',
                     'json_participants',
-                ),
-                Tab('participants',
-                    HTML(
-                        """
-                        <div id="participant-select">
-                        </div>
-                        """
-                    ),
-                ),
-            )
-        )
+                )
         self.helper.add_input(Submit('submit', 'Submit'))

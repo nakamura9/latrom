@@ -1,6 +1,5 @@
-import os
+from django.views.generic import TemplateView, DetailView, ListView
 
-from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, JsonResponse
@@ -8,8 +7,14 @@ from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.viewsets import ModelViewSet
 import datetime 
 from messaging import models, forms, serializers
+from django.db.models import Q
+from django.contrib.auth.models import User
+import os
+import json
+import urllib
 
 class Dashboard(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
@@ -143,3 +148,104 @@ def mark_notification_read(request, pk=None):
     notification.read = True
     notification.save()
     return JsonResponse({'status': 'ok'})
+
+
+class ChatListView(LoginRequiredMixin, TemplateView):
+    template_name = os.path.join('messaging', 'chat','chats.html')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['chats'] = models.Chat.objects.filter(
+            Q(
+                Q(sender=self.request.user) | 
+                Q(receiver=self.request.user)
+            ) & Q(archived=False)
+        )
+        return context
+
+class NewChatView(TemplateView):
+    template_name = os.path.join('messaging', 'chat','users.html')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["users"] = User.objects.all()
+        return context
+    
+
+class ChatView(LoginRequiredMixin, DetailView):
+    template_name = os.path.join('messaging', 'chat','thread.html')
+    model = models.Chat
+
+class GroupCreateView(LoginRequiredMixin, CreateView):
+    template_name = os.path.join('messaging', 'chat', 'group_create.html')
+    model = models.Group
+    form_class = forms.GroupForm
+    def get_initial(self):
+        return {
+            'admin': self.request.user.pk
+        }
+
+    def post(self, request, *args, **kwargs):
+        resp = super().post(request, *args, **kwargs)
+        if not self.object:
+            return resp 
+
+        data = json.loads(urllib.parse.unquote(
+            request.POST['participants']))
+        for person in data:
+            pk = person.split('-')[0]
+            self.object.participants.add(User.objects.get(pk=pk))
+
+        self.object.save()
+
+        return resp
+        
+class GroupView(LoginRequiredMixin, DetailView):
+    template_name = os.path.join('messaging', 'chat', 'group_detail.html')
+    model = models.Group
+    
+class GroupListView(LoginRequiredMixin, ListView):
+    template_name = os.path.join('messaging', 'chat', 'group_list.html')
+    
+    def get_queryset(self, *args, **kwargs):
+        return models.Group.objects.filter(Q(admin=self.request.user) | 
+            Q(participants__username=self.request.user.username))
+
+def create_chat(request, user=None):
+    filters = Q(Q(sender=request.user) &
+                Q(receiver=User.objects.get(pk=user)))
+    if models.Chat.objects.filter(filters).exists():
+        chat = models.Chat.objects.get(filters)
+        
+    else:
+        chat = models.Chat.objects.create(
+            sender=request.user,
+            receiver=User.objects.get(pk=user)
+        )
+
+    return HttpResponseRedirect(reverse('messaging:chat', kwargs={
+            'pk': chat.pk
+        }))
+
+
+class BubbleAPIViewset(ModelViewSet):
+    queryset = models.Bubble.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return serializers.BubbleReadSerializer
+
+        return serializers.BubbleSerializer
+
+class GroupAPIViewset(ModelViewSet):
+    queryset = models.Group.objects.all()
+    serializer_class = serializers.GroupSerializer
+
+    
+
+class ChatAPIViewset(ModelViewSet):
+    queryset = models.Chat.objects.all()
+    serializer_class = serializers.ChatSerializer
+
+def create_bubble(request):
+    pass

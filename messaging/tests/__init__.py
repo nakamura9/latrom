@@ -3,4 +3,7 @@ from .models import (DispatcherTests,
     MessageTests, 
     MessageThreadTests, 
     NotificationTests,
-    InboxTests)
+    InboxTests,
+    ChatTests,
+    BubbleTests,
+    GroupTests)

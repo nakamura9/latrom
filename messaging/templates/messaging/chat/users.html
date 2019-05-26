@@ -1,0 +1,59 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3"><i class="fas fa-comments" style="color:#007bff;"></i> New Chat</h1>
+    <p class="lead">Select a user to start a conversation</p>
+</div>
+<style>
+    .user-card {
+        padding: 5px 10px;
+        display: flex;
+        flex-direction: row;
+        min-height: 50px;
+        align-items: center;
+    }
+
+    .user-card-label {
+        margin-right: 5px;
+    }
+    .user-card-icon {
+        height: 50px;
+        width: 50px;
+    }
+    #users-list {
+        height: 80vh;
+        overflowY: hidden;
+    }
+
+</style>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow">
+                <div class="card-body" id="users-list">
+                    <ul class="list-group">
+                        {% for user in users %}
+                            <a href="{% url 'messaging:create-chat' user=user.pk %}">
+                                <li class="list-group-item user-card">
+                                    <div class='user-card-icon'>
+                                    {% if True %}
+                                        <i class="fas fa-user" style="font-size:2.5rem"></i>
+                                    {% else %}
+                                        <img src="{{user.avatar}}" alt="user-avatar">
+                                    {% endif %}
+                                    </div>
+                                    <div class='user-card-label'>{{user.username}}</div>
+                                </li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

@@ -153,3 +153,14 @@ class MessagingAPIViewTests(TestCase):
         self.assertTrue(MessageThread.objects.first().closed)
         self.assertEqual(resp.status_code, 302)
 
+
+    def test_get_chat_list(self):
+        self.assertTrue(False)
+
+    def test_get_users_list(self):
+        self.assertTrue(False)
+
+    def test_get_chat(self):
+        self.assertTrue(False)
+
+        

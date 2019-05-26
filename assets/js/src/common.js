@@ -8,7 +8,7 @@ export const Aux = (props) => props.children;
 const DeleteButton = (props) => {
         return(
             <button
-                className="btn btn-danger"
+                className="btn btn-danger btn-sm"
                 type="button"
                 onClick={() => (props.handler(props.index))}>
                 <i className="fas fa-trash"></i>

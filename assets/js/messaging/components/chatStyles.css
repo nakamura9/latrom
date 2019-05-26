@@ -1,0 +1,36 @@
+.chatDropdown {
+    position: absolute;
+    top: 100%;
+    float: left;
+    right: 0px;
+    z-index: 1000;
+    border: 1px solid #aaa;
+    background-color: white;
+    color: black;
+    padding: 5px;
+}
+.chatDropdownLi {
+    display: block;
+    width: 100%;
+    color: black;
+    padding: 3px;
+    text-align: left;
+    margin: 0px;
+}
+
+.chatDropdownUl {
+    padding: 0px;
+    margin: 0px;
+}
+
+.bubble {
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    width: 85%;
+}
+
+.messageContainer {
+    
+}
