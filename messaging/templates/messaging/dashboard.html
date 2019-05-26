@@ -1,0 +1,63 @@
+{% extends "window.html" %}
+{% block content %}
+
+<div class="jumbotron jumbo-gradient">
+    <h1 class="display-3"><i class="fas fa-envelope" style="color: #07f; font-size:128px;"></i> Messaging Dashboard</h1>
+    <p class="lead">Welcome {{request.user.username}}!</p>
+    <hr class="my-2">
+    <p class="lead">Choose the communication method to continue</p>
+    
+</div>
+
+<style>
+    .block-link {
+        text-decoration: none;
+        color: black;
+    }
+
+    .huge {
+        font-size: 12rem;
+        color: #007bff;
+    }
+    .icon-container {
+        margin:5px auto;
+        width: 12rem;
+        height: 12rem;
+    }
+    
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="card-title">Email</h4>
+                        <div class="icon-container">
+                            <i class="fas fa-at huge" ></i>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item hvr-grow"><a href="{% url 'messaging:create-message' %}">Compose Email</a></li>
+                            <li class="list-group-item hvr-grow"><a href="">Inbox</a></li>
+                            <li class="list-group-item hvr-grow"><a href="">Sent Items</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="card-title">Instant Messaging</h4>
+                        <div class="icon-container">
+                            <i class="fas fa-comments huge"></i>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item hvr-grow"><a href="{% url 'messaging:new-chat' %}">Start Chat</a></li>
+                            <li class="list-group-item hvr-grow"><a href="{% url 'messaging:chat-list' %}">Chats</a></li>
+                            <li class="list-group-item hvr-grow"><a href="{% url 'messaging:group-list' %}" >Groups</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}

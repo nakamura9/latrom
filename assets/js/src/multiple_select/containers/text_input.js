@@ -17,7 +17,7 @@ class SearchableTextInputWidget extends Component{
             url: this.props.dataURL
         }).then(res => {
             let newChoices = res.data.map((item) =>{
-                return(item["id"] + " - " + item["name"])
+                return(item["id"] + " - " + item[this.props.nameField ? this.props.nameField : "name"])
             });
 
             this.setState({
@@ -52,6 +52,10 @@ class SearchableTextInputWidget extends Component{
     addItemToSelectedItems = () =>{
         if(this.state.selectedValue !== ""){
             this.props.addItem(this.state.selectedValue)
+            this.setState({
+                inputValue: "",
+                selectedValue: ""
+            })
         }
     }
 
@@ -68,6 +72,7 @@ class SearchableTextInputWidget extends Component{
             padding: "3px",
             backgroundColor: "white",
             borderRadius: "3px",
+            border: "1px solid #007bff"
         };
         const inputStyle = {
             width:"85%", 

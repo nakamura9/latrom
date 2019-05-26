@@ -74,15 +74,17 @@ class ParticipantSelectWidget extends Component{
         const containerStyle = {
             backgroundColor: "#007bff",
             color: 'white',
-            padding: "20px",
-            margin: "5px",
+            padding: "3px",
+            margin: "3px",
             borderRadius: "5px"
             
         };
         return(
             <div style={containerStyle}>
-                <h4>Participants</h4>
-                <div>
+                <ParticipantEntry 
+                    dataList={this.state.items}
+                    addHandler={this.addHandler}/>
+                <div style={{overflowY: 'auto', maxHeight: "200px"}}>
                     {this.state.items.map((item, i) =>{
                         return(<SelectedItem 
                             index={i}
@@ -92,9 +94,7 @@ class ParticipantSelectWidget extends Component{
                             name = {item.name}/>)
                     })}
                 </div>
-                <ParticipantEntry 
-                    dataList={this.state.items}
-                    addHandler={this.addHandler}/>
+                
             </div>
         );
     }
@@ -178,7 +178,6 @@ class ParticipantEntry extends Component{
                     widgetSelector = <h4>Select Participant Category</h4>
             }
         const divStyle = {
-            border: "1px solid #fff",
             padding: "10px"
         }
 
@@ -216,15 +215,16 @@ class ParticipantEntry extends Component{
                     : '0px 0px 1px 0px ',}}
                 onClick={this.clickHandler}>Vendor</li>
         </ul>
-                <div >
-                    {widgetSelector}
-                </div>            
-                <button 
+                <div style={{display: "flex", width: '100%'}}>
+                    <div>{widgetSelector}</div>
+                    <div> <button 
                     className="btn"
                     type="button"
                     onClick={this.insertHandler}>
-                        Add
-                    </button>
+                        <i className="fas fa-plus"></i>
+                    </button></div>
+                </div>            
+                
             </div>
         );
     }       

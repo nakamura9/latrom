@@ -28,11 +28,11 @@
                             <div class="card-body">
                                 
                                 <ul class="list-group">
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:warehouse-create' %}">Add Warehouse</a>
                                     </li>
 
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:warehouse-list' %}"> Manage Warehouses</a>
                                     </li>
                                 </ul>
@@ -45,14 +45,14 @@
                                     <h4 class="card-title"><i class="fas fa-puzzle-piece"></i> Inventory Management</h4>
                                 </div>
                                 <ul class="list-group">
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:warehouse-detail' pk=1 %}">View Inventory</a>
                                     </li>
 
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:create-inventory-check' pk=1 %}"> Check Inventory</a>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:scrap-inventory' pk=1 %}"> Scrap Inventory</a>
                                     </li>
                                 </ul>
@@ -66,10 +66,10 @@
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:order-create' %}">Create New Purchase Order</a>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:order-list' %}">Manage Orders</a>
                                     </li>
                                 </ul>
@@ -82,11 +82,11 @@
                             <div class="card-body">
                                 <ul class="list-group">
 
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a class="card-link" href="{% url 'inventory:supplier-create' %}">Create
                                             Vendor</a>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:supplier-list'%} ">Manage Vendors</a>
                                     </li>
 
@@ -105,17 +105,17 @@
                             <div class="card-body">
                                 <ul class="list-group">
                                     {% if use_product_inventory %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:product-list' %}">Manage Products</a>
                                     </li>
                                     {% endif %}
                                     {% if use_equipment_inventory %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:equipment-list' %}">Manage Equipment</a>
                                     </li>
                                     {% endif %}
                                     {% if use_consumables_inventory %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:consumable-list' %}">Manage Consumables</a>
                                     </li>
                                     {% endif %}
@@ -131,15 +131,15 @@
                             <div class="card-body">
                                 <ul class="list-group">
 
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'services:equipment-requisition-list' %}">Manage Equipment
                                             Requisitions</a>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables
                                             Requisitions</a>
                                     </li>
-                                    <li class="list-group-item">...</li>
+                                    <li class="list-group-item hvr-grow">...</li>
 
                                 </ul>
                             </div>
@@ -154,15 +154,15 @@
                                 
                                 <ul class="list-group">
 
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
                                     </li>
 
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
                                             Report</a>
                                     </li>
-                                    <li class="list-group-item">...</li>
+                                    <li class="list-group-item hvr-grow">...</li>
 
                                 </ul>
                             </div>
@@ -176,13 +176,13 @@
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:config' pk=1 %}">Settings</a>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:category-list' %}">Manage Inventory Categories</a>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:unit-list' %}">Manage Units Of Measure</a>
                                     </li>
                                 </ul>

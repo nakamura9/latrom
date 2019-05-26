@@ -32,10 +32,10 @@
                         </center>
                         <h4 class="card-title">Vacation Time</h4>
                         <ul class="list-group">
-                            <li class="list-group-item">
+                            <li class="list-group-item hvr-grow">
                                 <a href="{% url 'employees:leave-request' %}">Apply for Leave</a>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item hvr-grow">
                                 <a href="{{calendar_url}}">View Leave Calendar</a>
                             </li>
                         </ul>
@@ -48,10 +48,10 @@
                         </center>
                         <h4 class="card-title">Personal Information</h4>
                         <ul class="list-group">
-                            <li class="list-group-item">
+                            <li class="list-group-item hvr-grow">
                                 <a href="{% url 'employees:employee-detail' pk=object.pk %}">View Personal Information</a>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item hvr-grow">
                                 <a href="{% url 'employees:employee-portal-update' pk=object.pk %}">Update Personal Information</a>
                             </li>
                         </ul>
@@ -66,7 +66,7 @@
                         
                         <h4 class="card-title"> Payslips</h4>
                         <ul class="list-group">
-                            <li class="list-group-item">
+                            <li class="list-group-item hvr-grow">
                                 <a href="{% url 'employees:list-pay-slips-employee' pk=object.pk %}">View Payslips</a>
                             </li>
                         </ul>
