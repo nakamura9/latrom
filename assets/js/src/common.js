@@ -271,4 +271,46 @@ AsyncSelect.propTypes = {
     resProcessor: PropTypes.func.isRequired,
     handler: PropTypes.func.isRequired,
 }
-export {DeleteButton, Totals, SearchableWidget, AsyncSelect};
+
+class ImgPreview extends Component{
+    state = {
+        url: ''
+    }
+
+    componentDidMount(){
+        const input = document.getElementById(this.props.inputID);
+        input.addEventListener('change', () => this.renderImg(input))
+        
+    }
+
+    renderImg =(input) =>{
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.setState({url: e.target.result})
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    render(){
+        return (
+            <div style={{
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                padding: "10px",
+                display: "flex",
+                justifyContent: "center"
+            }}>
+                {this.state.url === ''
+                ? <div >
+                    <h6>Select An image</h6>
+                    <i className="fas fa-image" style={{fontSize: "12rem"}}></i>
+                </div> 
+                : <img width={300} height={200} src={this.state.url} />
+                 }
+            </div>
+        )
+    }
+}
+export {DeleteButton, Totals, SearchableWidget, AsyncSelect, ImgPreview};

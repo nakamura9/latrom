@@ -14,9 +14,11 @@ import invoicing
 from employees.models.payslip import Payslip
 from employees.models.misc import PayrollOfficer
 from django.shortcuts import reverse
+from common_data.utilities.mixins import ContactsMixin
 
-
-class Employee(Person, SoftDeletionModel):
+class Employee(ContactsMixin, Person, SoftDeletionModel):
+    email_fields = ['email']
+    phone_fields = ['phone']
     '''
     Represents an individual employee of the business. Records their personal 
     details as well as their title, pay grade and leave days.

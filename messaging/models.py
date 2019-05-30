@@ -4,6 +4,8 @@ import datetime
 import os 
 from latrom.settings import MEDIA_ROOT
 from django.shortcuts import reverse 
+from django.contrib.auth.hashers import make_password
+import common_data
 
 class Dispatcher(object):
     '''An instance of this class takes a message as an argument and 
@@ -36,6 +38,55 @@ class Dispatcher(object):
             inbox = self.get_inbox(i)
             inbox.receive_message(self.message)
 
+class EmailAddress(models.Model):
+    address = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.address
+
+    @staticmethod
+    def get_address(address):
+        if EmailAddress.objects.filter(address=address).exists():
+            return EmailAddress.objects.get(address=address)
+
+        else:
+            return EmailAddress.objects.create(address=address)
+
+class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
+    user = models.ForeignKey('auth.user', on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to=os.path.join(MEDIA_ROOT, 'chat'))
+    email_address = models.CharField(max_length=255)
+    email_password = models.CharField(max_length=255)
+    '''
+    def save(self):
+        #prevent encrypt the password
+        pwd = make_password(self.email_password)
+    '''
+
+    def __str__(self):
+        return self.user.username
+
+class Email(models.Model):
+    '''Communication between people online using email    '''
+    copy = models.ManyToManyField('messaging.EmailAddress', 
+        related_name='copy_email', blank=True)
+    server_id = models.CharField( 
+        blank=True, 
+        default='',
+        max_length=16)
+    to = models.ForeignKey('messaging.EmailAddress', on_delete=models.SET_NULL, 
+        null=True,
+        related_name='to')
+    sender = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
+        null=True,
+        related_name='email_author')
+    subject = models.CharField(max_length=255, blank=True)
+    body = models.TextField()
+    sent = models.BooleanField(default=False)
+    created_timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"From {self.sender.username} to {self.to.address}"
 
 class Message(models.Model):
     '''Communication between users of the system

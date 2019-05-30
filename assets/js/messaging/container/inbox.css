@@ -1,0 +1,31 @@
+.inboxContainer {
+    display: flex;
+    height: 85vh;
+}
+
+.inboxMessageDetail{
+    padding-left: 2px;
+    width: 50%;
+    max-height: 80vh;
+    overflow-y: auto;
+
+}
+
+.inboxList{
+    padding: 1px;
+    width: 30%;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.inboxMenu{
+    width: 20%;
+}
+
+.headers {
+    border-bottom: 3px solid #007bff;
+    margin-bottom: 20px;
+    margin-left: 5px;
+}

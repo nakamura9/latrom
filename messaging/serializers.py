@@ -40,7 +40,10 @@ class ChatSerializer(serializers.ModelSerializer):
         model = Chat
         fields = "__all__"
 
-
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Email
+        fields = "__all__"
 
 class GroupSerializer(serializers.ModelSerializer):
     messages = BubbleReadSerializer(many=True)

@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView, DetailView, ListView
 
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse, get_object_or_404
@@ -8,21 +8,24 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
-import datetime 
+import datetime
 from messaging import models, forms, serializers
 from django.db.models import Q
 from django.contrib.auth.models import User
+from common_data.utilities.mixins import ContextMixin
 import os
 import json
 import urllib
 
+
 class Dashboard(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
-    
+
+
 class InboxView(LoginRequiredMixin, DetailView):
-    # a list of threads not messages 
-    # includes a panel for notifications 
-    template_name = os.path.join('messaging', 'inbox.html')
+    # a list of threads not messages
+    # includes a panel for notifications
+    template_name = os.path.join('messaging', 'email', 'inbox.html')
     model = models.Inbox
 
     def get_object(self, *args, **kwargs):
@@ -44,8 +47,6 @@ class MessageDetailView(LoginRequiredMixin, DetailView):
         self.object.open_message()
 
 
-        return resp
-
 class NotificationDetailView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'notification_detail.html')
     model = models.Notification
@@ -56,8 +57,9 @@ class NotificationDetailView(LoginRequiredMixin, DetailView):
 
         return resp
 
-class ComposeMessageView(LoginRequiredMixin, CreateView):
-    template_name = os.path.join('messaging', 'message_compose.html')
+
+class ComposeEmailView(LoginRequiredMixin, CreateView):
+    template_name = os.path.join('messaging', 'email', 'compose.html')
     form_class = forms.MessageForm
     model = models.Message
     success_url = "/messaging/inbox/"
@@ -75,16 +77,17 @@ class ComposeMessageView(LoginRequiredMixin, CreateView):
         sender.dispatch()
         return resp
 
+
 class MessageThreadAPIView(RetrieveAPIView):
     serializer_class = serializers.MessageThreadSerializer
     queryset = models.MessageThread.objects.all()
-    
+
 
 class MessageAPIView(RetrieveAPIView):
     serializer_class = serializers.MessageSerializer
     queryset = models.Message.objects.all()
 
-    
+
 def reply_message(request, pk=None):
     msg = models.Message.objects.get(pk=pk)
     reply = models.Message.objects.create(
@@ -101,11 +104,11 @@ def reply_message(request, pk=None):
 
 def inbox_counter(request):
     return JsonResponse({'count': request.user.inbox.total_in})
-    
+
 
 def mark_as_read(request, pk=None):
     msg = models.Message.objects.get(pk=pk)
-    msg.read=True
+    msg.read = True
     msg.opened_timestamp = datetime.datetime.now()
     msg.save()
     return JsonResponse({'status': 'ok'})
@@ -120,13 +123,14 @@ def close_thread(request, pk=None):
 
 def notification_service(request):
     try:
-        unread = models.Notification.objects.filter(read=False, user=request.user)
+        unread = models.Notification.objects.filter(
+            read=False, user=request.user)
     except:
         return JsonResponse({'latest': {}, 'unread': 0})
 
     if unread.count() == 0:
         return JsonResponse({'latest': {}, 'unread': 0})
-    
+
     latest = unread.latest('timestamp')
     data = {
         'latest': {
@@ -143,6 +147,7 @@ def notification_service(request):
 
     return JsonResponse(data)
 
+
 def mark_notification_read(request, pk=None):
     notification = get_object_or_404(models.Notification, pk=pk)
     notification.read = True
@@ -151,35 +156,66 @@ def mark_notification_read(request, pk=None):
 
 
 class ChatListView(LoginRequiredMixin, TemplateView):
-    template_name = os.path.join('messaging', 'chat','chats.html')
-    
+    template_name = os.path.join('messaging', 'chat', 'chats.html')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['chats'] = models.Chat.objects.filter(
             Q(
-                Q(sender=self.request.user) | 
+                Q(sender=self.request.user) |
                 Q(receiver=self.request.user)
             ) & Q(archived=False)
         )
         return context
 
+class UserProfileView(ContextMixin, LoginRequiredMixin, UpdateView):
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    extra_context = {
+        'title': 'Configure User Email Settings'
+    }
+
+    success_url = "/messaging/dashboard/"
+
+    def get_initial(self):
+        return {
+            'user': self.request.user.pk
+        }
+
+    form_class = forms.UserProfileForm
+
+    def get_object(self, *args, **kwargs):
+        usr = self.request.user
+        if models.UserProfile.objects.filter(user=usr).exists():
+            return models.UserProfile.objects.get(user=usr)
+        
+        profile = models.UserProfile.objects.create(
+            user=usr,
+            email_address='test@email.com',
+            email_password="password"
+            )
+
+        return profile
+
+
 class NewChatView(TemplateView):
-    template_name = os.path.join('messaging', 'chat','users.html')
-    
+    template_name = os.path.join('messaging', 'chat', 'users.html')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["users"] = User.objects.all()
         return context
-    
+
 
 class ChatView(LoginRequiredMixin, DetailView):
-    template_name = os.path.join('messaging', 'chat','thread.html')
+    template_name = os.path.join('messaging', 'chat', 'thread.html')
     model = models.Chat
+
 
 class GroupCreateView(LoginRequiredMixin, CreateView):
     template_name = os.path.join('messaging', 'chat', 'group_create.html')
     model = models.Group
     form_class = forms.GroupForm
+
     def get_initial(self):
         return {
             'admin': self.request.user.pk
@@ -188,7 +224,7 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
         if not self.object:
-            return resp 
+            return resp
 
         data = json.loads(urllib.parse.unquote(
             request.POST['participants']))
@@ -199,24 +235,27 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
         self.object.save()
 
         return resp
-        
+
+
 class GroupView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'chat', 'group_detail.html')
     model = models.Group
-    
+
+
 class GroupListView(LoginRequiredMixin, ListView):
     template_name = os.path.join('messaging', 'chat', 'group_list.html')
-    
+
     def get_queryset(self, *args, **kwargs):
-        return models.Group.objects.filter(Q(admin=self.request.user) | 
-            Q(participants__username=self.request.user.username))
+        return models.Group.objects.filter(Q(admin=self.request.user) |
+                                           Q(participants__username=self.request.user.username))
+
 
 def create_chat(request, user=None):
     filters = Q(Q(sender=request.user) &
                 Q(receiver=User.objects.get(pk=user)))
     if models.Chat.objects.filter(filters).exists():
         chat = models.Chat.objects.get(filters)
-        
+
     else:
         chat = models.Chat.objects.create(
             sender=request.user,
@@ -224,8 +263,8 @@ def create_chat(request, user=None):
         )
 
     return HttpResponseRedirect(reverse('messaging:chat', kwargs={
-            'pk': chat.pk
-        }))
+        'pk': chat.pk
+    }))
 
 
 class BubbleAPIViewset(ModelViewSet):
@@ -237,15 +276,17 @@ class BubbleAPIViewset(ModelViewSet):
 
         return serializers.BubbleSerializer
 
+
 class GroupAPIViewset(ModelViewSet):
     queryset = models.Group.objects.all()
     serializer_class = serializers.GroupSerializer
 
-    
 
 class ChatAPIViewset(ModelViewSet):
     queryset = models.Chat.objects.all()
     serializer_class = serializers.ChatSerializer
 
-def create_bubble(request):
-    pass
+class EmailAPIViewset(ModelViewSet):
+    queryset = models.Email.objects.all()
+    serializer_class = serializers.EmailSerializer
+

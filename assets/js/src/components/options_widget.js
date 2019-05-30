@@ -18,12 +18,13 @@ class OptionsWidget extends Component{
                 //always display id and display field
                 return(<div style={{
                     color: "black",
+                    padding: "0px 10px",
                     ":hover": {
                         'color':'white',
                         'backgroundColor':'blue'
                     }
                 }} key={i} onClick={() => this.props.onSelectValue(i)}>
-                        {item}
+                        {item.split('-')[1]}
                     </div>)
             });
         }else{

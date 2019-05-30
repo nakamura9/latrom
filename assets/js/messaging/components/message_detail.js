@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import ReplyWidget from './reply_widget';
 import axios from 'axios';
-import $ from 'jquery';
 
 class MessageDetail extends Component{
     state = {
         showReplyWidget: false,
         message: "",
+        subject: "",
+        recipient: "",
+        created_timestamp: "",
         reply: ""
     }
 
@@ -15,7 +17,20 @@ class MessageDetail extends Component{
             showReplyWidget: !prevState.showReplyWidget
         }))
     }
-        
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props.messageID !== prevProps.messageID){
+            axios.get('/messaging/api/email/' + this.props.messageID).then(res =>{
+                this.setState({
+                    'message': res.data.body,
+                    'subject': res.data.subject,
+                    'recipient': res.data.to,
+                    'sender': res.data.sender,
+                    'created_timestamp': res.data.created_timestamp
+                })
+            })
+        }
+    }
 
     submitHandler = () =>{
         const token = $("input[name='csrfmiddlewaretoken']").val();
@@ -40,41 +55,55 @@ class MessageDetail extends Component{
     }
 
     render(){
+        if(!this.props.messageID){
+            return(
+                <div>
+                    <h3 style={{textAlign: "center"}}>View selected Messages here.</h3>
+                    <div style={{
+                        margin: "0px auto",
+                        width: "20rem"
+                    }}>
+                        <i className="fas fa-envelope" style={{
+                            fontSize: "20rem",
+                            color: "#aaa"
+                        }}></i>
+                    </div>
+                </div>
+            )
+        }
         return(
-            <div>
+            <div >
                 <div className="card text-white bg-primary">
                     <div className="card-body">
-                        <h4 className="card-title">Message Details</h4>
-                        <p className="card-text" >Created: {this.props.created_timestamp}</p>
-                        <p className="card-text">To: {this.props.recipient}</p>
-                        {/*<p className="card-text">Copy: {this.props.copy.map((name) =>
-                            (`${name};`)
-                        )}</p>*/}    
+                        <h4 className="card-title">{this.state.subject}</h4>
+                        <p className="card-text" >From: {this.state.sender}</p>
+                        <p className="card-text">To: {this.state.recipient}</p>
+                        <p className="card-text">Created: {this.state.created_timestamp}</p>
                     </div>
                 </div>
                 <hr />
-                <h6>Subject: {this.props.subject}</h6>
-                <hr />
                 <h6>Message Body:</h6>
                 <p >
-                    {this.props.body}
+                    {this.state.message}
                 </p>
                 <hr />
-                <button 
-                    className="btn btn-primary"
-                    onClick={this.toggleReply}>
-                    
-                    {this.state.showReplyWidget ? <span><i className="fas fa-times"></i>Cancel Reply</span> : <span><i className="fas fa-reply"></i> Reply</span>} 
-                </button>
-                <hr />
-                {this.state.showReplyWidget 
-                    ? <ReplyWidget 
-                        clickHandler={this.submitHandler}
-                        inputHandler={this.textInputHandler}
-                        value={this.state.reply}    
-                        msgID={this.props.id}/> 
-                    : null}
-                {this.state.message}
+                <div>
+                    <button 
+                        className="btn btn-primary"
+                        onClick={this.toggleReply}>
+                        
+                        {this.state.showReplyWidget ? <span><i className="fas fa-times"></i>Cancel Reply</span> : <span><i className="fas fa-reply"></i> Reply</span>} 
+                    </button>
+                    <hr />
+                    {this.state.showReplyWidget 
+                        ? <ReplyWidget 
+                            clickHandler={this.submitHandler}
+                            inputHandler={this.textInputHandler}
+                            value={this.state.reply}    
+                            msgID={this.props.id}/> 
+                        : null}
+                </div>
+                
         </div>
         )
     }

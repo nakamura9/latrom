@@ -2,26 +2,22 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
 import axios from 'axios';
-import ChatRoot from '../js/messaging/container/chat_root';
-import GroupChatRoot from '../js/messaging/container/group_root';
 import PricingWidget from "../js/inventory/pricing_widget";
-import InvoiceTable from '../js/invoices/invoice';
-import EmailEditor from '../js/messaging/components/rich_text';
 import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
+import {ImgPreview} from '../js/src/common';
+
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
 const categoryView = document.getElementById('category-tree-view');
 const storageMediaView = document.getElementById('storage-media-tree-view');
-const threadView = document.getElementById('thread-widget');
-const groupThreadView = document.getElementById('group-widget');
 const testView = document.getElementById('test');
 const pricing = document.getElementById('pricing-widget');
-const rich_text = document.getElementById('message-field');
 const depts = document.getElementById('department-list');
-const group_participants_widget = document.getElementById('group-participant-select')
+const avatar = document.getElementById('avatar-preview');
+
 const dataMapper = (node, i) =>{
-    
+
     return({
         label: node.name,
         nodes: node.children,
@@ -68,10 +64,6 @@ if(storageMedia){
         updateUrlRoot='/inventory/storage-media-update/'
         detailUrlRoot='/inventory/storage-media-detail/'
         dataMapper={dataMapper}/>, storageMediaView);
-}else if(threadView){
-    ReactDOM.render(<ChatRoot />, threadView);
-}else if(groupThreadView){
-    ReactDOM.render(<GroupChatRoot />, groupThreadView);
 }else if(testView){
     ReactDOM.render(<MultipleSelectWidget 
         inputField="test-input"
@@ -87,12 +79,6 @@ if(storageMedia){
         url='/employees/api/department'
         externalFormFieldName='parent_department'//not important
         dataMapper={dataMapper}/>, depts);
-}else if(rich_text){
-    console.log('rich');
-    ReactDOM.render(<EmailEditor />, rich_text);
-}else if(group_participants_widget){
-    ReactDOM.render(<MultipleSelectWidget 
-        inputField="participants"
-        dataURL="/base/api/users/"
-        nameField="username"/>, group_participants_widget)
+}else if(avatar){
+    ReactDOM.render(<ImgPreview inputID='id_avatar' />, avatar);
 }

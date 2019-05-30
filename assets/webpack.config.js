@@ -15,7 +15,8 @@ module.exports = {
         calendar: './js/calendar',
         services: './js/services',
         manufacturing: './js/manufacturing',
-        widgets: './js/widgets'
+        widgets: './js/widgets',
+        messaging: './js/messaging'
     },
     output: {
         path: path.resolve('./bundles/'),

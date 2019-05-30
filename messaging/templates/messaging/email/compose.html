@@ -10,6 +10,7 @@
         max-height: 250px;
         overflow-y: auto;
     }
+
 </style>
 
 
@@ -53,11 +54,13 @@
                 {{form.sender}}
                 <div class="form-group">
                     <input type="submit" class="btn btn-primary" value="Submit" />
+
+                {{form.body}}
             </form>
         </div>
     </div>
 </div>
 
-{% render_bundle "widgets"%}
+{% render_bundle "messaging" %}
 
 {% endblock content %}

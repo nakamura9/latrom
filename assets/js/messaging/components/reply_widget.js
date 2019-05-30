@@ -7,7 +7,7 @@ const ReplyWidget = (props) =>{
                 <textarea 
                     className="form-control"  
                     cols="30" 
-                    rows="10"
+                    rows="6"
                     name="reply"
                     value={props.value}
                     onChange={props.inputHandler}

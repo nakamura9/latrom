@@ -1,0 +1,29 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<div class="jumbotron jumbo-gradient">
+    <h1 class="display-3"><i class="fas fa-envelope" style="color: #07f; font-size:128px;"></i> Email Client Inbox</h1>
+    <p class="lead">Welcome {{request.user.username}}!</p>
+    <p class="lead">Suave Business tools provides a focused inbox that only retrieves emails from customers, vendors and other members of the organization.</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'messaging:create-message' %}" role="button">Compose <i class="fas fa-pen"></i></a>
+    </p>
+</div>
+
+<style>
+    .block-link {
+        text-decoration: none;
+        color: black;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 shadow" id="inbox-widget">
+            
+    </div>
+</div>
+
+{% render_bundle 'messaging' %}
+{% endblock %}
