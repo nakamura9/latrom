@@ -83,9 +83,9 @@ class MessageDetail extends Component{
                 </div>
                 <hr />
                 <h6>Message Body:</h6>
-                <p >
-                    {this.state.message}
-                </p>
+                <div dangerouslySetInnerHTML={{__html: this.state.message}}>
+                    
+                </div>
                 <hr />
                 <div>
                     <button 

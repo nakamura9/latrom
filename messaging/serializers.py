@@ -1,26 +1,10 @@
 from rest_framework import serializers
 from .models import *
 from common_data.serializers import UserSerializer
-
-
-class MessageSerializer(serializers.ModelSerializer):
-    created_timestamp = serializers.DateTimeField(format="%A, %d %B %Y, %H:%M")
-    sender=serializers.StringRelatedField(many=False)
-    recipient=serializers.StringRelatedField(many=False)
-
-    class Meta:
-        model = Message
-        fields = "__all__"
-
-
-class MessageThreadSerializer(serializers.ModelSerializer):
-    messages = MessageSerializer(many=True, read_only=True)
-    class Meta:
-        model = MessageThread
-        fields = "__all__"
-
+from rest_framework.parsers import FormParser, MultiPartParser
 
 class BubbleSerializer(serializers.ModelSerializer):
+    parser_classes = (FormParser, MultiPartParser)
     created_timestamp = serializers.DateTimeField(format="%A, %d %B %Y, %H:%M", 
         required=False)
 
@@ -44,6 +28,10 @@ class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Email
         fields = "__all__"
+
+class EmailRetrieveSerializer(EmailSerializer):
+    sender = serializers.StringRelatedField(many=False)
+    to = serializers.StringRelatedField(many=False)
 
 class GroupSerializer(serializers.ModelSerializer):
     messages = BubbleReadSerializer(many=True)

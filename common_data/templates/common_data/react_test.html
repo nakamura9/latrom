@@ -16,6 +16,13 @@
     }
 </style>
 <div style="max-width:300px;" id="test"></div>
+<div id='email-content-test'></div>
+<script>
+    $.get('/messaging/api/email/2', function(data){
+        console.log($.parseHTML(data.body))
+        $('#email-content-test').html(data.body);
+    })
+</script>
 <input type="text" id="test-input">
 {% render_bundle 'widgets' %}
 

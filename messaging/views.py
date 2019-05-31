@@ -2,11 +2,13 @@ from django.views.generic import TemplateView, DetailView, ListView
 
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.models import User
+from rest_framework.response import Response
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 import datetime
 from messaging import models, forms, serializers
@@ -22,29 +24,10 @@ class Dashboard(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
 
 
-class InboxView(LoginRequiredMixin, DetailView):
+class InboxView(LoginRequiredMixin, TemplateView):
     # a list of threads not messages
     # includes a panel for notifications
     template_name = os.path.join('messaging', 'email', 'inbox.html')
-    model = models.Inbox
-
-    def get_object(self, *args, **kwargs):
-        try:
-            self.object = models.Inbox.objects.get(user=self.request.user)
-            return self.object
-        except:
-            self.object = models.Inbox.objects.create(
-                user=self.request.user
-            )
-            return self.object
-                
-class MessageDetailView(LoginRequiredMixin, DetailView):
-    template_name = os.path.join('messaging', 'message_detail.html')
-    model = models.Message
-
-    def get(self, *args, **kwargs):
-        resp = super().get(*args, **kwargs)
-        self.object.open_message()
 
 
 class NotificationDetailView(LoginRequiredMixin, DetailView):
@@ -60,8 +43,8 @@ class NotificationDetailView(LoginRequiredMixin, DetailView):
 
 class ComposeEmailView(LoginRequiredMixin, CreateView):
     template_name = os.path.join('messaging', 'email', 'compose.html')
-    form_class = forms.MessageForm
-    model = models.Message
+    form_class = forms.EmailForm
+    model = models.Email
     success_url = "/messaging/inbox/"
 
     def get_initial(self):
@@ -69,56 +52,6 @@ class ComposeEmailView(LoginRequiredMixin, CreateView):
             'sender': self.request.user.pk
         }
 
-    def post(self, request):
-        resp = super().post(request)
-        if not self.object:
-            return resp
-        sender = models.Dispatcher(self.object)
-        sender.dispatch()
-        return resp
-
-
-class MessageThreadAPIView(RetrieveAPIView):
-    serializer_class = serializers.MessageThreadSerializer
-    queryset = models.MessageThread.objects.all()
-
-
-class MessageAPIView(RetrieveAPIView):
-    serializer_class = serializers.MessageSerializer
-    queryset = models.Message.objects.all()
-
-
-def reply_message(request, pk=None):
-    msg = models.Message.objects.get(pk=pk)
-    reply = models.Message.objects.create(
-        recipient=msg.sender,
-        sender=request.user,
-        subject=msg.subject,
-        body=request.POST['reply'],
-        thread=msg.thread
-    )
-    sender = models.Dispatcher(reply)
-    sender.dispatch()
-    return JsonResponse({'status': 'ok'})
-
-
-def inbox_counter(request):
-    return JsonResponse({'count': request.user.inbox.total_in})
-
-
-def mark_as_read(request, pk=None):
-    msg = models.Message.objects.get(pk=pk)
-    msg.read = True
-    msg.opened_timestamp = datetime.datetime.now()
-    msg.save()
-    return JsonResponse({'status': 'ok'})
-
-
-def close_thread(request, pk=None):
-    thread = models.MessageThread.objects.get(pk=pk)
-    thread.closed = True
-    thread.save()
-    return HttpResponseRedirect('/messaging/inbox')
 
 
 def notification_service(request):
@@ -246,8 +179,9 @@ class GroupListView(LoginRequiredMixin, ListView):
     template_name = os.path.join('messaging', 'chat', 'group_list.html')
 
     def get_queryset(self, *args, **kwargs):
-        return models.Group.objects.filter(Q(admin=self.request.user) |
-                                           Q(participants__username=self.request.user.username))
+        return models.Group.objects.filter(Q(Q(admin=self.request.user) |
+                                           Q(
+                                               participants__username=self.request.user.username)) & Q(active=True))
 
 
 def create_chat(request, user=None):
@@ -288,5 +222,53 @@ class ChatAPIViewset(ModelViewSet):
 
 class EmailAPIViewset(ModelViewSet):
     queryset = models.Email.objects.all()
-    serializer_class = serializers.EmailSerializer
+    
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return serializers.EmailRetrieveSerializer
 
+        return serializers.EmailSerializer
+
+
+
+def close_chat(request, pk=None):
+    chat = get_object_or_404(models.Chat, pk=pk)
+    chat.archived=True
+    chat.save()
+
+    return HttpResponseRedirect(reverse('messaging:chat-list'))
+
+
+def close_group(request, pk=None):
+    group = get_object_or_404(models.Group, pk=pk)
+    group.active=False
+    group.save()
+
+    return HttpResponseRedirect(reverse('messaging:group-list'))
+
+class InboxAPIView(APIView):
+    def get(self, request):
+        #maybe try to sync latest emails here?
+        profile = models.UserProfile.objects.get(user=request.user)
+        # include copy 
+        emails = models.Email.objects.filter(to__address=profile.email_address)
+        data = serializers.EmailRetrieveSerializer(emails, many=True).data
+        return Response(data)
+
+class DraftsAPIView(APIView):
+    def get(self, request):
+        emails = models.Email.objects.filter(
+            sender=request.user,
+            sent=False)
+        data = serializers.EmailRetrieveSerializer(emails, many=True).data
+        return Response(data)
+
+
+class SentAPIView(APIView):
+    def get(self, request):
+        emails = models.Email.objects.filter(
+            sender=request.user,
+            sent=True)
+
+        data = serializers.EmailRetrieveSerializer(emails, many=True).data
+        return Response(data)

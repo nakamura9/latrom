@@ -56,6 +56,7 @@ class ChatWidget extends Component {
             return (
               <MessageBubble
                 key={i}
+                latest={this.state.messages.length -1 === i}
                 MessageID={i}
                 isSender={message.sender.id === this.props.owner.id}
                 message={message}

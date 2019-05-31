@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styles from './inbox.css';
-import InboxList from '../components/messages';
+import InboxList from '../components/inbox';
 import DraftList from '../components/drafts';
 import SentList from '../components/sent';
 import MessageDetail from '../components/message_detail';
@@ -42,19 +42,28 @@ class InboxView extends Component{
                     <h5 className={styles.headers}>Folders</h5>
                     <ul className="list-group">
                         <li 
-                            className="list-group-item"
+                            className={["list-group-item", 
+                                        this.state.view === 'inbox' 
+                                            ? 'selected-folder'
+                                            : ''].join(' ')}
                             onClick={()=>this.setState({view: 'inbox'})}
                             >
                             Inbox
                         </li>
                         <li 
-                            className="list-group-item"
+                            className={["list-group-item", 
+                            this.state.view === 'drafts' 
+                                ? 'selected-folder'
+                                : ''].join(' ')}
                             onClick={()=>this.setState({view: 'drafts'})}
                             >
                             Drafts
                         </li>
                         <li 
-                            className="list-group-item"
+                            className={["list-group-item", 
+                            this.state.view === 'inboxsent' 
+                                ? 'selected-folder'
+                                : ''].join(' ')}
                             onClick={()=>this.setState({view: 'sent'})}
                         >
                             Sent Items

@@ -11,32 +11,6 @@ import json
 import urllib
 
 
-class MessageForm(BootstrapMixin, forms.ModelForm):
-    body = forms.CharField(widget=forms.HiddenInput)
-    sender = forms.ModelChoiceField(User.objects.all(),
-                                    widget=forms.HiddenInput)
-    copy = forms.ModelMultipleChoiceField(User.objects.all(),
-                                          widget=forms.CheckboxSelectMultiple, required=False)
-
-    class Meta:
-        fields = ['copy', 'recipient',
-                  'subject', 'body', 'sender']
-        model = Message
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        config = {}
-        exporter = exporterHTML(config)
-        msg = exporter.render(json.loads(
-            urllib.parse.unquote(cleaned_data['body'])
-        ))
-
-        cleaned_data['body'] = msg
-        print(msg)
-        return cleaned_data
-
-
 class EmailForm(BootstrapMixin, forms.ModelForm):
     body = forms.CharField(widget=forms.HiddenInput)
     sender = forms.ModelChoiceField(User.objects.all(),

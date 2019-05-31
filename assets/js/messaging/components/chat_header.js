@@ -1,9 +1,18 @@
 import React, {Component} from 'react';
 import styles from './chatStyles.css';
+
+
 class chatHeader extends Component {
     state = {
         showDropdown: false
     }
+
+    addAttachment = () =>{
+        let input =  document.getElementById('attachment');
+        input.click();
+    }
+
+    
     render(){
         return(
             <div>
@@ -27,9 +36,17 @@ class chatHeader extends Component {
                         <div className={["shadow", styles.chatDropdown].join(" ")} style={{
                             display: this.state.showDropdown ? 'block' : 'none',
                         }}>
+                            <input 
+                                type="file" 
+                                 style={{display: 'none'}}
+                                id="attachment"
+                                onChange={this.props.attachmentHandler} />
                             <ul className={styles.chatDropdownUl}>
-                                <li className={styles.chatDropdownLi}>Close Chat</li>
-                                <li className={styles.chatDropdownLi}>Add attachment</li>
+                                <li className={styles.chatDropdownLi}> <a href={this.props.isGroup
+                                    ? "/messaging/close-group/" + this.props.chatID
+                                    :"/messaging/close-chat/" + this.props.chatID}> Close {this.props.isGroup ? 'Group' : 'Chat'}</a></li>
+                                <li className={styles.chatDropdownLi}
+                                    onClick={this.addAttachment}>Add attachment</li>
                             </ul>
                         </div>
                     </div>

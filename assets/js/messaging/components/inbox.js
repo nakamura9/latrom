@@ -1,15 +1,18 @@
 import React from 'react';
 import axios from 'axios';
 
-class DraftList extends React.Component{
+class InboxList extends React.Component{
     state = {
-        messages: [{sender: 'someone else', recipient:'conrad', subject: 'subject', id: 1}]
+        messages: [
+            
+        ]
     }
     componentDidMount(){
-        axios.get('/messaging/api/drafts/').then(res =>{
+        axios.get('/messaging/api/inbox/').then(res =>{
             this.setState({messages: res.data})
         })
     }
+
     render(){
         return(
             <ul className="list-group">
@@ -20,9 +23,8 @@ class DraftList extends React.Component{
                     : null
                 }
                 {this.state.messages.map((msg, i) =>(
-                    <li className="list-group-item"
-                    onClick={ () => this.props.setCurrent(msg.id)}>
-                        <h6>{msg.to}</h6>
+                    <li onClick={ () => this.props.setCurrent(msg.id)} className="list-group-item">
+                        <h6>{msg.sender}</h6>
                         <p>{msg.subject.substring(0, 25) + '...'}</p>
                     </li>
                 ))}
@@ -31,4 +33,4 @@ class DraftList extends React.Component{
     }
 }
 
-export default DraftList;
+export default InboxList;

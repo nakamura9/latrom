@@ -1,9 +1,6 @@
 from .views import MessagingAPIViewTests, MessagingViewTests
-from .models import (DispatcherTests, 
-    MessageTests, 
-    MessageThreadTests, 
+from .models import ( 
     NotificationTests,
-    InboxTests,
     ChatTests,
     BubbleTests,
     GroupTests)
