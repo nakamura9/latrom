@@ -62,9 +62,6 @@ class SearchableWidget extends Component {
                 let isPresent = false;
                 this.state.choices.forEach((i) =>{
                     const [id, name] = i.split('-');
-                    console.log(id);
-                    console.log(pk == id);
-
                     if(id == pk){
                         isPresent = true;
                     }

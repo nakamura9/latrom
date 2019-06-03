@@ -5,7 +5,6 @@ const MessageBubble = props => {
   let image;
   if (props.message.attachment) {
     image = props.message.attachment;
-    console.log(props.message.attachment);
   }
 
   return (

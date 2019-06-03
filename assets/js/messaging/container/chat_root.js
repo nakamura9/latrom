@@ -70,7 +70,6 @@ export default class ChatRoot extends Component{
         }
         axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-        console.log(file)
         let data = new FormData();
         data.append('attachment', file);
         data.append('message_text', file.name);

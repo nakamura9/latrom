@@ -91,8 +91,6 @@ export default class InvoiceTable extends Component{
         );
     }
 
-
-
     render(){
         return(
             <table className="table">
@@ -178,6 +176,8 @@ const SaleLine = (props) =>{
 }
 
 const ServiceLine = (props) =>{
+    console.log('tax')
+    console.log(props.tax)
     const subtotal = (parseFloat(props.hours) * parseFloat(props.rate)) +
          parseFloat(props.fee);
     const discount =  subtotal * (props.discount / 100.0)

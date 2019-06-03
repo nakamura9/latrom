@@ -36,6 +36,7 @@ class EntryWidget extends Component{
         this.setState({'focused': evt.target.id})
     }
     entryChangeHandler = (data) =>{
+        //duplicates the state of the child elements
         this.setState({inputs: data})
     }
 
@@ -51,6 +52,7 @@ class EntryWidget extends Component{
                 ...this.state.inputs
             }
             this.props.insertHandler(data)
+            this.setState({inputs: {}})
         }
         
     }

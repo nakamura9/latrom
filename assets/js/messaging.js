@@ -20,7 +20,6 @@ if(threadView){
 }else if(groupThreadView){
     ReactDOM.render(<GroupChatRoot />, groupThreadView);
 }else if(rich_text){
-    console.log('rich');
     ReactDOM.render(<EmailEditor textHandler={(state) =>{
             const contentState = state.editorState.getCurrentContent();
             const data = encodeURIComponent(
