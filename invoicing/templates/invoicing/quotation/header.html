@@ -1,0 +1,50 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Quotation {% if object.draft %}(Draft){% endif %}
+{% endblock title %}
+
+{% block left_content %}
+
+<table>
+    <tbody>
+        <tr>
+            <td>Quotation Date:</td>
+            <td>{{object.quotation_date}}</td>
+        </tr>
+        <tr>
+            <td>
+                Quotation #:
+            </td>
+            <td>
+                QUOT{{object.quotation_number | stringformat:"06d"}}
+            </td>
+        </tr>
+        <tr>
+            <td>Quotation Valid Till:</td>
+            <td>{{object.quotation_valid}}</td>
+        </tr>
+        <tr>
+            <td>Quoted By:</td>
+            <td>{{object.salesperson}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock left_content %}
+
+{% block right_content %}
+
+{% endblock right_content %}
+
+{% block lower_left %}
+
+{% include "common_data/common/customer_data.html" %}
+
+{% endblock lower_left %}
+
+{% block lower_right %}
+
+{% include "common_data/common/business.html" %}
+
+{% endblock lower_right %}

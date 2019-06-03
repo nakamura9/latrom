@@ -1,0 +1,49 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Customer Statement
+{% endblock title %}
+
+{% block left_content %}
+
+<table>
+    <tbody>
+        <tr>
+            <th>Current Balance</th>
+            <td>{{customer.account.balance}}</td>
+        </tr>
+        <tr>
+            <th>Start Period</th>
+            <td>{{start}}</td>
+        </tr>
+        <tr>
+            <th>End Period</th>
+            <td>{{end}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock left_content %}
+
+{% block right_content %}
+
+{% endblock right_content %}
+
+{% block lower_left %}
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <h6>{{customer.name}}</h6>
+                <p>{{customer.business_address}}</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock lower_left %}
+
+{% block lower_right %}
+
+{% include "common_data/common/business.html" %}
+
+{% endblock lower_right %}

@@ -1,14 +1,37 @@
-{% extends "common_data/page/pdf_page.html" %} {% block page_contents %}
+{% extends "common_data/page/pdf_page.html" %}
+
+{% block pre_page %}
+
+<div class="jumbotron">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a href="{% url 'accounting:trial-balance-csv' %}" class="dropdown-item"><i
+                    class="fas fa-file-excel"></i>Export as csv</a>
+            <a href="{% url 'accounting:trial-balance-pdf' %}" class="dropdown-item"><i
+                    class="fas fa-file-pdf"></i>Generate PDF</a>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}
+
+{% block page_contents %}
 {% load accounting %}
 <style>
-    .table td{
+    .table td {
         padding: 15px;
     }
-    .table th{
+
+    .table th {
         padding: 20px;
         color: white;
         background-color: black;
     }
+
     .btn {
         padding: 10px;
         border-radius: 10px;
@@ -19,16 +42,16 @@
     .btn-danger {
         background-color: red;
     }
-    .btn-success{
+
+    .btn-success {
         background-color: green;
     }
 
-    .actions{
+    .actions {
         background-color: #c5c5c5;
-        padding:30px;
-        margin:10px;
+        padding: 30px;
+        margin: 10px;
     }
- 
 </style>
 <table class="table table-sm" style="width:100%">
     <tbody>
@@ -93,18 +116,3 @@
 
 
 {% endblock page_contents %}
-
-{% block pre_page %}
-
-<div class="actions">
-    {% if pdf_link %}
-    <div class="btn btn-group">
-        <a href="{% url 'accounting:trial-balance-csv' %}" class="btn btn-success">Export as csv</a>
-        <a href="{% url 'accounting:trial-balance-pdf' %}" class="btn btn-danger">Generate PDF</a>
-    </div>
-    
-{% endif %}
-
-</div>
-
-{% endblock pre_page %}

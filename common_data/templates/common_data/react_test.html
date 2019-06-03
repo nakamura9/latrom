@@ -1,52 +1,212 @@
-{% extends "window.html" %}
-{% load render_bundle from webpack_loader %}
-{% block content %}
-<style>
-    .full{
-        height:100%;
-        min-height:100%;
-        width: 100%;
-        min-width:100%
-    }
-</style>
+<html>
 
-<div class="full jumbo-gradient">
-<p>1</p>
-</div>
-
-<ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link active" href="#lines" data-toggle="tab">Invoice Lines</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#comments-terms" data-toggle="tab">T's & C's</a></li>
-                    </ul>
-                    <div class="tab-content panel-body">
-                        <div id="lines" class="tab-pane active">
-                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                    Invoice Lines</label>
-                                <div id="invoice-table"></div>
-                            </div>
-                        </div>
-                        <div id="comments-terms" class="tab-pane">
-                            <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                    Terms and Comments</label>
-                                <div class="{{style}}-footer-cell">
-                                    <div class="{{style}}-footer-cell-heading">
-                                            Terms:
-                                    </div>
-                                    <div class="{{style}}-footer-cell-contents">
-                                            {{form.terms}}
-                                    </div>
-                                </div>
-                                <div class="{{style}}-footer-cell">
-                                    <div class="{{style}}-footer-cell-heading">
-                                            Comments:
-                                    </div>
-                                    <div class="{{style}}-footer-cell-contents">
-                                            {{form.comments}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" media="screen"
+        href="/static/common_data/css/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/common_data/css/document-styles.css" />
+    <link rel="stylesheet" type="text/css" href="/static/common_data/assets/css/all.min.css" />
+    <script type="text/javascript" src="/static/common_data/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/common_data/js/popper.js"></script>
+    <script type="text/javascript" src="/static/common_data/css/bootstrap/js/bootstrap.min.js"></script>
 
 
 
-{% endblock %}
+
+    <link rel="stylesheet" type="text/css" href="/static/common_data/assets/css/all.min.css" />
+
+
+    <link rel="stylesheet" type="text/css" href="/static/common_data/css/document-styles.css">
+</head>
+
+<body>
+    <style>
+        .custom-page {
+            width: 100%;
+            height: 100%;
+        }
+
+        .page-container {
+            margin: 0px auto;
+            padding: 0.5in;
+            width: 21cm;
+            height: 29.7cm;
+
+            border: 1px solid grey;
+            box-shadow: 15px 30px 20px #ccc;
+
+        }
+
+        #details {
+            width: 50%;
+        }
+
+        #customer-data {
+            width: 50%;
+            text-align: center;
+        }
+    </style>
+
+
+    <div class="page-container">
+        <div class="custom-page">
+            <style>
+                #page-layout {
+                    width: 100%;
+                    height: 100%;
+                }
+                #title {
+                    text-align: center;
+                }
+            </style>
+            <div style="display:flex;justify-content:space-between;">
+                <div>
+                    <h3 style="color:white;background-color:black;padding:5px;width:100%"> Invoice </h3>
+                    <table>
+                        <tr>
+                            <td>Invoice Number:</td>
+                            <td>INV000001</td>
+                        </tr>
+                        <tr>
+                            <td>Customer PO No:</td>
+                            <td>4845454</td>
+                        </tr>
+                    </table>
+                </div>
+                <div></div>
+                <div>
+                    <div style="margin:auto;width:150px;height:100px;">
+                        <img width="150.0" height="100" src="/media/download_Q57KzYe.png" alt="Logo">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div style="display:flex;justify-content:space-between;">
+                <div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Date:</td>
+                                <td>06/05/2019</td>
+                            </tr>
+                            <tr>
+                                <td>Due Date:</td>
+                                <td>07/05/2019</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div></div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h6>Conrad Tools</h6>
+                                    <p>20 Chelsea Mansions</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+            <tr>
+                <td id="customer-data">
+                </td>
+            </tr>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <table class="simple-content table-striped table-sm" height="500" width="100%">
+                        <thead>
+                            <tr>
+                                <!--This template is rendered conditionally based on the contents of the invoice -->
+
+                                <td style="width:40%;">Service</td>
+                                <td style="width:10%;">Fee</td>
+                                <td style="width:10%;">Hourly Rate</td>
+                                <td style="width:10%;">Hours</td>
+
+                                <td style="width:10%;">Discount</td>
+                                <td style="width:10%;">Tax</td>
+                                <td style="width:10%;">Subtotal</td>
+                            </tr>
+                        </thead>
+                        <tbody class="item-table">
+                            <tr>
+                                <td>Tools</td>
+                                <td>1000.00</td>
+                                <td>10.00</td>
+                                <td>1.00</td>
+
+                                <td>0.00</td>
+                                <td>None@0.0%</td>
+                                <td>1010.00</td>
+
+                            </tr>
+
+                            <tr style="height:100%">
+
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="6">
+                                    <b>SubTotal:</b>
+                                </td>
+                                <td>1010.00</td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <b>Tax Due :</b>
+                                </td>
+                                <td>0.00</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="6">
+                                    <b>Total:</b>
+                                </td>
+                                <td>1010.00</td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                    <p>&lt;Page 1 of 1&gt;</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+
+
+
+
+                </td>
+            </tr>
+            </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

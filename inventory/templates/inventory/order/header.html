@@ -1,0 +1,38 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Purchase Order{% if object.status == "draft" %}(Draft){% endif %}
+{% endblock title %}
+
+
+{% block left_content %}
+
+<table>
+    <tbody>
+        <tr>
+            <td>Issue Date:</td>
+            <td>{{object.date}}</td>
+        </tr>
+        <tr>
+            <td>Expected Receipt Date:</td>
+            <td>{{object.expected_receipt_date}}</td>
+        </tr>
+        <tr>
+            <td>Purchase Order Number:</td>
+            <td>{{object.pk}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block right_content %}
+{% endblock right_content %}
+
+{% block lower_left %}
+{% include "common_data/common/supplier_data.html" %}
+{% endblock lower_left %}
+
+{% block lower_right %}
+{% include "common_data/common/business.html" %}
+{% endblock lower_right %}

@@ -1,0 +1,55 @@
+<style>
+    .document_header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .header-content {
+        width: 30%;
+    }
+
+    #title {
+        color: white;
+        background-color: black;
+        padding: 5px;
+        width: 100%
+    }
+
+    #lower-header {
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="document_header">
+    <div id="left" class="header-content">
+        <h3 id="title">{% block title %}{% endblock title %}</h3>
+        {% block left_content %}
+
+        {% endblock  %}
+    </div>
+    <div id="center" class="header-content">
+        {% block center_content %}
+        {% endblock center_content %}
+    </div>
+    <div id="right" class="header-content">
+        {% include 'common_data/common/logo.html' %}
+        {% block right_content %}
+        {% endblock right_content %}
+    </div>
+</div>
+
+<div id="lower-header" class="document_header">
+    <div class="header-content">
+
+        {% block lower_left %}
+        {% endblock lower_left %}
+    </div>
+    <div class="header-content">
+        {% block lower_center %}
+        {% endblock lower_center %}
+    </div>
+    <div class="header-content">
+        {% block lower_right %}
+        {% endblock lower_right %}
+    </div>
+</div>

@@ -1,9 +1,18 @@
-{% extends "common_data/page/pdf_page.html" %} 
+{% extends "common_data/page/pdf_page.html" %}
 
 {% block pre_page %}
 <div class="jumbotron">
-<h4 class="bold">Actions</h4>
-<a href="{% url 'inventory:inventory-report-pdf' %}" class="btn btn-danger">Generate PDF</a>
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a href="{% url 'invoicing:invoice-aging-pdf' %}" class="dropdown-item"><i class="fas fa-file-pdf"></i>
+                Generate PDF
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock  %}
 
@@ -53,23 +62,23 @@
                             <th colspan="6" style="text-align:center">Invoice Age</th>
                         </tr>
                         <tr>
-                                <th></th>
-                                <th>Current</th>
-                                <th>0-7 Days</th>
-                                <th>8-14 Days</th>
-                                <th>15-30 Days</th>
-                                <th>31- 60 Days</th>
-                                <th>61+ Days</th>
-                            </tr>
+                            <th></th>
+                            <th>Current</th>
+                            <th>0-7 Days</th>
+                            <th>8-14 Days</th>
+                            <th>15-30 Days</th>
+                            <th>31- 60 Days</th>
+                            <th>61+ Days</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for c in customers %}
-                            <tr>
-                                <td>{{c}}</td>
+                        <tr>
+                            <td>{{c}}</td>
                             {% for amount in c.age_list %}
-                                <td>${{amount |floatformat:2}}</td>
+                            <td>${{amount |floatformat:2}}</td>
                             {% endfor %}
-                            </tr>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>

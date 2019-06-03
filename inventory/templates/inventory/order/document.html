@@ -50,36 +50,9 @@
 <table style="width:100%;">
     <tbody>
         <tr>
-            <td colspan="2" id="title"><h1 style="text-align:center;">Purchase Order{% if object.status == "draft" %}(Draft){% endif %}</h1></td>
-        </tr>
-        <tr>
-            <td colspan="2" id="business_data">
-                {% include "common_data/common/business_information.html" %}
-            </td>
-        </tr>
-        <tr>
-            <td id="customer-data">
-                {% include "common_data/common/supplier_data.html" %}
-            </td>
-            <td id="details">
-                <table style="width:100%;">
-                    <tbody>
-                        <tr>
-                            <td>Issue Date:</td>
-                            <td>{{object.date}}</td>
-                        </tr>
-                        <tr>
-                            <td>Expected Receipt Date:</td>
-                            <td>{{object.expected_receipt_date}}</td>
-                        </tr>
-                        <tr>
-                            <td>Purchase Order Number:</td>
-                            <td>{{object.pk}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-            </td>
+        <td colspan="2">
+            {% include "inventory/order/header.html" %}
+        </td>
         </tr>
         <tr>
             <th colspan="2" >
