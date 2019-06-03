@@ -24,14 +24,14 @@
             <form action="" method="POST">
                 {% csrf_token %}
                 <ul class="nav nav-tabs">
-                    <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">To</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">Basic</a></li>
                     <li class="nav-item"><a class="nav-link" href="#cc-bcc" data-toggle="tab">Copy To</a></li>
                 </ul>
                 <div class="tab-content panel-body">
                     <div id="to" class="tab-pane active">
                         <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                Recipient</label>
-                            {{form.recipient}}
+                                To</label>
+                            {{form.to}}
                         </div>
                     </div>
                     <div id="cc-bcc" class="tab-pane">

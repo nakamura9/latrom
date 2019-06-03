@@ -23,7 +23,8 @@ class EmailAddress(models.Model):
             return EmailAddress.objects.create(address=address)
 
 class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
-    user = models.ForeignKey('auth.user', on_delete=models.CASCADE)
+    email_fields =['email_address']
+    user = models.OneToOneField('auth.user', on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to=os.path.join(MEDIA_ROOT, 'chat'))
     email_address = models.CharField(max_length=255)
     email_password = models.CharField(max_length=255)
@@ -42,6 +43,8 @@ class Email(models.Model):
     '''Communication between people online using email    '''
     copy = models.ManyToManyField('messaging.EmailAddress', 
         related_name='copy_email', blank=True)
+    blind_copy = models.ManyToManyField('messaging.EmailAddress', 
+        related_name='blind_copy_email', blank=True)
     server_id = models.CharField( 
         blank=True, 
         default='',
@@ -49,16 +52,35 @@ class Email(models.Model):
     to = models.ForeignKey('messaging.EmailAddress', on_delete=models.SET_NULL, 
         null=True,
         related_name='to')
+    sent_from = models.ForeignKey('messaging.EmailAddress',     
+        on_delete=models.SET_NULL, 
+        null=True,
+        related_name='email_sent_from')
     sender = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
         null=True,
         related_name='email_author')
+    read = models.BooleanField(default=False)
     subject = models.CharField(max_length=255, blank=True)
     body = models.TextField()
+    folder=models.CharField(max_length=16, default='inbox', choices=[
+        ('inbox', 'Inbox'),
+        ('sent', 'Sent'),
+        ('drafts', 'Drafts'),
+    ])
     sent = models.BooleanField(default=False)
+    attachment=models.FileField(null=True, blank=True)
     created_timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"From {self.sender.username} to {self.to.address}"
+        if self.sent_from and self.to:
+            return f"From {self.sent_from.address} to {self.to.address}"
+        elif self.sent_from:
+            return f"From {self.sent_from.address}"
+        elif self.to:
+            return f"From {self.to.address}"
+
+        else: return 'Unknown details'
+
 
 class Notification(models.Model):
     user = models.ForeignKey('auth.user', default = 1, 
@@ -73,8 +95,6 @@ class Notification(models.Model):
     def open(self):
         self.read = True
         self.save()
-
-
 
 
 class Bubble(models.Model):

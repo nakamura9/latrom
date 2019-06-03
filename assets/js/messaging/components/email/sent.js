@@ -1,14 +1,24 @@
 import React from 'react';
 import axios from 'axios';
+import ListItem from './message_list_item';
+
 
 class SentList extends React.Component{
     state = {
-        messages: [{sender: 'caleb', recipient:'recipient', subject: 'subject', id: 1}]
+        messages: []
     }
     componentDidMount(){
         axios.get('/messaging/api/sent/').then(res =>{
             this.setState({messages: res.data})
         });
+    }
+    setCurrent = (id, index) =>{
+        let newMessages = [...this.state.messages];
+        let newMsg = newMessages[index];
+        newMsg.read = true;
+        newMessages[index] = newMsg;
+        this.setState({messages: newMessages})
+        this.props.setCurrent(id, false);
     }
     render(){
         return(
@@ -20,11 +30,11 @@ class SentList extends React.Component{
                 : null
             }
                 {this.state.messages.map((msg, i) =>(
-                    <li className="list-group-item"
-                    onClick={ () => this.props.setCurrent(msg.id)}>
-                        <h6>{msg.to}</h6>
-                        <p>{msg.subject.substring(0, 25) + '...'}</p>
-                    </li>
+                    <ListItem 
+                        msg={msg} 
+                        current={this.props.current}
+                        setCurrent={this.setCurrent}
+                        listIndex={i} />
                 ))}
             </ul>
         )

@@ -11,7 +11,7 @@ class HeaderStyleDropdown extends React.Component{
                     className="form-control" 
                     onChange={this.onToggle} 
                     value={this.props.active}
-                    style={{display: 'inline-block', width: '70%'}}>
+                    style={{display: 'inline-block', width: '40%'}}>
             <option value="">Heading Level</option>
             {this.props.headerOptions.map(heading =>{
                 return(

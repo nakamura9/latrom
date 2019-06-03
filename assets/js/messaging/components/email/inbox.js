@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import ListItem from './message_list_item';
 
 class InboxList extends React.Component{
     state = {
@@ -13,6 +14,15 @@ class InboxList extends React.Component{
         })
     }
 
+    setCurrent = (id, index) =>{
+        let newMessages = [...this.state.messages];
+        let newMsg = newMessages[index];
+        newMsg.read = true;
+        newMessages[index] = newMsg;
+        this.setState({messages: newMessages})
+        this.props.setCurrent(id, false);
+    }
+
     render(){
         return(
             <ul className="list-group">
@@ -23,10 +33,11 @@ class InboxList extends React.Component{
                     : null
                 }
                 {this.state.messages.map((msg, i) =>(
-                    <li onClick={ () => this.props.setCurrent(msg.id)} className="list-group-item">
-                        <h6>{msg.sender}</h6>
-                        <p>{msg.subject.substring(0, 25) + '...'}</p>
-                    </li>
+                    <ListItem 
+                        msg={msg} 
+                        current={this.props.current}
+                        setCurrent={this.setCurrent}
+                        listIndex={i} />
                 ))}
             </ul>
         )

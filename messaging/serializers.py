@@ -31,7 +31,11 @@ class EmailSerializer(serializers.ModelSerializer):
 
 class EmailRetrieveSerializer(EmailSerializer):
     sender = serializers.StringRelatedField(many=False)
+    sent_from = serializers.StringRelatedField(many=False)
     to = serializers.StringRelatedField(many=False)
+    copy = serializers.StringRelatedField(many=True)
+    blind_copy = serializers.StringRelatedField(many=True)
+
 
 class GroupSerializer(serializers.ModelSerializer):
     messages = BubbleReadSerializer(many=True)

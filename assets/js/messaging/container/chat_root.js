@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import ChatWidget from '../components/chat';
+import ChatWidget from '../components/chat/chat';
 import {Aux} from '../../src/common';
-import ChatHeader from '../components/chat_header';
+import ChatHeader from '../components/chat/chat_header';
 
 export default class ChatRoot extends Component{
     constructor(props){

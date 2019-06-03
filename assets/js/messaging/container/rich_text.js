@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Editor, EditorState, RichUtils, convertToRaw } from "draft-js";
+import { Editor, EditorState, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
 import styles from './richEditor.css';
 import BlockStyleToolbar, {getBlockStyle} from '../components/block_style_toolbar';
@@ -13,18 +13,11 @@ class EmailEditor extends Component {
     };
   }
 
-  updateForm = () =>{
-      const contentState = this.state.editorState.getCurrentContent();
-      const data = encodeURIComponent(
-          JSON.stringify(convertToRaw(contentState))
-        );
-      let field = document.getElementById('id_body');
-      field.setAttribute('value', data);
-  }
+  
 
   onChange = (editorState) => {
      
-     this.setState({ editorState }, this.updateForm);
+     this.setState({ editorState }, this.props.textHandler(this.state));
     
     }
 

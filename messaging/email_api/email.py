@@ -71,27 +71,12 @@ class EmailBaseClass():
         mailbox.login(self.address, self.password)
         return mailbox
 
-    def fetch_inbox(self):
-        # only store the latest 100 emails and the emails stored in the system.
-        if not self.configured:
-            mail = self.fetch_mailbox()
-
-        mail.select('Inbox')
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = None
-        recent = len(mail_ids) - 5
-        for id in mail_ids[recent:]:
-            typ, data = mail.fetch(id, '(RFC822)')
-            raw = data[0][1]
-
-            as_string = raw.decode('utf-8')
-            #returns email.Message object
-            email_message = email.message_from_string(as_string)
-            self.save_email_to_local_database(email_message)
-
-
-    def save_email_to_local_database(self, msg):
+    def save_email_to_local_database(self, 
+                                    msg, 
+                                    id,
+                                    draft=False, 
+                                    sent=False, 
+                                    incoming=False):
         if msg.is_multipart():
             msg_string = ""
             for part in msg.walk():
@@ -99,27 +84,73 @@ class EmailBaseClass():
                 if content_type in ['text/plain', 'text/html']:
                     msg_string += part.get_payload()
 
+        else:
+            msg_string = msg.get_payload()
+
         from email.parser import HeaderParser
         headers = dict(HeaderParser().parsestr(msg.as_string()).items())
         print(headers)
 
-        print(headers['Date'])
-        date = parse.parse('{}; {:te}', headers['Received'])
-            
-        receiver_string = parse.parse('{} <{}>', headers["From"])[1]
-        print(receiver_string)
-        if not EmailAddress.objects.filter(address=receiver_string).exists():
-            return 
+        
+        if headers.get('Received'):
+            date = parse.parse('{}; {:te}', headers['Received'])
+        elif headers.get('Date'):
+            date = parse.parse('{:te}', headers['Date'])
+        else:
+            date = datetime.date.today()
+        
 
-        receiver = EmailAddress.get_address(receiver_string)
-        Email.objects.create(
+        sent_from = None
+        sent_to = None
+        if draft or sent:
+            if draft:
+                folder='draft'
+            else:
+                folder='sent'
+            sent_from =  EmailAddress.objects.get(
+                address=self.profile.email_address)
+            if not headers.get('To', None):
+                print('##missing to')
+            sent_to = EmailAddress.get_address(headers.get('To', ''))
+        elif incoming:# i.e. inbox
+            folder='inbox'
+            if headers.get('From'):
+                try:
+                    sender_string = parse.parse('{} <{}>', headers["From"])[1]
+                except TypeError:
+                    print('##cannot parse header')
+                    sender_string = headers['From']
+            else:
+                print('##no from')
+                sender_string = 'test@email.com'
+            
+            print(sender_string)
+            
+            sent_to = EmailAddress.objects.get(
+                address=self.profile.email_address)
+            sent_from = EmailAddress.get_address(sender_string)
+
+        email_msg = Email.objects.create(
             created_timestamp=date,
             subject=headers.get('Subject', ''),
             sender=self.profile.user,
+            sent_from=sent_from,
             body=msg_string,
-            to=receiver,
-            sent=True
+            to=sent_to,
+            server_id=id,
+            folder=folder,
+            sent= sent if not incoming else True
         )
+
+        if headers.get('Cc'):
+            for address in headers['Cc'].split(', '):
+                addr = EmailAddress.get_address(address)
+                email_msg.copy.add(addr)
+
+        if headers.get('Bcc'):
+            for address in headers['Bcc'].split(', '):
+                addr = EmailAddress.get_address(address)
+                email_msg.blind_copy.add(addr)
 
 
     def download_email_attachment(self, msg_string, path):
@@ -146,7 +177,65 @@ class Gmail(EmailBaseClass):
         self.IMAP_HOST = "imap.gmail.com"
         self.IMAP_PORT = 993
         self.configured =False
+
+    def fetch_inbox(self):
+        # only store the latest 100 emails and the emails stored in the system.
+        mail = self.fetch_mailbox()
+
+        mail.select('Inbox')
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0].split()
+        latest = None
+        recent = len(mail_ids) - 5
+        for id in mail_ids:
+            typ, data = mail.fetch(id, '(RFC822)')
+            raw = data[0][1]
+
+            try:
+                as_string = raw.decode('utf-8')
+            except Exception as e:
+                print('error encountered decoding message')
+                print(e)
+                return
+            #returns email.Message object
+            email_message = email.message_from_string(as_string)
+            self.save_email_to_local_database(email_message, id, incoming=True)
     
+    def fetch_sent(self):
+        mail = self.fetch_mailbox()
+
+        mail.select('"[Gmail]/Sent Mail"')
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0].split()
+        latest = None
+        recent = len(mail_ids) - 5
+        for id in mail_ids[recent:]:
+            typ, data = mail.fetch(id, '(RFC822)')
+            raw = data[0][1]
+
+            as_string = raw.decode('utf-8')
+            #returns email.Message object
+            email_message = email.message_from_string(as_string)
+            self.save_email_to_local_database(email_message, sent=True)
+
+    def fetch_drafts(self):
+        mail = self.fetch_mailbox()
+
+        mail.select('"[Gmail]/Drafts"')
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0].split()
+        latest = None
+        recent = len(mail_ids) - 5
+        for id in mail_ids[recent:]:
+            typ, data = mail.fetch(id, '(RFC822)')
+            raw = data[0][1]
+
+            as_string = raw.decode('utf-8')
+            #returns email.Message object
+            email_message = email.message_from_string(as_string)
+            self.save_email_to_local_database(email_message, draft=True)
+
+
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import GroupChatWidget from '../components/group';
+import GroupChatWidget from '../components/chat/group';
 import {Aux} from '../../src/common';
-import ChatHeader from '../components/chat_header';
+import ChatHeader from '../components/chat/chat_header';
 
 export default class GroupChatRoot extends Component{
     constructor(props){

@@ -1,36 +1,49 @@
 import React, {Component} from 'react';
 import styles from './inbox.css';
-import InboxList from '../components/inbox';
-import DraftList from '../components/drafts';
-import SentList from '../components/sent';
-import MessageDetail from '../components/message_detail';
+import InboxList from '../components/email/inbox';
+import DraftList from '../components/email/drafts';
+import SentList from '../components/email/sent';
+import MessageDetail from '../components/email/message_detail';
+import axios from 'axios';
 
 class InboxView extends Component{
     state = {
         view: 'inbox',
+        draft: false,
         current: null
     }
 
-    setCurrent =(id) =>{
-        this.setState({current: id})
+    setCurrent =(id, draft) =>{
+        this.setState({
+            current: id,
+            draft: draft
+        })
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.patch('/messaging/api/email/' + id + '/', {'read': true});
     }
 
     render(){
         let renderedList;
         switch(this.state.view){
             case 'inbox':
-                renderedList = <InboxList setCurrent={this.setCurrent} />;
+                renderedList = <InboxList 
+                                    setCurrent={this.setCurrent}
+                                    current={this.state.current} />;
                 break;
             case 'drafts':
-                renderedList = <DraftList setCurrent={this.setCurrent}/>;
+                renderedList = <DraftList 
+                                    setCurrent={this.setCurrent}
+                                    current={this.state.current}/>;
                 break;
 
             case 'sent':
-                renderedList = <SentList setCurrent={this.setCurrent}/>;
+                renderedList = <SentList 
+                                    setCurrent={this.setCurrent}
+                                    current={this.state.current}/>;
                 break;
 
             default:
-                console.log(this.state.view)
                 renderedList = <InboxList setCurrent={this.setCurrent}/>;
         }
 
@@ -61,7 +74,7 @@ class InboxView extends Component{
                         </li>
                         <li 
                             className={["list-group-item", 
-                            this.state.view === 'inboxsent' 
+                            this.state.view === 'sent' 
                                 ? 'selected-folder'
                                 : ''].join(' ')}
                             onClick={()=>this.setState({view: 'sent'})}
@@ -75,7 +88,7 @@ class InboxView extends Component{
                     {renderedList}
                 </div>
                 <div className={styles.inboxMessageDetail}>
-                    <MessageDetail messageID={this.state.current}/>
+                    <MessageDetail messageID={this.state.current} draft={this.state.draft}/>
                 </div>
             </div>
         )

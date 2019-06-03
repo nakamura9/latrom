@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import {convertToRaw} from 'draft-js';
 
 import ChatRoot from '../js/messaging/container/chat_root';
 import GroupChatRoot from '../js/messaging/container/group_root';
@@ -20,7 +21,15 @@ if(threadView){
     ReactDOM.render(<GroupChatRoot />, groupThreadView);
 }else if(rich_text){
     console.log('rich');
-    ReactDOM.render(<EmailEditor />, rich_text);
+    ReactDOM.render(<EmailEditor textHandler={(state) =>{
+            const contentState = state.editorState.getCurrentContent();
+            const data = encodeURIComponent(
+                JSON.stringify(convertToRaw(contentState))
+              );
+            let field = document.getElementById('id_body');
+            field.setAttribute('value', data);
+    }}/>, rich_text);
+
 }else if(group_participants_widget){
     ReactDOM.render(<MultipleSelectWidget 
         inputField="participants"

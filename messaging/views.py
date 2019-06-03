@@ -18,6 +18,9 @@ from common_data.utilities.mixins import ContextMixin
 import os
 import json
 import urllib
+from messaging.email_api.email import Gmail
+from draftjs_exporter.html import HTML as exporterHTML
+
 
 
 class Dashboard(LoginRequiredMixin, TemplateView):
@@ -52,6 +55,16 @@ class ComposeEmailView(LoginRequiredMixin, CreateView):
             'sender': self.request.user.pk
         }
 
+    def form_valid(self, form):
+        data = form.cleaned_data
+
+        g = Gmail()
+        profile = models.UserProfile.objects.get(user=self.request.user)
+        g.get_credentials(profile)
+        
+        g.send_html_email(data['subject'], data['to'].address, data['body'])
+
+        return super().form_valid(form)
 
 
 def notification_service(request):
@@ -179,9 +192,10 @@ class GroupListView(LoginRequiredMixin, ListView):
     template_name = os.path.join('messaging', 'chat', 'group_list.html')
 
     def get_queryset(self, *args, **kwargs):
-        return models.Group.objects.filter(Q(Q(admin=self.request.user) |
-                                           Q(
-                                               participants__username=self.request.user.username)) & Q(active=True))
+        return models.Group.objects.filter(Q(
+            Q(admin=self.request.user) | 
+            Q(participants__username=self.request.user.username)) & 
+            Q(active=True))
 
 
 def create_chat(request, user=None):
@@ -272,3 +286,33 @@ class SentAPIView(APIView):
 
         data = serializers.EmailRetrieveSerializer(emails, many=True).data
         return Response(data)
+
+def send_draft(request, pk=None):
+    email = get_object_or_404(models.Email, pk=pk)
+    g = Gmail()
+    profile = models.UserProfile.objects.get(user=email.sender)
+    g.get_credentials(profile)
+    g.send_html_email(email.subject, email.to.address, email.body)
+
+    return JsonResponse({'status': 'ok'})
+
+def reply_email(request, pk=None):
+    email = get_object_or_404(models.Email, pk=pk)
+    g = Gmail()
+    profile = models.UserProfile.objects.get(user=email.sender)
+    g.get_credentials(profile)
+
+    #set up 
+    config = {}
+    exporter = exporterHTML(config)
+    print(request.body)
+    bindata = request.body.decode('utf-8')
+    jsondata = json.loads(bindata)
+    print(jsondata)
+    body = exporter.render(
+        jsondata['body']
+    )
+    g.send_html_email(email.subject, email.to.address, body)
+
+    return JsonResponse({'status': 'ok'})
+

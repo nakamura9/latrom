@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./chatStyles.css";
-import { Aux } from "../../src/common.js";
 
 const MessageBubble = props => {
   let image;
