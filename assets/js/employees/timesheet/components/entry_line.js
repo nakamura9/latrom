@@ -9,7 +9,7 @@ const entryLine = (props) => {
            <td>{props.data.breaksTaken}</td>
            <td>{props.data.workingTime}</td>
            <td>
-                <div className="button-group">
+                <div className="btn-group">
                         <button 
                         className="btn btn-info btn-sm"
                         onClick={() => props.editHandler(props.index)}>

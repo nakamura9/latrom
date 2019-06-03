@@ -391,11 +391,12 @@ class PDFDetailView(PDFTemplateView):
 def get_model_latest(request, app=None, model_name=None):
     try:
         model = apps.get_model(app_label=app, model_name=model_name)
+        latest = model.objects.latest('pk')
     except:
-        return JsonResponse({'status': 'failed'})
+        return JsonResponse({'data': -1})
 
-    latest = model.objects.latest('pk')
-    return JsonResponse({latest.pk: str(latest)})
+    
+    return JsonResponse({'data': [latest.pk, str(latest)]})
 
 
 class ConfigWizard(ConfigWizardBase):

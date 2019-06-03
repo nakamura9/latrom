@@ -77,6 +77,9 @@ if(inventoryCheck){
                     name: 'item',
                     type: 'search',
                     width: 35,
+                    'model': 'inventoryitem',
+                    'app': 'inventory',
+                    'newLink': '/inventory/product-create',
                     url: '/inventory/api/inventory-item/', 
                     idField: 'id',
                     displayField: 'name',
@@ -118,7 +121,6 @@ if(inventoryCheck){
             ))
             return itemset.map((item)=>{
                
-                console.log(item)
                 return {'item': item.id + '-' + item.item.name.replace('-', '_'),
                 'quantity': item.quantity, 
                 'moved_quantity': item.received,
@@ -226,7 +228,6 @@ if(inventoryCheck){
             dataURL={"/inventory/api/transfer-order/" + tail}
             headings={["Item", "Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
             resProcessor={(res) =>{
-                console.log(res.data);
                 return res.data.transferorderline_set.map((item)=>({
                     'item': item.id + ' - ' + item.item.name,
                     'quantity': item.quantity, 

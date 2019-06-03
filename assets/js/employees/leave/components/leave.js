@@ -23,7 +23,6 @@ const leave = (props) =>{
         color: 'white',
         backgroundColor: '#07f'
     };
-    console.log(props.offset);
     return(
         <a 
             style={{

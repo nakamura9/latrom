@@ -33,7 +33,6 @@ export default class CurrencyList extends Component{
             if(this.state.newCurrencyName !== "" && 
                 this.state.newCurrencySymbol !== ""){
                     const token = $("input[name='csrfmiddlewaretoken']").val();
-                    console.log(token);
                     $.ajax({
                         method: 'POST',
                         url: '/accounting/api/currency/',

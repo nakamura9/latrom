@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <h4 class="card-title">Customer Info</h4>
                     <p class="card-text">Name: {{object.name}}</p>
-                    <p class="card-text">Email: {{object.email}}</p>
+                    <p class="card-text">Email: {{object.customer_email}}</p>
                     <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual {% endif %}</p>
                     <p class="card-text">Account Balance: {{object.account.balance}}</p>
                     <p class="card-text">Address: {{object.address}}</p>

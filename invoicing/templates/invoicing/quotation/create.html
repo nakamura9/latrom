@@ -13,7 +13,24 @@
                 {% csrf_token %}
         <tbody>
             <tr>
-                <td colspan="2"><center><h1>Quotation</h1></center></td>
+                <td colspan="2"><tr>
+                <td colspan="2">
+                <script>
+                function linkClickHandler(link){
+                   $('#popup-frame').attr('src', link);
+                   var modal = document.getElementById('id-my-modal');
+                    modal.style.display = 'block';
+                   
+                }   
+            </script>
+            <input type="hidden" id="box-array" value="{{box_array}}">
+                <div class="jumbotron">
+                    <h1 style="display:inline;padding:40px;">Create Quotation</h1>
+                    <div class="btn-group" >
+                        
+                        <a onclick="linkClickHandler('/invoicing/create-customer')" target="popup" class="btn btn-primary text-white">Create Customer</a>
+                    </div>
+                </div></td>
             </tr>
             <tr>
                 <td valign="top">

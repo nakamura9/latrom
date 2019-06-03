@@ -11,7 +11,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
-from accounting.models import Account, Expense, Tax, Asset
+from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 from common_data.models import Individual, Organization
@@ -260,8 +260,19 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 
 class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     type=forms.CharField(widget=forms.HiddenInput)
-    asset_data = forms.ModelChoiceField(Asset.objects.all(), required=False)
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':15}), required=False)    
+    #asset name will take product equipment name
+    #description will take equipment decription
+    record_as_asset = forms.BooleanField(required=False)
+    initial_value = forms.CharField(widget=forms.NumberInput, required=False)
+    depreciation_period =forms.CharField(label="Depreciation period(years)",
+        widget=forms.NumberInput,
+        required=False)
+    date_purchased=forms.DateField(required=False)
+    salvage_value = forms.CharField(widget=forms.NumberInput, required=False)
+    asset_category = forms.ChoiceField(choices= ASSET_CHOICES, required=False)
+    description = forms.CharField(widget=forms.Textarea(
+        attrs={'rows':4, 'cols':15}), required=False)
+
     def __init__(self, *args, **kwargs):
         super(EquipmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -289,9 +300,20 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                     Row(
                         Column('category', css_class='form group col-6'),
                         Column('image', css_class='form group col-6'),
-                    ),
-                    'asset_data', 
+                    ), 
                 ),
+                Tab('Asset',
+                    'record_as_asset',
+                    'asset_category',
+                    Row(
+                        Column('initial_value', css_class="col-6"),
+                        Column('salvage_value', css_class="col-6"),
+                    ),
+                    Row(
+                        Column('date_purchased', css_class="col-6"),
+                        Column('depreciation_period', css_class="col-6"),
+                    ),
+                )
             )
         )
         self.helper.add_input(Submit('submit', 'Submit'))
@@ -300,19 +322,65 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
         exclude = "maximum_stock_level", "minimum_order_level", "product_component", "equipment_component", 
         model = models.InventoryItem
 
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+        if cleaned_data['record_as_asset']:
+            if cleaned_data['initial_value'] == "" or \
+                    cleaned_data['depreciation_period'] == "" or \
+                    cleaned_data['date_purchased'] == "" or \
+                    cleaned_data["salvage_value"] == "" or \
+                    cleaned_data['asset_category'] == "":
+                raise forms.ValidationError("To record equipment as an asset, all the fields in the 'Asset' tab must be filled.")
+
+        return cleaned_data
+            
+
     def save(self, **kwargs):
         instance = super().save(**kwargs)
+        print(dir(instance))
 
-        if instance.equipment_component:
-            instance.equipment_component.asset_data = \
-                self.cleaned_data['asset_data']
-            instance.equipment_component.save()
-      
-        else:
-            instance.equipment_component = \
-                models.EquipmentComponent.objects.create(
-                    asset_data=self.cleaned_data['asset_data']
+        def create_asset():
+            return Asset.objects.create(
+                    name=instance.name,
+                description=instance.description,
+                category = self.cleaned_data['asset_category'],
+                initial_value = self.cleaned_data['initial_value'],
+                init_date = self.cleaned_data['date_purchased'],
+                salvage_value = self.cleaned_data['salvage_value'],
+                depreciation_period=self.cleaned_data['depreciation_period']
                 )
+
+        if self.cleaned_data['record_as_asset']:
+            if instance.equipment_component and \
+                    instance.equipment_component.asset_data:
+                #edit each field
+                asset = instance.equipment_component.asset_data
+                asset.name=instance.name
+                asset.description=instance.description
+                asset.category = self.cleaned_data['asset_category']
+                asset.initial_value = self.cleaned_data['initial_value']
+                asset.init_date = self.cleaned_data['date_purchased']
+                asset.salvage_value = self.cleaned_data['salvage_value']
+                asset.depreciation_period=self.cleaned_data['depreciation_period']
+                asset.save()
+                instance.equipment_component.asset = asset
+                instance.equipment_component.save()
+
+            elif instance.equipment_component and \
+                    instance.equipment_component.asset_data is None:
+                #create asset
+                asset = create_asset()
+                instance.equipment_component.asset_data = asset
+                instance.equipment_component.save()
+
+            elif instance.equipment_component is None:
+                #create component and asset
+                asset = create_asset()
+                instance.equipment_component = \
+                    models.EquipmentComponent.objects.create(
+                        asset_data=asset
+                    )
+
 
         instance.save()
         return instance
@@ -397,10 +465,13 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                         'due'
                     ),
                 Tab('Shipping and Notes', 
-                    'bill_to', 
-                    'tracking_number',
-                    'supplier_invoice_number',
-                    'notes'),
+                    Row(
+                        Column('bill_to', 
+                            'tracking_number',
+                            'supplier_invoice_number',
+                            css_class='col-6'),
+                        Column('notes', css_class='col-6'),
+                    )),
             ),
             HTML(
                 """
@@ -704,7 +775,7 @@ class ShippingAndHandlingForm(BootstrapMixin, forms.Form):
 
 class DebitNoteForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude = 'entry',
         model = models.DebitNote
 
     order = forms.ModelChoiceField(models.Order.objects.all(),

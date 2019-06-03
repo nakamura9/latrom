@@ -14,15 +14,10 @@ form li {
             
             <script>
                 function linkClickHandler(link){
-                    /*
-                    window.open(link ,'popup','width=900,height=480');
-                    
-                    return false;
-                    */
+                 
                    $('#popup-frame').attr('src', link);
                    var modal = document.getElementById('id-my-modal');
                     modal.style.display = 'block';
-                    $('#refresher-button').css('display', 'block');
                 }   
             </script>
             <div class="btn btn-group">
@@ -30,19 +25,12 @@ form li {
                         <a class="btn btn-primary text-white"  onclick="linkClickHandler('{{item.url}}')" target="popup">{{item.name}}</a>
                     {% endfor %}    
             </div>
-            <button
-                class="btn btn-success"
-                id="refresher-button" 
-                style="display:none;"
-                onclick="window.location.replace(window.location.href);"
-                >Refresh <i class="fas fa-sync"></i>
-            </button>
         <p class="lead">
         
         {% endif %}
     </div>
 </div>
-
+<input type="hidden" id="box-array" value="{{box_array}}">
 <div class="container">
     <div class="row">
         <div class="col-sm-3">

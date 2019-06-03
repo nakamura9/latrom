@@ -270,7 +270,7 @@ class AccountViewTests(TestCase):
                 'balance': 100,
                 'type': 'asset',
                 'description': 'Test Description',
-                'balance_sheet_category': 'expense'
+                'balance_sheet_category': 'non-current-assets'
             }
 
         cls.end = datetime.date.today()

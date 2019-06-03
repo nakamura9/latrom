@@ -475,6 +475,7 @@ class InvoiceViewTests(TestCase):
                     'returned_quantity': 1    
                 }])
             })
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_credit_note_detail_page(self):

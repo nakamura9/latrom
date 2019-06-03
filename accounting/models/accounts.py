@@ -23,8 +23,7 @@ BALANCE_SHEET_CATEGORIES = [
         ('non-current-assets', 'Long Term Assets'),
         ('current-liabilites', 'Current Liabilites'),
         ('long-term-liabilites', 'Long Term Liabilites'),
-        ('expense', 'Expense'),
-        ('current-assets', 'Current Assets'),
+        ('equity', 'Equity'),
         ("not-included", "Not Included")
     ]
 
@@ -52,7 +51,7 @@ class AbstractAccount(SoftDeletionModel):
     control_account = models.BooleanField(default=False)
     parent_account = models.ForeignKey('accounting.account', blank=True, 
         null=True, on_delete=models.SET_NULL)
-    balance_sheet_category = models.CharField(max_length=16, 
+    balance_sheet_category = models.CharField(max_length=32, 
         choices=BALANCE_SHEET_CATEGORIES, default='current-assets')
     
     def get_absolute_url(self):

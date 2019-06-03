@@ -181,7 +181,7 @@ class InvoiceCreateMixin(forms.Form):
 class CreditNoteForm( forms.ModelForm, BootstrapMixin):
     invoice = forms.ModelChoiceField(models.Invoice.objects.all(), widget=forms.HiddenInput)
     class Meta:
-        fields = '__all__'
+        exclude = 'entry',
         model = models.CreditNote
 
 #######################################################

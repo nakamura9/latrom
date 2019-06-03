@@ -26,7 +26,6 @@ export default class TimeSheet extends Component{
                 method: 'GET',
 
             }).then(res =>{
-                console.log(res.data)
                 this.setState({lines: res.data.attendanceline_set.map((line) =>(
                     {
                         editing: false,

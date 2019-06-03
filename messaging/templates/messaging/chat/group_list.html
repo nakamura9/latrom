@@ -1,0 +1,75 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Groups</h1>
+    <p class="lead">View active groups or create new ones</p>
+    <hr class="my-2">
+    <p class="lead">
+        <a class="btn btn-primary " href="{% url 'messaging:create-group' %}" role="button"> Create Group</a>
+    </p>
+</div>
+
+<style>
+
+    .group-card {
+        padding: 5px;
+        display: flex;
+        flex-direction: row;
+        min-height: 50px;
+        align-items: center;
+    }
+
+    .group-card-label {
+        margin-left: 25px;
+        width: 100%;
+    }
+    .group-card-icon {
+        height: 50px;
+        width: 50px;
+        font-size: 2.5rem;
+        
+    }
+
+    .group-card-icon img{
+        vertical-align: top;
+    }
+
+    #group-list {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="group-list" class="card shadow">
+                <div class="card-body">
+                    <ul  class="list-group">
+                        {% for group in object_list %}
+                            <a style="text-decoration:none;" href="{% url 'messaging:group' pk=group.pk %}">
+                                <li class="list-group-item group-card">
+                                    <div class="group-card-icon">
+                                        {% if group.icon %}
+                                            <img src="{{group.icon.url}}" alt="icon" width="50" height="50">
+                                        {% else %}
+                                        <i class="fas fa-users"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="group-card-label">
+                                        {{group.name}}
+                                    </div>
+                                </li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

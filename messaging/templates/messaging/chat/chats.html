@@ -1,0 +1,62 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3"><i class="fas fa-comments" style="color:#007bff;"></i> Chats</h1>
+    <p class="lead">Select a conversation to connect with other users.</p>
+</div>
+<style>
+    .chat-card {
+        padding: 5px;
+        display: flex;
+        flex-direction: row;
+        min-height: 50px;
+        align-items: center;
+    }
+    
+    .chat-card-label {
+        margin-left: 25px;
+    }
+    .chat-card-icon {
+        height: 50px;
+        width: 50px;
+    }
+
+    #chat-list {
+        height: 80vh;
+        overflowY: hidden;
+    }
+
+</style>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow">
+                <div class="card-body" id="chat-list">
+                    <ul class="list-group">
+                        {% for chat in chats %}
+                            <a href="{% url 'messaging:chat' pk=chat.pk %}">
+                                <li class="list-group-item chat-card">
+                                    <div class="chat-card-icon">
+                                        <i class="fas fa-user" style="font-size:2.5rem" ></i>
+                                    </div>
+                                    <div class="chat-card-label">
+                                        {% if chat.sender != request.user %}
+                                            {{chat.sender}}
+                                        {% else %}
+                                            {{chat.receiver }}
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

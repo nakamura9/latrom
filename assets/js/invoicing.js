@@ -20,10 +20,8 @@ if(sales){
         dataURL={'/invoicing/api/invoice/' + pk}
         headings={["Product", "Invoiced Quantity", "Unit Price", "Returned Quantity"]}
         resProcessor={(res) =>{
-            console.log(res.data)
             // filter by lines which have a returned value less than 1
             const filtered = res.data.invoiceline_set.filter((line) => line.product)
-            console.log(filtered)
             return filtered.map((line, i)=>({
                 product: line.id + " - " +line.product.product.name,
                 quantity: line.product.quantity,

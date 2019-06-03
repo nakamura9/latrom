@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Day from '../Day/Day';
 import {Aux} from '../../../src/common';
 import axios from 'axios';
+import styles from './week.css';
 
 class WeekView extends Component{
     state = {
@@ -24,51 +25,42 @@ class WeekView extends Component{
     }
 
     render(){
-        const cellStyle = {
-            borderCollapse:"collapse",
-            border:"1px solid black",
-            
-        };
-        const headStyle = {
-            ...cellStyle,
-            color: "white",
-            backgroundColor: "#007bff",
-            padding: "10px"
-            
-        };
         if(this.state.days.lenght === 0){
             return(<h3>Loading data...</h3>)
         }
+        const weekHeaderHeight = 42;
+        const navBarHeight = document.getElementById('navbar').offsetHeight;
+        const windowHeight = document.documentElement.clientHeight;
+        const height = windowHeight - weekHeaderHeight - navBarHeight -43;
+    
         return(
             <Aux>
-                <h3 style={{
-                    color: "white",
-                    backgroundColor: "#007BfF",
-               }}>Week: {this.state.week}</h3>
+                <h3 className={styles.weekHeader}>Week: {this.state.week}</h3>
                <div style={{
-                maxHeight: "500px",
+                maxHeight: (height + 35) + "px",
                 overflowY: "auto",
-                minWidth: `${window.screen.width -250}px`
+                width: '79vw'
                 }}>
                     <table>
                         <thead>
                             <tr>
-                                <th style={headStyle}>Monday</th>
-                                <th style={headStyle}>Tuesday</th>
-                                <th style={headStyle}>Wednesday</th>
-                                <th style={headStyle}>Thursday</th>
-                                <th style={headStyle}>Friday</th>
-                                <th style={headStyle}>Saturday</th>
-                                <th style={headStyle}>Sunday</th>
+                                <th className={styles.headStyle}>Monday</th>
+                                <th className={styles.headStyle}>Tuesday</th>
+                                <th className={styles.headStyle}>Wednesday</th>
+                                <th className={styles.headStyle}>Thursday</th>
+                                <th className={styles.headStyle}>Friday</th>
+                                <th className={styles.headStyle}>Saturday</th>
+                                <th className={styles.headStyle}>Sunday</th>
                             </tr>
                         </thead>
                         <tbody >
                             <tr>
                                 {this.state.days.map((day, i) =>(
                                     <td key={i}
-                                        style={{...cellStyle, height: '640px'}}>
+                                        className={styles.cellStyle}
+                                        >
                                         <div >
-                                            <Day data={day} view={'week'} width={this.props.width}/>
+                                            <Day data={day} view={'week'} width={this.props.width} height={height}/>
                                         </div>                                
                                     </td>
                                 ))}

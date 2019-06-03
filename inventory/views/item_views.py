@@ -84,7 +84,23 @@ class ProductCreateView( ContextMixin,
         },{
             'name': 'Add Inventory Category',
             'url': '/inventory/category-create/'
-        },]
+        },],
+        'box_array':  urllib.parse.quote(json.dumps([{
+                "model": "supplier",
+                "app": "inventory",
+                "id": "id_supplier",
+            },
+            {
+                "model": "unitofmeasure",
+                "app": "inventory",
+                "id": "id_unit",
+            },
+            {
+                "model": "category",
+                "app": "inventory",
+                "id": "id_category",
+            }
+            ]))
         }
 
     def get_initial(self):
@@ -145,6 +161,22 @@ class ConsumableCreateView( ContextMixin,
             'name': 'Add Inventory Category',
             'url': '/inventory/category-create/'
         }],
+        'box_array':  urllib.parse.quote(json.dumps([{
+                "model": "supplier",
+                "app": "inventory",
+                "id": "id_supplier",
+            },
+            {
+                "model": "unitofmeasure",
+                "app": "inventory",
+                "id": "id_unit",
+            },
+            {
+                "model": "category",
+                "app": "inventory",
+                "id": "id_category",
+            }
+            ]))
         }
     
     def get_initial(self):
@@ -172,8 +204,16 @@ class EquipmentUpdateView( ContextMixin,
     def get_initial(self):
         initial = super().get_initial()
         item = models.InventoryItem.objects.get(pk=self.kwargs['pk'])
-        if item.equipment_component.asset_data:
-            initial['asset_data'] = item.equipment_component.asset_data.pk
+        if item.equipment_component and item.equipment_component.asset_data:
+            asset = item.equipment_component.asset_data
+            initial.update({
+                'record_as_asset': True,
+                'asset_category': asset.category,
+                'initial_value': asset.initial_value,
+                'date_purchased': asset.init_date,
+                'salvage_value': asset.salvage_value,
+                'depreciation_period': asset.depreciation_period
+            })
         return initial
         
 class EquipmentDetailView( DetailView):
@@ -212,6 +252,22 @@ class EquipmentCreateView( ContextMixin,
             'name': 'Add Inventory Category',
             'url': '/inventory/category-create/'
         }],
+        'box_array':  urllib.parse.quote(json.dumps([{
+                "model": "supplier",
+                "app": "inventory",
+                "id": "id_supplier",
+            },
+            {
+                "model": "unitofmeasure",
+                "app": "inventory",
+                "id": "id_unit",
+            },
+            {
+                "model": "category",
+                "app": "inventory",
+                "id": "id_category",
+            }
+            ]))
         }
 
     def get_initial(self):

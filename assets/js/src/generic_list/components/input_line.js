@@ -122,6 +122,8 @@ class inputLine extends Component{
                     list={this.props.lines}
                     dataURL={field.url}
                     idField={field.idField}
+                    model={field.model}
+                    app={field.app}
                     canCreateNewItem={field.canCreateNewItem}
                     displayField={field.displayField}
                     newLink={field.newLink}
@@ -168,7 +170,7 @@ class inputLine extends Component{
                         }}>
                         <button 
                             style={{float: 'right', marginRight: '10px'}}
-                            className="btn"
+                            className="btn btn-block"
                             type="button"
                             onClick={this.insertHandler}>Insert</button>
                         </div>

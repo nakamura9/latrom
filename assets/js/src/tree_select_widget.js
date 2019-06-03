@@ -28,7 +28,8 @@ export default class TreeSelectWidget extends Component{
             label: "None",
             id: ""
         },
-        data: []
+        data: [],
+        rendered: []
     }
 
     componentDidMount(){
@@ -60,11 +61,15 @@ export default class TreeSelectWidget extends Component{
         $('#id_' + this.props.externalFormFieldName).val(this.state.selected.id);
     }
     render(){
+        let rendered = [];
         return(
             <div>
                 <ul style={{listStyleType: "none"}}>
                 {this.state.data.map((element, i) => {
-                    if(element.nodes.length === 0){
+                    if(rendered.includes(element.id)){
+                        return null;
+                    }else if(element.nodes.length === 0){
+                        rendered.push(element.id);
                         return <LeafNode
                                     focused={this.state.selected.id}
                                     isListView={this.props.isListView}
@@ -74,6 +79,7 @@ export default class TreeSelectWidget extends Component{
                                     key={i}
                                     selectHandler={this.selectHandler}/>
                     }else{
+                        rendered.push(element.id);
                         return <BranchNode 
                                     focused={this.state.selected.id}
                                     isListView={this.props.isListView}

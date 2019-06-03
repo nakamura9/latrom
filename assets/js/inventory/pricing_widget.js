@@ -18,7 +18,6 @@ class PricingWidget extends Component{
                 "method": "GET",
                 "url": "/inventory/api/inventory-item/" + tail
             }).then(res =>{
-                console.log(res.data.product_component.pricing_method.toString());
                 this.setState({
                     selected: res.data.product_component.pricing_method.toString(),
                     marginValue: res.data.product_component.margin,

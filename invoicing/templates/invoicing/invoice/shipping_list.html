@@ -20,8 +20,8 @@
                     <div class="card-body">
                         <h4 class="card-title">Meta Data</h4>
                         <p class="card-text">Invoice: {{object.invoice_number}}</p>
-                        <p class="card-text">Invoice Value: ${{object.total}}</p>
-                        <p class="card-text">Total shipping costs: ${{object.total_shipping_costs}}</p>
+                        <p class="card-text">Invoice Value: ${{object.total | floatformat:2}}</p>
+                        <p class="card-text">Total shipping costs: ${{object.total_shipping_costs | floatformat:2}}</p>
                         <p class="card-text">Percentage shipping cost: {{object.percentage_shipping_cost | floatformat:2 }}%</p>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                                 <tr>
                                     <td><a href="{% url 'accounting:expense-detail' pk=expense.pk %}">{{expense.pk}}</a></td>
                                     <td>{{expense.date}}</td>
-                                    <td>{{expense.amount}}</td>
+                                    <td>{{expense.amount | floatformat:2}}</td>
                                     <td style="width:50%">{{expense.description | truncatechars:80}}</td>
                                 </tr>
                                 {% endfor %}

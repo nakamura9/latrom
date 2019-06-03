@@ -1,13 +1,14 @@
 import React from 'react';
+import styles from './event.css';
+
 const event = (props) =>{
 
-    
     let startY = 90;
     let height = 44;
     
     if(props.view === "month"){
         startY = 0;
-        height = 58;
+        height = 32;
     }else{
         if(props.data.start){
             const start = parseInt(props.data.start.split(":")[0]);
@@ -30,37 +31,27 @@ const event = (props) =>{
                         <p>{props.description}</p>
                     </div>);
         }
-    let style = {
-        height: "100%",
-        width: "100%",
-        color: 'white',
-        backgroundColor: '#007bff',
-        padding: '5px'
-    };
+  
 
     const startX = props.offset ? props.offset: 0;
 
     return(
-        <a 
+        <a className={[styles.event, 'hvr-grow'].join(' ')}
             style={{
                 zIndex: props.index,
-                position: "absolute",
                 left: props.view === "month" ? "0px" :`${40 + startX}px`,
                 top: `${startY}px`,
-                padding:'5px',
-                border: '1px solid white',
                 height: `${height}px`,
-                textDecoration: 'none',
                 width: props.view === "day" 
                         ? "250px" : props.view === "week" ?
-                         `${props.width - 40}px` : `${props.width}px` ,
+                         `${props.width - 40}px` : `100%` ,
                 
             }} 
             href={"/planner/event-detail/" + props.data.id}>
-            <div style={style}>
+            <div className={styles.eventBox}>
                 <div>
                     <i className={"fas fa-" + props.data.icon}></i>
-                    <span  >{props.data.label}</span>
+                    <span> {props.data.label}</span>
                 </div>
                 {description}
                 

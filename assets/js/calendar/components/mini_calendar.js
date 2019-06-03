@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios'
+import Radium from 'radium';
+import styles from './mini_calendar.css';
 
 
 class  MiniCalendar extends Component{
@@ -25,22 +27,17 @@ class  MiniCalendar extends Component{
     render(){
         return(
             <div>
-            <h3 style={{color: "white"}}>{this.state.period}</h3>
-            <table style={{
-                border:'1px solid white', 
-                margin: '5px', 
-                padding: '20px',
-                color: "white"
-            }}>
+            <h4 className={styles.title}>{this.state.period}</h4>
+            <table className={styles.miniTable}>
                 <tbody>
                     <tr>
-                        <th>M</th>
-                        <th>T</th>
-                        <th>W</th>
-                        <th>T</th>
-                        <th>F</th>
-                        <th>S</th>
-                        <th>S</th>
+                        <th>Mo</th>
+                        <th>Tu</th>
+                        <th>We</th>
+                        <th>Th</th>
+                        <th>Fr</th>
+                        <th>Sa</th>
+                        <th>Su</th>
                     </tr>
                     {this.state.weeks.length === 0
                         ? <tr>
@@ -50,13 +47,22 @@ class  MiniCalendar extends Component{
                     }
                     {this.state.weeks.map((week, i) =>(
                         <tr key={i}>
-                            {week.map((day, i) =>(
-                                <td key={i} style={{padding:'3px'}}>
-                                    <a 
+
+                            {week.map((day, j) =>(
+                                <td key={j} style={{padding:'3px'}}>
+                                    <a key={i.toString() + '-' + j.toString()}
                                         href={`/calendar/day/${day.date}`}
                                         style={{
                                             textDecoration: "none",
-                                        color: "white"
+                                        color: (i==0 && day.day > 7) || (i == 4 && day.day < 7)
+                                        ? '#007bff' 
+                                        : 'white' ,
+                                        width:" 100%",
+                                        display: 'inline-block',
+                                        ":hover": {
+                                            color: '#007bff',
+                                            backgroundColor: 'white'
+                                        }
                                     }}>{day.day}</a></td>
                             ))}
                         </tr>
@@ -70,4 +76,4 @@ class  MiniCalendar extends Component{
 
 
 
-export default MiniCalendar;
+export default Radium(MiniCalendar);

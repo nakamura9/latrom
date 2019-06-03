@@ -9,6 +9,9 @@
     background-color: slategray;
 }
 
-.day-content{
-    
+.eventBox {
+    padding: 5px;
+    background-color: #007bff;
+    width: 100%;
+    box-sizing: border-box;
 }

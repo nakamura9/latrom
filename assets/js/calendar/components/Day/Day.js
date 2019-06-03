@@ -62,7 +62,7 @@ const day = (props) => {
                         height={20}
                         key={i} 
                         style={{
-                        borderTop: "1px solid black",
+                        borderTop: "1px solid #aaaaaa",
                         minHeight: "20px",
                         
                     }}>

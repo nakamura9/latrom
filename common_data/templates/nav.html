@@ -35,28 +35,13 @@ $(document).ready(function(){
                 </a>
             </li>
             <li class="nav-item" id="inbox">
-                <a href="{% url 'messaging:inbox' %}" class="nav-link">
+                <a href="{% url 'messaging:dashboard' %}" class="nav-link">
                     <i class="fas fa-envelope" style="font-size:24;"></i> 
                     Messaging 
-                    <span class="badge badge-primary" id='id_message_count'>
-                        {{request.user.inbox.total_in}}
-                    </span>
                     <sub>
                         <span class="badge badge-danger" >beta!</span>
                     </sub>
                 </a>
-                <script>
-                    // need to find a better way that does not violate the session check
-                    function inboxCounter(){
-                        $.get('/messaging/inbox-counter').then(function(res){
-                            $('#id_message_count').text(res.count);
-                        });
-                    }
-
-                    $(document).ready(function(){
-                        setInterval(inboxCounter, 3000000)
-                    })
-                </script>
             </li>
             {% endif %}
             

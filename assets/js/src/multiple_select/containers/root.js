@@ -10,7 +10,6 @@ import $ from "jquery";
  *  populatedURL - string
  *  resProcessor -function
  *  dataURL -string 
- *  title - string
  */
 
 class MultipleSelectWidget extends Component{
@@ -19,7 +18,6 @@ class MultipleSelectWidget extends Component{
     }
 
     updateForm =() =>{
-        console.log("form updated");
         $('#id_'+ this.props.inputField).val(
             encodeURIComponent(
                 JSON.stringify(this.state.selectedItems)
@@ -42,7 +40,6 @@ class MultipleSelectWidget extends Component{
                 method: 'GET'
             }).then((res) =>{
                 const dataList = this.props.resProcessor(res);
-                console.log(dataList);
                 this.setState({selectedItems: dataList}, () =>{
                     //this.removeDuplicates();
                     this.updateForm();
@@ -64,23 +61,16 @@ class MultipleSelectWidget extends Component{
     }
     
     render(){
-        const containerStyle = {
-            padding: "10px", 
-            borderRadius: "10px",
-            minHeight:"220px",
-            margin: "5px",
-            backgroundColor: "#07f"
-        };
+        
         return(
-            <div style={containerStyle}>
-                <h5 style={{color: "white"}}>{this.props.title}</h5>
-                <hr className="my-2" style={{color: "white"}}/>
+            <div>
+                <SearchableTextInputWidget
+                    nameField={this.props.nameField}
+                    dataURL={this.props.dataURL} 
+                    addItem={this.addItem}/>
                 <SelectedItemsListWidget 
                     removeHandler={this.removeHandler}
                     selectedItems={this.state.selectedItems}/>
-                <SearchableTextInputWidget
-                    dataURL={this.props.dataURL} 
-                    addItem={this.addItem}/>
             </div>
         )
     }

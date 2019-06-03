@@ -37,7 +37,6 @@ class CurrencyConverter extends Component{
     }
 
     setExchangeTable = (evt) =>{
-        console.log(evt.target.value);
         this.setState({exchangeTable: evt.target.value});
     }
 

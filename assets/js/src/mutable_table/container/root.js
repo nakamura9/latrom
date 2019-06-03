@@ -80,8 +80,6 @@ class MutableTable extends Component{
         let verified = true;
         for(i=0; i < this.state.data.length; i++){
             if(!this.state.data[i].verified){
-                console.log('is not verified ')
-                console.log(i)
                 verified = false;
             }
         }

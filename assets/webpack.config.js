@@ -15,7 +15,8 @@ module.exports = {
         calendar: './js/calendar',
         services: './js/services',
         manufacturing: './js/manufacturing',
-        widgets: './js/widgets'
+        widgets: './js/widgets',
+        messaging: './js/messaging'
     },
     output: {
         path: path.resolve('./bundles/'),
@@ -28,6 +29,18 @@ module.exports = {
 
     module: {
         rules: [
+            {
+                test: /\.css$/,
+                'loader': 'style-loader'
+            },
+            {
+                test: /\.css$/,
+                loader: 'css-loader',
+                query: {
+                    modules: true,
+                    localIdentName: '[name]__[local]__[hash:64:5]'
+                }
+            },
             {
                 test: /\.js$/,
                 loader: 'babel-loader',

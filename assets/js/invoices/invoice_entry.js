@@ -15,15 +15,23 @@ class EntryWidget extends Component{
 
     componentDidMount =() =>{
         let customer = document.getElementById('id_customer');
+        //initial value
+        this.setBillables(customer.value);
+        //event handler
         customer.addEventListener('change', (evt) =>{
-            axios({
-                method: 'get',
-                url: '/invoicing/api/customer/' + evt.target.value
-            }).then(res =>{
-                this.setState({billables: res.data.expense_set})
-            })
+            this.setBillables(evt.target.value)
         })
     }
+
+    setBillables = (customer) =>{
+        axios({
+            method: 'get',
+            url: '/invoicing/api/customer/' + customer
+        }).then(res =>{
+            this.setState({billables: res.data.expense_set})
+        })
+    }
+
     clickHandler = (evt) =>{
         this.setState({'focused': evt.target.id})
     }

@@ -123,7 +123,11 @@ export default class CalendarRouter extends Component{
                     <Sidebar calendarState={{...this.state}}
                             nextHandler={this.nextHandler}
                             prevHandler={this.prevHandler}/>
-                    <div style={{display:'inline-block', float: 'left', 'width':'500px',clear: 'right'}}>
+                    <div style={{
+                        display:'inline-block', 
+                        float: 'left', 
+                    'width':'500px',
+                        clear: 'right'}}>
                         {/*App */}
                         <Route 
                             path="/calendar/month/:year/:month" 

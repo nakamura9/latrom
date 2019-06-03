@@ -32,10 +32,8 @@ const InventorySelectWidgets = (props) => {
     let populatedURL  = null;
     if(tail !== 'create-procedure'){
         const pk =  splitURL[splitURL.length - 1];
-        console.log(pk);
         populatedURL = '/services/api/procedure/'+ pk;
     }
-    console.log(populatedURL);
     
     return(
         <div>

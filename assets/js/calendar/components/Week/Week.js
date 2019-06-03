@@ -1,16 +1,14 @@
 import React from 'react';
 import Day from '../Day/DayMonth';
+import styles from './week.css';
 
 const week = (props) => {
-    let cellStyle = {
-        borderCollapse:"collapse",
-        border:"1px solid black"
-    }
+    
     return(
         <tr>
             {props.days.map((day, i) =>(
                 <td key={i}
-                    style={cellStyle}>
+                    className={styles.cellStyle}>
                     <Day 
                         width={props.width}
                         height={props.height}

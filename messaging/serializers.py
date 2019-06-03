@@ -1,19 +1,45 @@
 from rest_framework import serializers
 from .models import *
+from common_data.serializers import UserSerializer
+from rest_framework.parsers import FormParser, MultiPartParser
 
-
-class MessageSerializer(serializers.ModelSerializer):
-    created_timestamp = serializers.DateTimeField(format="%A, %d %B %Y, %H:%M")
-    sender=serializers.StringRelatedField(many=False)
-    recipient=serializers.StringRelatedField(many=False)
+class BubbleSerializer(serializers.ModelSerializer):
+    parser_classes = (FormParser, MultiPartParser)
+    created_timestamp = serializers.DateTimeField(format="%A, %d %B %Y, %H:%M", 
+        required=False)
 
     class Meta:
-        model = Message
+        model = Bubble
         fields = "__all__"
 
+class BubbleReadSerializer(BubbleSerializer):
+    sender= UserSerializer(many=False)
 
-class MessageThreadSerializer(serializers.ModelSerializer):
-    messages = MessageSerializer(many=True)
+
+class ChatSerializer(serializers.ModelSerializer):
+    sender= serializers.StringRelatedField(many=False)
+    receiver= serializers.StringRelatedField(many=False)
+    messages = BubbleReadSerializer(many=True)
     class Meta:
-        model = MessageThread
+        model = Chat
+        fields = "__all__"
+
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Email
+        fields = "__all__"
+
+class EmailRetrieveSerializer(EmailSerializer):
+    sender = serializers.StringRelatedField(many=False)
+    sent_from = serializers.StringRelatedField(many=False)
+    to = serializers.StringRelatedField(many=False)
+    copy = serializers.StringRelatedField(many=True)
+    blind_copy = serializers.StringRelatedField(many=True)
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    messages = BubbleReadSerializer(many=True)
+
+    class Meta:
+        model = Group
         fields = "__all__"

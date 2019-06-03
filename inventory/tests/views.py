@@ -307,7 +307,6 @@ class ItemViewTests(TestCase):
             'tax': Tax.objects.create(name='tax', rate=15).pk
         }
         cls.EQUIPMENT_DATA = {
-            'asset_data': 1,
             'type': 1
         }
         cls.CONSUMABLE_DATA = {
@@ -392,6 +391,20 @@ class ItemViewTests(TestCase):
         
         self.assertEqual(resp.status_code,  302)
 
+    def test_post_equipment_with_asset_form(self):
+        self.EQUIPMENT_DATA.update({
+                'record_as_asset': True,
+                'asset_category': 0,
+                'initial_value': 100,
+                'salvage_value': 0,
+                'date_purchased': datetime.date.today(),
+                'depreciation_period': 5
+            })
+        resp = self.client.post(reverse('inventory:equipment-create'),
+            data=self.EQUIPMENT_DATA)        
+        
+        self.assertEqual(resp.status_code,  302)
+
     def test_get_equipment_list(self):
         resp = self.client.get(reverse('inventory:equipment-list'))
         self.assertEqual(resp.status_code,  200)
@@ -408,7 +421,23 @@ class ItemViewTests(TestCase):
             kwargs={
                 'pk': self.equipment.pk
             }), data=self.EQUIPMENT_DATA)
-                
+        
+        self.assertEqual(resp.status_code,  302)
+
+    def test_post_equipment_with_asset_update_form(self):
+        self.EQUIPMENT_DATA.update({
+                'record_as_asset': True,
+                'asset_category': 0,
+                'initial_value': 100,
+                'salvage_value': 0,
+                'date_purchased': datetime.date.today(),
+                'depreciation_period': 5
+            })
+        resp = self.client.post(reverse('inventory:equipment-update',
+            kwargs={
+                'pk': self.equipment.pk
+            }), data=self.EQUIPMENT_DATA)
+        
         self.assertEqual(resp.status_code,  302)
     
     def test_get_equipment_detail(self):
@@ -607,6 +636,7 @@ class OrderViewTests(TestCase):
                 'order': 1,
                 'comments': 'some comment'
             })
+        
         self.assertEqual(resp.status_code, 302)
 
     def test_get_debit_note_list_view(self):

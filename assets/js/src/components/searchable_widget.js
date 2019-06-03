@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import OptionsWidget from "./options_widget";
-
+import Radium from 'radium';
 // TODO make sure that on clear works, replace caret with times when deleting data
 class SearchableWidget extends Component {
     //currValue is whats being typed, selected is the value validated
@@ -40,6 +40,45 @@ class SearchableWidget extends Component {
         })
     }
 
+    updateChoices = () =>{
+        // retrieves the latest object from the database
+        if(!this.props.model){
+            return
+        }
+        axios({
+            'method': 'GET',
+            url: '/base/models/get-latest/' + this.props.app+ '/' + this.props.model
+        }).then((resp) =>{
+            if(!(resp.data.data === -1)){
+                
+                const pk = resp.data.data[0];
+                const itemString = resp.data.data[1];
+                let label;
+                if(itemString.indexOf('-') === -1){
+                    label=itemString;
+                }else{
+                    label = itemString.split('-')[1]
+                }
+                let isPresent = false;
+                this.state.choices.forEach((i) =>{
+                    const [id, name] = i.split('-');
+                    console.log(id);
+                    console.log(pk == id);
+
+                    if(id == pk){
+                        isPresent = true;
+                    }
+                });
+
+                if(!isPresent){
+                    let newChoices = this.state.choices;
+                    newChoices.push(pk.toString() + ' - ' + label);
+                    this.setState({choices: newChoices});
+                }
+            }
+        })
+    }
+
     onSelectValue = (index) => {
         this.setState({
             selectedValue: this.state.filteredChoices[index],
@@ -51,6 +90,8 @@ class SearchableWidget extends Component {
 
     toggleOptions = () =>{
         // only toggle options if the value is not already selected
+        
+        this.updateChoices()
         if(this.state.selectedValue){
             this.clearValue()
         }else{
@@ -62,8 +103,10 @@ class SearchableWidget extends Component {
     }
 
     showOptions = () =>{
+        this.updateChoices();
         this.setState({optionsHidden: false});
     }
+    
 
     clearValue = () =>{
         this.setState({
@@ -86,7 +129,6 @@ class SearchableWidget extends Component {
         if(index !== -1){
             selectedValue = evt.target.value;
         }
-
         this.setState({
             filteredChoices: filtered,
             currValue: evt.target.value,
@@ -114,6 +156,7 @@ class SearchableWidget extends Component {
                     handleChange={this.handleChange}
                     toggleOptions={this.toggleOptions}
                     showOptions={this.showOptions}
+                    hideOptions={this.hideOptions}
                     bordered={this.props.bordered}/>
                    
                 <OptionsWidget 
@@ -130,7 +173,10 @@ class SearchableWidget extends Component {
 class TextBoxWidget extends Component{
     componentDidMount(){
         let input = document.getElementById(`${this.props.idRoot}-input`);
-        input.addEventListener('focus', this.props.showOptions)
+        input.addEventListener('focus', () =>{
+            this.props.showOptions();
+        })
+       
     }
 
     render(){
@@ -183,4 +229,4 @@ SearchableWidget.propTypes = {
 
 }
 
-export default SearchableWidget;
+export default Radium(SearchableWidget);

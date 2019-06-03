@@ -11,7 +11,11 @@ import subprocess
 from common_data.utilities import db_util
 from common_data.schedules import backup_db
 from background_task.models import Task
+from messaging.models import EmailAddress
+from common_data.utilities.mixins import ContactsMixin
 
+class PhoneNumber(models.Model):
+    number = models.CharField(max_length=16)
 
 class Person(models.Model):
     first_name = models.CharField(max_length =32)
@@ -41,13 +45,15 @@ class SoftDeletionModel(models.Model):
     def hard_delete(self):
         super().delete()
 
-class Individual(Person, SoftDeletionModel):
+class Individual(ContactsMixin, Person, SoftDeletionModel):
     '''inherits from the base person class in common data
     represents clients of the business with entry specific details.
     the customer can also have an account with the business for credit 
     purposes
     A customer may be a stand alone individual or part of a business organization.
     '''
+    phone_fields = ['phone', 'phone_two']
+    email_fields = ['email']
     phone_two = models.CharField(max_length = 16,blank=True , default="")
     other_details = models.TextField(blank=True, default="")
     organization = models.ForeignKey('common_data.Organization', 
@@ -68,7 +74,10 @@ class Note(models.Model):
     def __str__(self):
         return "{}({}): {}".format(self.timestamp.strftime("%d %b %y, %H:%M "), self.author, self.note)
 
-class Organization(models.Model):
+class Organization(ContactsMixin, models.Model):
+    phone_fields = ['phone']
+    email_fields = ['email']
+
     legal_name = models.CharField(max_length=255)
     business_address = models.TextField(blank=True)
     website = models.CharField(max_length=255, blank=True)
