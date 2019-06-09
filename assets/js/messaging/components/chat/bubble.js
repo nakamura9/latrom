@@ -2,9 +2,10 @@ import React from "react";
 import styles from "./chatStyles.css";
 
 const MessageBubble = props => {
-  let image;
+  let isImage;
+
   if (props.message.attachment) {
-    image = props.message.attachment;
+    isImage = ['png', 'jpg', 'jpeg', 'gif'].includes(props.message.attachment.split('.')[1]) ;
   }
 
   return (
@@ -41,8 +42,8 @@ const MessageBubble = props => {
           justifyContent: "center"
         }}
       >
-        {image ? (
-          <a href={props.message.attachment}>
+        {isImage ? (
+          <a href={props.message.attachment} style={{color: 'white', textDecoration: 'none'}} download target="_blank">
             <img
               style={{ display: "inline-block" }}
               width={250}
@@ -51,10 +52,10 @@ const MessageBubble = props => {
             />
           </a>
         ) : props.message.attachment ? (
-          <a href={props.message.attachment}>
+          <a href={props.message.attachment} style={{color: 'white', textDecoration: 'none'}} download target="_blank">
             <i
               className="fas fa-file"
-              style={{ display: "inline-block", fontSize: "6rem" }}
+              style={{ display: "inline-block", fontSize: "6rem", color:'white'}}
             />
           </a>
         ) : null}

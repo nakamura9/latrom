@@ -5,6 +5,7 @@ import axios from 'axios';
 import PricingWidget from "../js/inventory/pricing_widget";
 import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import {ImgPreview} from '../js/src/common';
+import FilePickerUI from '../js/src/components/custom_file_picker';
 
 
 const storageMedia = document.getElementById('storage-media-select-widget');
@@ -65,10 +66,8 @@ if(storageMedia){
         detailUrlRoot='/inventory/storage-media-detail/'
         dataMapper={dataMapper}/>, storageMediaView);
 }else if(testView){
-    ReactDOM.render(<MultipleSelectWidget 
-        inputField="test-input"
-        dataURL="/base/api/users/"
-        nameField="username"/>, testView);
+    ReactDOM.render(<FilePickerUI 
+        fieldID="attachment"/>, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
 }else if(depts){

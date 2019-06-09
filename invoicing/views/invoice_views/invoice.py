@@ -188,9 +188,9 @@ class InvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
         context['object'] = Invoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class InvoiceEmailSendView(EmailPlusPDFView):
+class InvoiceEmailSendView(ConfigMixin, EmailPlusPDFView):
     inv_class = Invoice
-    success_url = reverse_lazy('invoicing:invoice-list')
+    success_url = reverse_lazy('invoicing:invoices-list')
     pdf_template_name = os.path.join("invoicing", "invoice",
             'pdf.html')
 

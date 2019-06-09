@@ -7,6 +7,7 @@ from .misc import other_urls
 from .payroll import pay_urls
 from .time import timesheet_urls
 from .portal import portal_urls 
+from .reports import report_urls
 from employees import views
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     pay_urls + \
     leave_urls + \
     department_urls + \
-    portal_urls
+    portal_urls + \
+    report_urls

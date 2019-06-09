@@ -13,14 +13,15 @@ import urllib
 
 class EmailForm(BootstrapMixin, forms.ModelForm):
     body = forms.CharField(widget=forms.HiddenInput)
+    folder = forms.CharField(widget=forms.HiddenInput)
     sender = forms.ModelChoiceField(User.objects.all(),
                                     widget=forms.HiddenInput)
     copy = forms.ModelMultipleChoiceField(EmailAddress.objects.all(),
                                           widget=forms.CheckboxSelectMultiple, required=False)
 
     class Meta:
-        fields = ['copy', 'to',
-                  'subject', 'body', 'sender']
+        fields = ['copy', 'to', 'folder',
+                  'subject', 'body', 'sender', 'attachment']
         model = Email
 
     def clean(self):
@@ -32,11 +33,20 @@ class EmailForm(BootstrapMixin, forms.ModelForm):
             urllib.parse.unquote(cleaned_data['body'])
         ))
 
+        if cleaned_data['attachment'] and \
+                cleaned_data['attachment'].size > 5000000:
+            raise forms.ValidationError('The uploaded file exceeds 5MB')
+
         cleaned_data['body'] = msg
-        print(msg)
         return cleaned_data
 
-
+class PrePopulatedEmailForm(EmailForm):
+    attachment_path = forms.CharField(widget=forms.HiddenInput)
+    attachment = forms.FileField(widget=forms.HiddenInput, required=False)
+    class Meta:
+        fields = ['copy', 'to', 'folder', 'attachment_path',
+                  'subject', 'body', 'sender', 'attachment']
+        model = Email
 class GroupForm(forms.ModelForm):
     admin = forms.ModelChoiceField(
         User.objects.all(), widget=forms.HiddenInput)
@@ -72,14 +82,29 @@ class UserProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Row(
-                Column('user', 'avatar', 'email_address',
-                       'email_password', css_class='form-group col-6'),
-                Column(HTML("""
-                    {% load render_bundle from webpack_loader %}
-                    {% render_bundle 'widgets' %}
-                    <div id="avatar-preview"></div>
-                """), css_class='form-group col-6'),
+            TabHolder(
+                Tab('Basic',
+                    Row(
+                        Column('user', 'avatar', 'email_address',
+                            'email_password', css_class='form-group col-6'),
+                        Column(HTML("""
+                            {% load render_bundle from webpack_loader %}
+                            {% render_bundle 'widgets' %}
+                            <div id="avatar-preview"></div>
+                        """), css_class='form-group col-6'),
+                    )
+                ),
+                Tab('Advanced',
+                    'smtp_server',
+                    'smtp_port',
+                    'pop_imap_host',
+                    'pop_port'
+                )
             )
         )
         self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class AxiosEmailForm(forms.Form):
+    attachment = forms.FileField(required=False)
+    body = forms.CharField()

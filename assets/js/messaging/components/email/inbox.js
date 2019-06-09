@@ -6,11 +6,15 @@ class InboxList extends React.Component{
     state = {
         messages: [
             
-        ]
+        ],
+        status: 'loading'
     }
     componentDidMount(){
         axios.get('/messaging/api/inbox/').then(res =>{
-            this.setState({messages: res.data})
+            this.setState({
+                messages: res.data,
+                status: 'loaded'
+            })
         })
     }
 
@@ -28,10 +32,12 @@ class InboxList extends React.Component{
             <ul className="list-group">
                 {this.state.messages.length === 0 ?
                     <li className='list-group-item'>
-                        No Messages in This folder.
+                        {this.state.status === 'loaded' ? 'No Messages in this folder'
+                            : <img src="/static/common_data/images/spinner.gif" width={50} height={50} />}
                     </li> 
                     : null
                 }
+
                 {this.state.messages.map((msg, i) =>(
                     <ListItem 
                         msg={msg} 

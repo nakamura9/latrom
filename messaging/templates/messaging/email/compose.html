@@ -21,8 +21,12 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <form action="" method="POST">
+            <div>
+                {{form.errors}}
+            </div>
+            <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
+                {{form.attachment_path}}
                 <ul class="nav nav-tabs">
                     <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">Basic</a></li>
                     <li class="nav-item"><a class="nav-link" href="#cc-bcc" data-toggle="tab">Copy To</a></li>
@@ -47,11 +51,21 @@
                     </label>
                     {{form.subject}}
                 </div>
+                
+                <div id="div_id_attachment" class="form-group"> 
+                {% if not form.attachment_path %}
+                <label for="id_attachment" class="col-form-label ">
+                        Attachment
+                    </label>
+                {% endif %}
+                    {{form.attachment}}
+                </div>
                 <div id="div_id_body" class="form-group"> <label for="id_body" class="col-form-label  requiredField">
                         Body<span class="asteriskField">*</span> </label>
                     <div id="message-field"></div>
                 </div>
                 {{form.sender}}
+                {{form.folder}}
                 <div class="form-group">
                     <input type="submit" class="btn btn-primary" value="Submit" />
 

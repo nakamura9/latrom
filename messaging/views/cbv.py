@@ -13,21 +13,31 @@ from rest_framework.viewsets import ModelViewSet
 import datetime
 from messaging import models, forms, serializers
 from django.db.models import Q
-from django.contrib.auth.models import User
+from latrom.settings import MEDIA_ROOT
 from common_data.utilities.mixins import ContextMixin
 import os
 import json
 import urllib
-from messaging.email_api.email import Gmail
+from messaging.email_api.email import EmailSMTP
 from draftjs_exporter.html import HTML as exporterHTML
+from ..email_api.service import sync_service
+
+class UserEmailConfiguredMixin(object):
+    def get(self, *args, **kwargs):
+        if models.UserProfile.objects.filter(user=self.request.user).exists():
+            return super().get(*args, **kwargs)
+        return HttpResponseRedirect('/messaging/config')
 
 
-
-class Dashboard(LoginRequiredMixin, TemplateView):
+class Dashboard(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
 
+    def get(self, request, *args, **kwargs):
+        sync_service(request.user)
+        return super.get(request, *args, **kwargs)
 
-class InboxView(LoginRequiredMixin, TemplateView):
+
+class InboxView(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     # a list of threads not messages
     # includes a panel for notifications
     template_name = os.path.join('messaging', 'email', 'inbox.html')
@@ -44,7 +54,7 @@ class NotificationDetailView(LoginRequiredMixin, DetailView):
         return resp
 
 
-class ComposeEmailView(LoginRequiredMixin, CreateView):
+class ComposeEmailView(LoginRequiredMixin, UserEmailConfiguredMixin, CreateView):
     template_name = os.path.join('messaging', 'email', 'compose.html')
     form_class = forms.EmailForm
     model = models.Email
@@ -52,54 +62,26 @@ class ComposeEmailView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         return {
-            'sender': self.request.user.pk
+            'sender': self.request.user.pk,
+            'folder': 'sent'
         }
 
     def form_valid(self, form):
         data = form.cleaned_data
 
-        g = Gmail()
-        profile = models.UserProfile.objects.get(user=self.request.user)
-        g.get_credentials(profile)
         
-        g.send_html_email(data['subject'], data['to'].address, data['body'])
+        profile = models.UserProfile.objects.get(user=self.request.user)
+        g = EmailSMTP(profile)
+
+        print(data['attachment'].name)
+        path = os.path.join(MEDIA_ROOT, 'messaging', data['attachment'].name)
+        
+        if(data.get('attachment', None)):# and os.path.exists(path):
+            g.send_email_with_attachment(data['subject'], data['to'].address, data['body'], data['attachment'], html=True)
+        else:
+            g.send_html_email(data['subject'], data['to'].address, data['body'])
 
         return super().form_valid(form)
-
-
-def notification_service(request):
-    try:
-        unread = models.Notification.objects.filter(
-            read=False, user=request.user)
-    except:
-        return JsonResponse({'latest': {}, 'unread': 0})
-
-    if unread.count() == 0:
-        return JsonResponse({'latest': {}, 'unread': 0})
-
-    latest = unread.latest('timestamp')
-    data = {
-        'latest': {
-            'title': latest.title,
-            'message': latest.message,
-            'action': latest.action,
-            'id': latest.pk,
-            'stamp': latest.timestamp.strftime("%d, %B, %Y")
-        },
-        'unread': unread.count()
-    }
-    #latest.read = True
-    latest.save()
-
-    return JsonResponse(data)
-
-
-def mark_notification_read(request, pk=None):
-    notification = get_object_or_404(models.Notification, pk=pk)
-    notification.read = True
-    notification.save()
-    return JsonResponse({'status': 'ok'})
-
 
 class ChatListView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('messaging', 'chat', 'chats.html')
@@ -213,106 +195,3 @@ def create_chat(request, user=None):
     return HttpResponseRedirect(reverse('messaging:chat', kwargs={
         'pk': chat.pk
     }))
-
-
-class BubbleAPIViewset(ModelViewSet):
-    queryset = models.Bubble.objects.all()
-
-    def get_serializer_class(self):
-        if self.request.method in ['GET']:
-            return serializers.BubbleReadSerializer
-
-        return serializers.BubbleSerializer
-
-
-class GroupAPIViewset(ModelViewSet):
-    queryset = models.Group.objects.all()
-    serializer_class = serializers.GroupSerializer
-
-
-class ChatAPIViewset(ModelViewSet):
-    queryset = models.Chat.objects.all()
-    serializer_class = serializers.ChatSerializer
-
-class EmailAPIViewset(ModelViewSet):
-    queryset = models.Email.objects.all()
-    
-    def get_serializer_class(self):
-        if self.request.method in ['GET']:
-            return serializers.EmailRetrieveSerializer
-
-        return serializers.EmailSerializer
-
-
-
-def close_chat(request, pk=None):
-    chat = get_object_or_404(models.Chat, pk=pk)
-    chat.archived=True
-    chat.save()
-
-    return HttpResponseRedirect(reverse('messaging:chat-list'))
-
-
-def close_group(request, pk=None):
-    group = get_object_or_404(models.Group, pk=pk)
-    group.active=False
-    group.save()
-
-    return HttpResponseRedirect(reverse('messaging:group-list'))
-
-class InboxAPIView(APIView):
-    def get(self, request):
-        #maybe try to sync latest emails here?
-        profile = models.UserProfile.objects.get(user=request.user)
-        # include copy 
-        emails = models.Email.objects.filter(to__address=profile.email_address)
-        data = serializers.EmailRetrieveSerializer(emails, many=True).data
-        return Response(data)
-
-class DraftsAPIView(APIView):
-    def get(self, request):
-        emails = models.Email.objects.filter(
-            sender=request.user,
-            sent=False)
-        data = serializers.EmailRetrieveSerializer(emails, many=True).data
-        return Response(data)
-
-
-class SentAPIView(APIView):
-    def get(self, request):
-        emails = models.Email.objects.filter(
-            sender=request.user,
-            sent=True)
-
-        data = serializers.EmailRetrieveSerializer(emails, many=True).data
-        return Response(data)
-
-def send_draft(request, pk=None):
-    email = get_object_or_404(models.Email, pk=pk)
-    g = Gmail()
-    profile = models.UserProfile.objects.get(user=email.sender)
-    g.get_credentials(profile)
-    g.send_html_email(email.subject, email.to.address, email.body)
-
-    return JsonResponse({'status': 'ok'})
-
-def reply_email(request, pk=None):
-    email = get_object_or_404(models.Email, pk=pk)
-    g = Gmail()
-    profile = models.UserProfile.objects.get(user=email.sender)
-    g.get_credentials(profile)
-
-    #set up 
-    config = {}
-    exporter = exporterHTML(config)
-    print(request.body)
-    bindata = request.body.decode('utf-8')
-    jsondata = json.loads(bindata)
-    print(jsondata)
-    body = exporter.render(
-        jsondata['body']
-    )
-    g.send_html_email(email.subject, email.to.address, body)
-
-    return JsonResponse({'status': 'ok'})
-

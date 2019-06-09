@@ -17,6 +17,7 @@
 </style>
 <div style="max-width:300px;" id="test"></div>
 <div id='email-content-test'></div>
+{{form}}
 <script>
     $.get('/messaging/api/email/2', function(data){
         console.log($.parseHTML(data.body))

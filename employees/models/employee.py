@@ -12,6 +12,9 @@ import planner
 import accounting
 import invoicing
 from employees.models.payslip import Payslip
+from employees.models.timesheets import EmployeeTimeSheet,AttendanceLine
+
+import employees
 from employees.models.misc import PayrollOfficer
 from django.shortcuts import reverse
 from common_data.utilities.mixins import ContactsMixin
@@ -145,6 +148,37 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
             Q(Q(completed=False) & Q(date__lt=datetime.date.today())) & 
             filter).count()
 
+    @property
+    def attendance(self):
+        TODAY = datetime.date.today()
+        
+        if EmployeeTimeSheet.objects.filter(
+                employee=self, 
+                year=TODAY.year, 
+                month=TODAY.month).exists():
+            sheet = EmployeeTimeSheet.objects.get(
+                                    employee=self, 
+                                    year=TODAY.year, 
+                                    month=TODAY.month)
+
+            attendance = []
+            for i in range(1,32):
+                try:
+                    date = datetime.date(TODAY.year, TODAY.month, i)
+                except:
+                    attendance.append(2)
+                    break
+                else:
+                    if AttendanceLine.objects.filter(
+                                date=date, timesheet=sheet).exists():
+                        attendance.append(0)
+                    else:
+                        attendance.append(2)
+
+            return attendance
+
+        else:
+            return list(range(1,32))
 
 class Department(models.Model):
     name = models.CharField(max_length=255)

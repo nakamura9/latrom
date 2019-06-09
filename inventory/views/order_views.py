@@ -249,20 +249,12 @@ class OrderPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
         context['object'] = models.Order.objects.get(pk=self.kwargs['pk'])
         return context
 
-class OrderEmailSendView(EmailPlusPDFView):
+class OrderEmailSendView(ConfigMixin, EmailPlusPDFView):
     inv_class = models.Order
     pdf_template_name = os.path.join("inventory", "order",
             'pdf.html')
     success_url = reverse_lazy('inventory:order-list')
-    extra_context = {
-        'title': 'Send Purchase Order as PDF attatchment'
-    }
-
-    def get_initial(self):
-        ord = models.Order.objects.get(pk=self.kwargs['pk'])
-        return {
-            'recipient': ord.supplier.email
-        }
+    
 
 class ShippingCostDetailView(DetailView):
     # TODO test
