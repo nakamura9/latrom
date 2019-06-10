@@ -24,8 +24,10 @@ class EmailAddress(models.Model):
 
 class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
     email_fields =['email_address']
+
     user = models.OneToOneField('auth.user', on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to=os.path.join(MEDIA_ROOT, 'chat'))
+    avatar = models.ImageField(
+        upload_to=os.path.join(MEDIA_ROOT, 'chat'), blank=True, null=True)
     email_address = models.CharField(max_length=255)
     email_password = models.CharField(max_length=255)
     smtp_server = models.CharField(max_length=255, default='smtp.gmail.com')
