@@ -3,81 +3,139 @@ import smtplib
 import ssl
 import imaplib
 from email.mime.text import MIMEText
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 import quopri
 from email import encoders
 import email
-from messaging.models import Email, EmailAddress
+from messaging.models import Email, EmailAddress, UserProfile
 import datetime
 import parse
+from email.parser import HeaderParser
+import logging
+
+
+logger =logging.getLogger(__name__)
+
 
 class EmailBaseClass():
-    
-
     def send_plaintext_email(self, to, message):
-        '''sends plain text email over tls.'''
+        '''sends plain text email over tls.
+        Args
+        ======
+        to - list of strings  email addresses
+        message - plain text string 
+        '''
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL(
-                self.SMTP_SERVER, self.SMTP_PORT, context=context) as server:
-            server.login(self.profile.email_address, self.profile.email_password)
-            server.sendmail(self.profile.email_address, to, message)
+                self.SMTP_SERVER, 
+                self.SMTP_PORT, 
+                context=context) as server:
+            server.login(
+                    self.profile.email_address, 
+                    self.profile.email_password)
+            try:
+                resp = server.sendmail(self.profile.email_address, to, message)
+            except smtplib.SMTPException:
+                logger.error(f'Email to {to.split(", ")} not sent')
+            else:
+                if len(resp) == 0:
+                    pass
+                else:
+                    logger.error(f'Email to {", ".join(resp.keys())} not sent')
 
-    def send_html_email(self, subject, to, html_message):
+            finally:
+                server.quit()
+
+    def send_html_email(self, 
+                        subject, 
+                        to, cc, bcc, 
+                        html_message, 
+                        hook=None, 
+                        **hook_kwargs):
+        '''Used to send multipart emails with HTML content.
+            calls the send plaintext email method to actually send emails
+            applies headers and adds an html part to the message.
+            Args
+            =======
+            subject - string describes message
+            to - string, email address of recepient
+            cc - list of strings, carbon copy of message
+            bcc - list of strings, blind carbon copy
+            hook - func - used to attach additional mime parts
+            hook_kwargs - variable length kwargs passed on to hook function '''
+
         mime_message = MIMEMultipart('alternative')
         mime_message['Subject'] = subject
         mime_message['From'] = self.profile.email_address
         mime_message['To'] = to
+        mime_message['Cc'] = ','.join(cc)
         mime_message.attach(MIMEText(html_message, 'html'))
-        self.send_plaintext_email(to, mime_message.as_string())
+        
+
+        if hook:
+            parts = hook(**hook_kwargs)
+            for part in parts:
+                mime_message.attach(part)
+
+        self.send_plaintext_email([to] + cc + bcc, mime_message.as_string())
 
     def send_email_with_attachment(self,
                                    subject,
-                                   to,
+                                   to, cc, bcc,
                                    message,
                                    attachment,
                                    html=False):
-        mime_message = MIMEMultipart('alternative')
-        mime_message['Subject'] = subject
-        mime_message['From'] = self.profile.email_address
-        mime_message['To'] = to
-        if html:
-            mime_message.attach(MIMEText(message, 'html'))
-        else:
-            mime_message.attach(MIMEText(message, 'plain'))
 
-        # open as binary
-        #with open(filename, 'rb') as attachment:
+        def add_attachment_hook(a=None):
+            '''Used to add files to emails. returns a one element list
+            with the mime-part of the encoded attachment'''
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(a.read())
 
-        part = MIMEBase('application', 'octet-stream')
-        part.set_payload(attachment.read())
+            # encoded into ASCII string
+            encoders.encode_base64(part)
+            part.add_header(
+                'Content-Disposition',
+                f'attachment; filename={a.name}',
+            )
+            return [part]
 
-        # encoded into ASCII string
-        encoders.encode_base64(part)
-        part.add_header(
-            'Content-Disposition',
-            f'attachment; filename={attachment.name}',
-        )
-
-        mime_message.attach(part)
-        self.send_plaintext_email(to, mime_message.as_string())
+        self.send_html_email(subject, 
+                            to, cc, bcc, 
+                            message, 
+                            hook=add_attachment_hook,
+                            a=attachment)
 
     def fetch_mailbox(self):
+        '''Used to retrueve an instance of the mailbox'''
         self.configured = True
         mailbox = imaplib.IMAP4_SSL(self.IMAP_HOST, self.IMAP_PORT)
         mailbox.login(self.profile.email_address, self.profile.email_password)
         return mailbox
 
-    def process_email(self,mail, id):
+    def process_email(self, mail, id):
+        '''Used to retrieve a complete email from the server, and decode it in UTF-8. Logs any errors. 
+
+        Args
+        ==========
+        mail -  object mailbox
+        id - string -represents the index of the email in the folder.
+
+        Returns
+        ==========
+        the decoded string
+        '''
+
         typ, data = mail.fetch(id, '(RFC822)')
         raw = data[0][1]
 
         try:
             as_string = raw.decode('utf-8')
-            print('decoded')
         except Exception as e:
-            print('error encountered decoding message')
-            print(e)
+            logger.error(
+                f'Error encountered decoding message {id} with error {e}')
             return
         
         return as_string
@@ -88,39 +146,34 @@ class EmailBaseClass():
                                     draft=False, 
                                     sent=False, 
                                     incoming=False):
-        print("##raw email: ", msg)
+        '''Iterates over the message parts and combines the text sections together while decoding them as well.'''
+
         msg_string = ""
         html_string = ""
 
+        #multipart vs singular message
         if msg.is_multipart():
             
-            #TODO separate text parts from html parts
             for part in msg.walk():
                 content_type = part.get_content_type()
                 payload = part.get_payload(decode=True)
-                print(payload)
+
                 if isinstance(payload, bytes):
                         payload = payload.decode('utf-8')
                     
                 if content_type  == 'text/plain':
-                    print('string content')
                     msg_string += payload
 
                 if content_type == 'text/html':
-                    print('html content')
                     html_string += payload
 
         else:
-            print('direct msg')
             payload = msg.get_payload(decode=True)
             if isinstance(payload, bytes):
                 payload = payload.decode('utf-8')
-            print(payload)
             msg_string = payload
 
-        from email.parser import HeaderParser
         headers = dict(HeaderParser().parsestr(msg.as_string()).items())
-        print("##headers: ", headers)
 
         
         if headers.get('Received'):
@@ -204,6 +257,89 @@ class EmailBaseClass():
                 fp.write(part.get_payload(decode=True))
                 fp.close()
 
+    def fetch_messages(self, 
+                        mail,
+                        mail_ids,
+                        latest, 
+                        incoming=False, 
+                        sent=False,
+                        draft=False):
+        skipped = 0
+        errors = 0
+        queryset = self.profile.emails
+        
+
+        for id in mail_ids:
+            if isinstance(id, bytes):
+                id = id.decode('utf-8')
+            if id < latest:
+                skipped += 1
+                continue
+
+            folder = None
+            if incoming:
+                folder = 'inbox'
+            elif sent:
+                folder='sent'
+            else:
+                folder='drafts'
+                
+            if queryset.filter(server_id=id, folder=folder).exists():
+                continue
+
+            as_string = self.process_email(mail, id)
+            
+            #returns email.Message object
+            
+            email_message = email.message_from_string(as_string)
+            try:
+                self.save_email_to_local_database(
+                    email_message, 
+                    id, 
+                    incoming=incoming,
+                    sent=sent,
+                    draft=draft)
+
+            except UnicodeDecodeError:
+                errors += 1
+                logger.error(f'Failed to decode email {id}')
+            except:
+                errors += 1
+                logger.error('An unexpected error occurred')
+
+        logger.info(f'{skipped} emails skipped')
+        logger.warn(f'{errors} errors handled')
+
+    def fetch_inbox(self):
+        # only store the latest 100 emails and the emails stored in the system.
+        mail = self.fetch_mailbox()
+
+        mail.select(self.config['inbox'])
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0].split()
+        latest = self.profile.latest_inbox
+        self.fetch_messages(mail, mail_ids, latest, incoming=True)
+        
+
+    def fetch_sent(self):
+        mail = self.fetch_mailbox()
+
+        mail.select(self.config['sent'])
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0].split()
+        latest = self.profile.latest_sent
+        self.fetch_messages(mail, mail_ids, latest, sent=True)
+        
+
+    def fetch_drafts(self):
+        mail = self.fetch_mailbox()
+
+        mail.select(self.config['drafts'])
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0].split()
+        latest = self.profile.latest_drafts
+        self.fetch_messages(mail, mail_ids, latest,draft=True)
+
 class EmailSMTP(EmailBaseClass):
     EMAIL_CONFIG = {
         'gmail': {
@@ -225,66 +361,10 @@ class EmailSMTP(EmailBaseClass):
 
         self.configured =False
 
-    def fetch_inbox(self):
-        # only store the latest 100 emails and the emails stored in the system.
-        mail = self.fetch_mailbox()
-
-        mail.select(self.config['inbox'])
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = self.profile.latest_inbox
-        recent = len(mail_ids) - 5
-        for id in mail_ids[-10:]:
-            if isinstance(id, bytes):
-                id = id.decode('utf-8')
-            if id < latest:
-                continue
-                
-            as_string = self.process_email(mail, id)
-            print("##called")
-            #returns email.Message object
-            email_message = email.message_from_string(as_string)
-            try:
-                self.save_email_to_local_database(email_message, id, incoming=True)
-            except UnicodeDecodeError:
-                pass
-    
-    def fetch_sent(self):
-        mail = self.fetch_mailbox()
-
-        mail.select(self.config('sent'))
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = None
-        recent = len(mail_ids) - 5
-        for id in mail_ids[recent:]:
-            typ, data = mail.fetch(id, '(RFC822)')
-            raw = data[0][1]
-
-            as_string = raw.decode('utf-8')
-            #returns email.Message object
-            email_message = email.message_from_string(as_string)
-            self.save_email_to_local_database(email_message, sent=True)
-
-    def fetch_drafts(self):
-        mail = self.fetch_mailbox()
-
-        mail.select(self.config['drafts'])
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = None
-        recent = len(mail_ids) - 5
-        for id in mail_ids[recent:]:
-            typ, data = mail.fetch(id, '(RFC822)')
-            raw = data[0][1]
-
-            as_string = raw.decode('utf-8')
-            #returns email.Message object
-            email_message = email.message_from_string(as_string)
-            self.save_email_to_local_database(email_message, draft=True)
-
-
-
 
 if __name__ == "__main__":
-    pass
+    profile = UserProfile.objects.first()
+    client = EmailSMTP(profile)
+    client.fetch_inbox()
+    client.fetch_drafts()
+    client.fetch_sent()

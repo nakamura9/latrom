@@ -15,6 +15,9 @@ bubble_router.register(r'^api/bubble', views.BubbleAPIViewset)
 email_router = DefaultRouter()
 email_router.register(r'^api/email', views.EmailAPIViewset)
 
+email_address_router = DefaultRouter()
+email_router.register(r'^api/email-address', views.EmailAddressAPIViewset)
+
 chat_urls = [
     path('chat-list', views.ChatListView.as_view(), name='chat-list'),
     path('chat/<int:pk>', views.ChatView.as_view(), name='chat'),
@@ -25,13 +28,19 @@ chat_urls = [
     path('group/<int:pk>', views.GroupView.as_view(), name='group'),
     path('close-chat/<int:pk>', views.close_chat, name='close-chat'),
     path('close-group/<int:pk>', views.close_group, name='close-group'),
+    path('api/chat/get-latest/<int:chat>', views.get_latest_chat_messages, 
+        name='chat-api-get-latest'),
+    path('api/group/get-latest/<int:group>', views.get_latest_group_messages, 
+        name='group-api-get-latest'),
 
 ] + chat_router.urls + bubble_router.urls  + group_router.urls + \
-        email_router.urls
+        email_router.urls + email_address_router.urls
 
 email_urls = [
     path('create-message', views.ComposeEmailView.as_view(), 
         name='create-message'),
+    path('create-email-address', views.EmailAddressCreateView.as_view(), 
+        name='create-email-address'),
     path('inbox/', views.InboxView.as_view(), name='inbox'),
     path('config/', views.UserProfileView.as_view(), name='config'),
     path("api/inbox/", views.InboxAPIView.as_view(), name="inbox-api"),

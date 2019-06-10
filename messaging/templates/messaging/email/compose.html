@@ -29,21 +29,29 @@
                 {{form.attachment_path}}
                 <ul class="nav nav-tabs">
                     <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">Basic</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#cc-bcc" data-toggle="tab">Copy To</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cc" data-toggle="tab">Cc</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#bcc" data-toggle="tab">Bcc</a></li>
                 </ul>
                 <div class="tab-content panel-body">
                     <div id="to" class="tab-pane active">
-                        <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                To</label>
-                            {{form.to}}
-                        </div>
+                        <label for="id_recipient" class="col-form-label  requiredField">
+                                To
+                        </label>
+                        <div id='email-to'></div>
+                        <input type="hidden" name="to" id="id_to" />
                     </div>
-                    <div id="cc-bcc" class="tab-pane">
-                        <div id="div_id_copy" class="form-group"> <label for="id_copy" class="col-form-label ">
-                                Copy
-                            </label>
-                            {{form.copy}}
-                        </div>
+                    <div id="cc" class="tab-pane"> 
+                        <label for="id_copy" class="col-form-label ">
+                            Cc:
+                        </label>
+                        <div id="email-cc"></div>
+                        
+                    </div>
+                    <div id="bcc" class="tab-pane">
+                        <label for="id_bcc" class="col-form-label ">
+                            Bcc:
+                        </label>
+                        <div id="email-bcc"></div>
                     </div>
                 </div>
                 <div id="div_id_subject" class="form-group"> <label for="id_subject" class="col-form-label ">
@@ -67,6 +75,7 @@
                 {{form.sender}}
                 {{form.folder}}
                 <div class="form-group">
+                    <label for="">Save as Draft? {{form.save_as_draft}}</label> <br>
                     <input type="submit" class="btn btn-primary" value="Submit" />
 
                 {{form.body}}

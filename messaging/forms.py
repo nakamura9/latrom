@@ -14,17 +14,16 @@ import urllib
 class EmailForm(BootstrapMixin, forms.ModelForm):
     body = forms.CharField(widget=forms.HiddenInput)
     folder = forms.CharField(widget=forms.HiddenInput)
-    sender = forms.ModelChoiceField(User.objects.all(),
+    owner = forms.ModelChoiceField(User.objects.all(),
                                     widget=forms.HiddenInput)
-    copy = forms.ModelMultipleChoiceField(EmailAddress.objects.all(),
-                                          widget=forms.CheckboxSelectMultiple, required=False)
-
+    save_as_draft = forms.BooleanField(required=False)
     class Meta:
-        fields = ['copy', 'to', 'folder',
-                  'subject', 'body', 'sender', 'attachment']
+        fields = ['save_as_draft', 
+                'folder', 'subject', 'body', 'owner', 'attachment']
         model = Email
 
     def clean(self):
+        
         cleaned_data = super().clean()
 
         config = {}
@@ -45,7 +44,7 @@ class PrePopulatedEmailForm(EmailForm):
     attachment = forms.FileField(widget=forms.HiddenInput, required=False)
     class Meta:
         fields = ['copy', 'to', 'folder', 'attachment_path',
-                  'subject', 'body', 'sender', 'attachment']
+                  'subject', 'body', 'owner', 'attachment']
         model = Email
 class GroupForm(forms.ModelForm):
     admin = forms.ModelChoiceField(
@@ -108,3 +107,8 @@ class UserProfileForm(forms.ModelForm):
 class AxiosEmailForm(forms.Form):
     attachment = forms.FileField(required=False)
     body = forms.CharField()
+
+class EmailAddressForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        model = EmailAddress
+        fields = "__all__"

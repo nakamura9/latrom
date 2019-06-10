@@ -22,9 +22,9 @@ from draftjs_exporter.html import HTML as exporterHTML
 from rest_framework.pagination import PageNumberPagination
 
 class MessagingPaginator(PageNumberPagination):
-    page_size = 50
+    page_size = 10
     page_size_query_param = 'page_size'
-    max_page_size = 50
+    max_page_size = 10
 
 
 class BubbleAPIViewset(ModelViewSet):
@@ -47,10 +47,14 @@ class ChatAPIViewset(ModelViewSet):
     queryset = models.Chat.objects.all()
     serializer_class = serializers.ChatSerializer
 
+class EmailAddressAPIViewset(ModelViewSet):
+    queryset = models.EmailAddress.objects.all()
+    serializer_class = serializers.EmailAddressSerializer
+
 
 
 class EmailAPIViewset(ModelViewSet):
-    queryset = models.Email.objects.all().order_by('-date')
+    queryset = models.Email.objects.all().order_by('-created_timestamp')
     pagination_class = MessagingPaginator
     
     def get_serializer_class(self):
@@ -97,14 +101,6 @@ class SentAPIView(APIView):
         data = serializers.EmailRetrieveSerializer(emails, many=True).data
         return Response(data)
 
-def send_draft(request, pk=None):
-    email = get_object_or_404(models.Email, pk=pk)
-    
-    profile = models.UserProfile.objects.get(user=email.sender)
-    g = EmailSMTP(profile)
-    g.send_html_email(email.subject, email.to.address, email.body)
-
-    return JsonResponse({'status': 'ok'})
 
 def reply_email(request, pk=None):
     email = get_object_or_404(models.Email, pk=pk)
@@ -179,3 +175,37 @@ def mark_notification_read(request, pk=None):
     notification.read = True
     notification.save()
     return JsonResponse({'status': 'ok'})
+
+def send_draft(request, pk=None):
+    email = get_object_or_404(models.Email, pk=pk)
+    profile = models.UserProfile.objects.get(user=request.user)
+    
+    g = EmailSMTP(profile)
+    g.send_html_email(
+                email.subject,
+                email.to.address,
+                [i.address for i in email.copy.all()],
+                [i.address for i in email.blind_copy.all()],
+                email.body
+                )
+    email.folder = 'sent'
+    email.save()
+
+    return JsonResponse({'status': 'ok'})
+
+def get_latest_chat_messages(request, chat=None):
+    discussion = get_object_or_404(models.Chat, pk=chat)
+    latest = json.loads(request.body.decode('utf-8'))['latest']
+    messages = discussion.messages.filter(pk__gt=latest)
+
+    data = serializers.BubbleReadSerializer(messages, many=True).data
+    
+    return JsonResponse({'messages': data})
+
+def get_latest_group_messages(request, group=None):
+    discussion = get_object_or_404(models.Group, pk=group)
+    latest = json.loads(request.body.decode('utf-8'))['latest']
+    messages = discussion.messages.filter(pk__gt=latest)
+
+    data =  serializers.BubbleReadSerializer(messages, many=True).data
+    return JsonResponse({'messages': data})

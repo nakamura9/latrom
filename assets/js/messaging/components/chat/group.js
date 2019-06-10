@@ -5,15 +5,10 @@ import ChatInput from './chat_input';
 
 class groupChatWidget extends Component{
     state = {
-        messages: [],
         inputText: ""
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
-        if(prevState.messages.length !== this.props.messages.length){
-            this.setState({messages: this.props.messages});
-        }
-      }
+   
 
     inputHandler = (evt) =>{
         this.setState({inputText: evt.target.value});
@@ -42,13 +37,14 @@ class groupChatWidget extends Component{
                 
                 "maxWidth" :  window.screen.width > 720 ? "50vw" : "98vw",
                 "margin" : "0px auto",
+                "padding": "5px"
             }} className="shadow">
                 <div style={{
                     "overflowY": "auto",
                     "minHeight": "400px",
                     "height": "400px"
-                }}>
-                    {this.state.messages.map((message, i) =>(
+                }} id='chat-body'>
+                    {this.props.messages.map((message, i) =>(
                         <MessageBubble
                             showSender
                             key={i}

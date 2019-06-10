@@ -10,6 +10,7 @@ import $ from "jquery";
  *  populatedURL - string
  *  resProcessor -function
  *  dataURL -string 
+ *  nameField - string
  */
 
 class MultipleSelectWidget extends Component{

@@ -47,6 +47,15 @@ class chatHeader extends Component {
                                     :"/messaging/close-chat/" + this.props.chatID}> Close {this.props.isGroup ? 'Group' : 'Chat'}</a></li>
                                 <li className={styles.chatDropdownLi}
                                     onClick={this.addAttachment}>Add attachment</li>
+                                /*
+                                <li className={styles.chatDropdownLi}
+                                    onClick={this.props.toggleContext}>{this.props.selecting ? 
+                                        'Clear' : 
+                                        'Select'} Messages</li>
+                                <li className={styles.chatDropdownLi}
+                                >Forward Selected</li>
+                                <li className={styles.chatDropdownLi}
+                                    >Delete Selected</li> */
                             </ul>
                         </div>
                     </div>

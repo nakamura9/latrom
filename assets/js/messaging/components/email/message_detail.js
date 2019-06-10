@@ -28,13 +28,19 @@ class MessageDetail extends Component {
   }
 
   sendDraft = () => {
-    axios.get("/messaging/api/send-draft/" + this.state.id + "/");
+    this.setState({replyStatus: 'sending'})
+    axios.get("/messaging/api/send-draft/" + this.state.id + "/")
+        .then(res =>{
+            if(res.data.status === "ok"){
+                this.setState({replyStatus: 'sent'})
+            }
+        })
+        .catch(() =>{this.setState({replyStatus: 'error'})});
   };
 
   submitHandler = () => {
     this.setState({ replyStatus: "sending" });
     let data = new FormData();
-    console.log(this.state.attachment);
     data.append("attachment", this.state.attachment);
     data.append("body", JSON.stringify(this.state.reply));
 
@@ -65,7 +71,8 @@ class MessageDetail extends Component {
 
   render() {
     let replyView = null;
-    if (this.state.replyStatus==="open" && this.state.folder==="inbox") {
+    if (this.state.replyStatus==="open" && 
+            ['inbox', 'drafts'].includes(this.state.folder)) {
       replyView = (
         <div>
           <div className="btn-group">

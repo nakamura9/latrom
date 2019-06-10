@@ -11,15 +11,17 @@ export default class ChatRoot extends Component{
         const pk = splitURL[splitURL.length - 1];
         this.state = {
             messages: [],
-            currentMessage: null,
+            currentPage: 1,
             currentUser: null,
             chatPk: pk,
+            selecting: false,
+            selected: []
         }    
     }
     
-
-    setCurrentMessage = (msg) =>{
-        this.setState({currentMessage: msg})
+    toggleContext = () =>{
+        console.log('context')
+        this.setState(prevState => ({selecting: !prevState.selecting}));
     }
 
     componentDidMount(){
@@ -36,18 +38,47 @@ export default class ChatRoot extends Component{
             },
         })
         })
-        this.intervalID = setInterval(this.getMessages, 3000);
-
         this.getMessages()
+        this.intervalID = setInterval(this.getLatest, 1000);
+
+    }
+
+    scrollToBottom = () =>{
+        const chatBody = document.getElementById('chat-body');
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+    getLatest = () =>{
+        console.log('setting up')
+
+        const latest = Math.max(...this.state.messages.map(msg => (msg.id)));
+        axios({
+            url: '/messaging/api/chat/get-latest/' +this.state.chatPk,
+            method: 'POST',
+            data: {
+                latest: latest
+            }
+        }).then(res =>{
+            if(res.data.messages.length === 0){
+                return null;
+            }
+            this.setState(prevState => ({
+                messages: prevState.messages.concat(res.data.messages)
+            }), this.scrollToBottom)
+        }).catch(error =>{
+            console.log(error)
+        })
     }
     getMessages =() =>{
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
         axios({
             'method': 'GET',
             'url': '/messaging/api/chat/' + this.state.chatPk
         }).then( res => {
             this.setState({
-                messages: res.data.messages,
-                currentMessage: res.data.messages[res.data.messages.length - 1],
+                messages: res.data.messages.reverse(),
                 receiver: res.data.receiver
             })
         })
@@ -81,6 +112,30 @@ export default class ChatRoot extends Component{
         })
     }
 
+    loadMoreMessages = () =>{
+        console.log('loading')
+        this.setState(prevState => ({currentPage: prevState.currentPage + 1}), 
+            () =>{
+                console.log(this.state.currentPage)
+                axios.get('/messaging/api/chat/'+ this.state.chatPk +'/',
+                        {
+                            params: {
+                                page: this.state.currentPage
+                            }
+                        }
+                    ).then(res =>{
+                        console.log(res.data)
+                        this.setState(prevState =>{
+                            return {
+                                messages: res.data.messages.reverse()
+                                    .concat(prevState.messages)}
+                        })
+                    }).catch(() =>{
+                        alert('No more older messages')
+                    })
+        })
+    }
+
     render(){
         
 
@@ -89,24 +144,20 @@ export default class ChatRoot extends Component{
                 <div className="row">
                     <div className="col-sm-12">
                         <ChatHeader 
+                            toggleContext={this.toggleContext}
+                            selecting={this.state.selecting}
                             title={this.state.receiver}
                             chatID={this.state.chatPk}
                             attachmentHandler={this.attachmentHandler}
                             />
-                    </div>
-                </div>
-                <hr className="my-4" />
-                <div className="row">
-                <Aux>
-                    <div className="col-sm-12 ">
                         <ChatWidget 
                             messages={this.state.messages}
                             owner={this.state.currentUser}
-                            chat={this.state.chatPk}/>
+                            chat={this.state.chatPk}
+                            loadMoreMessages={this.loadMoreMessages}/>
                     </div>
-                </Aux>
                 </div>
-            </Aux>    
+            </Aux>
         );
     }
 }

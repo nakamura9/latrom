@@ -33,8 +33,8 @@ class Dashboard(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
 
     def get(self, request, *args, **kwargs):
-        sync_service(request.user)
-        return super.get(request, *args, **kwargs)
+        #sync_service(request.user)
+        return super().get(request, *args, **kwargs)
 
 
 class InboxView(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
@@ -62,26 +62,70 @@ class ComposeEmailView(LoginRequiredMixin, UserEmailConfiguredMixin, CreateView)
 
     def get_initial(self):
         return {
-            'sender': self.request.user.pk,
+            'owner': self.request.user.pk,
             'folder': 'sent'
         }
 
     def form_valid(self, form):
         data = form.cleaned_data
 
+        #add all to addresses to email object
+        # add all address to smtp send
+
+        to_data = self.request.POST['to']
+        raw_cc_data = self.request.POST['copy']
+        raw_bcc_data = self.request.POST['blind_carbon_copy']
         
+        to = models.EmailAddress.objects.get(pk=to_data.split('-')[0])
+        
+        cc_data = json.loads(urllib.parse.unquote(raw_cc_data))
+        bcc_data = json.loads(urllib.parse.unquote(raw_bcc_data))
+        cc = []
+        bcc = []
+
+        for addr in cc_data:
+            cc.append(models.EmailAddress.objects.get(pk=addr.split('-')[0]))
+
+        for addr in bcc_data:
+            bcc.append(models.EmailAddress.objects.get(pk=addr.split('-')[0]))
+
+        resp = super().form_valid(form)
+
+        self.object.to = to
+        self.object.copy.add(*cc)
+        self.object.blind_copy.add(*bcc)
+        self.object.save()
+
         profile = models.UserProfile.objects.get(user=self.request.user)
         g = EmailSMTP(profile)
 
-        print(data['attachment'].name)
-        path = os.path.join(MEDIA_ROOT, 'messaging', data['attachment'].name)
-        
-        if(data.get('attachment', None)):# and os.path.exists(path):
-            g.send_email_with_attachment(data['subject'], data['to'].address, data['body'], data['attachment'], html=True)
-        else:
-            g.send_html_email(data['subject'], data['to'].address, data['body'])
+        if data['save_as_draft']:
+            self.object.folder = 'drafts'
+            self.object.save()
+            return resp
 
-        return super().form_valid(form)
+        if(data.get('attachment', None)):# and os.path.exists(path):
+            path = os.path.join(
+                MEDIA_ROOT, 
+                'messaging', 
+                data['attachment'].name)
+            
+            g.send_email_with_attachment(
+                data['subject'], 
+                to.address,
+                [i.address for i in cc],
+                [i.address for i in bcc],
+                data['body'], 
+                data['attachment'], html=True)
+        else:
+            g.send_html_email(
+                data['subject'], 
+                to.address, 
+                [i.address for i in cc],
+                [i.address for i in bcc],
+                data['body'])
+
+        return resp
 
 class ChatListView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('messaging', 'chat', 'chats.html')
@@ -195,3 +239,11 @@ def create_chat(request, user=None):
     return HttpResponseRedirect(reverse('messaging:chat', kwargs={
         'pk': chat.pk
     }))
+
+class EmailAddressCreateView(ContextMixin, CreateView):
+    form_class = forms.EmailAddressForm
+    template_name = os.path.join('common_data', 'create_template.html')
+    success_url = '/messaging/dashboard/'
+    extra_context = {
+        'title': 'Create Email Address'
+    }

@@ -4,6 +4,7 @@ import GroupChatWidget from '../components/chat/group';
 import {Aux} from '../../src/common';
 import ChatHeader from '../components/chat/chat_header';
 
+
 export default class GroupChatRoot extends Component{
     constructor(props){
         super(props)
@@ -11,16 +12,12 @@ export default class GroupChatRoot extends Component{
         const pk = splitURL[splitURL.length - 1];
         this.state = {
             messages: [],
-            currentMessage: null,
             currentUser: null,
             groupPk: pk,
         }    
     }
 
-    setCurrentMessage = (msg) =>{
-        this.setState({currentMessage: msg})
-    }
-
+   
     componentDidMount(){
 
         this.intervalID = null;
@@ -36,9 +33,8 @@ export default class GroupChatRoot extends Component{
             },
         })
         })
-        this.intervalID = setInterval(this.getMessages, 3000);
-
         this.getMessages()
+        this.intervalID = setInterval(this.getLatest, 1000);
     }
 
 
@@ -47,11 +43,63 @@ export default class GroupChatRoot extends Component{
             'method': 'GET',
             'url': '/messaging/api/group/' + this.state.groupPk
         }).then( res => {
+            console.log(res.data)
             this.setState({
                 messages: res.data.messages,
-                currentMessage: res.data.messages[res.data.messages.length - 1],
                 name: res.data.name
             });
+        })
+    }
+
+    scrollToBottom = () =>{
+        const chatBody = document.getElementById('chat-body');
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+    getLatest = () =>{
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        const latest = Math.max(...this.state.messages.map(msg => (msg.id)));
+        axios({
+            url: '/messaging/api/group/get-latest/' +this.state.groupPk,
+            method: 'POST',
+            data: {
+                latest: latest
+            }
+        }).then(res =>{
+            if(res.data.messages.length === 0){
+                return null;
+            }
+            this.setState(prevState => ({
+                messages: prevState.messages.concat(res.data.messages)
+            }), this.scrollToBottom)
+        }).catch(error =>{
+            console.log(error)
+        })
+    }
+
+    loadMoreMessages = () =>{
+        console.log('loading')
+        this.setState(prevState => ({currentPage: prevState.currentPage + 1}), 
+            () =>{
+                console.log(this.state.currentPage)
+                axios.get('/messaging/api/group/'+ this.state.groupPk +'/',
+                        {
+                            params: {
+                                page: this.state.currentPage
+                            }
+                        }
+                    ).then(res =>{
+                        console.log(res.data)
+                        this.setState(prevState =>{
+                            return {
+                                messages: res.data.messages.reverse()
+                                    .concat(prevState.messages)}
+                        })
+                    }).catch(() =>{
+                        alert('No more older messages')
+                    })
         })
     }
 
