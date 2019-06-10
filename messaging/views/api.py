@@ -144,7 +144,6 @@ def reply_email(request, pk=None):
         
 
     else:
-        print(form.errors)
         return JsonResponse({'status': 'fail'})
 
 
