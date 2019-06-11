@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import ReplyWidget from "./reply_widget";
 import axios from "axios";
+import {Aux} from '../../../src/common';
+import ReactModal from 'react-modal';
+import SearchableWidget from '../../../src/components/searchable_widget';
+import MultipleSelectWidget from '../../../src/multiple_select/containers/root';
+
 
 class MessageDetail extends Component {
   state = {
@@ -10,8 +15,13 @@ class MessageDetail extends Component {
     subject: "",
     created_timestamp: "",
     reply: "",
-    replyStatus: "open"
+    replyStatus: "open",
+    forwardModalIsOpen: false,
+    forwardTo: "",
+    forwardCopy: [],
+    forwardBlindCopy: []
   };
+
 
   toggleReply = () => {
     this.setState(prevState => ({
@@ -69,17 +79,54 @@ class MessageDetail extends Component {
     this.setState({ attachment: file });
   };
 
+  setForwardCopy = (data) =>{
+    this.setState({forwardCopy: data})
+  }
+
+  setForwardBlindCopy = (data) =>{
+    this.setState({forwardBlindCopy: data})
+  }
+
+  forwardMessage = () =>{
+      axios.post('/messaging/api/forward-email/' + this.props.messageID,
+        {
+            to: this.state.forwardTo,
+            copy: this.state.forwardCopy,
+            blind_copy: this.state.forwardBlindCopy
+        })
+  }
+
+  
+
   render() {
     let replyView = null;
     if (this.state.replyStatus==="open" && 
             ['inbox', 'drafts'].includes(this.state.folder)) {
       replyView = (
         <div>
+        <input 
+                type="hidden" 
+                name="copy" 
+                id="id_copy"/>
+            <input 
+                type="hidden" 
+                name="blind_copy" 
+                id="id_blind_copy"/>
           <div className="btn-group">
+            <button 
+                className="btn btn-primary"
+                onClick={() => this.setState({forwardModalIsOpen: true})}>Forward Message</button>
             {this.props.draft ? (
-              <button className="btn btn-primary" onClick={this.sendDraft}>
+              <Aux>
+                <button className="btn btn-primary" onClick={this.sendDraft}>
                 <i class="fas fa-envelope-open" /> Send
-              </button>
+                </button>
+                <a className="btn btn-primary" 
+                href={"/messaging/email/update-draft/" + this.props.messageID}>
+                <i class="fas fa-envelope-open" /> Edit Draft
+                </a>
+              </Aux>
+              
             ) : (
               <button className="btn btn-primary" onClick={this.toggleReply}>
                 {this.state.showReplyWidget ? (
@@ -153,6 +200,8 @@ class MessageDetail extends Component {
     }
     return (
       <div>
+        
+
         <div className="card text-white bg-primary">
           <div className="card-body">
             <h4 className="card-title">{this.state.subject}</h4>
@@ -174,7 +223,41 @@ class MessageDetail extends Component {
         <p>{this.state.text}</p>
         <div dangerouslySetInnerHTML={{ __html: this.state.body }} />
         {replyView}
-      </div>
+        <ReactModal
+            isOpen={this.state.forwardModalIsOpen}
+            parentSelector={() => document.body}>
+            <h4>Forward Message</h4>
+            
+            <div>
+                <p>To:</p>
+                    <SearchableWidget
+                        onSelect={(value) =>{this.setState({forwardTo: value})}}
+                        onClear={() =>{this.setState({forwardTo: ""})}}
+                        newLink="/messaging/create-email-address"
+                        dataURL="/messaging/api/email-address"
+                        displayField="address"
+                        idField="id" />
+                <p>Cc:</p>
+                    <MultipleSelectWidget 
+                        resProcessor={(res) => res.data.copy}
+                        inputField="copy"
+                        dataURL="/messaging/api/email-address"
+                        nameField="address"
+                        selectHook={this.setForwardCopy}/>
+                <p>Bcc:</p>
+                    <MultipleSelectWidget 
+                        resProcessor={(res) => res.data.copy}
+                        inputField="blind_copy"
+                        dataURL="/messaging/api/email-address"
+                        nameField="address"
+                        selectHook={this.setForwardBlindCopy}/>
+                <button 
+                    className="btn btn-primary"
+                    onClick={this.forwardMessage}>Send</button>
+            </div>
+        
+        </ReactModal>
+        </div>      
     );
   }
 }

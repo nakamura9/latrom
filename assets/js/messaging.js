@@ -23,16 +23,6 @@ if(threadView){
     ReactDOM.render(<ChatRoot />, threadView);
 }else if(groupThreadView){
     ReactDOM.render(<GroupChatRoot />, groupThreadView);
-}else if(rich_text){
-    ReactDOM.render(<EmailEditor textHandler={(state) =>{
-            const contentState = state.editorState.getCurrentContent();
-            const data = encodeURIComponent(
-                JSON.stringify(convertToRaw(contentState))
-              );
-            let field = document.getElementById('id_body');
-            field.setAttribute('value', data);
-    }}/>, rich_text);
-
 }else if(group_participants_widget){
     ReactDOM.render(<MultipleSelectWidget 
         inputField="participants"
@@ -40,11 +30,24 @@ if(threadView){
         nameField="username"/>, group_participants_widget)
 }else if(inboxContainer){
     ReactDOM.render(<InboxView />, inboxContainer)
-}
-
-
-if(toWidget){
-    ReactDOM.render(<SearchableWidget 
+}else if(toWidget){
+    //get page url
+    const url = window.location.href;
+    let prePopulatedURL = null;
+    if(url.indexOf('update-draft') !== -1){
+        const splitURL = url.split('/');
+        const pk = splitURL[splitURL.length -1]
+        prePopulatedURL = '/messaging/api/email/' + pk;
+    }
+    
+    const toprePopulatedHandler = (data) =>{
+        console.log(data)
+        return data.to
+    }
+    
+    ReactDOM.render(<SearchableWidget
+                        prePopulatedURL={prePopulatedURL}
+                        prePopulationHandler={toprePopulatedHandler} 
                         newLink="/messaging/create-email-address"
                         dataURL="/messaging/api/email-address"
                         displayField="address"
@@ -56,15 +59,31 @@ if(toWidget){
                         }}
                         idField="id"/>, toWidget)
     ReactDOM.render(<MultipleSelectWidget
+                        populatedURL={prePopulatedURL}
+                        resProcessor={(res) => res.data.copy}
                         inputField="copy"
                         dataURL="/messaging/api/email-address"
                         nameField="address"
                         /*resProcessor={(res) =>{
                             return res.data.map((emailaddr) => )
                         }}*/ />, ccWidget)
+
+
     ReactDOM.render(<MultipleSelectWidget
                         inputField="blind_carbon_copy"
+                        populatedURL={prePopulatedURL}
+                        resProcessor={(res) => res.data.blind_copy}
                         dataURL="/messaging/api/email-address"
                         nameField="address"
                          />, bccWidget)
+    ReactDOM.render(<EmailEditor 
+                        prePopulatedURL={prePopulatedURL}
+                        textHandler={(state) =>{
+                        const contentState = state.editorState.getCurrentContent();
+                        const data = encodeURIComponent(
+                            JSON.stringify(convertToRaw(contentState))
+                            );
+                        let field = document.getElementById('id_body');
+                        field.setAttribute('value', data);
+}}/>, rich_text);
 }

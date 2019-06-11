@@ -53,8 +53,9 @@ class NotificationDetailView(LoginRequiredMixin, DetailView):
 
         return resp
 
-
-class ComposeEmailView(LoginRequiredMixin, UserEmailConfiguredMixin, CreateView):
+class ComposeEmailView(LoginRequiredMixin, 
+                        UserEmailConfiguredMixin, 
+                        CreateView):
     template_name = os.path.join('messaging', 'email', 'compose.html')
     form_class = forms.EmailForm
     model = models.Email
@@ -124,8 +125,103 @@ class ComposeEmailView(LoginRequiredMixin, UserEmailConfiguredMixin, CreateView)
                 [i.address for i in cc],
                 [i.address for i in bcc],
                 data['body'])
+        
+        self.object.folder='sent'
+        self.object.save()
 
         return resp
+
+class DraftEmailUpdateView(LoginRequiredMixin, 
+                            UserEmailConfiguredMixin, 
+                            UpdateView):
+    
+    template_name = os.path.join('messaging', 'email', 'update_draft.html')
+    form_class=forms.EmailForm
+    model=models.Email
+    success_url = "/messaging/inbox/"
+
+    def form_valid(self, form):
+        #slightly different from compose 'form_valid'
+        data = form.cleaned_data
+
+        to_data = self.request.POST['to']
+        raw_cc_data = self.request.POST['copy']
+        raw_bcc_data = self.request.POST['blind_carbon_copy']
+        
+        #string lacking a pk 
+        if('-' not in to_data):
+            to = models.EmailAddress.get_address(to_data)
+        else:
+            #in case another receiver has been chosen
+            to = models.EmailAddress.objects.get(pk=to_data.split('-')[0])
+
+        
+        cc_data = json.loads(urllib.parse.unquote(raw_cc_data))
+        bcc_data = json.loads(urllib.parse.unquote(raw_bcc_data))
+        
+        cc = []
+        bcc = []
+        for addr in cc_data:
+            if('-' not in addr):
+                cc.append(models.EmailAddress.get_address(addr))
+            else:
+                address = models.EmailAddress.objects.get(pk=addr.split('-')[0])
+                cc.append(address)
+
+        for addr in bcc_data:
+            if('-' not in addr):
+                bcc.append(models.EmailAddress.get_address(addr))
+            else:
+                address = models.EmailAddress.objects.get(pk=addr.split('-')[0])
+                bcc.append(address)
+  
+        resp = super().form_valid(form)
+
+        self.object.to = to
+        # remove all m2m before rebuilding relations 
+        for a in self.object.copy.all():
+            self.object.copy.remove(a)
+
+        self.object.copy.add(*cc)
+        
+        for a in self.object.blind_copy.all():
+            self.object.blind_copy.remove(a)
+
+        self.object.blind_copy.add(*bcc)
+
+        self.object.save()
+
+        profile = models.UserProfile.objects.get(user=self.request.user)
+        g = EmailSMTP(profile)
+
+        if data['save_as_draft']:
+            self.object.folder = 'drafts'
+            self.object.save()
+            return resp
+
+        if(data.get('attachment', None)):# and os.path.exists(path):
+            path = os.path.join(
+                MEDIA_ROOT, 
+                'messaging', 
+                data['attachment'].name)
+            
+            g.send_email_with_attachment(
+                data['subject'], 
+                to.address,
+                [i.address for i in cc],
+                [i.address for i in bcc],
+                data['body'], 
+                data['attachment'], html=True)
+        else:
+            g.send_html_email(
+                data['subject'], 
+                to.address, 
+                [i.address for i in cc],
+                [i.address for i in bcc],
+                data['body'])
+
+        return resp
+
 
 class ChatListView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('messaging', 'chat', 'chats.html')

@@ -2,7 +2,7 @@ from rest_framework import serializers, pagination
 from .models import *
 from common_data.serializers import UserSerializer
 from rest_framework.parsers import FormParser, MultiPartParser
-
+import messaging
 class BubbleSerializer(serializers.ModelSerializer):
     parser_classes = (FormParser, MultiPartParser)
     created_timestamp = serializers.DateTimeField(format="%A, %d %B %Y, %H:%M", 
@@ -26,7 +26,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
     def paginated_messages(self, obj):
         messages = Bubble.objects.filter(chat=obj).order_by('-pk')
-        paginator = pagination.PageNumberPagination()
+        paginator = messaging.views.api.MessagingPaginator()
         page = paginator.paginate_queryset(messages, self.context['request'])
         serializer = BubbleReadSerializer(page, many=True, 
             context={'request': self.context['request']}
@@ -57,7 +57,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     def paginated_messages(self, obj):
         messages = Bubble.objects.filter(group=obj)
-        paginator = pagination.PageNumberPagination()
+        paginator = messaging.views.api.MessagingPaginator()
         page = paginator.paginate_queryset(messages, self.context['request'])
         serializer = BubbleReadSerializer(page, many=True, 
             context={'request': self.context['request']}

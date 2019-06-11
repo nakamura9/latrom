@@ -12,7 +12,7 @@ import urllib
 
 
 class EmailForm(BootstrapMixin, forms.ModelForm):
-    body = forms.CharField(widget=forms.HiddenInput)
+    body = forms.CharField(widget=forms.HiddenInput, required=True)
     folder = forms.CharField(widget=forms.HiddenInput)
     owner = forms.ModelChoiceField(User.objects.all(),
                                     widget=forms.HiddenInput)
@@ -28,10 +28,13 @@ class EmailForm(BootstrapMixin, forms.ModelForm):
 
         config = {}
         exporter = exporterHTML(config)
-        msg = exporter.render(json.loads(
-            urllib.parse.unquote(cleaned_data['body'])
-        ))
-
+        try:
+            msg = exporter.render(json.loads(
+                urllib.parse.unquote(cleaned_data['body'])
+            ))
+        except json.decoder.JSONDecodeError:
+            raise forms.ValidationError('The message must have content')
+            
         if cleaned_data['attachment'] and \
                 cleaned_data['attachment'].size > 5000000:
             raise forms.ValidationError('The uploaded file exceeds 5MB')

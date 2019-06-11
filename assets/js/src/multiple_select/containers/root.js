@@ -19,6 +19,9 @@ class MultipleSelectWidget extends Component{
     }
 
     updateForm =() =>{
+        if(this.props.selectHook){
+         this.props.selectHook(this.state.selectedItems);
+        }
         $('#id_'+ this.props.inputField).val(
             encodeURIComponent(
                 JSON.stringify(this.state.selectedItems)
@@ -41,9 +44,11 @@ class MultipleSelectWidget extends Component{
                 method: 'GET'
             }).then((res) =>{
                 const dataList = this.props.resProcessor(res);
+                console.log(dataList)
                 this.setState({selectedItems: dataList}, () =>{
                     //this.removeDuplicates();
                     this.updateForm();
+                    
                 })
             })
         }

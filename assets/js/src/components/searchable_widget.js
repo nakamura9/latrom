@@ -3,7 +3,15 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import OptionsWidget from "./options_widget";
 import Radium from 'radium';
-// TODO make sure that on clear works, replace caret with times when deleting data
+
+// TODO make sure that on clear works, replace caret with times when deleting 
+//data
+
+//For prepopulated searchable widgets, we provide a prepoulating url, including 
+//any params it requires.
+//we then provided a prepopulationHandler that takes the async response and 
+//returns the appropriate value to be set to the selected state value
+
 class SearchableWidget extends Component {
     //currValue is whats being typed, selected is the value validated
     state = {
@@ -20,7 +28,6 @@ class SearchableWidget extends Component {
                 currValue: "",
                 selectedValue: ""
             })
-            //remove selected choice from list of choices 
         }
     }
 
@@ -36,7 +43,19 @@ class SearchableWidget extends Component {
             this.setState({
                 choices: newChoices,
                 filteredChoices: newChoices
+            }, () =>{
+                if(this.props.prePopulatedURL){
+                    axios.get(this.props.prePopulatedURL).then(res => {
+                        const selected = this.props.prePopulationHandler(res.data);
+                        this.props.onSelect(selected);
+                        this.setState({
+                            selectedValue:  selected,
+                            currValue: selected
+                        })
+                    })
+                }
             });
+            
         })
     }
 

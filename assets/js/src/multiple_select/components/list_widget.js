@@ -4,7 +4,6 @@ import SelectedItem from "./list_item";
 const selectedItemsListWidget = (props) =>{
     const containerStyle = {
             maxHeight: "150px",
-            minHeight: "150px",
             overflowY: "auto",
             marginBottom: "5px"
         };

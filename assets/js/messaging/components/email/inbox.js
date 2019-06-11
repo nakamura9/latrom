@@ -7,7 +7,8 @@ class InboxList extends React.Component{
         messages: [
             
         ],
-        status: 'loading'
+        status: 'loading',
+        currentPage: 1
     }
     componentDidMount(){
         axios.get('/messaging/api/inbox/').then(res =>{
@@ -15,6 +16,24 @@ class InboxList extends React.Component{
                 messages: res.data,
                 status: 'loaded'
             })
+        })
+    }
+
+    loadMoreMessages = () =>{
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        
+        axios.get('/messaging/api/inbox/', {
+            params: {
+                page: this.state.currentPage + 1
+            }
+    }).then( res =>{
+            this.setState(prevState => ({
+                currentPage: prevState.currentPage + 1,
+                messages: res.data.concat(prevState.messages) 
+            }))
+        }).catch(error =>{
+            alert('No more email messages')
         })
     }
 
@@ -45,6 +64,14 @@ class InboxList extends React.Component{
                         setCurrent={this.setCurrent}
                         listIndex={i} />
                 ))}
+                <li className="list-group-item">
+                    <button 
+                        className="btn btn-primary"
+                        onClick={this.loadMoreMessages}>
+                        Load More Emails
+                    </button>
+                </li>
+
             </ul>
         )
     }

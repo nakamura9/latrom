@@ -66,6 +66,9 @@ class ChatWidget extends Component {
           {this.props.messages.map((message, i) => {
             return (
               <MessageBubble
+                selectedMessages={this.props.selectedMessages}
+                selectHandler={this.props.messageSelectHandler}
+                canBeSelected={this.props.selectingContext}
                 key={i}
                 latest={this.props.messages.length -1 === i}
                 MessageID={i}

@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import TreeSelectWidget from '../js/src/tree_select_widget';
 import axios from 'axios';
 import PricingWidget from "../js/inventory/pricing_widget";
-import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import {ImgPreview} from '../js/src/common';
 import FilePickerUI from '../js/src/components/custom_file_picker';
 

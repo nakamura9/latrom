@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Editor, EditorState, RichUtils } from "draft-js";
+import { Editor, EditorState, RichUtils, convertFromHTML, ContentState } from "draft-js";
 import "draft-js/dist/Draft.css";
 import styles from './richEditor.css';
+import axios from 'axios';
 import BlockStyleToolbar, {getBlockStyle} from '../components/block_style_toolbar';
 //import ErrorBoundary from '../../src/components/error_boundary';
 
@@ -11,6 +12,23 @@ class EmailEditor extends Component {
     this.state = {
       editorState: EditorState.createEmpty()
     };
+  }
+
+  componentDidMount(){
+      if(this.props.prePopulatedURL){
+          axios.get(this.props.prePopulatedURL).then(
+              res =>{
+                const blocksFromHTML = convertFromHTML(res.data.body)
+                const state = ContentState.createFromBlockArray(
+                    blocksFromHTML.contentBlocks,
+                    blocksFromHTML.entityMap
+                );
+                this.setState(
+                    {editorState: EditorState.createWithContent(state)},    
+                        this.props.textHandler(this.state))
+              }
+          )
+      }
   }
 
   

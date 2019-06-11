@@ -26,7 +26,6 @@ class MessagingPaginator(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 10
 
-
 class BubbleAPIViewset(ModelViewSet):
     queryset = models.Bubble.objects.all()
     pagination_class = MessagingPaginator
@@ -50,7 +49,6 @@ class ChatAPIViewset(ModelViewSet):
 class EmailAddressAPIViewset(ModelViewSet):
     queryset = models.EmailAddress.objects.all()
     serializer_class = serializers.EmailAddressSerializer
-
 
 
 class EmailAPIViewset(ModelViewSet):
@@ -84,21 +82,33 @@ class InboxAPIView(APIView):
     def get(self, request):
         #maybe try to sync latest emails here?
         emails = models.UserProfile.objects.get(user=self.request.user).inbox
-
-        data = serializers.EmailRetrieveSerializer(emails, many=True).data
+        paginator = MessagingPaginator()
+        qs = paginator.paginate_queryset(emails, request)
+        data = serializers.EmailRetrieveSerializer(qs, many=True, context={
+            'request': request
+        }).data
+        
         return Response(data)
 
 class DraftsAPIView(APIView):
     def get(self, request):
         emails = models.UserProfile.objects.get(user=self.request.user).drafts
-        data = serializers.EmailRetrieveSerializer(emails, many=True).data
+        paginator = MessagingPaginator()
+        qs = paginator.paginate_queryset(emails, request)
+        data = serializers.EmailRetrieveSerializer(qs, many=True, context={
+            'request': request
+        }).data
         return Response(data)
 
 
 class SentAPIView(APIView):
     def get(self, request):
         emails = models.UserProfile.objects.get(user=self.request.user).sent
-        data = serializers.EmailRetrieveSerializer(emails, many=True).data
+        paginator = MessagingPaginator()
+        qs = paginator.paginate_queryset(emails, request)
+        data = serializers.EmailRetrieveSerializer(qs, many=True, context={
+            'request': request
+        }).data
         return Response(data)
 
 
@@ -112,9 +122,6 @@ def reply_email(request, pk=None):
     config = {}
     exporter = exporterHTML(config)
     form = forms.AxiosEmailForm(request.POST, request.FILES)
-    
-
-    
 
     if form.is_valid():
         body = exporter.render(
@@ -141,7 +148,6 @@ def reply_email(request, pk=None):
         body=body
     )
         return JsonResponse({'status': 'ok'})
-        
 
     else:
         return JsonResponse({'status': 'fail'})
@@ -208,3 +214,101 @@ def get_latest_group_messages(request, group=None):
 
     data =  serializers.BubbleReadSerializer(messages, many=True).data
     return JsonResponse({'messages': data})
+
+def delete_messages(request):
+    ids = json.loads(request.body.decode('utf-8'))['message_ids']
+    for id in ids:
+        models.Bubble.objects.get(pk=id).delete()
+
+    return JsonResponse({'status': 'ok'})
+
+def forward_messages(request, user=None):
+    user = get_object_or_404(User, pk=user)
+    filters = Q(
+        Q(
+            Q(sender=request.user) &
+            Q(receiver=user)
+        )
+        |
+        Q(
+            Q(receiver=request.user) &
+            Q(sender=user)
+        )
+    )
+    if models.Chat.objects.filter(filters).exists():
+        chat = models.Chat.objects.filter(filters).first()
+
+    else:
+        chat = models.Chat.objects.create(
+            sender=request.user,
+            receiver=user
+            )
+    
+    ids = json.loads(request.body.decode('utf-8'))['message_ids']
+    for id in ids:
+        bubble = models.Bubble.objects.get(pk=id)
+        models.Bubble.objects.create(
+            sender=request.user,
+            message_text=bubble.message_text,
+            attachment=bubble.attachment,
+            chat=chat
+        )
+
+    return JsonResponse({
+        'redirect': reverse("messaging:chat", kwargs={'pk': chat.id})})
+    # return HttpResponseRedirect(
+    #     reverse("messaging:chat", kwargs={'pk': chat.id}))
+
+
+def forward_email_messages(request, pk=None):
+    email = get_object_or_404(models.Email, pk=pk)
+    data = json.loads(request.body.decode('utf-8'))
+
+    to = models.EmailAddress.objects.get(pk=data['to'].split('-')[0])
+    copy = [models.EmailAddress.objects.get(pk=addr.split('-')[0]) \
+                for addr in data['copy']]
+    blind_copy = [models.EmailAddress.objects.get(pk=addr.split('-')[0]) \
+                for addr in data['blind_copy']]
+
+    profile = models.UserProfile.objects.get(user=request.user)
+    msg = models.Email.objects.create(
+        to=to,
+        sent_from=profile.address_obj,
+        owner=profile.user,
+        subject=email.subject,
+        body=email.body,
+        text=email.text,
+        folder='sent',
+        attachment=email.attachment
+    )
+
+    msg.copy.add(*copy)
+    msg.blind_copy.add(*blind_copy)
+    msg.save()
+
+    if(data.get('attachment', None)):# and os.path.exists(path):
+        path = os.path.join(
+            MEDIA_ROOT, 
+            'messaging', 
+            email.attachment.filename)
+        
+        g.send_email_with_attachment(
+            email.subject, 
+            to.address,
+            [i.address for i in copy],
+            [i.address for i in blind_copy],
+            email.body, 
+            email.attachment, html=True)
+    else:
+        g.send_html_email(
+            data['subject'], 
+            to.address, 
+            [i.address for i in cc],
+            [i.address for i in bcc],
+            data['body'])
+
+
+
+
+    
+    return JsonResponse({'status': 'ok'})

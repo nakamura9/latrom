@@ -32,6 +32,8 @@ chat_urls = [
         name='chat-api-get-latest'),
     path('api/group/get-latest/<int:group>', views.get_latest_group_messages, 
         name='group-api-get-latest'),
+    path('api/delete-messages/', views.delete_messages, name='api/delete-messages'),
+    path('api/forward-messages/<int:user>', views.forward_messages, name='api/forward-messages'),
 
 ] + chat_router.urls + bubble_router.urls  + group_router.urls + \
         email_router.urls + email_address_router.urls
@@ -41,6 +43,8 @@ email_urls = [
         name='create-message'),
     path('create-email-address', views.EmailAddressCreateView.as_view(), 
         name='create-email-address'),
+    path('email/update-draft/<int:pk>', views.DraftEmailUpdateView.as_view(), 
+        name='email-update-draft'),
     path('inbox/', views.InboxView.as_view(), name='inbox'),
     path('config/', views.UserProfileView.as_view(), name='config'),
     path("api/inbox/", views.InboxAPIView.as_view(), name="inbox-api"),

@@ -85,6 +85,10 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
     def __str__(self):
         return self.email_address
 
+    @property
+    def address_obj(self):
+        return EmailAddress.get_address(self.email_address)
+
 class Email(models.Model):
     '''Communication between people online using email'''
     copy = models.ManyToManyField('messaging.EmailAddress', 

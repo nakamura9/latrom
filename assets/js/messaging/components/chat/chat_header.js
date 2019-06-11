@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styles from './chatStyles.css';
-
+import {Aux} from '../../../src/common';
 
 class chatHeader extends Component {
     state = {
@@ -14,6 +14,21 @@ class chatHeader extends Component {
 
     
     render(){
+
+        let rendered = null;
+        if(this.props.selecting){
+            rendered= (
+                <Aux>
+                    <li 
+                        className={styles.chatDropdownLi}
+                        onClick={this.props.toggleUsersModal}>
+                            Forward Selected</li>
+                    <li 
+                        className={styles.chatDropdownLi}
+                        onClick={this.props.deleteHandler}>Delete Selected</li>
+                </Aux>
+                )
+        }
         return(
             <div>
                 <div className="col-sm-12 bg-primary text-white" 
@@ -21,6 +36,7 @@ class chatHeader extends Component {
                     <h3 style={{
                         display: "inline-block"
                     }}>{this.props.title}</h3>
+
                     
                     <div style={{
                         'float': 'right',
@@ -47,15 +63,11 @@ class chatHeader extends Component {
                                     :"/messaging/close-chat/" + this.props.chatID}> Close {this.props.isGroup ? 'Group' : 'Chat'}</a></li>
                                 <li className={styles.chatDropdownLi}
                                     onClick={this.addAttachment}>Add attachment</li>
-                                /*
                                 <li className={styles.chatDropdownLi}
                                     onClick={this.props.toggleContext}>{this.props.selecting ? 
                                         'Clear' : 
                                         'Select'} Messages</li>
-                                <li className={styles.chatDropdownLi}
-                                >Forward Selected</li>
-                                <li className={styles.chatDropdownLi}
-                                    >Delete Selected</li> */
+                                {rendered}
                             </ul>
                         </div>
                     </div>
