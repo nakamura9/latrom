@@ -14,6 +14,7 @@ from rest_framework import viewsets
 
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
+from common_data.forms import IndividualForm
 from invoicing import filters, forms, serializers
 from invoicing.models import Customer, Invoice, CreditNote
 from common_data.models import Individual, Organization
@@ -197,13 +198,13 @@ class CustomerUpdateView( ContextMixin, FormView):
             
             else:
                 organization = customer.organization
-                organization.legal_name=form.cleaned_data['name'],
-                organization.business_address= form.cleaned_data['address'],
-                organization.website=form.cleaned_data['website'],
+                organization.legal_name=form.cleaned_data['name']
+                organization.business_address= form.cleaned_data['address']
+                organization.website=form.cleaned_data['website']
                 organization.bp_number= \
-                    form.cleaned_data['business_partner_number'],
-                organization.email=form.cleaned_data['email'],
-                organization.phone=form.cleaned_data['phone_1'],
+                    form.cleaned_data['business_partner_number']
+                organization.email=form.cleaned_data['email']
+                organization.phone=form.cleaned_data['phone_1']
                 organization.logo=form.cleaned_data['image']
                 organization.save()
         
@@ -250,3 +251,21 @@ class CustomerDetailView(DetailView):
         })
 
         return context 
+
+#TODO test
+class AddCustomerIndividualView(ContextMixin, CreateView):
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    form_class = IndividualForm
+    success_url = reverse_lazy('invoicing:customers-list')#wont redirect
+
+    extra_context = {
+        'title': 'Add member to organization'
+    }
+
+    def get_initial(self):
+        return {
+            'organization': self.kwargs['pk']
+        }
+
+class RemoveCustomerIndividualView(DeleteView):
+    template_name = os.path.join('common_data', 'delete_template.html')

@@ -2,7 +2,7 @@ from .email import EmailSMTP
 from messaging.models import UserProfile
 import logging
 
-def sync_service(user):
+async def sync_service(user):
     try:
         profile = UserProfile.objects.get(user=user)
         client = EmailSMTP(profile)

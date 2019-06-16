@@ -8,6 +8,7 @@ import EmailEditor from '../js/messaging/container/rich_text';
 import InboxView from '../js/messaging/container/inbox';
 import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import SearchableWidget from '../js/src/components/searchable_widget';
+import FilePicker from '../js/src/components/custom_file_picker';
 
 const rich_text = document.getElementById('message-field');
 const group_participants_widget = document.getElementById('group-participant-select')
@@ -17,7 +18,7 @@ const inboxContainer = document.getElementById('inbox-widget');
 const toWidget = document.getElementById('email-to')
 const ccWidget = document.getElementById('email-cc')
 const bccWidget = document.getElementById('email-bcc')
-
+const attachmentWidget = document.getElementById('email-attachment')
 
 if(threadView){
     ReactDOM.render(<ChatRoot />, threadView);
@@ -85,5 +86,12 @@ if(threadView){
                             );
                         let field = document.getElementById('id_body');
                         field.setAttribute('value', data);
-}}/>, rich_text);
+                        }}/>, rich_text);
+    // add support for getting initial 
+    if(!prePopulatedURL){
+        ReactDOM.render(<FilePicker
+            fieldName="attachment"
+            fieldID="id_attachment" />, attachmentWidget)
+    }
+    /**/
 }

@@ -52,6 +52,7 @@ email_urls = [
     path("api/sent/", views.SentAPIView.as_view(), name="sent-api"),
     path("api/send-draft/<int:pk>/", views.send_draft, name='send-draft'),
     path("api/reply-email/<int:pk>/", views.reply_email, name='reply-email'),
+    path("api/forward-email/<int:pk>", views.forward_email_messages, name='forward-email'),
 ]
 
 urlpatterns = [

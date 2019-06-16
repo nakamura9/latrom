@@ -9,6 +9,8 @@ from draftjs_exporter.dom import DOM
 from draftjs_exporter.html import HTML as exporterHTML
 import json
 import urllib
+from messaging.email_api.secrets import get_secret_key
+from cryptography.fernet import Fernet
 
 
 class EmailForm(BootstrapMixin, forms.ModelForm):
@@ -75,11 +77,13 @@ class GroupForm(forms.ModelForm):
 
 class UserProfileForm(forms.ModelForm):
     user = forms.ModelChoiceField(User.objects.all(), widget=forms.HiddenInput)
-
+    
     class Meta:
         fields = "__all__"
         model = UserProfile
-
+        widgets ={
+            'email_password': forms.PasswordInput(render_value=True)
+        }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -106,7 +110,13 @@ class UserProfileForm(forms.ModelForm):
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data['email_password'].encode()
+        crypt = Fernet(get_secret_key())
+        cleaned_data['email_password'] = crypt.encrypt(password).decode() 
 
+        return cleaned_data
 class AxiosEmailForm(forms.Form):
     attachment = forms.FileField(required=False)
     body = forms.CharField()

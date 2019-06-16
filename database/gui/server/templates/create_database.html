@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="jumbotron">
+                <h1 class="display-3">Database Utilities</h1>
+                <p class="lead">Create New Database</p>
+                <a href="/" class="btn btn-primary">Go Home</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+                <p>Database Name:</p>
+                <input type="text" name="name" id="id_name" class="form-control">
+                <button type="button" class="btn btn-primary" onclick="setDBName()">Submit</button>
+        </div>
+    </div>
+    <div id="status">
+        <div id="spinner">
+            <img width="150" heigh="150" src="{{ url_for('static', filename='spinner.gif') }}" alt="">
+        </div>
+    </div>
+</div>
+<style>
+    #spinner {
+        display: none;
+    }
+</style>
+<script>
+    function setDBName (){
+        var inputVal = $('#id_name').val()
+        if(inputVal == ""){
+            alert('Please insert a name into the text field')
+        }else{
+            $("#spinner").show();
+            $.post('/create-database', {
+                'name': inputVal
+            }, function(res){
+                $('#spinner').html('<p>' + res + '</p>')
+            })
+        }
+    }
+</script>
+
+{% endblock content %}

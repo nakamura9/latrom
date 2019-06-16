@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="jumbotron">
+                <h1 class="display-3">Database Utilities</h1>
+                <p class="lead">Restore Backup</p>
+                <a href="/" class="btn btn-primary">Go Home</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <p>Restore a backup from a local file:</p>
+            <button onclick="openFileDialog()" class='btn btn-primary'>Select File</button>
+            <p>Or choose a network address</p>
+            <form action="">
+                <input placeholder="Choose address..." type="text" name="resource_location" id="id_resource_location" class="form-control">
+                <input type="submit" value="submit" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+    
+</div>
+<script>
+
+function openFileDialog(){
+    $.get('/open-file')
+}
+
+</script>
+
+{% endblock content %}

@@ -13,8 +13,7 @@
         </p>
     </div>
     <div class="row">
-        <div class="col-sm-12">
-        <div class="card-deck">
+        <div class="col-sm-6">
             <div class="card bg-primary text-white" style="max-height:300px;">
                 <div class="card-body">
                     <h4 class="card-title">Customer Info</h4>
@@ -27,6 +26,38 @@
 
                 </div>
             </div>
+            {% if object.organization %}
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Members</h4>
+                    <button onclick="linkClickHandler('/invoicing/customer/add-member/{{object.organization.pk}}')" target='popup' class="btn btn-primary">Add Member</button>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Full Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in object.organization.members %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-user"></i>
+                                </td>
+                                <td>{{m.full_name}}</td>
+                                <td>{{m.phone}}</td>
+                                <td>{{m.email}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class='col-sm-6'>
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Interactions</h4>
@@ -109,12 +140,17 @@
                 </div>
             </div>
         </div>
-        
-        </div>
     </div>
 </div>
 
 
 
-
+<script>
+function linkClickHandler(link){
+    $('#popup-frame').attr('src', link);
+    var modal = document.getElementById('id-my-modal');
+    modal.style.display = 'block';
+    
+}
+</script>
 {% endblock content %}

@@ -25,15 +25,17 @@ class FilePickerUI extends Component {
         return (<div>
             <input 
                 type="file" 
-                name="" 
+                name={this.props.fieldName} 
                 id={this.props.fieldID}
                 style={{display:"none"}}
                 onChange={this.inputChangeHandler} />
             {this.state.filename === "" 
                 ? <button 
+                        type="button"
                         className="btn btn-primary"
                         onClick={this.fileSelectHandler}>Select File</button>
                 : <button 
+                        type="button"
                         className="btn btn-primary"
                         onClick={this.fileClearHandler}>
                             {this.state.filename} 

@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import ReplyWidget from "./reply_widget";
 import axios from "axios";
-import {Aux} from '../../../src/common';
-import ReactModal from 'react-modal';
-import SearchableWidget from '../../../src/components/searchable_widget';
-import MultipleSelectWidget from '../../../src/multiple_select/containers/root';
-
+import { Aux } from "../../../src/common";
+import ReactModal from "react-modal";
+import SearchableWidget from "../../../src/components/searchable_widget";
+import MultipleSelectWidget from "../../../src/multiple_select/containers/root";
 
 class MessageDetail extends Component {
   state = {
@@ -22,7 +21,6 @@ class MessageDetail extends Component {
     forwardBlindCopy: []
   };
 
-
   toggleReply = () => {
     this.setState(prevState => ({
       showReplyWidget: !prevState.showReplyWidget
@@ -38,14 +36,17 @@ class MessageDetail extends Component {
   }
 
   sendDraft = () => {
-    this.setState({replyStatus: 'sending'})
-    axios.get("/messaging/api/send-draft/" + this.state.id + "/")
-        .then(res =>{
-            if(res.data.status === "ok"){
-                this.setState({replyStatus: 'sent'})
-            }
-        })
-        .catch(() =>{this.setState({replyStatus: 'error'})});
+    this.setState({ replyStatus: "sending" });
+    axios
+      .get("/messaging/api/send-draft/" + this.state.id + "/")
+      .then(res => {
+        if (res.data.status === "ok") {
+          this.setState({ replyStatus: "sent" });
+        }
+      })
+      .catch(() => {
+        this.setState({ replyStatus: "error" });
+      });
   };
 
   submitHandler = () => {
@@ -79,54 +80,60 @@ class MessageDetail extends Component {
     this.setState({ attachment: file });
   };
 
-  setForwardCopy = (data) =>{
-    this.setState({forwardCopy: data})
-  }
+  setForwardCopy = data => {
+    this.setState({ forwardCopy: data });
+  };
 
-  setForwardBlindCopy = (data) =>{
-    this.setState({forwardBlindCopy: data})
-  }
+  setForwardBlindCopy = data => {
+    this.setState({ forwardBlindCopy: data });
+  };
 
-  forwardMessage = () =>{
-      axios.post('/messaging/api/forward-email/' + this.props.messageID,
-        {
-            to: this.state.forwardTo,
-            copy: this.state.forwardCopy,
-            blind_copy: this.state.forwardBlindCopy
-        })
-  }
-
-  
+  forwardMessage = () => {
+    axios
+      .post("/messaging/api/forward-email/" + this.props.messageID, {
+        to: this.state.forwardTo,
+        copy: this.state.forwardCopy,
+        blind_copy: this.state.forwardBlindCopy
+      })
+      .then(res => {
+        this.setState({ forwardModalIsOpen: false });
+      });
+  };
 
   render() {
     let replyView = null;
-    if (this.state.replyStatus==="open" && 
-            ['inbox', 'drafts'].includes(this.state.folder)) {
+    if (
+      this.state.replyStatus === "open" &&
+      ["inbox", "drafts"].includes(this.state.folder)
+    ) {
       replyView = (
         <div>
-        <input 
-                type="hidden" 
-                name="copy" 
-                id="id_copy"/>
-            <input 
-                type="hidden" 
-                name="blind_copy" 
-                id="id_blind_copy"/>
+          <input type="hidden" name="copy" id="id_copy" />
+          <input type="hidden" name="blind_copy" id="id_blind_copy" />
           <div className="btn-group">
-            <button 
-                className="btn btn-primary"
-                onClick={() => this.setState({forwardModalIsOpen: true})}>Forward Message</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => this.setState({ forwardModalIsOpen: true })}
+            >
+              <i className="fa fa-arrow-right" /> Forward Message
+            </button>
+            {this.state.attachment ? (
+              <a href={this.state.attachment} className="btn btn-info" download>
+                Download Attachment
+              </a>
+            ) : null}
             {this.props.draft ? (
               <Aux>
                 <button className="btn btn-primary" onClick={this.sendDraft}>
-                <i class="fas fa-envelope-open" /> Send
+                  <i class="fas fa-envelope-open" /> Send
                 </button>
-                <a className="btn btn-primary" 
-                href={"/messaging/email/update-draft/" + this.props.messageID}>
-                <i class="fas fa-envelope-open" /> Edit Draft
+                <a
+                  className="btn btn-primary"
+                  href={"/messaging/email/update-draft/" + this.props.messageID}
+                >
+                  <i class="fas fa-edit" /> Edit Draft
                 </a>
               </Aux>
-              
             ) : (
               <button className="btn btn-primary" onClick={this.toggleReply}>
                 {this.state.showReplyWidget ? (
@@ -166,15 +173,34 @@ class MessageDetail extends Component {
           alt=""
         />
       );
-    } else if(this.state.folder !== "inbox"){
-        replyView = null
-    }else{
-        replyView = <div>
-            <h3>Email Send Error</h3>;
-            <button 
-                className="btn btn-primary"
-                onClick={()=>this.setState({replyStatus: "open"})}>Retry</button>    
+    } else if (this.state.folder !== "inbox") {
+      replyView = (
+        <div className="btn-group">
+          <button
+            className="btn btn-primary"
+            onClick={() => this.setState({ forwardModalIsOpen: true })}
+          >
+            <i className="fa fa-arrow-right" /> Forward Message
+          </button>
+          {this.state.attachment ? (
+            <a href={this.state.attachment} className="btn btn-info" download>
+              Download Attachment
+            </a>
+          ) : null}
         </div>
+      );
+    } else {
+      replyView = (
+        <div>
+          <h3>Email Send Error</h3>;
+          <button
+            className="btn btn-primary"
+            onClick={() => this.setState({ replyStatus: "open" })}
+          >
+            Retry
+          </button>
+        </div>
+      );
     }
 
     if (!this.props.messageID) {
@@ -200,8 +226,6 @@ class MessageDetail extends Component {
     }
     return (
       <div>
-        
-
         <div className="card text-white bg-primary">
           <div className="card-body">
             <h4 className="card-title">{this.state.subject}</h4>
@@ -224,40 +248,62 @@ class MessageDetail extends Component {
         <div dangerouslySetInnerHTML={{ __html: this.state.body }} />
         {replyView}
         <ReactModal
-            isOpen={this.state.forwardModalIsOpen}
-            parentSelector={() => document.body}>
-            <h4>Forward Message</h4>
-            
-            <div>
-                <p>To:</p>
-                    <SearchableWidget
-                        onSelect={(value) =>{this.setState({forwardTo: value})}}
-                        onClear={() =>{this.setState({forwardTo: ""})}}
-                        newLink="/messaging/create-email-address"
-                        dataURL="/messaging/api/email-address"
-                        displayField="address"
-                        idField="id" />
-                <p>Cc:</p>
-                    <MultipleSelectWidget 
-                        resProcessor={(res) => res.data.copy}
-                        inputField="copy"
-                        dataURL="/messaging/api/email-address"
-                        nameField="address"
-                        selectHook={this.setForwardCopy}/>
-                <p>Bcc:</p>
-                    <MultipleSelectWidget 
-                        resProcessor={(res) => res.data.copy}
-                        inputField="blind_copy"
-                        dataURL="/messaging/api/email-address"
-                        nameField="address"
-                        selectHook={this.setForwardBlindCopy}/>
-                <button 
-                    className="btn btn-primary"
-                    onClick={this.forwardMessage}>Send</button>
+          isOpen={this.state.forwardModalIsOpen}
+          parentSelector={() => document.body}
+        >
+          <h4>Forward Message</h4>
+
+          <div>
+            <p>To:</p>
+            <SearchableWidget
+              onSelect={value => {
+                this.setState({ forwardTo: value });
+              }}
+              onClear={() => {
+                this.setState({ forwardTo: "" });
+              }}
+              newLink="/messaging/create-email-address"
+              dataURL="/messaging/api/email-address"
+              displayField="address"
+              idField="id"
+            />
+            <p>Cc:</p>
+            <MultipleSelectWidget
+              resProcessor={res => res.data.copy}
+              inputField="copy"
+              dataURL="/messaging/api/email-address"
+              nameField="address"
+              selectHook={this.setForwardCopy}
+            />
+            <p>Bcc:</p>
+            <MultipleSelectWidget
+              resProcessor={res => res.data.copy}
+              inputField="blind_copy"
+              dataURL="/messaging/api/email-address"
+              nameField="address"
+              selectHook={this.setForwardBlindCopy}
+            />
+            <div className="btn-group">
+              <button className="btn btn-primary" onClick={this.forwardMessage}>
+                Send
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => {
+                  this.setState({
+                    forwardTo: "",
+                    forwardBlindCopy: [],
+                    forwardCopy: [],
+                    forwardModalIsOpen: false
+                  });
+                }}
+              >
+                Cancel
+              </button>
             </div>
-        
+          </div>
         </ReactModal>
-        </div>      
+      </div>
     );
   }
 }

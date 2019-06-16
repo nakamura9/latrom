@@ -41,7 +41,6 @@ class GroupAPIViewset(ModelViewSet):
     queryset = models.Group.objects.all()
     serializer_class = serializers.GroupSerializer
 
-
 class ChatAPIViewset(ModelViewSet):
     queryset = models.Chat.objects.all()
     serializer_class = serializers.ChatSerializer
@@ -83,7 +82,7 @@ class InboxAPIView(APIView):
         #maybe try to sync latest emails here?
         emails = models.UserProfile.objects.get(user=self.request.user).inbox
         paginator = MessagingPaginator()
-        qs = paginator.paginate_queryset(emails, request)
+        qs = paginator.paginate_queryset(emails.order_by('-server_id'), request)
         data = serializers.EmailRetrieveSerializer(qs, many=True, context={
             'request': request
         }).data
@@ -286,6 +285,8 @@ def forward_email_messages(request, pk=None):
     msg.blind_copy.add(*blind_copy)
     msg.save()
 
+    g = EmailSMTP(profile)
+
     if(data.get('attachment', None)):# and os.path.exists(path):
         path = os.path.join(
             MEDIA_ROOT, 
@@ -301,14 +302,10 @@ def forward_email_messages(request, pk=None):
             email.attachment, html=True)
     else:
         g.send_html_email(
-            data['subject'], 
+            email.subject, 
             to.address, 
-            [i.address for i in cc],
-            [i.address for i in bcc],
-            data['body'])
-
-
-
-
+            [i.address for i in copy],
+            [i.address for i in blind_copy],
+            email.body)
     
     return JsonResponse({'status': 'ok'})

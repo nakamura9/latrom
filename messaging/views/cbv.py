@@ -21,6 +21,9 @@ import urllib
 from messaging.email_api.email import EmailSMTP
 from draftjs_exporter.html import HTML as exporterHTML
 from ..email_api.service import sync_service
+from cryptography.fernet import Fernet
+from messaging.email_api.secrets import get_secret_key
+
 
 class UserEmailConfiguredMixin(object):
     def get(self, *args, **kwargs):
@@ -33,7 +36,7 @@ class Dashboard(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
 
     def get(self, request, *args, **kwargs):
-        #sync_service(request.user)
+        sync_service(request.user)
         return super().get(request, *args, **kwargs)
 
 
@@ -245,8 +248,10 @@ class UserProfileView(ContextMixin, LoginRequiredMixin, UpdateView):
     success_url = "/messaging/dashboard/"
 
     def get_initial(self):
+        
         return {
-            'user': self.request.user.pk
+            'user': self.request.user.pk,
+            'email_password': self.object.get_plaintext_password()
         }
 
     form_class = forms.UserProfileForm

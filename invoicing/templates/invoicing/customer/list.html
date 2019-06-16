@@ -1,13 +1,15 @@
 {% extends "common_data/list_template.html" %} {% block list_headings %}
 <tr>
-    <td class="info">Full Name</td>
+    <td class="info">Name</td>
+    <td class="info">Type</td>
     <td class="info">Address</td>
     <td class="info">Actions</td>
 </tr>
 {% endblock %} {% block list_content %} {% for customer in object_list %}
 <tr>
     <td>{{customer}}</td>
-    <td>{{customer.billing_address}}</td>
+    <td>{% if customer.is_organization %}Organization{% else %} Individual {% endif %}</td>
+    <td>{%if customer.address != "" %} {{customer.address}}{% else %} None Saved {% endif %}</td>
     <td>
         <div class="dropdown">
             <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"

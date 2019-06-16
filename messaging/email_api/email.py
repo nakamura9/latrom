@@ -3,6 +3,7 @@ import smtplib
 import ssl
 import imaplib
 from email.mime.text import MIMEText
+from django.core.files import File
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -14,6 +15,7 @@ import datetime
 import parse
 from email.parser import HeaderParser
 import logging
+from latrom.settings import MEDIA_ROOT
 
 
 logger =logging.getLogger(__name__)
@@ -150,6 +152,7 @@ class EmailBaseClass():
 
         msg_string = ""
         html_string = ""
+        file= None
 
         #multipart vs singular message
         if msg.is_multipart():
@@ -166,6 +169,15 @@ class EmailBaseClass():
 
                 if content_type == 'text/html':
                     html_string += payload
+
+            file, file_name = self.download_email_attachment(msg, 
+                                           os.path.join(MEDIA_ROOT, 'temp'))
+            if file:
+                file_rb = open(file, 'rb')
+                django_file = File(
+                    os.path.join('messaging', file_name), file_rb)
+                file_rb.close()
+                os.remove(file)
 
         else:
             payload = msg.get_payload(decode=True)
@@ -208,7 +220,6 @@ class EmailBaseClass():
                 print('##no from')
                 sender_string = 'test@email.com'
             
-            print(sender_string)
             
             sent_to = EmailAddress.objects.get(
                 address=self.profile.email_address)
@@ -226,7 +237,8 @@ class EmailBaseClass():
             to=sent_to,
             server_id=id,
             folder=folder,
-            sent= sent if not incoming else True
+            sent= sent if not incoming else True,
+            attachment= None if not file else django_file
         )
 
         if headers.get('Cc'):
@@ -243,7 +255,7 @@ class EmailBaseClass():
     def download_email_attachment(self, msg_string, path):
         #TODO save the file temporarily and then add it to the filefield in the 
         #attachment folder
-        
+        fileName =None
         for part in msg_string.walk():
             if part.get_content_maintype() == 'multipart':
                 continue
@@ -256,6 +268,9 @@ class EmailBaseClass():
                 fp = open(filePath, 'wb')
                 fp.write(part.get_payload(decode=True))
                 fp.close()
+
+            return filePath, fileName
+        return (None, fileName)
 
     def fetch_messages(self, 
                         mail,
@@ -274,6 +289,7 @@ class EmailBaseClass():
                 id = id.decode('utf-8')
             if id < latest:
                 skipped += 1
+                print("skipped")
                 continue
 
             folder = None
@@ -285,6 +301,7 @@ class EmailBaseClass():
                 folder='drafts'
                 
             if queryset.filter(server_id=id, folder=folder).exists():
+                print(f'Email skipped: {id}')
                 continue
 
             as_string = self.process_email(mail, id)
@@ -303,9 +320,9 @@ class EmailBaseClass():
             except UnicodeDecodeError:
                 errors += 1
                 logger.error(f'Failed to decode email {id}')
-            except:
+            except Exception as e:
                 errors += 1
-                logger.error('An unexpected error occurred')
+                logger.error(f'An unexpected error occurred: {e}')
 
         logger.info(f'{skipped} emails skipped')
         logger.warn(f'{errors} errors handled')

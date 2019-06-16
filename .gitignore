@@ -4,10 +4,13 @@ db.sqlite3
 /assets/electron/
 htmlcov/
 env/
+media/chat/*.*
+media/logo/*.*
+media/messaging/*.*
 media/*.*
-media/
 wkhtmltopdf/
 build/app/*/
+database/*.sqlite3
 build/build/
 build/dist/
 !build/app/server/

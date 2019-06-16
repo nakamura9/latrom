@@ -6,6 +6,7 @@ from latrom.settings import MEDIA_ROOT
 from django.shortcuts import reverse 
 from django.contrib.auth.hashers import make_password
 import common_data
+from messaging.email_api.secrets import get_secret_key
 
 
 class EmailAddress(models.Model):
@@ -35,6 +36,13 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
     pop_imap_host = models.CharField(max_length=255, default='imap.gmail.com')
     pop_port = models.IntegerField(default=993)
 
+    @property
+    def get_plaintext_password(self):
+        encrypted = self.email_password.encode()
+        crypt = Fernet(get_secret_key())
+        decrypted = crypt.decrypt(encrypted)
+
+        return decrypted.decode()
 
     @property
     def emails(self):
@@ -76,11 +84,7 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
 
         return '-1'
 
-    '''
-    def save(self):
-        #prevent encrypt the password
-        pwd = make_password(self.email_password)
-    '''
+    
 
     def __str__(self):
         return self.email_address
