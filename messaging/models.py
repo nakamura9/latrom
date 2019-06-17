@@ -100,10 +100,9 @@ class Email(models.Model):
         related_name='copy_email', blank=True)
     blind_copy = models.ManyToManyField('messaging.EmailAddress', 
         related_name='blind_copy_email', blank=True)
-    server_id = models.CharField( 
+    server_id = models.IntegerField( 
         blank=True, 
-        default='',
-        max_length=16)
+        default='')
     to = models.ForeignKey('messaging.EmailAddress', on_delete=models.SET_NULL, 
         null=True,
         related_name='to')
