@@ -138,24 +138,24 @@ class BubbleTests(TestCase):
             chat=cls.chat,
         )
 
-        def test_create_chat_bubble(self):
-            obj = Bubble.objects.create(
-                sender=self.usr,
-                message_text = "Hi",
-                chat=self.chat,
-            )
+    def test_create_chat_bubble(self):
+        obj = Bubble.objects.create(
+            sender=self.usr,
+            message_text = "Hi",
+            chat=self.chat,
+        )
 
-            self.assertIsInstance(obj, Bubble)
+        self.assertIsInstance(obj, Bubble)
 
 
-        def test_create_group_bubble(self):
-            obj = Bubble.objects.create(
-                sender=self.usr,
-                message_text = "Hi",
-                group=self.group,
-            )
+    def test_create_group_bubble(self):
+        obj = Bubble.objects.create(
+            sender=self.usr,
+            message_text = "Hi",
+            group=self.group,
+        )
 
-            self.assertIsInstance(obj, Bubble)
+        self.assertIsInstance(obj, Bubble)
 
 class EmailTests(TestCase):
     @classmethod
