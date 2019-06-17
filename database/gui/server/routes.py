@@ -176,3 +176,27 @@ def load_network_backup():
             return 'failed to load backup.'
         
         return 'backup loaded successfully.'
+
+
+@app.route('/set-backup', methods=['GET', "POST"])
+def set_backup():
+    if request.method == "POST":
+        conf = None
+        root = Tk()
+        path = filedialog.askdirectory()
+        with open('../config.json', 'r') as conf_file:
+            conf = json.load(conf_file)
+            conf['backup_dir'] = path
+
+        with open('../config.json', 'w') as conf_file:
+            json.dump(conf, conf_file)
+
+        root.destroy()
+
+        return f"{path}"
+    else:
+        backup_dir = None 
+        with open('../config.json', 'r') as conf_file:
+            conf = json.load(conf_file)
+            backup_dir = conf.get('backup_dir', "")
+        return render_template('backup.html', current=backup_dir)

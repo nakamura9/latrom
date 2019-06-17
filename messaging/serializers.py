@@ -47,7 +47,7 @@ class EmailRetrieveSerializer(EmailSerializer):
     copy = serializers.StringRelatedField(many=True)
     blind_copy = serializers.StringRelatedField(many=True)
 
-
+    
 class GroupSerializer(serializers.ModelSerializer):
     messages = serializers.SerializerMethodField('paginated_messages')
 

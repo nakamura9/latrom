@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="jumbotron">
+                <h1 class="display-3">Database Utilities</h1>
+                <p class="lead">Set backup location</p>
+                <a href="/" class="btn btn-primary">Go Home</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <p>Select the folder for storing backups.</p>
+            <button onclick="openFileDialog()" class='btn btn-primary'>Select Folder</button>
+            <p><b>Current Location:</b> <span id="current">{{current}}</span></p>
+        </div>
+    </div>
+    
+</div>
+<script>
+
+function openFileDialog(){
+    $.post('/set-backup',{}, function(res){
+        $('#current').text(res)
+    })
+}
+
+</script>
+
+{% endblock content %}

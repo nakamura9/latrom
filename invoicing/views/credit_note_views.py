@@ -44,8 +44,10 @@ class CreditNoteCreateView( ContextMixin, CreateView):
     form_class = forms.CreditNoteForm
 
     def get_initial(self):
+        config = SalesConfig.objects.first()
         return {
-            'invoice': self.kwargs['pk']
+            'invoice': self.kwargs['pk'],
+            'comments': config.default_credit_note_comments
         }
 
     def post(self, request, *args, **kwargs):

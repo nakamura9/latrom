@@ -4,8 +4,25 @@
 <div class="jumbotron">
 <div class="btn-group">
     <a href="{% url 'inventory:order-pdf' pk=object.pk %}" class="btn btn-danger">Generate PDF</a>
+    {% if order.status == 'draft' %}
     <a href="{% url 'inventory:order-update' pk=object.pk %}" class="btn btn-primary">Update</a>
-
+    <button class="btn" onclick="toggleValidateForm()">Validate Order</button>
+    {% endif %}
+</div>
+<script>
+    function toggleValidateForm(){
+        $('#validate-form').toggle();
+    }
+</script>
+<div id="validate-form" style="margin:0px auto;width:320px;padding:10px;display:none" >
+    <form action="{% url 'inventory:verify-order' pk=object.pk %}" method="POST">
+    <h5>Validate Document</h5>
+    {% csrf_token %}
+    <table>
+        {{form.as_table}}
+    </table>
+    <button class="btn btn-primary">Submit</button>
+    </form>
 </div>
 </div>
 

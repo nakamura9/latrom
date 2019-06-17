@@ -135,12 +135,6 @@ class GlobalConfig(SingletonModel):
         (2, '4:3 (Narrower Rectangle)'),
         (3, ':16:9 (Wide Rectangle)'),
     ]
-    # TODO personalize email settings for each user
-    email_host = models.CharField(max_length=32, blank=True, default="")
-    email_port = models.IntegerField(null=True, blank=True)
-    email_user = models.CharField(max_length=32, blank=True, default="")
-    # TODO secure email password
-    email_password = models.CharField(max_length=255, blank=True, default="")
     document_theme = models.IntegerField(
         choices= DOCUMENT_THEME_CHOICES, 
         default=1)
@@ -172,14 +166,6 @@ class GlobalConfig(SingletonModel):
         max_length=32, 
         choices=BACKUP_FREQUENCY_CHOICES, 
         default="D")
-    backup_location_type = models.CharField(
-        blank=True, 
-        default="",
-        max_length=255)
-    backup_location = models.CharField(
-        default="", 
-        blank=True,
-        max_length=255)
     verification_task_id = models.CharField(
         default="", 
         blank=True,

@@ -69,10 +69,14 @@ class QuotationCreateView(ContextMixin,
 
     def get_initial(self):
         initial = {}
+        config = SalesConfig.objects.first()
+
         if self.kwargs.get('customer', None):
             initial['customer'] = self.kwargs['customer']
         initial.update({
-            "status": "quotation"
+            "status": "quotation",
+            'terms': config.default_terms,
+            'comments': config.default_quotation_comments
         })
         return initial
 

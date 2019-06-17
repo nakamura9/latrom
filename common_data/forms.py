@@ -147,12 +147,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
                         )
                     )
                     ),
-                Tab('Email Config',
-                    'email_host',
-                    'email_port',
-                    'email_user',
-                    'email_password',
-                ),
+                
                 Tab('Backups',
                     'use_backups',
                     'backup_frequency',

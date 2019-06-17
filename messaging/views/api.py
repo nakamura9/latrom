@@ -80,9 +80,10 @@ def close_group(request, pk=None):
 class InboxAPIView(APIView):
     def get(self, request):
         #maybe try to sync latest emails here?
-        emails = models.UserProfile.objects.get(user=self.request.user).inbox
+        emails = models.UserProfile.objects.get(
+            user=self.request.user).inbox
         paginator = MessagingPaginator()
-        qs = paginator.paginate_queryset(emails.order_by('-server_id'), request)
+        qs = paginator.paginate_queryset(emails, request)
         data = serializers.EmailRetrieveSerializer(qs, many=True, context={
             'request': request
         }).data

@@ -8,6 +8,7 @@ media/chat/*.*
 media/logo/*.*
 media/messaging/*.*
 media/*.*
+media/temp/*.*
 wkhtmltopdf/
 build/app/*/
 database/*.sqlite3

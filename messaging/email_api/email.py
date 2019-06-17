@@ -114,7 +114,7 @@ class EmailBaseClass():
         '''Used to retrueve an instance of the mailbox'''
         self.configured = True
         mailbox = imaplib.IMAP4_SSL(self.IMAP_HOST, self.IMAP_PORT)
-        mailbox.login(self.profile.email_address, self.profile.email_password)
+        mailbox.login(self.profile.email_address, self.profile.get_plaintext_password)
         return mailbox
 
     def process_email(self, mail, id):
@@ -134,7 +134,7 @@ class EmailBaseClass():
         raw = data[0][1]
 
         try:
-            as_string = raw.decode('utf-8')
+            as_string = raw.decode('utf-8', errors="ignore")
         except Exception as e:
             logger.error(
                 f'Error encountered decoding message {id} with error {e}')
@@ -155,14 +155,19 @@ class EmailBaseClass():
         file= None
 
         #multipart vs singular message
+        charset = msg.get_content_charset()
+        charset = charset if charset else 'utf-8'
         if msg.is_multipart():
             
             for part in msg.walk():
                 content_type = part.get_content_type()
-                payload = part.get_payload(decode=True)
+                try:
+                    payload = part.get_payload(decode=True) 
+                except:
+                    payload = part.get_payload()
 
-                if isinstance(payload, bytes):
-                        payload = payload.decode('utf-8')
+                if payload and isinstance(payload, bytes):
+                        payload = payload.decode(charset, errors="ignore")
                     
                 if content_type  == 'text/plain':
                     msg_string += payload
@@ -174,25 +179,24 @@ class EmailBaseClass():
                                            os.path.join(MEDIA_ROOT, 'temp'))
             if file:
                 file_rb = open(file, 'rb')
-                django_file = File(
-                    os.path.join('messaging', file_name), file_rb)
-                file_rb.close()
-                os.remove(file)
-
+                django_file = File(file_rb,
+                        os.path.join('messaging', file_name))
+                
         else:
             payload = msg.get_payload(decode=True)
-            if isinstance(payload, bytes):
-                payload = payload.decode('utf-8')
+            if payload and isinstance(payload, bytes):
+                payload = payload.decode(charset, errors="ignore")
             msg_string = payload
 
         headers = dict(HeaderParser().parsestr(msg.as_string()).items())
-
+        print(headers)
         
         if headers.get('Received'):
             date = parse.parse('{}; {:te}', headers['Received'])
         elif headers.get('Date'):
             date = parse.parse('{:te}', headers['Date'])
         else:
+            print('wrong date')
             date = datetime.date.today()
         
 
@@ -227,10 +231,14 @@ class EmailBaseClass():
 
         if isinstance(id, bytes):
             id = id.decode('utf-8')
+        subject = headers.get('Subject', '')
+        
+        if subject and isinstance(subject, bytes):
+            subject.decode('utf-8', errors="ignore")
 
         email_msg = Email.objects.create(
             created_timestamp=date,
-            subject=headers.get('Subject', ''),
+            subject=subject,
             owner=self.profile.user,
             sent_from=sent_from,
             body= html_string.strip() + msg_string,
@@ -238,8 +246,15 @@ class EmailBaseClass():
             server_id=id,
             folder=folder,
             sent= sent if not incoming else True,
-            attachment= None if not file else django_file
         )
+        if file:
+            try:
+                email_msg.attachment.save(file_name, django_file)
+            except Exception as e:
+                print(f'file related exception {e}')
+
+            file_rb.close()
+            os.remove(file)
 
         if headers.get('Cc'):
             for address in headers['Cc'].split(', '):
@@ -251,6 +266,7 @@ class EmailBaseClass():
                 addr = EmailAddress.get_address(address)
                 email_msg.blind_copy.add(addr)
 
+        email_msg.save()
 
     def download_email_attachment(self, msg_string, path):
         #TODO save the file temporarily and then add it to the filefield in the 
@@ -266,8 +282,10 @@ class EmailBaseClass():
             filePath = os.path.join(path, fileName)
             if not os.path.isfile(filePath) :
                 fp = open(filePath, 'wb')
-                fp.write(part.get_payload(decode=True))
-                fp.close()
+                payload = part.get_payload(decode=True) 
+                if payload:
+                    fp.write(payload)
+                    fp.close()
 
             return filePath, fileName
         return (None, fileName)
@@ -287,11 +305,7 @@ class EmailBaseClass():
         for id in mail_ids:
             if isinstance(id, bytes):
                 id = id.decode('utf-8')
-            if id < latest:
-                skipped += 1
-                print("skipped")
-                continue
-
+            
             folder = None
             if incoming:
                 folder = 'inbox'
@@ -324,11 +338,10 @@ class EmailBaseClass():
                 errors += 1
                 logger.error(f'An unexpected error occurred: {e}')
 
-        logger.info(f'{skipped} emails skipped')
+        logger.warn(f'{skipped} emails skipped')
         logger.warn(f'{errors} errors handled')
 
     def fetch_inbox(self):
-        # only store the latest 100 emails and the emails stored in the system.
         mail = self.fetch_mailbox()
 
         mail.select(self.config['inbox'])

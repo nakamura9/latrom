@@ -36,7 +36,7 @@ class Dashboard(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
 
     def get(self, request, *args, **kwargs):
-        sync_service(request.user)
+        #sync_service(request.user)
         return super().get(request, *args, **kwargs)
 
 
@@ -251,7 +251,7 @@ class UserProfileView(ContextMixin, LoginRequiredMixin, UpdateView):
         
         return {
             'user': self.request.user.pk,
-            'email_password': self.object.get_plaintext_password()
+            'email_password': self.object.get_plaintext_password
         }
 
     form_class = forms.UserProfileForm

@@ -48,7 +48,10 @@ class Order(SoftDeletionModel):
         ('draft', 'Internal Draft'),
         ('order', 'Order')
     ]
-    
+    validated_by = models.ForeignKey('auth.user', 
+                                    on_delete=models.SET_NULL, 
+                                    null=True, 
+                                    blank=True)
     expected_receipt_date = models.DateField()
     date = models.DateField()
     due = models.DateField(blank=True, null=True)

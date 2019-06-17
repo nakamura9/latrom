@@ -244,8 +244,7 @@ class MessageDetail extends Component {
         </div>
         <hr className="my-4" />
 
-        <p>{this.state.text}</p>
-        <div dangerouslySetInnerHTML={{ __html: this.state.body }} />
+        
         {replyView}
         <ReactModal
           isOpen={this.state.forwardModalIsOpen}
@@ -303,7 +302,9 @@ class MessageDetail extends Component {
             </div>
           </div>
         </ReactModal>
-      </div>
+        <p>{this.state.text}</p>
+        <div dangerouslySetInnerHTML={{ __html: this.state.body }} />
+        </div>
     );
   }
 }

@@ -17,6 +17,8 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
+from common_data.forms import AuthenticateForm
+
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 from wkhtmltopdf import utils as pdf_tools
@@ -176,6 +178,7 @@ class OrderDetailView( ContextMixin,
     template_name = os.path.join('inventory', 'order', 'detail.html')
     extra_context = {
         'title': 'Purchase Order',
+        'form': AuthenticateForm()
     }
     page_length=20
     
@@ -301,12 +304,6 @@ class ShippingAndHandlingView(
         return resp
 
     
-def verify_order(request, pk=None):
-    order = get_object_or_404(models.Order, pk=pk)
-    order.status = "order"
-    order.save()
-    return HttpResponseRedirect('/inventory/order-detail/{}'.format(order.pk))
-
 class DebitNoteCreateView(CreateView):
     form_class = forms.DebitNoteForm
     template_name = os.path.join("inventory", "order", "debit_note", "create.html")
@@ -375,3 +372,17 @@ class DebitNotePDFView(ConfigMixin, MultiPageDocument, PDFDetailView):
         return models.DebitNoteLine.objects.filter(
             note=models.DebitNote.objects.get(
                 pk=self.kwargs['pk']))
+
+def verify_order(request, pk=None):
+    order = get_object_or_404(models.Order, pk=pk)
+    form = AuthenticateForm(request.POST)
+    if form.is_valid():
+        order.status = 'order'
+        order.validated_by = form.cleaned_data['user']
+        order.save()
+
+        order.create_entry()
+
+
+    return HttpResponseRedirect('/inventory/order-detail/{}'.format(pk))
+    

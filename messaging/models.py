@@ -7,6 +7,7 @@ from django.shortcuts import reverse
 from django.contrib.auth.hashers import make_password
 import common_data
 from messaging.email_api.secrets import get_secret_key
+from cryptography.fernet import Fernet
 
 
 class EmailAddress(models.Model):
@@ -46,7 +47,7 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
 
     @property
     def emails(self):
-        return Email.objects.filter(owner=self.user)
+        return Email.objects.filter(owner=self.user).order_by('-server_id')
 
     @property
     def inbox(self):
