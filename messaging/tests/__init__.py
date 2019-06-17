@@ -5,3 +5,6 @@ from .models import (
     BubbleTests,
     GroupTests,
     EmailTests)
+
+
+from .views import (ChatViewTests, EmailViewTests)

@@ -54,6 +54,7 @@ class PrePopulatedEmailForm(EmailForm):
 class GroupForm(forms.ModelForm):
     admin = forms.ModelChoiceField(
         User.objects.all(), widget=forms.HiddenInput)
+    icon = forms.ImageField(required=False)
 
     class Meta:
         model = Group

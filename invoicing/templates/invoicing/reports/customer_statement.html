@@ -1,16 +1,18 @@
-{% extends "common_data/page/pdf_page.html" %} 
+{% extends "common_data/page/pdf_page.html" %}
 
 {% block pre_page %}
 
 <div class="jumbotron">
-<p>Actions:</p>
-{% if pdf_link %}
-<p>
-    <a style="padding:10px;border-radius:10px;background-color:#f22;color:white;" href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
-</p>
-
-{% endif %}
-
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="/invoicing/customer-statement-pdf/{{start}}/{{end}}/{{customer.pk}}" class="dropdown-item"><i
+                        class="fas fa-file-pdf"></i> Generate PDF</a>
+        </div>
+    </div>
 </div>
 
 {% endblock  %}
@@ -28,48 +30,18 @@
 <table style="width:100%">
     <tbody>
         <tr>
-            <td colspan="2"> 
-                {% include "common_data/common/business_information.html" %}
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <center><h1>Customer Statement</h1></center>
-            </td>
-        </tr>
-        <tr>
             <td>
-                <h3>{{customer.name}}</h3>
-                <hr class="my-2">
-                <p>{{customer.business_address}}</p>
-            </td>
-            <td>
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>Current Balance</th>
-                            <td>{{customer.account.balance | accounting}}</td>
-                        </tr>
-                        <tr>
-                            <th>Start Period</th>
-                            <td>{{start}}</td>
-                        </tr>
-                        <tr>
-                            <th>End Period</th>
-                            <td>{{end}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                {% include "invoicing/reports/customer_header.html" %}
             </td>
         </tr>
         <tr>
             <td colspan="2">
                 <div>
-                    <table style=" border: 1px solid black;width:100%;min-height:600px;" >
+                    <table style=" border: 1px solid black;width:100%;min-height:600px;">
                         <thead>
                             <tr style="background-color:black; color:white; padding:10px;">
                                 <th style="width:15%;padding:10px;">Date</th>
-                                
+
                                 <th style="width:25%;padding:10px;">Description</th>
                                 <th style="width:15%;padding:10px;">Credit</th>
                                 <th style="width:15%;padding:10px;">Debit</th>
@@ -78,8 +50,10 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border-bottom: 1px solid black;" class="cell" colspan="4">Balance Brought Forward: </td>
-                                <td style="border-bottom: 1px solid black;" class="cell">{{balance_brought_forward | accounting }}</td>
+                                <td style="border-bottom: 1px solid black;" class="cell" colspan="4">Balance Brought
+                                    Forward: </td>
+                                <td style="border-bottom: 1px solid black;" class="cell">
+                                    {{balance_brought_forward | accounting }}</td>
                             </tr>
                             {% for t in transactions %}
                             <tr>
@@ -88,14 +62,14 @@
                                 <td class="cell">{% if t.is_credit %} {{t.amount}} {% endif %}</td>
                                 <td class="cell"> {% if t.is_debit %} {{t.amount}} {% endif %}</td>
                                 <td class="cell">
-                                {% if t.is_credit %}
-                                ({{t.amount | floatformat:2}})
-                                {% else %}
-                                {{t.amount | floatformat:2}}
-                                {% endif %}
+                                    {% if t.is_credit %}
+                                    ({{t.amount | floatformat:2}})
+                                    {% else %}
+                                    {{t.amount | floatformat:2}}
+                                    {% endif %}
                                 </td>
                             </tr>
-                            {% endfor %} 
+                            {% endfor %}
                             <tr style="height:100%">
                                 <td class="cell"></td>
                                 <td class="cell"></td>

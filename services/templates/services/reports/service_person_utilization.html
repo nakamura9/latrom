@@ -1,4 +1,21 @@
 {% extends "common_data/page/pdf_page.html" %}
+
+{% block pre_page %}
+
+<div class="jumbotron">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="/services/reports/service-person-utilization/pdf/{{start|urlencode}}/{{end|urlencode}}" class="dropdown-item"><i class="fas fa-file-pdf"></i>Generate PDF</a>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}
+
 {% block page_contents %}
 
 <h1>Service Report</h1>
@@ -27,12 +44,5 @@
 </table>
 {% autoescape off %}
 {{graph}}
-
-
-{% if pdf_link %}
-
-<a href="/services/reports/service-person-utilization/pdf/{{start|urlencode}}/{{end|urlencode}}" class="btn btn-danger">Generate PDF</a>
-
-{% endif %}
 {% endautoescape %}
 {% endblock %}

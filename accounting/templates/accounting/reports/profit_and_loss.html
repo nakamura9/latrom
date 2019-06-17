@@ -1,10 +1,31 @@
-{% extends "common_data/page/pdf_page.html" %} {% block page_contents %}
+{% extends "common_data/page/pdf_page.html" %}
+
+{% block pre_page %}
+<div class="jumbotron">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a class="dropdown-item"
+                href="/accounting/csv/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}"><i class="fas fa-file-excel"></i>Export as csv</a>
+            <a class="dropdown-item"
+                href="/accounting/pdf/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}"><i class="fas fa-file-pdf"></i>Generate PDF</a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock  %}
+
+{% block page_contents %}
 {% load accounting %}
 <table class="table table-sm" style="width:100%">
     <tbody>
         <tr>
             <td style="width:100%">
-                {% include "common_data/common/business_information.html"%}  
+                {% include "common_data/common/business_information.html"%}
             </td>
         </tr>
         <tr>
@@ -56,20 +77,20 @@
                             <td></td>
                             <td>{{gross_profit | floatformat:2}}</td>
                         </tr>
-                    {% if other_income_total != 0 %}
+                        {% if other_income_total != 0 %}
                         <tr>
                             <td>Add:</td>
                             <td></td>
                             <td></td>
                         </tr>
                         {% for i in other_income_accounts %}
-                            <tr>
-                                <td>{{i.name}}</td>
-                                <td></td>
-                                <td>{{i.control_balance | accounting}}</td>
-                            </tr>
+                        <tr>
+                            <td>{{i.name}}</td>
+                            <td></td>
+                            <td>{{i.control_balance | accounting}}</td>
+                        </tr>
                         {% endfor %}
-                    {% endif %}
+                        {% endif %}
                         <tr>
                             <td></td>
                             <td></td>
@@ -104,8 +125,5 @@
         </tr>
     </tbody>
 </table>
-{% if pdf_link %}
-<a class="btn btn-success" href="/accounting/csv/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}">Export as csv</a>
-<a class="btn btn-danger" href="/accounting/pdf/profit-and-loss/{{start|urlencode}}/{{end|urlencode}}">Generate PDF</a>
-{% endif %}
+
 {% endblock %}

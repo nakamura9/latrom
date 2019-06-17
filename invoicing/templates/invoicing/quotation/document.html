@@ -1,44 +1,8 @@
 <table id="page-layout">
     <tbody>
         <tr>
-            <td colspan="2" id="title">
-                <h1>Quotation {% if object.draft %}(Draft){% endif %}</h1>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" id="business-data">
-                {% include "common_data/common/business_information.html" %}
-            </td>
-        </tr>
-        <tr>
-            <td id="customer-data">
-                {% include "common_data/common/customer_data.html" %}  
-            </td>
-            <td id="details">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Quotation Date:</td>
-                            <td>{{object.quotation_date}}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                            Quotation Number:
-                            </td>
-                            <td>
-                            QUOT{{object.quotation_number | stringformat:"06d"}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Quotation Valid Till:</td>
-                            <td>{{object.quotation_valid}}</td>
-                        </tr>
-                        <tr>
-                            <td>Quoted By:</td>
-                            <td>{{object.salesperson}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <td>
+                {% include "invoicing/quotation/header.html" %}
             </td>
         </tr>
         <tr>
@@ -73,14 +37,14 @@
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
                         <tr>
-                            <td >
+                            <td>
                                 <b>Tax Due @{{object.tax.rate}}%:</b>
                             </td>
                             <td>{{object.tax_amount | floatformat:2 }}</td>
                         </tr>
 
                         <tr>
-                            <td >
+                            <td>
                                 <b>Total:</b>
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>

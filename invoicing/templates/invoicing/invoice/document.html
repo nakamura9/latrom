@@ -1,53 +1,14 @@
 <table id="page-layout">
     <tbody>
         <tr>
-            <td colspan="2" id="title">
-                <h1> {% if object.status == 'proforma' %}Proforma{% endif %} {% if object.tax_amount > 0 %} Tax {% endif %} Invoice {% if object.draft %}(Draft){% endif %}</h1>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" id="business-data">
-                {% include "common_data/common/business_information.html" %}
-            </td>
-        </tr>
-        <tr>
-            <td id="customer-data">
-                {% include "common_data/common/customer_data.html" %}  
-            </td>
-            <td id="details">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Date:</td>
-                            <td>{{object.date}}</td>
-                        </tr>
-                        {% if object.status != "draft" %}
-                        <tr>
-                            
-                            <td>
-                            Invoice Number:
-                            </td>
-                            <td>
-                            INV{{object.invoice_number | stringformat:"06d"}}
-                            </td>
-                        </tr>
-                        {% endif %}
-                        <tr>
-                            <td>Due Date:</td>
-                            <td>{{object.due}}</td>
-                        </tr>
-                        <tr>
-                            <td>Customer PO No:</td>
-                            <td>{{object.purchase_order_number}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <td>
+                {% include "invoicing/invoice/header.html"%}
             </td>
         </tr>
         <tr>
             <td colspan="2">
                 {% for page in pages %}
-                <table class="{{style}}-content" height="500" width="100%">
+                <table class="{{style}}-content table-sm table-striped" height="500" width="100%">
                     <thead>
                         <tr>
                             <!--This template is rendered conditionally based on the contents of the invoice -->
@@ -109,20 +70,24 @@
                     {% if not page.has_next %}
                     <tfoot>
                         <tr>
-                            <td colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
+                            <td
+                                colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
                                 <b>SubTotal:</b>
                             </td>
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
                         <tr>
-                            <td colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
+                            <td
+                                colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
                                 <b>Tax Due :</b>
                             </td>
-                            <td >{{object.tax_amount | floatformat:2 }}</td>
+                            <td>{{object.tax_amount | floatformat:2 }}</td>
                         </tr>
 
                         <tr>
-                            <td colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
+                            
+                            <td
+                                colspan="{% if object.sales_only %}5{% elif object.service_only %}6{% else %}3{% endif %}">
                                 <b>Total:</b>
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>
