@@ -136,7 +136,9 @@ class Invoice(SoftDeletionModel):
             )
             
         elif data['type'] == 'service':
+            print("## data: ", data)
             pk = data['selected'].split('-')[0]
+            print(f'Primary Key ##: {pk}')
             service = Service.objects.get(pk=pk)
             component = ServiceLineComponent.objects.create(
                 service=service,
@@ -589,7 +591,8 @@ class ProductLineComponent(models.Model):
         if self.value == D(0.0) and \
                 self.product.product_component.unit_value > D(0.0):
             self.set_value()  
-        if self.unit_price == D(0.0):
+        if self.unit_price == D(0.0) and \
+                self.product.product_component.unit_sales_price != 0:
             self.unit_price = self.product.product_component.unit_sales_price
             self.save()
         

@@ -19,5 +19,8 @@ supplier_urls = [
         name="supplier-detail"),
     re_path(r'^supplier-delete/(?P<pk>[\w]+)/?$', 
         views.SupplierDeleteView.as_view(), 
-        name="supplier-delete"),        
+        name="supplier-delete"), 
+    re_path(r'^supplier/add-member/(?P<pk>[\w]+)/?$', 
+        views.AddSupplierIndividualView.as_view(), 
+        name="supplier-add-member"),        
 ]

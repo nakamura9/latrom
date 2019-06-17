@@ -30,6 +30,7 @@ from django.http import HttpResponseRedirect
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.parse.unquote(items))
+        print(f'##items: {items}')
         for item in items:
             inv.add_line(item)
 
@@ -85,10 +86,13 @@ class InvoiceCreateView(ContextMixin, InvoiceCreateMixin, ConfigMixin, CreateVie
 
     def get_initial(self):
         initial = {}
+        config = SalesConfig.objects.first()
         if self.kwargs.get('customer', None):
             initial['customer'] = self.kwargs['customer']
         initial.update({
-            "status": "invoice"
+            "status": "invoice",
+            'terms': config.default_terms,
+            'comments': config.default_invoice_comments
         })
         return initial
 
@@ -188,9 +192,9 @@ class InvoicePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
         context['object'] = Invoice.objects.get(pk=self.kwargs['pk'])
         return context
 
-class InvoiceEmailSendView(EmailPlusPDFView):
+class InvoiceEmailSendView(ConfigMixin, EmailPlusPDFView):
     inv_class = Invoice
-    success_url = reverse_lazy('invoicing:invoice-list')
+    success_url = reverse_lazy('invoicing:invoices-list')
     pdf_template_name = os.path.join("invoicing", "invoice",
             'pdf.html')
 

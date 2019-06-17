@@ -1,0 +1,52 @@
+{% extends 'common_data/page/pdf_page.html' %}
+
+{% block page_contents %}
+
+<div style="display:flex;">
+    <div>
+        <h3>Leave Days Report</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Prepared On</td>
+                    <td>{{date}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="min-width:30%;%"></div>
+    <div>
+        <img width="{{logo.width}}" height="100" src="{{logo.url}}" alt="">
+        <h5>{{business_name}}</h5>
+        <p>{{business_address}}</p>
+    </div>
+
+</div>
+<div>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Number of days</th>
+                <th>Type</th>
+                <th>Approved By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in leave %}
+            <tr>
+                <td>{{i.employee}}</td>
+                <td>{{i.start_date}}</td>
+                <td>{{i.end_date}}</td>
+                <td>{{i.duration}}</td>
+                <td>{{i.category_string}}</td>
+                <td>{{i.authorized_by}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock  %}

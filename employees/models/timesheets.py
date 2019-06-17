@@ -45,6 +45,10 @@ class EmployeeTimeSheet(models.Model):
 
         return total
 
+    @property
+    def lines(self):
+        return AttendanceLine.objects.filter(timesheet=self).order_by('date')
+
     def get_absolute_url(self):
         return reverse("employees:timesheet-detail", kwargs={"pk": self.pk})
     

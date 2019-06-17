@@ -110,6 +110,13 @@ class Supplier(SoftDeletionModel):
             return self.individual.full_name
 
     @property
+    def phone(self):
+        if self.organization:
+            return self.organization.phone
+        else:
+            return self.individual.phone
+
+    @property
     def is_organization(self):
         return self.organization != None
 

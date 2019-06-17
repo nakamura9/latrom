@@ -60,8 +60,30 @@ class OrganizationForm(forms.ModelForm, BootstrapMixin):
 
 class IndividualForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        fields = "__all__"
+        exclude = 'active',
         model = models.Individual
+        widgets ={
+            'address': forms.Textarea(attrs={'rows': 4}),
+            'other_details': forms.Textarea(attrs={'rows': 8})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('first_name', css_class='col-6'),
+                Column('last_name', css_class='col-6'),
+            ),
+            'address',
+            Row(
+                Column('email', 'phone', 'phone_two', css_class='col-6'),
+                Column('other_details', css_class='col-6'),
+            ),
+            'photo',
+            'organization',
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     #not showing password on update view
@@ -125,12 +147,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
                         )
                     )
                     ),
-                Tab('Email Config',
-                    'email_host',
-                    'email_port',
-                    'email_user',
-                    'email_password',
-                ),
+                
                 Tab('Backups',
                     'use_backups',
                     'backup_frequency',

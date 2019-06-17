@@ -20,6 +20,7 @@ from rest_framework.viewsets import ModelViewSet
 from common_data.models import GlobalConfig, Individual, Organization
 from common_data.utilities import *
 from common_data.views import PaginationMixin
+from common_data.forms import IndividualForm
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 
@@ -193,13 +194,13 @@ class SupplierUpdateView(ContextMixin, FormView):
             
             else:
                 organization = vendor.organization
-                organization.legal_name=form.cleaned_data['name'],
-                organization.business_address= form.cleaned_data['address'],
-                organization.website=form.cleaned_data['website'],
+                organization.legal_name=form.cleaned_data['name']
+                organization.business_address= form.cleaned_data['address']
+                organization.website=form.cleaned_data['website']
                 organization.bp_number= \
-                    form.cleaned_data['business_partner_number'],
-                organization.email=form.cleaned_data['email'],
-                organization.phone=form.cleaned_data['phone_1'],
+                    form.cleaned_data['business_partner_number']
+                organization.email=form.cleaned_data['email']
+                organization.phone=form.cleaned_data['phone_1']
                 organization.logo=form.cleaned_data['image']
                 organization.save()
         
@@ -238,3 +239,18 @@ class SupplierDetailView(
         DetailView):
     template_name=os.path.join('inventory', 'supplier', 'detail.html')
     model = models.Supplier
+
+class AddSupplierIndividualView(ContextMixin, CreateView):
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    form_class = IndividualForm
+    success_url = reverse_lazy('inventory:supplier-list')#wont redirect
+
+    extra_context = {
+        'title': 'Add member to organization'
+    }
+
+    def get_initial(self):
+        return {
+            'organization': self.kwargs['pk']
+        }
+

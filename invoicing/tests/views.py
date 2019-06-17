@@ -5,6 +5,7 @@ import urllib
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from django.contrib.auth.models import User
 from accounting.models import Account, Expense, Currency
 from common_data.tests import create_account_models, create_test_user
 from employees.models import Employee
@@ -17,6 +18,7 @@ from .model_util import InvoicingModelCreator
 import accounting
 from common_data.tests import create_test_common_entities
 import copy
+from messaging.models import UserProfile
 
 TODAY = datetime.datetime.today()
 
@@ -360,6 +362,11 @@ class InvoiceViewTests(TestCase):
         create_test_user(cls)
         amc = accounting.tests.model_util.AccountingModelCreator(cls).create_tax()
         create_test_common_entities(cls)
+        UserProfile.objects.create(
+            user=User.objects.get(username='Testuser'),
+            email_address="test@address.com",
+            email_password='123',
+        )
 
             
     def setUp(self):
@@ -440,10 +447,10 @@ class InvoiceViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_get_invoice_email_page(self):
-        resp = self.client.get(reverse('invoicing:invoice-email',
-            kwargs={'pk':1})) 
+        with self.assertRaises(Exception):
+            resp = self.client.get(reverse('invoicing:invoice-email',
+                kwargs={'pk':1})) 
         
-        self.assertEqual(resp.status_code, 200)
 
     def test_post_invoice_email_page(self):
         with self.assertRaises(Exception):

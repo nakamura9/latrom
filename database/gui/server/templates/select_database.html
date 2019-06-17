@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="jumbotron">
+                    <h1 class="display-3">Database Utilities</h1>
+                    <p class="lead">Select Database</p>
+                    <hr class="my-2">
+                    <p>Choose one option from the ones listed below</p>
+                    <a href="/" class="btn btn-primary">Go Back</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="list-box">
+                    <ul class="list-group">
+                        {% for dbname in options %}
+                            <a href="/selected-database/{{loop.index}}">
+                                <li class="list-group-item">{{dbname}}</li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+    </div>
+
+{% endblock content %}

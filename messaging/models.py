@@ -6,6 +6,8 @@ from latrom.settings import MEDIA_ROOT
 from django.shortcuts import reverse 
 from django.contrib.auth.hashers import make_password
 import common_data
+from messaging.email_api.secrets import get_secret_key
+from cryptography.fernet import Fernet
 
 
 class EmailAddress(models.Model):
@@ -24,23 +26,76 @@ class EmailAddress(models.Model):
 
 class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
     email_fields =['email_address']
+
     user = models.OneToOneField('auth.user', on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to=os.path.join(MEDIA_ROOT, 'chat'), blank=True, null=True)
+    avatar = models.ImageField(
+        upload_to=os.path.join(MEDIA_ROOT, 'chat'), blank=True, null=True)
     email_address = models.CharField(max_length=255)
     email_password = models.CharField(max_length=255)
-    last_sync_id = models.CharField(max_length=16, blank=True, default= '')
+    smtp_server = models.CharField(max_length=255, default='smtp.gmail.com')
+    smtp_port = models.IntegerField(default=465)
+    pop_imap_host = models.CharField(max_length=255, default='imap.gmail.com')
+    pop_port = models.IntegerField(default=993)
 
-    '''
-    def save(self):
-        #prevent encrypt the password
-        pwd = make_password(self.email_password)
-    '''
+    @property
+    def get_plaintext_password(self):
+        encrypted = self.email_password.encode()
+        crypt = Fernet(get_secret_key())
+        decrypted = crypt.decrypt(encrypted)
+
+        return decrypted.decode()
+
+    @property
+    def emails(self):
+        return Email.objects.filter(owner=self.user).order_by('-server_id')
+
+    @property
+    def inbox(self):
+        if self.emails:
+            return self.emails.filter(folder='inbox')
+    
+    @property
+    def sent(self):
+        if self.emails:
+            return self.emails.filter(folder='sent')
+
+    @property
+    def drafts(self):
+        if self.emails:
+            return self.emails.filter(folder='drafts')
+
+    @property
+    def latest_inbox(self):
+        if self.inbox and self.inbox.exists():
+            return self.inbox.latest('server_id').server_id
+
+        return '-1'
+
+    @property
+    def latest_sent(self):
+        if self.sent and self.sent.exists():
+            return self.sent.latest('server_id').server_id
+
+        return '-1'
+
+    @property
+    def latest_drafts(self):
+        if self.drafts and self.drafts.exists():
+            return self.drafts.latest('server_id').server_id
+
+        return '-1'
+
+    
 
     def __str__(self):
         return self.email_address
 
+    @property
+    def address_obj(self):
+        return EmailAddress.get_address(self.email_address)
+
 class Email(models.Model):
-    '''Communication between people online using email    '''
+    '''Communication between people online using email'''
     copy = models.ManyToManyField('messaging.EmailAddress', 
         related_name='copy_email', blank=True)
     blind_copy = models.ManyToManyField('messaging.EmailAddress', 
@@ -56,19 +111,22 @@ class Email(models.Model):
         on_delete=models.SET_NULL, 
         null=True,
         related_name='email_sent_from')
-    sender = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
+    owner = models.ForeignKey('auth.user', on_delete=models.SET_NULL, 
         null=True,
         related_name='email_author')
     read = models.BooleanField(default=False)
     subject = models.CharField(max_length=255, blank=True)
-    body = models.TextField()
+    body = models.TextField(blank=True, default="")
+    text = models.TextField(blank=True, default="")
     folder=models.CharField(max_length=16, default='inbox', choices=[
         ('inbox', 'Inbox'),
         ('sent', 'Sent'),
         ('drafts', 'Drafts'),
     ])
     sent = models.BooleanField(default=False)
-    attachment=models.FileField(null=True, blank=True)
+    attachment=models.FileField(null=True, blank=True, upload_to=os.path.join(
+        MEDIA_ROOT, 'messaging'
+    ))
     created_timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):

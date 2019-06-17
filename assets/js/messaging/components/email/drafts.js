@@ -5,7 +5,9 @@ import ListItem from './message_list_item';
 
 class DraftList extends React.Component{
     state = {
-        messages: []
+        messages: [],
+        currentPage: 1
+
     }
     componentDidMount(){
         axios.get('/messaging/api/drafts/').then(res =>{
@@ -20,6 +22,24 @@ class DraftList extends React.Component{
         newMessages[index] = newMsg;
         this.setState({messages: newMessages})
         this.props.setCurrent(id, true);
+    }
+
+    loadMoreMessages = () =>{
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        
+        axios.get('/messaging/api/drafts/', {
+            params: {
+                page: this.state.currentPage + 1
+            }
+    }).then( res =>{
+            this.setState(prevState => ({
+                currentPage: prevState.currentPage + 1,
+                messages: res.data.concat(prevState.messages) 
+            }))
+        }).catch(error =>{
+            alert('No more email messages')
+        })
     }
     
     render(){
@@ -38,6 +58,14 @@ class DraftList extends React.Component{
                         setCurrent={this.setCurrent}
                         listIndex={i} />
                 ))}
+
+                <li className="list-group-item">
+                    <button 
+                        className="btn btn-primary"
+                        onClick={this.loadMoreMessages}>
+                        Load More Emails
+                    </button>
+                </li>
             </ul>
         )
     }

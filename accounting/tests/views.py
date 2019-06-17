@@ -354,10 +354,7 @@ class AccountViewTests(TestCase):
         start = urllib.parse.quote(self.start.strftime("%d %B %Y"))
         end = urllib.parse.quote(self.end.strftime("%d %B %Y"))
         account = Account.objects.get(pk=1000)
-        print("%%%%")
-        print(start)
-        print(end)
-        print(account)
+        
         resp = self.client.get(reverse('accounting:account-report-pdf', kwargs={
             'start': start,
             'end': end,

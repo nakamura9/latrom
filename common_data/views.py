@@ -1,8 +1,10 @@
+import random
+
 import os
 import datetime
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.template import loader
@@ -13,6 +15,9 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from django_filters.views import FilterView
 from wkhtmltopdf import utils as pdf_tools
 from wkhtmltopdf.views import PDFTemplateView
+from messaging.views import UserEmailConfiguredMixin
+from messaging.models import Email, UserProfile
+from messaging.forms import AxiosEmailForm
 
 from accounting.models import Journal
 from common_data import filters, models, serializers, forms
@@ -31,7 +36,8 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from background_task.models_completed import CompletedTask
 import services
-
+from messaging.email_api.email import EmailSMTP
+from messaging.forms import EmailForm, PrePopulatedEmailForm
 
 class PaginationMixin(object):
     '''quick and dirty mixin to support pagination on filterviews '''
@@ -177,6 +183,12 @@ class WorkFlowView(LoginRequiredMixin, TemplateView):
 class ReactTestView(TemplateView):
     template_name = os.path.join("common_data", "react_test.html")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = AxiosEmailForm
+        return context
+    
+
 class AboutView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "about.html")
 
@@ -263,51 +275,58 @@ class SendEmail(ContextMixin,  LoginRequiredMixin, FormView):
             return resp
         return resp
 
-class EmailPlusPDFView(ContextMixin, FormView, MultiPagePDFDocument):
+class PDFException(Exception):
+    pass
+
+class EmailPlusPDFView(UserEmailConfiguredMixin,
+                       CreateView, 
+                       MultiPagePDFDocument):
     '''THe pagination is optional, it will be ignored '''
-    form_class = SendMailForm
-    template_name = os.path.join('common_data', 'create_template.html')
+    form_class = PrePopulatedEmailForm #SendMailForm
+    template_name = os.path.join('messaging', 'email', 'compose.html')
     success_url = None
     pdf_template_name = None
     inv_class = None
-    extra_context = {
-        'title': 'Send Invoice as PDF attatchment'
-    }
+    
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
+        
+        try:
+            return super().get(*args, **kwargs)
+        except PDFException:
+            return HttpResponse('<p>An error occurred rendering the PDF</p>')
+        
+        except Exception as e:
+            raise e
 
     def get_initial(self):
         if not self.inv_class:
             raise ValueError('Improperly configured, needs an inv_class attribute')
+
         inv = self.inv_class.objects.get(pk=self.kwargs['pk'])
-        return {
-            'recipient': inv.customer.customer_email
-        }
-    
-    def post(self,request, *args, **kwargs):
-        resp = super(EmailPlusPDFView, self).post(
-            request, *args, **kwargs)
-        form = self.form_class(request.POST)
         
-        if not form.is_valid():
-            return resp
-        
-        config = GlobalConfig.objects.get(pk=1)
-        msg = EmailMessage(
-            subject=form.cleaned_data['subject'],
-            body = form.cleaned_data['content'],
-            from_email=config.email_user,
-            to=[form.cleaned_data['recipient']]
-        )
-        if not self.pdf_template_name:
-            raise ValueError('Improperly configured. Needs pdf_template_name attribute.')
 
         out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
-    
+        if os.path.exists(out_file):
+            out_file = os.path.join(
+                os.getcwd(), 
+                'media', 
+                'temp',
+                f'out_{random.randint(1, 100000)}.pdf')
+            
         #use the context for pagination and the object
         obj = self.inv_class.objects.get(pk=self.kwargs['pk'])
         context = {
             'object': obj,
         }
-        context.update(SalesConfig.objects.first().__dict__)
+        config = GlobalConfig.objects.first()
+        context.update(config.__dict__)
+        context.update({
+            'logo': config.logo,
+            'logo_width': config.logo_width,
+            'business_name': config.business_name,
+            'business_address': config.business_address
+        })
         options = {
             'output': out_file
         }
@@ -318,14 +337,45 @@ class EmailPlusPDFView(ContextMixin, FormView, MultiPagePDFDocument):
                 cmd_options=options)
 
         except Exception as e:
-            raise Exception('Error occured creating pdf %s' % e )
+            print('Error occured creating pdf %s' % e )
+            raise PDFException()
+        
+        return {
+            'sender': self.request.user.pk,
+            'folder': 'sent',
+            'attachment_path': out_file
+        }
+    
+    def post(self,request, *args, **kwargs):
+        resp = super(EmailPlusPDFView, self).post(
+            request, *args, **kwargs)
+        form = self.form_class(request.POST)
+        
+        if not form.is_valid():
+            return resp
 
-        if os.path.isfile(out_file):
-            msg.attach_file(out_file)
-            msg.send()
-            os.remove(out_file)
+        
+        u = UserProfile.objects.get(user=self.request.user)
+        e = EmailSMTP(u)
 
-        # if the message is successful delete it.
+        self.object.attachment.name = form.cleaned_data['attachment_path']
+        self.object.save()
+
+        g.send_email_with_attachment(
+            form.cleaned_data['subject'],
+            form.cleaned_data['to'].address,
+            form.cleaned_data['body'],
+            open(form.cleaned_data['attachment_path'], 'rb'),
+            html=True
+            )
+
+        if not self.pdf_template_name:
+            raise ValueError('Improperly configured. Needs pdf_template_name attribute.')
+
+        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
+        if os.path.exists(form.cleaned_data['attachment_path']):
+            os.remove(form.cleaned_data['attachment_path'])
+
         return resp
 
 

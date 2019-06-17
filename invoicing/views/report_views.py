@@ -14,7 +14,11 @@ import urllib
 from accounting.models import Credit, Debit
 
 
-from common_data.utilities import ContextMixin, extract_period,  PeriodReportMixin,ConfigMixin, PeriodReportMixin
+from common_data.utilities import (ContextMixin, 
+                                    extract_period,  
+                                    PeriodReportMixin,
+                                    ConfigMixin, 
+                                    PeriodReportMixin)
 from invoicing import forms, models
 from invoicing.models.invoice import Invoice
 from .report_utils.plotters import plot_sales

@@ -1,10 +1,11 @@
 .editorBlock {
-    border: 1px solid #007bff;
-    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 5px 15px 30px #ddd;
     padding: 5px;
     margin: 5px;
+    min-height: 300px;
 }
 .editorContainer {
-    background-color: powderblue;
+    border: 1px solid #ccc;
     padding: 10px;
 }

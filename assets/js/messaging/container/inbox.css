@@ -5,7 +5,7 @@
 
 .inboxMessageDetail{
     padding-left: 2px;
-    width: 50%;
+    width: 60%;
     max-height: 80vh;
     overflow-y: auto;
 
@@ -13,7 +13,7 @@
 
 .inboxList{
     padding: 1px;
-    width: 30%;
+    width: 25%;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
     max-height: 85vh;
@@ -21,7 +21,7 @@
 }
 
 .inboxMenu{
-    width: 20%;
+    width: 15%;
 }
 
 .headers {

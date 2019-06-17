@@ -23,6 +23,9 @@ customer_urls = [
     re_path(r'^customers-list/?$', 
         views.CustomerListView.as_view(), 
         name='customers-list'),
+    re_path(r'^customer/add-member/(?P<pk>[\d]+)?$', 
+        views.AddCustomerIndividualView.as_view(), 
+        name='customer-member-add'),
 ] + customer_router.urls
 
 sales_rep_router = DefaultRouter()

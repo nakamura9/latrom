@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="jumbotron">
+                <h1 class="display-3">Suave Business Tools</h1>
+                <p class="lead">Database Utilities</p>
+                <hr class="my-2">
+                <p>Manage application databases.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h4>Select the desired action below.</h4>
+            <ul class="list-group">
+                
+                <a href="/create-database">
+                    <li class="list-group-item">Create a new Database</li>
+                </a>
+                <a href="/restore-database">
+                    <li class="list-group-item">Restore a backup</li>
+                </a>
+                <a href="/select-database">
+                    <li class="list-group-item">Select a primary database</li>
+                </a>
+                <a href="/set-backup">
+                    <li class="list-group-item">Set Backup location</li>
+                </a>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

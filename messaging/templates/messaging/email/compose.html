@@ -2,15 +2,13 @@
 {% block content %}
 {% load render_bundle from webpack_loader %}
 <style>
-    #div_id_copy li{
-        list-style-type: none;
-    }
-
-    #div_id_copy {
-        max-height: 250px;
+    div.public-DraftEditor-content{
+        min-height: 298px;
         overflow-y: auto;
     }
-
+    #email-to > div {
+        border: 1px solid #ccc;
+    }
 </style>
 
 
@@ -21,25 +19,37 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <form action="" method="POST">
+            <div>
+                {{form.errors}}
+            </div>
+            <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
+                {{form.attachment_path}}
                 <ul class="nav nav-tabs">
                     <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">Basic</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#cc-bcc" data-toggle="tab">Copy To</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cc" data-toggle="tab">Cc</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#bcc" data-toggle="tab">Bcc</a></li>
                 </ul>
                 <div class="tab-content panel-body">
                     <div id="to" class="tab-pane active">
-                        <div id="div_id_recipient" class="form-group"> <label for="id_recipient" class="col-form-label  requiredField">
-                                To</label>
-                            {{form.to}}
-                        </div>
+                        <label for="id_recipient" class="col-form-label  requiredField">
+                                To
+                        </label>
+                        <div id='email-to'></div>
+                        <input type="hidden" name="to" id="id_to" />
                     </div>
-                    <div id="cc-bcc" class="tab-pane">
-                        <div id="div_id_copy" class="form-group"> <label for="id_copy" class="col-form-label ">
-                                Copy
-                            </label>
-                            {{form.copy}}
-                        </div>
+                    <div id="cc" class="tab-pane"> 
+                        <label for="id_copy" class="col-form-label ">
+                            Cc:
+                        </label>
+                        <div id="email-cc"></div>
+                        
+                    </div>
+                    <div id="bcc" class="tab-pane">
+                        <label for="id_bcc" class="col-form-label ">
+                            Bcc:
+                        </label>
+                        <div id="email-bcc"></div>
                     </div>
                 </div>
                 <div id="div_id_subject" class="form-group"> <label for="id_subject" class="col-form-label ">
@@ -47,12 +57,23 @@
                     </label>
                     {{form.subject}}
                 </div>
+                
+                <div id="div_id_attachment" class="form-group"> 
+                {% if not form.attachment_path %}
+                <label for="id_attachment" class="col-form-label ">
+                        Attachment
+                    </label>
+                {% endif %}
+                    <div id="email-attachment"></div>
+                </div>
                 <div id="div_id_body" class="form-group"> <label for="id_body" class="col-form-label  requiredField">
                         Body<span class="asteriskField">*</span> </label>
                     <div id="message-field"></div>
                 </div>
-                {{form.sender}}
+                {{form.owner}}
+                {{form.folder}}
                 <div class="form-group">
+                    <label for="">Save as Draft? {{form.save_as_draft}}</label> <br>
                     <input type="submit" class="btn btn-primary" value="Submit" />
 
                 {{form.body}}

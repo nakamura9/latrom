@@ -1,0 +1,87 @@
+{% extends "window.html" %}
+{% block content %}
+{% load render_bundle from webpack_loader %}
+<style>
+    div.public-DraftEditor-content{
+        min-height: 298px;
+        overflow-y: auto;
+    }
+    #email-to > div {
+        border: 1px solid #ccc;
+    }
+</style>
+
+
+<div class="jumbotron">
+    <h3 class="display-3">Update Draft Email</h3>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div>
+                {{form.errors}}
+            </div>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.attachment_path}}
+                <ul class="nav nav-tabs">
+                    <li class="nav-item"><a class="nav-link active" href="#to" data-toggle="tab">Basic</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cc" data-toggle="tab">Cc</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#bcc" data-toggle="tab">Bcc</a></li>
+                </ul>
+                <div class="tab-content panel-body">
+                    <div id="to" class="tab-pane active">
+                        <label for="id_recipient" class="col-form-label  requiredField">
+                                To
+                        </label>
+                        <div id='email-to'></div>
+                        <input type="hidden" name="to" id="id_to" />
+                    </div>
+                    <div id="cc" class="tab-pane"> 
+                        <label for="id_copy" class="col-form-label ">
+                            Cc:
+                        </label>
+                        <div id="email-cc"></div>
+                        
+                    </div>
+                    <div id="bcc" class="tab-pane">
+                        <label for="id_bcc" class="col-form-label ">
+                            Bcc:
+                        </label>
+                        <div id="email-bcc"></div>
+                    </div>
+                </div>
+                <div id="div_id_subject" class="form-group"> <label for="id_subject" class="col-form-label ">
+                        Subject
+                    </label>
+                    {{form.subject}}
+                </div>
+                
+                <div id="div_id_attachment" class="form-group"> 
+                {% if not form.attachment_path %}
+                <label for="id_attachment" class="col-form-label ">
+                        Attachment
+                    </label>
+                {% endif %}
+                    {{form.attachment}}
+                </div>
+                <div id="div_id_body" class="form-group"> <label for="id_body" class="col-form-label  requiredField">
+                        Body<span class="asteriskField">*</span> </label>
+                    <div id="message-field"></div>
+                </div>
+                {{form.owner}}
+                {{form.folder}}
+                <div class="form-group">
+                    <label for="">Save as Draft? {{form.save_as_draft}}</label> <br>
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+
+                {{form.body}}
+            </form>
+        </div>
+    </div>
+</div>
+
+{% render_bundle "messaging" %}
+
+{% endblock content %}

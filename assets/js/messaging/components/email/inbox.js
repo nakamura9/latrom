@@ -6,11 +6,34 @@ class InboxList extends React.Component{
     state = {
         messages: [
             
-        ]
+        ],
+        status: 'loading',
+        currentPage: 1
     }
     componentDidMount(){
         axios.get('/messaging/api/inbox/').then(res =>{
-            this.setState({messages: res.data})
+            this.setState({
+                messages: res.data,
+                status: 'loaded'
+            })
+        })
+    }
+
+    loadMoreMessages = () =>{
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        
+        axios.get('/messaging/api/inbox/', {
+            params: {
+                page: this.state.currentPage + 1
+            }
+    }).then( res =>{
+            this.setState(prevState => ({
+                currentPage: prevState.currentPage + 1,
+                messages: res.data.concat(prevState.messages) 
+            }))
+        }).catch(error =>{
+            alert('No more email messages')
         })
     }
 
@@ -28,10 +51,12 @@ class InboxList extends React.Component{
             <ul className="list-group">
                 {this.state.messages.length === 0 ?
                     <li className='list-group-item'>
-                        No Messages in This folder.
+                        {this.state.status === 'loaded' ? 'No Messages in this folder'
+                            : <img src="/static/common_data/images/spinner.gif" width={50} height={50} />}
                     </li> 
                     : null
                 }
+
                 {this.state.messages.map((msg, i) =>(
                     <ListItem 
                         msg={msg} 
@@ -39,6 +64,14 @@ class InboxList extends React.Component{
                         setCurrent={this.setCurrent}
                         listIndex={i} />
                 ))}
+                <li className="list-group-item">
+                    <button 
+                        className="btn btn-primary"
+                        onClick={this.loadMoreMessages}>
+                        Load More Emails
+                    </button>
+                </li>
+
             </ul>
         )
     }

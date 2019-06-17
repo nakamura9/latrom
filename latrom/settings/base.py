@@ -165,6 +165,7 @@ LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/base/workflow'
 
 
+
 #change for each installation
 #WKHTMLTOPDF_CMD = os.path.join(BASE_DIR, 'wkhtmltopdf', 'bin')
 

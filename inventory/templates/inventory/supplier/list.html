@@ -3,7 +3,7 @@
 {% block list_headings %}
     <tr>
         <td class="info">Name</td>
-        <td class="info">Contact Person</td>
+        <td class="info">Type</td>
         <td class="info">Phone</td>
         <td class="info">Email</td>
         <td class="info">Actions</td>
@@ -14,9 +14,9 @@
     {% for supplier in object_list %}
     <tr>
         <td>{{supplier.name}}</td>
-        <td>{{supplier.contact_person}}</td>
-        <td>{{supplier.telephone}}</td>
-        <td>{{supplier.email}}</td>
+        <td>{% if supplier.is_organization %}Organization {% else %} Individual{% endif %}</td>
+        <td> {% if supplier.phone != "" %} {{supplier.phone}}{% else %}None stored{% endif %}</td>
+        <td>{% if supplier.email != "" %}{{supplier.email}}{% else %} None recorded {% endif %}</td>
         <td>
                 <div class="dropdown">
                         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"

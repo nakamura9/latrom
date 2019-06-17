@@ -20,7 +20,8 @@ class ServiceEntry extends Component{
                 rate: 0,
                 fee: 0,
                 discount: 0,
-                tax: 1,
+                tax: null,
+                selected: ''
             })
             let tax = document.getElementById('product-tax');
             tax.value = 1;
@@ -74,7 +75,13 @@ class ServiceEntry extends Component{
         
     }
 
-    
+    insertHandler = () =>{
+        //used to reset the tax field
+        let taxSelectInput = document.getElementById('service-tax')
+        taxSelectInput.value = "";
+        this.props.insertHandler()
+    }
+
 
     render(){
     
@@ -157,7 +164,7 @@ class ServiceEntry extends Component{
                             </td>
                             <td>
                                 <button 
-                                    onClick={this.props.insertHandler} 
+                                    onClick={this.insertHandler} 
                                     className="invoice-btn" >Insert</button>
                             </td>
                         </tr>
