@@ -11,7 +11,7 @@ from tkinter import filedialog
 logger =logging.getLogger(__name__)
 
 
-@background(schedule=60)
+@background
 def remote_license_verification(license):
     print(f'License checked at: {datetime.datetime.now().time().strftime("%H:%M")}')
     print(license)

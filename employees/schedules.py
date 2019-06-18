@@ -2,9 +2,13 @@ from employees.services import AutomatedPayrollService
 from background_task import background
 from background_task.models import Task
 
-@background(schedule=60)
+@background
 def run_payroll_service():
     service = AutomatedPayrollService()
     service.run()
 
-run_payroll_service(repeat=Task.DAILY)
+try:
+    run_payroll_service(repeat=Task.DAILY)
+except:
+    # TODO handle exceptions better
+    pass

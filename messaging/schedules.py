@@ -5,7 +5,7 @@ import logging
 from background_task import background
 from background_task.models import Task
 
-@background(schedule=60)
+@background
 def sync_service():
     for user in User.objects.all():
         if not UserProfile.objects.filter(user=user).exists():
@@ -18,5 +18,9 @@ def sync_service():
                 client.fetch_sent()
             except: 
                 logger.error('The email service failed to connect to the remote server')
-        
-sync_service(repeat=3600)
+
+try:
+    sync_service(repeat=3600)
+except:
+    # TODO handle exceptions better
+    pass

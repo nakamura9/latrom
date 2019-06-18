@@ -5,7 +5,7 @@ import os
 from latrom import settings
 from common_data.models import GlobalConfig
 
-@background(schedule=60)
+@background
 def backup_db():
     os.chdir(settings.BASE_DIR)
     ret = subprocess.run(['python', 'manage.py', 'dbbackup', '-z'])
