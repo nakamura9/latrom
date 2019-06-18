@@ -4,7 +4,6 @@
         "model": "common_data.GlobalConfig",
         "pk": 1,
         "fields": {
-            "email_host": "",
             "document_theme": 1
         }
     }

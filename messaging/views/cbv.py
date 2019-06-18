@@ -11,7 +11,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 import datetime
-from messaging import models, forms, serializers
+from messaging import models, forms, serializers, schedules
 from django.db.models import Q
 from latrom.settings import MEDIA_ROOT
 from common_data.utilities.mixins import ContextMixin
@@ -20,7 +20,6 @@ import json
 import urllib
 from messaging.email_api.email import EmailSMTP
 from draftjs_exporter.html import HTML as exporterHTML
-from ..email_api.service import sync_service
 from cryptography.fernet import Fernet
 from messaging.email_api.secrets import get_secret_key
 
@@ -34,10 +33,6 @@ class UserEmailConfiguredMixin(object):
 
 class Dashboard(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     template_name = os.path.join('messaging', 'dashboard.html')
-
-    def get(self, request, *args, **kwargs):
-        #sync_service(request.user)
-        return super().get(request, *args, **kwargs)
 
 
 class InboxView(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):

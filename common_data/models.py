@@ -9,7 +9,6 @@ from django.db import models
 from latrom import settings
 import subprocess
 from common_data.utilities import db_util
-from common_data.schedules import backup_db
 from background_task.models import Task
 from messaging.models import EmailAddress
 from common_data.utilities.mixins import ContactsMixin
@@ -200,23 +199,6 @@ class GlobalConfig(SingletonModel):
     def save(self, *args, **kwargs):
         
         super().save(*args, **kwargs)
-        
-        if self.use_backups and self.backup_location == "":
-            task = backup_db(repeat=self.task_mapping)
-            #task = backup_db(repeat=10)
-            
-            self.backup_location = task.task_hash
-            super().save(*args, **kwargs)
-
-        print(self.backup_location)
-        if not self.use_backups and self.backup_location != "":
-            tasks = Task.objects.filter(task_hash=self.backup_location)
-            if tasks.exists():
-                tasks.delete()
-                print('deleting task')
-            
-            self.backup_location = ""
-            super().save(*args, **kwargs)
 
         #setup hardware id
         if self.hardware_id == "":

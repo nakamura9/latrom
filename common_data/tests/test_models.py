@@ -44,7 +44,8 @@ def create_account_models(cls):
     1. Accounts:
         a. account_c - account that is commonly credited
         b. account_d - account that is commonly debited'''
-    if not hasattr(cls, 'user'):
+    if not hasattr(cls, 'user') and not \
+            User.objects.filter(username='Testuser').exists():
         create_test_user(cls)
 
     create_test_employees_models(cls)

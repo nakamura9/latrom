@@ -30,10 +30,7 @@ class AccountingSettings(SingletonModel):
     is_configured = models.BooleanField(default=False)
     service_hash = models.CharField(max_length=255, default="", blank=True)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.is_configured and self.service_hash == "":
-            run_accounting_service(repeat=Task.DAILY)
+    
 
 class Bookkeeper(SoftDeletionModel):
     '''

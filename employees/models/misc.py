@@ -39,7 +39,4 @@ class EmployeesSettings(SingletonModel):
     service_hash = models.CharField(max_length=255, default="", blank=True)
 
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.is_configured and self.service_hash == "":
-            run_payroll_service(repeat=Task.DAILY)
+    

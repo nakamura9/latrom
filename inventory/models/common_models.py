@@ -64,12 +64,6 @@ class InventorySettings(SingletonModel):
     service_hash = models.CharField(max_length=255, default="", blank=True)
 
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.is_configured and self.service_hash == "":
-            run_inventory_service(repeat=Task.DAILY)
-
-
 class InventoryController(models.Model):
     '''Model that represents employees with the role of 
     inventory controller and have the ability to make purchase orders,
