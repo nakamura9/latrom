@@ -63,7 +63,6 @@ class Individual(ContactsMixin, Person, SoftDeletionModel):
     def __str__(self):
         return self.full_name
 
-
 class Note(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     author = models.ForeignKey('auth.User', on_delete=models.SET_NULL, 
@@ -95,7 +94,7 @@ class Organization(ContactsMixin, models.Model):
     def add_member(self, individual):
         individual.organization = self
         individual.save()
-        
+
 
 class SingletonModel(models.Model):
     class Meta:

@@ -6,6 +6,12 @@ import shutil
 import latrom
 from common_data.models import GlobalConfig
 import os
+from accounting.models import Bookkeeper
+from employees.models import PayrollOfficer
+from inventory.models import InventoryController
+from invoicing.models import SalesRepresentative
+from services.models import ServicePerson
+
 
 class LicenseMiddlewareTest(TestCase):
     fixtures = ['common.json']
@@ -19,8 +25,6 @@ class LicenseMiddlewareTest(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_superuser('Testuser', 'admin@mail.com', '123')
         
-    
-
     def setUp(self):
         self.client.login(username='Testuser', password='123')
         self.config = GlobalConfig.objects.first()
@@ -50,6 +54,43 @@ class LicenseMiddlewareTest(TestCase):
         latrom.settings.DEBUG = True
 
 
+class LicenseMiddlewareTest(TestCase):
+    fixtures = ['common.json']
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+        
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser('Testuser', 'admin@mail.com', '123')
+        
+    
 
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+        self.config = GlobalConfig.objects.first()
 
+    def test_exempted_urls(self):
+        pass
+
+    def test_calendar_urls(self):
+        pass
+
+    def test_employee_urls(self):
+        pass
+
+    def test_bookkeeper_urls(self):
+        pass
+
+    def test_inventory_urls(self):
+        pass
+
+    def test_sales_urls(self):
+        pass
+
+    def test_services_urls(self):
+        pass
+
+        

@@ -6,10 +6,28 @@
     <h1 class="display-3" style="color:red;"><i class="fas fa-times"></i> Error!</h1>
     <p class="lead">A User profile error is preventing you from continuing</p>
     <hr class="my-2">
-    <p>The system has detected suspicious user activity that violates the terms of the licence. This could be due to more users than licenced logging on to the system or the same user logging on from multiple devices.</p>
+    <p>The system has detected suspicious user activity that violates the terms of the licence. </p>
     <p class="lead">
         <a class="btn btn-success btn-lg" href="" role="button">Contact Vendor</a>
     </p>
 </div>
 
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 shadow">
+            <p>The error could be a result of:</p>
+            <ol>
+                <li>The same user logging into the server from different address in a short space of time.</li>
+                <li>More Users than stated in the license are concurrently logged in.</li>
+            </ol>
+            <p>To try and resolve the issue<sup>*</sup>: </p>
+            <ul>
+                <li>Wait two minutes and try again.</li>
+                <li>Restart the server.</li>
+            </ul>
+
+            <p>*<sub>If the issues persist please contact the vendor for assistance.</sub></p>
+        </div>
+    </div>
+</div>
 {% endblock window %}

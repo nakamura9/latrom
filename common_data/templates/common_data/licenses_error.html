@@ -5,12 +5,32 @@
 <div class="jumbotron">
     <h1 class="display-3" style="color:red;"><i class="fas fa-times"></i> Error!</h1>
     <p class="lead">A License error is preventing you from continuing</p>
-    <hr class="my-2">
-    <p>A valid license must be located in the application directory and the application server must be connected to the internet once every 3 days. If you believe that all these conditions have been met and you are still facing challenges, feel free to contact the application vendor.</p>
     <p class="lead">
         <a class="btn btn-success" href="mailto:kandoroc@hotmail.com" role="button">Contact Vendor</a>
         <a class="btn btn-primary" href="/base/reset-license-check" role="button">Try again</a>
     </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 shadow">
+            <p>The error could be a result of:</p>
+            <ol>
+                <li>A license file, "license.json" being absent from the application directory</li>
+                <li>The Server being offline for a period greater than 3 days.</li>
+                <li>An invalid license is being used.</li>
+            </ol>
+            <p>To try and resolve the issue<sup>*</sup>: </p>
+            <ul>
+                <li>Check the application directory for the license file.</li>
+                <li>Connect to the internet and try again.</li>
+                <li>Replace the license in the application folder with the one 
+                    that came with the purchase email.</li>
+            </ul>
+
+            <p>*<sub>If the issues persist please contact the vendor for assistance.</sub></p>
+        </div>
+    </div>
 </div>
 
 {% endblock window %}

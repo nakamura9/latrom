@@ -7,14 +7,25 @@ class UserTestMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
+        '''
+        Middleware that evaluates a requests user and determines whether the 
+        user should be granted access to the page.
+        Conditions:
+            1. the url is publicly available according to exempted urls
+            2. the url is one of base, login, calendar, messaging, media or 
+                calendar.
+            3. If the request user has an employee:
+                a. checks if the employee has certain privileges that match the 
+                    page requested e.g. invoicing -> sales rep.
+                b. the employee is trying to access employee portal pages 
+            4. Redirects users to login page if all conditions are not met
+        '''
 
         redirect = request.META.get('HTTP_REFERER', None)
 
         exempted_urls = [
             '/employees/portal/login',
             '/employees/leave-request',
-            
-
         ]
 
         exempted_base_urls = [
