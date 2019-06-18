@@ -157,7 +157,7 @@ class LicenseMiddleware(object):
 
         #check with remote server every three days
         config = GlobalConfig.objects.get(pk=1)
-        if (config.last_license_check == None or \
+        if not settings.DEBUG and (config.last_license_check == None or \
                 (datetime.date.today() - \
                 config.last_license_check).days > 2):
             
