@@ -1010,7 +1010,7 @@ class TransferViewTests(TestCase):
 
 
 class ConfigWizardTests(TestCase):
-    fixtures = ['common.json']
+    fixtures = ['common.json', 'journals.json', 'settings.json', 'accounts.json']
 
     @classmethod
     def setUpClass(cls):
