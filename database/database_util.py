@@ -190,12 +190,17 @@ def select_database():
 
         selected_db = dbs[selection-1]
         print(f'You have selected the database {selected_db}')
-        with open('config.json', 'w') as config:
-            json.dump({
-                'current': selected_db,
-                'db_list': dbs
-            }, config)
+        conf = None
+        with open('config.json', 'r') as conf_file:
+            conf = json.load(conf_file)
+            conf['current'] = selected_db
+            conf['db_list'] = dbs
 
+        with open('config.json', 'w') as conf_file:
+            json.dump(conf, conf_file)
+
+        # keep db up to date
+        subprocess.run(['python', 'manage.py', 'migrate'])
         break
 
 

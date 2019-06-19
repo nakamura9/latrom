@@ -39,6 +39,8 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
 
     @property
     def get_plaintext_password(self):
+        if self.email_password == "":
+            return self.email_password
         encrypted = self.email_password.encode()
         crypt = Fernet(get_secret_key())
         decrypted = crypt.decrypt(encrypted)

@@ -107,7 +107,7 @@ Totals.propTypes = {
     list: PropTypes.array.isRequired,
     subtotalReducer: PropTypes.func.isRequired
 }
-
+/*
 class SearchableWidget extends Component {
     //currValue is whats being typed, selected is the value validated
     state = {
@@ -233,7 +233,7 @@ SearchableWidget.propTypes = {
     onClear: PropTypes.func.isRequired,
     idField: PropTypes.string.isRequired
 
-}
+}*/
 
 
 class AsyncSelect extends Component{
@@ -313,4 +313,5 @@ class ImgPreview extends Component{
         )
     }
 }
-export {DeleteButton, Totals, SearchableWidget, AsyncSelect, ImgPreview};
+//SearchableWidget
+export {DeleteButton, Totals, AsyncSelect, ImgPreview};

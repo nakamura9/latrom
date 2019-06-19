@@ -255,11 +255,12 @@ class UserProfileView(ContextMixin, LoginRequiredMixin, UpdateView):
         usr = self.request.user
         if models.UserProfile.objects.filter(user=usr).exists():
             return models.UserProfile.objects.get(user=usr)
-        
+        crypt=Fernet(get_secret_key())
+        password = "password".encode()
         profile = models.UserProfile.objects.create(
             user=usr,
             email_address='test@email.com',
-            email_password="password"
+            email_password=crypt.encrypt(password).decode()
             )
 
         return profile

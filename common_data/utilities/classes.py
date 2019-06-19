@@ -73,6 +73,37 @@ class ConfigWizardBase(SessionWizardView):
     config_class = None
     success_url = None
 
+    def get_next_step(self, step=None):
+        """
+        Not called directly, overrides built in method that raises 
+        a value error because of the condition dict
+        """
+        if step is None:
+            step = self.steps.current
+        
+        form_list = self.get_form_list()
+        keys = list(form_list.keys())
+        
+        if step in keys:
+            key = keys.index(step) + 1
+            if len(keys) > key:
+                return keys[key]
+        else:
+            print(self.form_list)#ordered dict
+            
+            all_forms_keys = list(self.form_list.keys())
+            
+            if step == all_forms_keys[-1]:#last step
+                return None
+            next_key = all_forms_keys.index(step) + 1
+            key_string = all_forms_keys[next_key]
+            key_index = keys.index(key_string)
+
+            return keys[key_index]
+            #find where it originally was in the list
+
+        return None
+
     def render_next_step(self, form, **kwargs):
         '''saves each instance of the form after rendering'''
         form.save()

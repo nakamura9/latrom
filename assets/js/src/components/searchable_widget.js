@@ -136,7 +136,7 @@ class SearchableWidget extends Component {
         let selectedValue = "";
 
         let filtered = this.state.choices.filter((val) =>(
-            val.indexOf(evt.target.value) !== -1
+            val.toLowerCase().indexOf(evt.target.value.toLowerCase()) !== -1
         ))
 
         //checking if the selected value is in the list of options
