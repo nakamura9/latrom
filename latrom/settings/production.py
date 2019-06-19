@@ -1,9 +1,16 @@
 import os
+import socket
+
 DEBUG = False
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 # set to the ip address of the server
-ALLOWED_HOSTS = ["localhost", '127.0.0.1']
+def get_host_names():
+    """Only works on windows"""
+    return socket.gethostbyname_ex(socket.gethostname())[2]
+
+
+ALLOWED_HOSTS = ["localhost", '127.0.0.1'] + get_host_names()
 
 DATABASES = {
     'default': {

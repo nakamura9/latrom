@@ -113,6 +113,8 @@ class ConfigWizardBase(SessionWizardView):
         '''This method overrides form tools default to prevent revalitdation
         on forms that have already been saved.'''
         final_forms = OrderedDict()
+        form.save()
+
         # walk through the form list and try to validate the data again.
         for form_key in self.get_form_list():
             form_obj = self.get_form(
@@ -126,6 +128,7 @@ class ConfigWizardBase(SessionWizardView):
                 form_dict=final_forms, **kwargs)
             
             self.storage.reset()
+
             return done_response
 
     def done(self, form_list, **kwargs):
