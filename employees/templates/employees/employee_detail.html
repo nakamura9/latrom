@@ -26,7 +26,7 @@
                     <div class="card-body">
                         <p class="card-text">First name: {{object.first_name}}</p>
                         <p class="card-text">Last name: {{object.last_name}}</p>
-                        <p class="card-text">Email: {{object.email}}</p>
+                        <p class="card-text">Email: <a href="{% url 'messaging:create-message' %}">{{object.email}}</a></p>
                         <p class="card-text">Phone #: {{object.phone}}</p>
                         <p class="card-text">Address: {{object.address}}</p>
                     </div>

@@ -47,6 +47,7 @@ class EditLine extends Component{
             <td>Calculating...</td>
             <td>
                 <button 
+                    type="button"
                     className="btn btn-success"
                     onClick={() => this.props.editHandler(this.state, this.props.index)}>Confirm</button>
             </td>

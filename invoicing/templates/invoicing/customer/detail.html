@@ -14,14 +14,17 @@
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <div class="card bg-primary text-white" style="max-height:300px;">
+            <div class="card bg-primary text-white" >
                 <div class="card-body">
                     <h4 class="card-title">Customer Info</h4>
                     <p class="card-text">Name: {{object.name}}</p>
                     <p class="card-text">Email: {{object.customer_email}}</p>
                     <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual {% endif %}</p>
-                    <p class="card-text">Account Balance: {{object.account.balance}}</p>
                     <p class="card-text">Address: {{object.address}}</p>
+                    <h4>Account</h4>
+                     <p class="card-text">Name: {{object.account}}</p>
+                     <p class="card-text">Balance: {{object.account.balance}}</p>
+                     <a href="{% url 'accounting:account-detail' pk=object.account.pk %}" class="btn btn-secondary">View</a>
 
 
                 </div>
@@ -34,21 +37,21 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th></th>
                                 <th>Full Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for m in object.organization.members %}
                             <tr>
-                                <td>
-                                    <i class="fas fa-user"></i>
-                                </td>
                                 <td>{{m.full_name}}</td>
                                 <td>{{m.phone}}</td>
-                                <td>{{m.email}}</td>
+                                <td><a href="{% url 'messaging:create-message' %}">{{m.email}}</a></td>
+                                <td>
+                                    <a href="{% url 'base:individual-detail' pk=m.pk %}" class="btn btn-success btn-sm">View</a>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

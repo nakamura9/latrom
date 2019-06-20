@@ -35,7 +35,9 @@
                         <i class="fas fa-eye"></i> View {% if inv.draft %} / Validate {% endif %}
                     </a>
                 {% elif inv.status == "proforma" %}
-
+                    <a class="dropdown-item" href="{% url 'invoicing:invoice-details' pk=inv.pk %}">
+                        <i class="fas fa-eye"></i> View {% if inv.draft %} / Validate {% endif %}
+                    </a>
                     <a class="dropdown-item" href="{% url 'invoicing:make-invoice' pk=inv.pk %}"> <i class="fa fa-file-alt" aria-hidden="true"></i> Make Invoice from Proforma Invoice</a>
                 {% else %} <!-- Invoice or paid -->
 

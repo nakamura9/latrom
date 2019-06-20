@@ -21,38 +21,11 @@
 <table class="table table-sm" style="width:100%">
     <tbody>
         <tr>
-            <td style="width:100%">
-                {% include "common_data/common/business_information.html"%}
-            </td>
-        </tr>
-        <tr>
             <td colspan="2">
-                <center>
-                    <h1>Invoice Aging Report</h1>
-                </center>
+                {% include "invoicing/reports/aging_header.html" %}
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>Number of customers</th>
-                            <td>{{customers.count}}</td>
-                        </tr>
-                        <!--
-                        <tr>
-                            <th>Number of Invoices</th>
-                            <td>{{invoice_count}}</td>
-                        </tr> -->
-                        <tr>
-                            <th>Number of outstanding invoices</th>
-                            <td>{{outstanding_invoices}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
+        
         <tr>
             <td colspan="2">
                 <table>

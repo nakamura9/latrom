@@ -201,7 +201,13 @@ def send_draft(request, pk=None):
 def get_latest_chat_messages(request, chat=None):
     discussion = get_object_or_404(models.Chat, pk=chat)
     latest = json.loads(request.body.decode('utf-8'))['latest']
-    messages = discussion.messages.filter(pk__gt=latest)
+    print(latest)
+    if latest:
+        messages = discussion.messages.filter(pk__gt=latest)
+    elif discussion.messages.count() > 0:
+        messages = discussion.messages
+    else:
+        messages= []
 
     data = serializers.BubbleReadSerializer(messages, many=True).data
     
@@ -210,7 +216,13 @@ def get_latest_chat_messages(request, chat=None):
 def get_latest_group_messages(request, group=None):
     discussion = get_object_or_404(models.Group, pk=group)
     latest = json.loads(request.body.decode('utf-8'))['latest']
-    messages = discussion.messages.filter(pk__gt=latest)
+    print(latest)
+    if latest:
+        messages = discussion.messages.filter(pk__gt=latest)
+    elif discussion.messages.count() > 0:
+        messages = discussion.messages
+    else:
+        messages= []
 
     data =  serializers.BubbleReadSerializer(messages, many=True).data
     return JsonResponse({'messages': data})

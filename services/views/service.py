@@ -19,6 +19,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect
 from employees.forms import EmployeeForm
 from employees.models import Employee
+import urllib
+import json
 
 
 
@@ -41,14 +43,26 @@ class ServiceCreateView( ContextMixin, CreateView):
         },{
             'name': 'Create Service Category',
             'url': '/services/create-category/'
-        }]
+        }],
+        'box_array': urllib.parse.quote(json.dumps(
+            [{
+                'model': 'serviceprocedure',
+                'app': 'services',
+                'id': 'id_procedure'
+            },
+            {
+                'model': 'servicecategory',
+                'app': 'services',
+                'id': 'id_category'
+            }
+            ]))
     }
 
 
 class ServiceUpdateView( ContextMixin, UpdateView):
     form_class = forms.ServiceForm
     model = models.Service
-    template_name = CREATE_TEMPLATE
+    template_name = os.path.join('common_data','crispy_create_template.html')
     success_url = reverse_lazy('services:dashboard')
     extra_context = {
         'title': 'Update Service',
@@ -59,7 +73,19 @@ class ServiceUpdateView( ContextMixin, UpdateView):
         },{
             'name': 'Create Service Category',
             'url': '/services/create-category/'
-        }]
+        }],
+        'box_array': urllib.parse.quote(json.dumps(
+            [{
+                'model': 'serviceprocedure',
+                'app': 'services',
+                'id': 'id_procedure'
+            },
+            {
+                'model': 'servicecategory',
+                'app': 'services',
+                'id': 'id_category'
+            }
+            ]))
     }
 
 class ServiceListView( ContextMixin, PaginationMixin, FilterView):

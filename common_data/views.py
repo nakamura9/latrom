@@ -82,7 +82,6 @@ CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 class OrganizationCreateView(ContextMixin, LoginRequiredMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.OrganizationForm
-    success_url = reverse_lazy('invoicing:home')
     extra_context = {
         'title': 'Add Organization'
     }
@@ -92,7 +91,6 @@ class OrganizationUpdateView(ContextMixin, LoginRequiredMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.OrganizationForm
     model = models.Organization
-    success_url = reverse_lazy('invoicing:home')
     extra_context = {
         'title': 'Update Organization details'
     }
@@ -124,7 +122,6 @@ class OrganizationListView(ContextMixin,
 class IndividualCreateView(ContextMixin,  LoginRequiredMixin, CreateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.IndividualForm
-    success_url = reverse_lazy('invoicing:home')
     extra_context = {
         'title': 'Add Individual',
         'description': 'Register a human that interacts with your business either as a customer or supplier or an employee of one of the two.',
@@ -138,7 +135,6 @@ class IndividualUpdateView(ContextMixin,  LoginRequiredMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     form_class = forms.IndividualForm
     model = models.Individual
-    success_url = reverse_lazy('invoicing:home')
     extra_context = {
         'title': 'Update Individual details',
         'description': 'Register a human that interacts with your business either as a customer or supplier or an employee of one of the two.',
@@ -147,6 +143,8 @@ class IndividualUpdateView(ContextMixin,  LoginRequiredMixin, UpdateView):
             'url': '/base/organization/create'
         }]
     }
+
+
 
 
 class IndividualDetailView(ContextMixin,  LoginRequiredMixin, DetailView):

@@ -34,7 +34,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Email</th>
-                                                <td>{{object.business_address}}</td>
+                                                <td><a href="{% url 'messaging:create-message' %}">{{object.email}}</a></td>
                                             </tr>
                                             <tr>
                                                 <th>Phone</th>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Organization</h4>
+                        <h4 class="card-title">Organization <a href="{% url 'base:organization-detail' pk=object.organization.pk %}" class="btn btn-success">View</a></h4>
                         <table class="table table-sm">
                             <tbody>
                                 <tr>

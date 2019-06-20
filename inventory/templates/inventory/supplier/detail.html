@@ -20,11 +20,12 @@
                         {% endif %} </p>
                     <p class="card-text">Name: {{object}}</p>
                     <h5>Contact Details</h5>
-                    <p class="card-text">Email: {{object.email}}</p>
+                    <p class="card-text">Email: <a href="{% url 'messaging:create-message' %}">{{object.email}}</a></p>
                     <p class="card-text">Address: {{object.address}}</p>
                     <h4 class="card-title">Vendor Account</h4>
                     <p class="card-text">Name: {{object.account}}</p>
                     <p class="card-text">Balance: {{object.account.balance}}</p>
+                    <a href="{% url 'accounting:account-detail' pk=object.account.pk %}" class="btn btn-secondary">View</a>
                 </div>
             </div>
             {% if object.is_organization %}
@@ -32,24 +33,25 @@
                 <div class="card-body">
                     <h4 class="card-title">Members</h4>
                     <button onclick="linkClickHandler('/inventory/supplier/add-member/{{object.organization.pk}}')" target='popup' class="btn btn-primary">Add Member</button>
-                    <table class="table">
+                    <table class="table table-sm">
                         <thead>
                             <tr>
-                                <th></th>
                                 <th>Full Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for m in object.organization.members %}
                             <tr>
-                                <td>
-                                    <i class="fas fa-user"></i>
-                                </td>
+                               
                                 <td>{{m.full_name}}</td>
                                 <td>{{m.phone}}</td>
-                                <td>{{m.email}}</td>
+                                <td><a href="{% url 'messaging:create-message' %}">{{m.email}}</a></td>
+                                <td>
+                                    <a href="{% url 'base:individual-detail' pk=m.pk %}" class="btn btn-success btn-sm">View</a>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

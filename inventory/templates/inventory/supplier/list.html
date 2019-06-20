@@ -16,7 +16,7 @@
         <td>{{supplier.name}}</td>
         <td>{% if supplier.is_organization %}Organization {% else %} Individual{% endif %}</td>
         <td> {% if supplier.phone != "" %} {{supplier.phone}}{% else %}None stored{% endif %}</td>
-        <td>{% if supplier.email != "" %}{{supplier.email}}{% else %} None recorded {% endif %}</td>
+        <td>{% if supplier.email != "" %}<a href="{% url 'messaging:create-message' %}">{{supplier.email}}</a>{% else %} None recorded {% endif %}</td>
         <td>
                 <div class="dropdown">
                         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"

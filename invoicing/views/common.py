@@ -105,3 +105,10 @@ class ConfigWizard(ConfigWizardBase):
 
     config_class = SalesConfig
     success_url = reverse_lazy('invoicing:home')
+
+    def get_form_initial(self, step):
+        initial = super().get_form_initial(step)
+        if step == '1':
+            initial.update({'customer_type': 'individual'})
+
+        return initial

@@ -1,0 +1,40 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Goods Received Note
+{% endblock title %}
+
+{% block left_content %}
+<div style="display:block;">
+    <p>
+        <b>Vendor:</b>
+    </p>
+    <h6>{{object.order.supplier}}</h6>
+    <p>{{object.order.supplier.address | linebreaks}} </p>
+</div>
+{% endblock left_content %}
+
+{% block right_content %}
+    {% include 'common_data/common/business.html' %}
+{% endblock right_content %}
+
+{% block lower_left %}
+
+<table style="width:100%;">
+    <tbody >
+        <tr>
+            <th>Purchase Order #</th>
+            <td>{{object.order.pk | stringformat:"06d"}}</td>
+        </tr>
+        <tr>
+            <th>Goods Received Note #</th>
+            <td>{{object.pk | stringformat:"06d"}}</td>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <td>{{object.receive_date}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock lower_left %}

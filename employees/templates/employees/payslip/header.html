@@ -1,0 +1,51 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+    Pay Slip
+{% endblock title %}
+
+{% block left_content %}
+<p><b>Start Date:</b> {{object.start_period}}</p>
+<p><b>End Date:</b> {{object.end_period}}</p>
+
+<table style="width:100%;">
+        <tbody>
+            <tr>
+                <th>Employee Full Name:</th>
+                <td>{{object.employee}}</td>
+            </tr>
+            <tr>
+                <th>Employee Number:</th>
+                <td>{{object.employee.employee_number |stringformat:"06d"}}</td>
+            </tr>
+            <tr>
+                <th>Employee Grade:</th>
+                <td>{{object.pay_grade}}</td>
+            </tr>
+            <tr>
+                <th>Earnings YTD:</th>
+                <td>{{object.employee.earnings_YTD | floatformat:2}}</td>
+            </tr>
+            <tr>
+                <th>Deductions YTD:</th>
+                <td>{{object.employee.deductions_YTD | floatformat:2}}</td>
+            </tr>
+            <tr>
+                <th>Leave Days:</th>
+                <td>{{object.employee.leave_days}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock left_content %}
+
+{% block right_content %}
+{% include "common_data/common/business.html" %}
+
+{% endblock right_content %}
+
+{% block lower_left %}
+{% endblock lower_left %}
+
+{% block lower_right %}
+    
+{% endblock lower_right %}

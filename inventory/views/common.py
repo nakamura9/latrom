@@ -221,3 +221,10 @@ class ConfigWizard(ConfigWizardBase):
     config_class = models.InventorySettings
     success_url = reverse_lazy('inventory:home')
     file_storage = FileSystemStorage(location=settings.MEDIA_ROOT)
+
+    def get_form_initial(self, step):
+        initial = super().get_form_initial(step)
+        if step == '4':
+            initial.update({'vendor_type': 'organization'})
+
+        return initial

@@ -9,7 +9,7 @@ from inventory.views.common import CREATE_TEMPLATE
 from wkhtmltopdf.views import PDFTemplateView
 
 class InventoryReport( ConfigMixin, TemplateView):
-    template_name = os.path.join('inventory', 'reports', 'inventory_report.html')
+    template_name = os.path.join('inventory', 'reports', 'inventory','report.html')
 
     def get_context_data(self, *args, **kwargs):
         context = super(InventoryReport, self).get_context_data(*args, **kwargs)
@@ -23,7 +23,7 @@ class InventoryReport( ConfigMixin, TemplateView):
 
 
 class OutstandingOrderReport( ConfigMixin, TemplateView):
-    template_name = os.path.join('inventory', 'reports', 'outstanding_orders.html')
+    template_name = os.path.join('inventory', 'reports', 'outstanding_orders','report.html')
 
     def get_context_data(self, *args, **kwargs):
         context = super(OutstandingOrderReport, self).get_context_data(*args, **kwargs)

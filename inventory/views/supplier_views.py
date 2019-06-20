@@ -37,7 +37,7 @@ class SupplierCreateView(ContextMixin, FormView):
 
     def get_initial(self):
         return {
-            'vendor_type': 'individual'
+            'vendor_type': 'organization'
         }
 
     def get_success_url(self):

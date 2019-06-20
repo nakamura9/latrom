@@ -70,26 +70,30 @@ class ServiceTeamForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "members",
         model = models.ServiceTeam
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 4})
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            TabHolder(
-                Tab('Team Creation Form',
-                    'name',
-                    'description',
-                    'manager',
-                ),
-                Tab('Service People',
-                    HTML(
-                    """
-                    <div class="col-sm-4"><div id="personnel-list"></div>
-                    """
-                    )
-                ),
+                Row(
+                    Column(
+                        'Team Creation Form',
+                        'name',
+                        'description',
+                        'manager',
+                        css_class="col-6"),
+                    Column(
+                        HTML(
+                            """
+                            <p>Select Service People:</p>
+                            <div><div id="personnel-list"></div>
+                            """
+                            ), css_class="col-6")
+                )
             )
-        )
         self.helper.add_input(Submit('submit', 'Submit')) 
 
 class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):

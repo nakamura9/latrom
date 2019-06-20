@@ -50,6 +50,7 @@ class DataEntryLine extends Component{
                     /></td>
             <td colSpan={2}>
                 <button 
+                    type="button"
                     className="btn btn-primary btn-block"
                     onClick={() => this.props.insertLine(this.state)}>Add to Sheet</button>
             </td>

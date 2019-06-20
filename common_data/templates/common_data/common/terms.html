@@ -1,12 +1,8 @@
-{% if object.comments %}
-
 <div class="footer-cell">
     <div class="footer-cell-heading">
-        <h6>Comments:</h6>
+        <h6>Terms:</h6>
     </div>
     <div class="footer-cell-contents">
-        <p>{{object.comments | linebreaks}}</p>
+        <p>{{object.terms | linebreaks}}</p>
     </div>
 </div>
-
-{% endif %}

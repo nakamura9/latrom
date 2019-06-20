@@ -30,7 +30,7 @@ from django.http import HttpResponseRedirect
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.parse.unquote(items))
-        print(f'##items: {items}')
+        
         for item in items:
             inv.add_line(item)
 
@@ -126,11 +126,14 @@ class InvoiceUpdateView(ContextMixin, UpdateView):
         if not self.object.draft:
             return resp
         #remove existing items
-        for line in self.object.invoiceline_set.all():
-            line.delete()
-        
         inv = self.object
         items = request.POST.get("item_list", None)
+
+        if len(json.loads(urllib.parse.unquote(items))) > 0:
+            for line in self.object.invoiceline_set.all():
+                line.delete()
+        
+        
         
         process_data(items, inv)
 

@@ -126,8 +126,8 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="{% url 'inventory:order-create' %}">Create Order</a>
                                     <a class="dropdown-item" href="{% url 'inventory:warehouse-list' %}">Manage Warehouses</a>
-                                    <a class="dropdown-item" href="{% url 'inventory:supplier-list' %}">Manage Organization Suppliers</a>
-                                    <a class="dropdown-item" href="{% url 'inventory:product-create' %}">Add product to database</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:supplier-list' %}">Manage Vendors</a>
+                                    <a class="dropdown-item" href="{% url 'inventory:product-create' %}">Create product</a>
                                     <a class="dropdown-item" href="{% url 'inventory:config' pk=1%}">Inventory Configuration</a>
                                 </div>
                             </span></h6>
@@ -193,6 +193,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="{% url 'accounting:account-list' %}">View Chart of Accounts</a>
+                                    <a href=" {% url 'accounting:compound-entry' %} " class="dropdown-item">Create Entry</a>
                                 </div>
                             </span></h6>
                 <hr>
@@ -213,7 +214,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="{% url 'employees:portal-login' %}">Employee Portal</a>
-                                    
+                                    <a class="dropdown-item" href="{% url 'employees:time-logger' %}">Time Logger</a>
                                     <a class="dropdown-item" href="{% url 'employees:list-employees' %}">View Employees List</a>
                                 </div>
                 </span></h6>

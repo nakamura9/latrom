@@ -8,6 +8,7 @@
     <h1 class="display-3">Manual Payroll config form</h1>
     <p class="lead">Control panel for running payroll manually</p>
     <hr class="my-2">
+    <a href="{% url 'employees:execute-payroll' %}" class="btn btn-primary btn-lg" >Execute Payroll</a>
 </div>
 {% csrf_token %}
 

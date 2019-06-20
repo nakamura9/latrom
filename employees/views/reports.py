@@ -11,7 +11,10 @@ from common_data.forms import PeriodReportForm
 
 
 class EmployeeAttendanceReport(ConfigMixin, TemplateView):
-    template_name = os.path.join('employees', 'reports', 'employee_attendance.html')
+    template_name = os.path.join('employees', 
+                                 'reports', 
+                                 'attendance',
+                                 'report.html')
 
     @staticmethod
     def common_context():

@@ -6,6 +6,7 @@
 
     .header-content {
         width: 30%;
+        margin-top: 5px;
     }
 
     #title {
@@ -18,8 +19,14 @@
     #lower-header {
         margin-top: 2rem;
     }
+
+    #right {
+        /*text-align: right;*/
+    }
 </style>
 
+<!--
+    {% comment %}
 <div class="document_header">
     <div id="left" class="header-content">
         <h3 id="title">{% block title %}{% endblock title %}</h3>
@@ -53,3 +60,42 @@
         {% endblock lower_right %}
     </div>
 </div>
+{% endcomment %}
+-->
+<table style="width:100%;">
+    <tbody>
+        <tr>
+            <td class="header-content" id="left">
+                <h3 id="title">{% block title %}{% endblock title %}</h3>
+                {% block left_content %}
+
+                {% endblock  %}
+            </td>
+            <td >
+                <div class="header-content" id="center">
+                    {% block center_content %}
+                    {% endblock center_content %}
+                </div>
+            </td>
+            <td class="header-content" id="right">
+                {% include 'common_data/common/logo.html' %}
+                {% block right_content %}
+                {% endblock right_content %}
+            </td>
+        </tr>
+        <tr>
+            <td class="header-content">
+                {% block lower_left %}
+                {% endblock lower_left %}
+            </td>
+            <td class="header-content">
+                {% block lower_center %}
+                {% endblock lower_center %}
+            </td>
+            <td class="header-content">
+                {% block lower_right %}
+                {% endblock lower_right %}
+            </td>
+        </tr>
+    </tbody>
+</table>

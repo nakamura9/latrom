@@ -59,6 +59,16 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     id_number = models.CharField(max_length=64, blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     
+    @property
+    def latest_timesheet(self):
+        qs =EmployeeTimeSheet.objects.filter(employee=self)
+        
+        return EmployeeTimeSheet.objects.filter(employee=self).latest('pk').pk
+
+    @property
+    def short_name(self):
+        return f"{self.first_name[0]}. {self.last_name}" 
+
     def get_absolute_url(self):
         return reverse("employees:employee-detail", kwargs={"pk": self.pk})
     

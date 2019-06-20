@@ -34,6 +34,7 @@ Quotation {% if object.draft %}(Draft){% endif %}
 {% endblock left_content %}
 
 {% block right_content %}
+{% include "common_data/common/business.html" %}
 
 {% endblock right_content %}
 
@@ -45,6 +46,5 @@ Quotation {% if object.draft %}(Draft){% endif %}
 
 {% block lower_right %}
 
-{% include "common_data/common/business.html" %}
 
 {% endblock lower_right %}

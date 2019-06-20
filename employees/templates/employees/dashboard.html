@@ -25,19 +25,26 @@
                     <div class="card-deck">
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-puzzle-piece"></i> Payroll Elements</h4>
+                                <h4 class="card-title"><i class="fas fa-puzzle-piece"></i> Payroll</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-group">
 
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'employees:list-pay-grades' %}">Manage Pay Grades</a>
+                                        <a href="{% url 'employees:list-pay-grades' %}"> Pay Grades</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'employees:payroll-tax-list' %}">Manage Payroll Taxes</a>
+                                        <a href="{% url 'employees:list-pay-slips' %}"> Pay Slips</a>
                                     </li>
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'employees:util-list' %}">Manage Payroll Elements</a>
+                                    <li class="list-group-item">
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                 <a class="dropdown-item" href="{% url 'employees:payroll-tax-list' %}"> Payroll Taxes</a>
+                                                <a class="dropdown-item" href="{% url 'employees:util-list' %}"> Payroll Elements</a>
+                                            </div>
+                                        </div>
                                     </li>
                                 </ul>
 
@@ -51,26 +58,19 @@
                                 <ul class="list-group">
                                     <li class="list-group-item hvr-grow">
                                         <a href="{% url 'employees:list-employees' %}">
-                                            List and Manage Employees
+                                             Employees
                                         </a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'employees:list-pay-slips' %}">Manage Pay Slips</a>
+                                        <a 
+                                                    href="{% url 'employees:department-list' %}"> Departments</a>
+                                        
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <div class="dropdown">
-                                            <span data-toggle="dropdown" class=" card-link"
-                                                style="color:blue;">More...</span>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item "
-                                                    href="{% url 'employees:timesheet-list' %}">Manage Time Sheets</a>
-                                                <a class="dropdown-item "
-                                                    href="{% url 'employees:department-list' %}">Manage Departments</a>
-                                                <a class="dropdown-item " href="{% url 'employees:manual-config' %}">Run
-                                                    Manual Payroll</a>
-                                            </div>
-                                        </div>
+                                        <a 
+                                                    href="{% url 'employees:timesheet-list' %}"> Time Sheets</a>
                                     </li>
+                                    
                                 </ul>
                             </div>
                         </div>
@@ -83,11 +83,12 @@
                                     <li class="list-group-item hvr-grow">
                                         <a href="{% url 'employees:employee-attendance' %}" >Employee Attendance</a>
                                     </li>
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="" style="color:grey;">Payroll Tax Report</a>
-                                    </li>
+                                    
                                     <li class="list-group-item hvr-grow">
                                         <a href="{% url 'employees:leave-report' %}" >Leave Schedule Report</a>
+                                    </li>
+                                    <li class="list-group-item hvr-grow">
+                                        <a href="" style="color:grey;">Payroll Tax Report</a>
                                     </li>
                                 </ul>
                             </div>
@@ -121,26 +122,26 @@
                                 <ul class="list-group">
                                     <li class="list-group-item hvr-grow">
                                         <a class="card-link"
-                                            href="{% url 'inventory:inventory-controller-list' %}">Manage
+                                            href="{% url 'inventory:inventory-controller-list' %}">
                                             Inventory Controllers</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a class="card-link" href="{% url 'invoicing:sales-reps-list' %}">Manage Sales
+                                        <a class="card-link" href="{% url 'invoicing:sales-reps-list' %}"> Sales
                                             Representatives</a>
                                     </li>
-                                    <li class="list-group-item hvr-grow">
+                                    <li class="list-group-item">
                                         <div class="dropdown">
                                             <span data-toggle="dropdown" class=" card-link"
                                                 style="color:blue;">More...</span>
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item "
-                                                    href="{% url 'accounting:bookkeeper-list' %}">Manage
+                                                    href="{% url 'accounting:bookkeeper-list' %}">
                                                     Bookkeepers </a>
                                                 <a class="dropdown-item"
-                                                    href="{% url 'services:service-person-list' %}">Manage
+                                                    href="{% url 'services:service-person-list' %}">
                                                     Service Employees </a>
                                                 <a class="dropdown-item"
-                                                    href="{% url 'employees:payroll-officer-list' %}">Manage
+                                                    href="{% url 'employees:payroll-officer-list' %}">
                                                     Payroll Officers </a>
                                             </div>
                                         </div>
@@ -162,7 +163,9 @@
                                         <a href="{% url 'employees:payroll-date-list' %}">Manage Payroll Schedule</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'employees:execute-payroll' %}">Execute Payroll</a>
+                                        <a href="{% url 'employees:manual-config' %}">Run
+                                                    Manual Payroll</a>
+                                        
                                     </li>
                                 </ul>
                             </div>

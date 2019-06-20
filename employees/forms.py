@@ -349,13 +349,16 @@ class TimeLoggerForm(BootstrapMixin, forms.Form):
                 )
 
         if curr_line.time_in is None:
+            cleaned_data['in_out'] = 'in'
             curr_line.time_in = NOW
             curr_line.save()
 
         else:
+            cleaned_data['in_out'] = 'out'
             curr_line.time_out = NOW
             curr_line.save()
 
+        return cleaned_data
 
 class TimeLoggerFormWithEmployee(TimeLoggerForm):
     employee_number = forms.IntegerField(widget=forms.HiddenInput)

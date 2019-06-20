@@ -200,6 +200,7 @@ def select_database():
             json.dump(conf, conf_file)
 
         # keep db up to date
+        os.chdir('..')
         subprocess.run(['python', 'manage.py', 'migrate'])
         break
 

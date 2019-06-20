@@ -31,6 +31,8 @@ class TimeSheetMixin(object):
         update_flag = isinstance(self, UpdateView)
         
         def get_time(time_string):
+            if '.' in time_string:
+                time_string = time_string.split('.')[0] # removes seconds component
             try:
                 return datetime.datetime.strptime(time_string, '%H:%M').time()
             except:
@@ -46,24 +48,24 @@ class TimeSheetMixin(object):
         if not self.object:
             return resp
 
-        if update_flag:
+        raw_data = request.POST['lines']
+        line_data = json.loads(urllib.parse.unquote(raw_data))
+
+        if update_flag and len(line_data) > 0:
             for i in self.object.attendanceline_set.all():
                 i.delete()
 
-        raw_data = request.POST['lines']
-        line_data = json.loads(urllib.parse.unquote(raw_data))
+        
         for line in line_data:
-            try:
+            if '-' in line['date']:
+                date = datetime.datetime.strptime(
+                    line['date'], '%Y-%m-%d')
+            else:
                 date =datetime.date(
                         self.object.year, 
                         self.object.month,
                         int(line['date']))
-            except:
-
-                date = datetime.date(
-                        self.object.year, 
-                        self.object.month,
-                        28)# but why??
+            
             models.AttendanceLine.objects.create(
                 timesheet=self.object,
                 date=date,
@@ -74,11 +76,11 @@ class TimeSheetMixin(object):
         return resp
 
 class CreateTimeSheetView( TimeSheetMixin, CreateView):
-    template_name = os.path.join('employees', 'timesheet_create_update.html')
+    template_name = os.path.join('employees', 'timesheet', 'create_update.html')
     form_class = forms.TimesheetForm
 
 class ListTimeSheetView(ContextMixin,  PaginationMixin, FilterView):
-    template_name = os.path.join('employees', 'time_sheet_list.html')
+    template_name = os.path.join('employees', 'timesheet','list.html')
     filterset_class = filters.TimeSheetFilter
     paginate_by = 20
     extra_context ={
@@ -92,10 +94,10 @@ class ListTimeSheetView(ContextMixin,  PaginationMixin, FilterView):
 
 class TimeSheetDetailView( DetailView):
     model = models.EmployeeTimeSheet
-    template_name = os.path.join('employees', 'timesheet_detail.html')
+    template_name = os.path.join('employees', 'timesheet','detail.html')
 
 class TimeSheetUpdateView(TimeSheetMixin,  UpdateView):
-    template_name = os.path.join('employees', 'timesheet_create_update.html')
+    template_name = os.path.join('employees', 'timesheet','create_update.html')
     form_class = forms.TimesheetForm
     queryset = models.EmployeeTimeSheet.objects.all()
 
@@ -114,27 +116,16 @@ class TimeLoggerView(ContextMixin, FormView):
 
     def form_valid(self, form):
         resp = super().form_valid(form)
-        messages.info(self.request, '{} logged in successfully at {}'.format(
-            form.cleaned_data['employee_number'], datetime.datetime.now().time()
-        ))
+        in_out = form.cleaned_data['in_out']
+        employee = models.Employee.objects.get(
+            pk=form.cleaned_data['employee_number'])
+        messages.info(
+            self.request, 
+            f"{employee} logged {in_out} " 
+            f"successfully at {datetime.datetime.now().time()}")
+        
         return resp
 
-
-class TimeLoggerView(ContextMixin, FormView):
-    template_name = CREATE_TEMPLATE
-    extra_context = {
-        'title': 'Log Time In/Out',
-        'icon': 'hourglass-half'
-    }
-    form_class = forms.TimeLoggerForm
-    success_url = reverse_lazy('employees:time-logger')
-
-    def form_valid(self, form):
-        resp = super().form_valid(form)
-        messages.info(self.request, '{} logged in successfully at {}'.format(
-            form.cleaned_data['employee_number'], datetime.datetime.now().time()
-        ))
-        return resp
 
 class TimeLoggerWithEmployeeView(ContextMixin, FormView):
     template_name = CREATE_TEMPLATE

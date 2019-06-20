@@ -51,20 +51,19 @@ table {
     
 }
 
-.simple-footer-cell {
-    border: 0.5mm solid black;
-    margin-top: 2mm;
-
+.footer-cell {
+    border: 1px solid black;
+    min-height: 100px;
 }
 
-.simple-footer-cell-heading{
+.footer-cell-heading{
     color: white;
     background-color: black;
-    padding: 2mm;
+    padding: 2px 5px;
 }
 
-.simple-footer-cell-contents{
-    padding: 2mm;
+.footer-cell-contents{
+    padding: 2px 5px;
 }
 
 

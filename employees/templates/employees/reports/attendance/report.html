@@ -1,0 +1,38 @@
+{% extends 'common_data/page/pdf_page.html' %}
+
+{% block pre_page %}
+<p>NB: Report only includes employees who use timesheets.</p>
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+                Actions
+            </button>
+    <div class="dropdown-menu" aria-labelledby="triggerId">
+        <a class="dropdown-item" href="{% url 'employees:employee-attendance-pdf' %}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
+        
+    </div>
+</div>
+{% endblock pre_page %}
+
+{% block page_contents %}
+<style>
+    .day-heading {
+        min-width: 20px;
+        height:16px;
+        border: 1px solid black;
+        border-collapse: collapse
+    }
+
+    .day-content {
+        border:1px solid black;
+        border-collapse: collapse;
+    }
+</style>
+<div>
+    {% include 'employees/reports/attendance/header.html' %}
+</div>
+<div id="report-content">
+    {% include 'employees/reports/attendance/document.html' %}
+</div>
+
+{% endblock page_contents %}

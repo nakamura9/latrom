@@ -1,0 +1,36 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+    Invoice Aging Report
+{% endblock title %}
+
+{% block left_content %}
+<table style="width:100%;">
+        <tbody>
+            <tr>
+                <th>Number of customers</th>
+                <td>{{customers.count}}</td>
+            </tr>
+            <tr>
+                <th>Number of outstanding invoices</th>
+                <td>{{outstanding_invoices}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock left_content %}
+
+{% block right_content %}
+{% include 'common_data/common/business.html' %}
+
+{% endblock right_content %}
+
+{% block lower_left %}
+    
+{% endblock lower_left %}
+
+
+{% block lower_center %}
+{% endblock lower_center %}
+
+{% block lower_right %}
+{% endblock lower_right %}

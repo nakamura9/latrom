@@ -16,7 +16,7 @@ leave_urls = [
     re_path(r'^leave-authorization/(?P<pk>[\d]+)/?$', 
         views.LeaveAuthorizationView.as_view(),
         name='leave-authorization'),
-    re_path(r'^api/month/(?P<year>[\d]{4})/(?P<month>[\d]{2})', 
+    re_path(r'^api/month/(?P<year>[\d]{4})/(?P<month>[\d]+)', 
         views.get_month_data),
     re_path(r'^api/year/(?P<year>[\d]{4})/?$', 
         views.get_year_data)

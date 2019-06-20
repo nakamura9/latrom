@@ -24,39 +24,7 @@
     <tbody>
         <tr>
             <td colspan="2">
-                <h1>{{title}}</h1>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                {% include "common_data/common/business_information.html" %}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p><b>Customer:</b></p>
-                <p>{{object.invoice.customer}}</p>
-                {% if include_shipping %}
-                {{object.invoice.customer.business_address | linebreaks}}
-                {% endif %}  
-            </td>
-            <td>
-                <table >
-                    <tbody>
-                        <tr>
-                            <td>Date:</td>
-                            <td>{{object.date}}</td>
-                        </tr>
-                        <tr>
-                                <td>Credit Note ID:</td>
-                                <td>{{object.pk | stringformat:"06d"}}</td>
-                            </tr>
-                        <tr>
-                            <td>Invoice Number:</td>
-                            <td>{{object.invoice.id | stringformat:"06d"}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                {% include "invoicing/invoice/credit_note/header.html" %}
             </td>
         </tr>
         <tr>

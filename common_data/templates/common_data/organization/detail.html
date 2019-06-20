@@ -46,7 +46,7 @@
                                 <tr>
                                     <th>Email</th>
                                     <td>
-                                        <a>{{object.email}}</a>
+                                        <a href="{% url 'messaging:create-message' %}">{{object.email}}</a>
                                     </td>
                                 </tr>
 
@@ -61,7 +61,7 @@
                             <thead>
                                 <tr class="bg-primary">
                                     <td>Name</td>
-                                    <td>View</td>
+                                    <td>Actions</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,8 +69,7 @@
                                 <tr>
                                     <td>{{m}}</td>
                                     <td>
-                                        <!--add member url-->
-                                        <a href="#" class="btn"></a>
+                                        <a href="{% url 'base:individual-detail' pk=m.pk %}" class="btn btn-success btn-sm">View</a>
                                     </td>
                                 </tr>
                                 {% endfor %}

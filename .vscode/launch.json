@@ -52,8 +52,7 @@
             "program": "${workspaceFolder}/manage.py",
             "console": "integratedTerminal",
             "args": [
-                "test",
-                "accounting"
+                "test"
             ],
             "django": true
         },

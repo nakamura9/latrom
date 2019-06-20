@@ -1,0 +1,46 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+    Debit Note
+{% endblock title %}
+
+{% block left_content %}
+<div style="display:block;">
+    <p>
+        <b>Supplier:</b>
+    </p>
+    <h6>{{object.order.supplier}}</h6>
+    <p>{{object.order.supplier.address | linebreaks}} </p>
+</div>
+{% endblock left_content %}
+
+{% block right_content %}
+{% include 'common_data/common/business.html' %}
+
+{% endblock right_content %}
+
+{% block lower_left %}
+    <table style="width:100%;">
+        <tbody>
+            <tr>
+                <td>Date:</td>
+                <td>{{object.date}}</td>
+            </tr>
+            <tr>
+                    <td>Debit Note ID:</td>
+                    <td>{{object.pk | stringformat:"06d"}}</td>
+                </tr>
+            <tr>
+                <td>Order Number:</td>
+                <td>{{object.invoice.id | stringformat:"06d"}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock lower_left %}
+
+
+{% block lower_center %}
+{% endblock lower_center %}
+
+{% block lower_right %}
+{% endblock lower_right %}

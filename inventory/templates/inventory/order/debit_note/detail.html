@@ -5,34 +5,8 @@
 <table style="width:100%;">
     <tbody>
         <tr>
-            <td colspan="2" id="title"><h1 style="text-align:center;">Debit Note</h1></td>
-        </tr>
-        <tr>
-            <td colspan="2" id="business_data">
-                {% include "common_data/common/business_information.html" %}
-            </td>
-        </tr>
-        <tr>
-            <td id="customer-data">
-                {% include "common_data/common/supplier_data.html" %}
-            </td>
-            <td id="details">
-                <table >
-                    <tbody>
-                        <tr>
-                            <td>Date:</td>
-                            <td>{{object.date}}</td>
-                        </tr>
-                        <tr>
-                                <td>Debit  Note ID:</td>
-                                <td>{{object.pk | stringformat:"06d"}}</td>
-                            </tr>
-                        <tr>
-                            <td>Order Number:</td>
-                            <td>{{object.order.id | stringformat:"06d"}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <td colspan="2">
+                {% include "inventory/order/debit_note/header.html" %}
             </td>
         </tr>
         <tr>

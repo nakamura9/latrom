@@ -12,7 +12,7 @@ from common_data.utilities import db_util
 from background_task.models import Task
 from messaging.models import EmailAddress
 from common_data.utilities.mixins import ContactsMixin
-
+from django.shortcuts import reverse
 class PhoneNumber(models.Model):
     number = models.CharField(max_length=16)
 
@@ -63,6 +63,10 @@ class Individual(ContactsMixin, Person, SoftDeletionModel):
     def __str__(self):
         return self.full_name
 
+    def get_absolute_url(self):
+        return reverse("base:individual-detail", kwargs={"pk": self.pk})
+    
+
 class Note(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     author = models.ForeignKey('auth.User', on_delete=models.SET_NULL, 
@@ -95,6 +99,9 @@ class Organization(ContactsMixin, models.Model):
         individual.organization = self
         individual.save()
 
+    def get_absolute_url(self):
+        return reverse("base:organization-detail", kwargs={"pk": self.pk})
+    
 
 class SingletonModel(models.Model):
     class Meta:

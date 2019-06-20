@@ -2,39 +2,11 @@
 
 {% block page_contents %}
 
-<div class="row">
-    {% include "common_data/common/business_information.html"%}
-</div>
-<center>
-    <h2>Goods Received Note</h2>
-</center>
-<div class="row" style="width:100%;">
-    <div style="float:left;width:50%">
-        <h5>Supplier:</h5>
-        <p>{{object.order.supplier}}</p>
-    </div>
-    <div style="float:left">
-        <table>
-            <tbody >
-                <tr>
-                    <th>Purchase Order #</th>
-                    <td>{{object.order.pk}}</td>
-                </tr>
-                <tr>
-                    <th>Goods Received Note #</th>
-                    <td>{{object.pk}}</td>
-                </tr>
-                <tr>
-                        <th>Date</th>
-                        <td>{{object.receive_date}}</td>
-                    </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
 <div style="width:100%">
-    <table class="{{style}}-content"  style="height:500px;width:100%;">
+    {% include "inventory/goods_received/header.html" %}
+</div>
+<div style="width:100%">
+    <table class="{{style}}-content table table-sm"  style="height:500px;width:100%;">
         <thead  >
             <tr >
                 <td style="width:70%">Description</td>

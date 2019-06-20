@@ -42,7 +42,6 @@ if(threadView){
     }
     
     const toprePopulatedHandler = (data) =>{
-        console.log(data)
         return data.to
     }
     
@@ -52,6 +51,7 @@ if(threadView){
                         newLink="/messaging/create-email-address"
                         dataURL="/messaging/api/email-address"
                         displayField="address"
+                        widgetID="to"
                         onSelect={(value) => {
                             document.getElementById('id_to').value = value;
                         }}
