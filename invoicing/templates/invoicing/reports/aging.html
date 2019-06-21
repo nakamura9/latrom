@@ -18,7 +18,7 @@
 
 {% block page_contents %}
 
-<table class="table table-sm" style="width:100%">
+<table class=" table-sm" style="width:100%">
     <tbody>
         <tr>
             <td colspan="2">
@@ -28,6 +28,7 @@
         
         <tr>
             <td colspan="2">
+                {% for page in pages %}
                 <table>
                     <thead>
                         <tr>
@@ -45,7 +46,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for c in customers %}
+                        {% for c in page %}
                         <tr>
                             <td>{{c}}</td>
                             {% for amount in c.age_list %}
@@ -55,6 +56,10 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% if page.has_next %}
+                <p style="page-break-before:always;"></p>
+                {% endif %}
+                {% endfor %}
             </td>
         </tr>
     </tbody>

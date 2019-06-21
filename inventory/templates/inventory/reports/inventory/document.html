@@ -8,6 +8,7 @@
         </tr>
         <tr>
             <td colspan="2">
+            {% for page in pages %}
                 <table class="table table-sm  table-striped ">
                     <thead>
                         <tr>
@@ -18,7 +19,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for i in items %}
+                        {% for i in page %}
                         <tr>
                             <td>{{i.item.name}}</td>
                             <td>{{i.warehouse}}</td>
@@ -28,6 +29,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <p>{{page}}</p>
+            {% if page.has_next %}
+                <p style="page-break-before:always;"></p>
+                {% endif %}
+            {% endfor %}
             </td>
         </tr>
     </tbody>

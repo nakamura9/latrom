@@ -16,7 +16,7 @@ import parse
 from email.parser import HeaderParser
 import logging
 from latrom.settings import MEDIA_ROOT
-
+import mailparser
 
 logger =logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class EmailBaseClass():
                                    attachment,
                                    html=False):
 
-        def add_attachment_hook(a=None):
+        def add_attachment_hook(a=None):#meta
             '''Used to add files to emails. returns a one element list
             with the mime-part of the encoded attachment'''
             part = MIMEBase('application', 'octet-stream')
@@ -189,60 +189,26 @@ class EmailBaseClass():
             msg_string = payload
 
         headers = dict(HeaderParser().parsestr(msg.as_string()).items())
-        print(headers)
+        better_headers = mailparser.parse_from_string(msg.as_string())
         
-        if headers.get('Received'):
-            date = parse.parse('{}; {:te}', headers['Received'])
-        elif headers.get('Date'):
-            date = parse.parse('{:te}', headers['Date'])
+        to = EmailAddress.get_address(better_headers.to[0][1])
+        from_ = EmailAddress.get_address(better_headers.from_[0][1])
+        
+        if draft:
+            folder='draft'
+        elif sent:
+            folder='sent'
         else:
-            print('wrong date')
-            date = datetime.date.today()
-        
-
-        sent_from = None
-        sent_to = None
-        if draft or sent:
-            if draft:
-                folder='draft'
-            else:
-                folder='sent'
-            sent_from =  EmailAddress.objects.get(
-                address=self.profile.email_address)
-            if not headers.get('To', None):
-                print('##missing to')
-            sent_to = EmailAddress.get_address(headers.get('To', ''))
-        elif incoming:# i.e. inbox
             folder='inbox'
-            if headers.get('From'):
-                try:
-                    sender_string = parse.parse('{} <{}>', headers["From"])[1]
-                except TypeError:
-                    print('##cannot parse header')
-                    sender_string = headers['From']
-            else:
-                print('##no from')
-                sender_string = 'test@email.com'
             
-            
-            sent_to = EmailAddress.objects.get(
-                address=self.profile.email_address)
-            sent_from = EmailAddress.get_address(sender_string)
-
-        if isinstance(id, bytes):
-            id = id.decode('utf-8')
-        subject = headers.get('Subject', '')
-        
-        if subject and isinstance(subject, bytes):
-            subject.decode('utf-8', errors="ignore")
 
         email_msg = Email.objects.create(
-            created_timestamp=date,
-            subject=subject,
+            created_timestamp=better_headers.date,
+            subject=better_headers.subject,
             owner=self.profile.user,
-            sent_from=sent_from,
             body= html_string.strip() + msg_string,
-            to=sent_to,
+            to=to,
+            sent_from=from_,
             server_id=id,
             folder=folder,
             sent= sent if not incoming else True,
@@ -302,7 +268,7 @@ class EmailBaseClass():
         queryset = self.profile.emails
         
 
-        for id in mail_ids:
+        for id in reversed(mail_ids):
             if isinstance(id, bytes):
                 id = id.decode('utf-8')
             

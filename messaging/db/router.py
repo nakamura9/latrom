@@ -2,8 +2,6 @@ class MessagingRouter():
     def db_for_read(self, model, **hints):
         if model._meta.app_label == 'messaging':
             return 'messaging'
-        elif model._meta.app_label == 'auth':
-            return 'messaging', 'default'
         return None
 
     def db_for_write(self, model, **hints):

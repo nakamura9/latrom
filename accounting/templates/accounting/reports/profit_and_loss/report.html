@@ -23,17 +23,10 @@
 {% load accounting %}
 <table class="table table-sm" style="width:100%">
     <tbody>
-        <tr>
-            <td style="width:100%">
-                {% include "common_data/common/business_information.html"%}
-            </td>
-        </tr>
+        
         <tr>
             <td colspan="2">
-                <center>
-                    <h1>Statement of Comprehensive Income</h1>
-                    <h4>Period Spanning {{start}} - {{end}}</h4>
-                </center>
+                {% include "accounting/reports/profit_and_loss/header.html" %}
             </td>
         </tr>
         <tr>

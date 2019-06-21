@@ -16,6 +16,7 @@ from accounting.models import Credit, Debit
 
 from common_data.utilities import (ContextMixin, 
                                     extract_period,  
+                                    MultiPageDocument,
                                     PeriodReportMixin,
                                     ConfigMixin, 
                                     PeriodReportMixin)
@@ -41,11 +42,20 @@ class CustomerReportFormView(ContextMixin, FormView):
         return {}
 
 
-class CustomerStatement(ConfigMixin, PeriodReportMixin, TemplateView):
+class CustomerStatement(ConfigMixin, 
+                        MultiPageDocument, 
+                        PeriodReportMixin, 
+                        TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'customer_statement.html')
+    page_length=20
 
-    @staticmethod 
-    def common_context(context, customer, start, end):
+    def get_multipage_queryset(self):
+        kwargs = self.request.GET
+        customer = models.Customer.objects.get(
+            pk=kwargs['customer'])
+        
+        start, end = extract_period(kwargs)
+        
         credits = Credit.objects.filter(
             Q(entry__date__gte=start) & 
             Q(entry__date__lte=end) &
@@ -56,12 +66,18 @@ class CustomerStatement(ConfigMixin, PeriodReportMixin, TemplateView):
             Q(entry__date__lte=end) &
             Q(account=customer.account)
         ).order_by('pk')
+
+        return sorted(itertools.chain(debits, credits), key=lambda t: t.entry.date)
+
+
+    @staticmethod 
+    def common_context(context, customer, start, end):
+        
         context.update({
             'customer': customer,
             'start': start.strftime("%d %B %Y"),
             'end': end.strftime("%d %B %Y"),
-            'transactions': itertools.chain(credits, debits),
-            'balance_brought_forward': customer.account.balance_on_date(start),
+             'balance_brought_forward': customer.account.balance_on_date(start),
             'balance_at_end_of_period': customer.account.balance_on_date(end)
         })
         return context
@@ -78,9 +94,32 @@ class CustomerStatement(ConfigMixin, PeriodReportMixin, TemplateView):
         context['pdf_link'] = True
         return CustomerStatement.common_context(context, customer, start, end)
         
-class CustomerStatementPDFView(ConfigMixin, PDFTemplateView):
+class CustomerStatementPDFView(ConfigMixin, MultiPageDocument,PDFTemplateView):
     template_name = CustomerStatement.template_name
     file_name ="customer_statement.pdf"
+
+    page_length=20
+
+    def get_multipage_queryset(self):
+        start = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['start']), "%d %B %Y")
+        end = datetime.datetime.strptime(urllib.parse.unquote(
+            self.kwargs['end']), "%d %B %Y")
+        customer = models.Customer.objects.get(pk=self.kwargs['customer'])
+        
+        
+        credits = Credit.objects.filter(
+            Q(entry__date__gte=start) & 
+            Q(entry__date__lte=end) &
+            Q(account=customer.account)
+        ).order_by('pk')
+        debits = Debit.objects.filter(
+            Q(entry__date__gte=start) & 
+            Q(entry__date__lte=end) &
+            Q(account=customer.account)
+        ).order_by('pk')
+
+        return sorted(itertools.chain(debits, credits), key=lambda t: t.entry.date)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,9 +132,14 @@ class CustomerStatementPDFView(ConfigMixin, PDFTemplateView):
         
 
 
-class InvoiceAgingReport(ConfigMixin, TemplateView):
+class InvoiceAgingReport(ConfigMixin, MultiPageDocument, TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'aging.html')
+    page_length = 20
 
+    def get_multipage_queryset(self):
+        return models.Customer.objects.all()
+
+        
     @staticmethod 
     def common_context(context):
         outstanding_invoices = Invoice.objects.filter(Q(status='invoice'))
@@ -110,9 +154,13 @@ class InvoiceAgingReport(ConfigMixin, TemplateView):
         context['pdf_link'] = True
         return InvoiceAgingReport.common_context(context)
 
-class InvoiceAgingPDFView(ConfigMixin, PDFTemplateView):
+class InvoiceAgingPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = InvoiceAgingReport.template_name
     file_name ="invoice_aging.pdf"
+    page_length = 20
+
+    def get_multipage_queryset(self):
+        return models.Customer.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

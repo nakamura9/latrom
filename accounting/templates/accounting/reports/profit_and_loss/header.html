@@ -1,0 +1,15 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Statement of Comprehensive Income
+
+{% endblock title %}
+
+{% block left_content %}
+Period Spanning {{start}} - {{end}}
+
+{% endblock left_content %}
+
+{% block right_content %}
+    {% include "common_data/common/business.html" %}
+{% endblock right_content %}

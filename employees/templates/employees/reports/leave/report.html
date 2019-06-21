@@ -1,0 +1,59 @@
+{% extends 'common_data/page/pdf_page.html' %}
+
+{% block pre_page %}
+
+{% if pdf_link %}
+<div class="jumbotron">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                    Actions
+                </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a class="dropdown-item" href=" {% url 'employees:leave-report-pdf' %} "> <i class="fas fa-file-pdf"></i>Generate PDF </a>
+            
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock pre_page %}
+
+{% block page_contents %}
+
+<div>
+    {% include "employees/reports/leave/header.html" %}
+</div>
+<div>
+    {% for page in pages %}
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Number of days</th>
+                <th>Type</th>
+                <th>Approved By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in page %}
+            <tr>
+                <td>{{i.employee}}</td>
+                <td>{{i.start_date}}</td>
+                <td>{{i.end_date}}</td>
+                <td>{{i.duration}}</td>
+                <td>{{i.category_string}}</td>
+                <td>{{i.authorized_by}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>{{page}}</p>
+    {% if page.has_next %}
+        <p style="page-break-before:always;"></p>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock  %}

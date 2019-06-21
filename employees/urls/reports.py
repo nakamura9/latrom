@@ -8,4 +8,6 @@ report_urls = [
         name='employee-attendance-pdf'),
     path('leave-report', LeaveReport.as_view(), 
         name='leave-report'),
+    path('leave-report-pdf', LeaveReportPDFView.as_view(), 
+        name='leave-report-pdf'),
 ]

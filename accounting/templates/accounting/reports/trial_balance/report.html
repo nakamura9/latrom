@@ -22,12 +22,7 @@
 {% block page_contents %}
 {% load accounting %}
 <style>
-    .table td {
-        padding: 15px;
-    }
-
     .table th {
-        padding: 20px;
         color: white;
         background-color: black;
     }
@@ -55,17 +50,10 @@
 </style>
 <table class="table table-sm" style="width:100%">
     <tbody>
-        <tr>
-            <td style="width:100%">
-                {% include "common_data/common/business_information.html"%}
-            </td>
-        </tr>
+      
         <tr>
             <td colspan="2">
-                <center>
-                    <h1>Trial Balance Report</h1>
-                    <h4>As At: {{date}}</h4>
-                </center>
+                {% include "accounting/reports/trial_balance/header.html" %}
             </td>
         </tr>
         <tr>
@@ -102,7 +90,7 @@
                 </table>
                 <p>{{page}}</p>
                 {% if page.has_next %}
-                <p style="page-break-before:always"></p>
+                <p style="page-break-before:always;"></p>
                 {% endif %}
                 {% endfor %}
             </td>

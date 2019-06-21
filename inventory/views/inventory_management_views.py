@@ -220,13 +220,20 @@ class StockReceiptCreateView(CreateView):
             
         return resp 
 
-class GoodsReceivedVoucherView(ContextMixin, ConfigMixin, 
-        DetailView):
+class GoodsReceivedVoucherView(ContextMixin,
+                               MultiPageDocument,
+                               ConfigMixin, 
+                               DetailView):
     model = models.StockReceipt
+    page_length=20
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
     extra_context ={
         'pdf_link': True
     }
+
+    def get_multipage_queryset(self):
+        return self.object.order.items.filter(received__gt=0.0)
+        
 class GoodsReceivedVoucherPDFView( ConfigMixin, PDFDetailView):
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
     model = models.StockReceipt

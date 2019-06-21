@@ -2,21 +2,18 @@
     #item-table th{
         color: white;
         background-color: black;
-        padding: 10px;
         border-right: 1px solid white;
     }
 
     #item-table tbody td{
         border-collapse: collapse;
         border-right: 1px solid black;
-        padding: 5px;
     }
 
     #item-table tbody{
         border: 1px solid black;
     }
 
-    
 
     .subtotals{
         padding: 5px;
@@ -26,22 +23,6 @@
     #item-table{
         width:100%;
         min-height: 15cm;
-    }
-
-    #comments h5{
-        color: white;
-        background-color: black;
-        padding: 15px;
-    }
-
-    #comments{
-        margin-top: 15px;
-        border: 1px solid black;
-        border-radius: 0px 0px 15px 15px;
-    }
-
-    #comments p{
-        min-height: 75px;
     }
 
 
@@ -57,11 +38,11 @@
         <tr>
             <th colspan="2" >
                 {% for page in pages %}                
-                <table id="item-table" >
+                <table id="item-table" class=" table-sm" >
                     <thead>
                         <tr>
                             <th >Qty</th>
-                            <th  style="width:300px;">Description</th>
+                            <th  style="width:40%;">Description</th>
                             <th>Unit</th>
                             <th >Unit Price</th>
                             <th >Total</th>
@@ -86,25 +67,25 @@
                         </tr>
                     </tbody>
                     {% if not page.has_next %}
-                    <tfoot>
+                    <tfoot style="border-top:1px solid black;">
                         <tr>
-                            <td colspan="3"></td>
-                            <td class="subtotals">
+                            <td colspan="2"></td>
+                            <td colspan="2" class="subtotals">
                                 <b>SubTotal:</b>
                             </td>
                             <td class="subtotals">{{object.subtotal | floatformat:2 }}</td>
                         </tr>
                         <tr>
-                            <td colspan="3"></td>
-                            <td class="subtotals">
+                            <td colspan="2"></td>
+                            <td colspan="2" class="subtotals">
                                 <b>Tax Due @{{object.tax.rate}}%:</b>
                             </td>
                             <td class="subtotals">{{object.tax_amount | floatformat:2 }}</td>
                         </tr>
 
                         <tr>
-                            <td colspan="3"></td>
-                            <td class="subtotals">
+                            <td colspan="2"></td>
+                            <td colspan="2" class="subtotals">
                                 <b>Total:</b>
                             </td>
                             <td class="subtotals">{{object.total | floatformat:2 }}</td>
@@ -114,18 +95,18 @@
                 </table>
                 <p>{{page}}</p>
                 {% if page.has_next %}
-                <p style="page-break-before:always"></p>
+                <p style="page-break-before:always;"></p>
                 {% endif %}
                 {% endfor %}
             </td>
         </tr>
         <tr>
             <td colspan="2" >
-                <div id="comments">
-                    <div>
+                <div class="footer-cell">
+                    <div class="footer-cell-heading">
                         <h5>Notes:</h5>
                     </div>
-                    <div>
+                    <div class="footer-cell-contents">
                         <p>{{object.notes}}</p>
                     </div>
                 </div>

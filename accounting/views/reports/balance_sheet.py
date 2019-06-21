@@ -19,7 +19,7 @@ from accounting import forms, models
 '''Note: Recorded carriage and other costs of goods sold as current assets'''
 
 class BalanceSheet(ConfigMixin,TemplateView):
-    template_name = os.path.join('accounting', 'reports', 'balance_sheet.html')
+    template_name = os.path.join('accounting', 'reports', 'balance_sheet','report.html')
 
 
     @staticmethod

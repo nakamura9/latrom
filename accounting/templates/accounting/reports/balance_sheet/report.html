@@ -24,17 +24,10 @@
 
 <table style="width:100%">
     <tbody>
-        <tr>
-            <td style="widtd:100%">
-                {% include "common_data/common/business_information.html"%}
-            </td>
-        </tr>
+        
         <tr>
             <td colspan="2">
-                <center>
-                    <h1>Balance Sheet</h1>
-                    <h4>As of {{ date }}</h4>
-                </center>
+                {% include "accounting/reports/balance_sheet/header.html" %}
             </td>
         </tr>
         <tr>

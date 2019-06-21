@@ -1,0 +1,15 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Balance Sheet
+
+{% endblock title %}
+
+{% block left_content %}
+<p>As of {{ date }}</p>
+
+{% endblock left_content %}
+
+{% block right_content %}
+    {% include "common_data/common/business.html" %}
+{% endblock right_content %}

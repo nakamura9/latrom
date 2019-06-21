@@ -5,6 +5,8 @@
 <div style="width:100%">
     {% include "inventory/goods_received/header.html" %}
 </div>
+
+{% for page in pages %}
 <div style="width:100%">
     <table class="{{style}}-content table table-sm"  style="height:500px;width:100%;">
         <thead  >
@@ -15,7 +17,7 @@
             </tr>
         </thead>
         <tbody class="item-table" style="border:1px solid black;">
-            {% for item in object.order.orderitem_set.all %}
+            {% for item in page %}
                 <tr>
                     <td>{{item.item.name}}</td>
                     <td>{{item.quantity}}</td>
@@ -29,13 +31,24 @@
             </tr>
         </tbody>
     </table>
-</div>
-<div style=" border: 2px solid black; margin-top:0.5cm;">
-    <div class="text-white"  style="padding:2.5mm;background-color:black;">Note</div>
-    <div>
-        <p style="padding:5mm">{{object.note}}</p>
+<p>{{page}}</p>
+{% if not page.has_next %}
+
+<div class="footer-cell">
+    <div class="footer-cell-heading">
+        <h5>Note</h5>    
+    </div>
+    <div class="footer-cell-contents">
+        <p>{{object.note}}</p>
     </div>
 </div>
+{% else %}
+    <p style="page-break-before:always;"></p>
+{% endif %}
+
+{% endfor %}
+</div>
+
 
 {% if pdf_link %}
 <a href="{% url 'inventory:goods-received-pdf' pk=object.pk %}" class="btn btn-danger">Generate PDF</a>

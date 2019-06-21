@@ -23,7 +23,7 @@
     .cell {
         border-collapse: collapse;
         border-right: 1px solid black;
-        padding: 5px;
+        
 
     }
 </style>
@@ -37,15 +37,15 @@
         <tr>
             <td colspan="2">
                 <div>
-                    <table style=" border: 1px solid black;width:100%;min-height:600px;">
+                    {% for page in pages %}
+                    <table class="table-sm" style=" border: 1px solid black;width:100%;min-height:600px;" >
                         <thead>
-                            <tr style="background-color:black; color:white; padding:10px;">
-                                <th style="width:15%;padding:10px;">Date</th>
-
-                                <th style="width:25%;padding:10px;">Description</th>
-                                <th style="width:15%;padding:10px;">Credit</th>
-                                <th style="width:15%;padding:10px;">Debit</th>
-                                <th style="width:15%;padding:10px;">Line Total</th>
+                            <tr style="background-color:black; color:white; ">
+                                <th style="width:15%;">Date</th>
+                                <th style="width:25%;">Description</th>
+                                <th style="width:15%;">Credit</th>
+                                <th style="width:15%;">Debit</th>
+                                <th style="width:15%;">Line Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,7 +55,7 @@
                                 <td style="border-bottom: 1px solid black;" class="cell">
                                     {{balance_brought_forward | accounting }}</td>
                             </tr>
-                            {% for t in transactions %}
+                            {% for t in page %}
                             <tr>
                                 <td class="cell">{{t.entry.date}}</td>
                                 <td class="cell">{{t.entry.memo}}</td>
@@ -78,13 +78,21 @@
                                 <td class="cell"></td>
                             </tr>
                         </tbody>
+                        {% if not page.has_next %}
                         <tfoot>
                             <tr style="border-top: 1mm solid black;">
                                 <td colspan="4">Remaining Balance:</td>
                                 <td>{{balance_at_end_of_period | accounting}}</td>
                             </tr>
                         </tfoot>
+                        
+                        {% endif %}
                     </table>
+                    <p>{{page}}</p>
+                    {% if page.has_next %}
+                        <p style="page-break-before:always;"></p>
+                    {% endif %}
+                    {% endfor %}
                 </div>
             </td>
         </tr>

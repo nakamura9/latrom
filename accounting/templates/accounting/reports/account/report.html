@@ -19,13 +19,8 @@
 
 {% block page_contents %}
 
-
-{% include "common_data/common/business_information.html" %}
 <style>
-    h5,
-    h3 {
-        text-align: center;
-    }
+  
 
     table.report-table {
         width: 100%;
@@ -46,11 +41,10 @@
     }
 </style>
 
-<h3>Account Statement</h3>
-<h5>Account: {{account}}</h5>
-<h5>Period spanning: {{start}} - {{end}}</h5>
+{% include "accounting/reports/account/header.html" %}
+</h5>
 
-
+{% for page in pages %}
 <table class="report-table">
     <thead>
         <tr>
@@ -61,7 +55,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for transaction in object_list %}
+        {% for transaction in page %}
         <tr>
             <td>{{transaction.entry.date}}</td>
             <td>{{transaction.entry.memo}}</td>
@@ -76,6 +70,10 @@
         {% endfor %}
     </tbody>
 </table>
-
+<p>{{page}}</p>
+{% if page.has_next %}
+    <p style="page-break-before:always;"></p>
+{% endif %}
+{% endfor %}
 
 {% endblock page_contents %}

@@ -1,0 +1,22 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+    Leave Schedule Report
+{% endblock %}
+
+{% block left_content %}
+
+<table style="width:100%;">
+    <tbody>
+        <tr>
+            <td>Prepared On</td>
+            <td>{{date}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock  %}
+
+{% block right_content %}
+    {% include "common_data/common/business.html" %}
+{% endblock right_content %}

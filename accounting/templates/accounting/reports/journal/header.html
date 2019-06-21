@@ -1,0 +1,17 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+
+Journal Report
+
+{% endblock title %}
+
+{% block left_content %}
+<p>Journal: {{journal}}</p>
+<p>Period spanning: {{start}} - {{end}}</p>
+
+{% endblock left_content %}
+
+{% block right_content %}
+    {% include "common_data/common/business.html" %}
+{% endblock right_content %}

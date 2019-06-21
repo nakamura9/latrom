@@ -20,9 +20,9 @@ from accounting import forms, models
 
 
 class TrialBalance(ConfigMixin, MultiPageDocument, TemplateView):
-    template_name = os.path.join('accounting', 'reports', 'trial_balance.html')
+    template_name = os.path.join('accounting', 'reports', 'trial_balance', 'report.html')
 
-    page_length=16
+    page_length=20
 
     def get_multipage_queryset(self):
         return models.Account.objects.all().exclude(
@@ -50,7 +50,7 @@ class TrialBalance(ConfigMixin, MultiPageDocument, TemplateView):
 
 class TrialBalancePDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
     template_name = TrialBalance.template_name
-    page_length=16
+    page_length=20
 
     def get_multipage_queryset(self):
         return models.Account.objects.all().exclude(

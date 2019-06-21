@@ -1,7 +1,21 @@
 {% extends 'common_data/page/pdf_page.html' %}
 
+{% block pre_page %}
+<div class="jumbotron">
+{% if pdf_link %}
+    <h4>Actions:</h4>
+    <div class="btn-group">
+        <a href="/accounting/csv/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-success">Generate CSV</a>
+        <a href="/accounting/pdf/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-danger"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
+    </div>
+{% endif %}
+
+</div>
+
+
+{% endblock pre_page %}
+
 {% block page_contents %}
-{% include "common_data/common/business_information.html" %}
 <style>
 h5, h3 {
     text-align: center;
@@ -26,11 +40,9 @@ th {
 }
 </style>
 
-<h3>Journal Report</h3>
-<h5>Journal: {{journal}}</h5>
-<h5>Period spanning: {{start}} - {{end}}</h5>
+{% include "accounting/reports/journal/header.html" %}
 
-
+{% for page in pages %}
 <table class="report-table">
     <thead>
         <tr>
@@ -38,12 +50,11 @@ th {
             <th>Date</th>
             <th>Credit</th>
             <th>Debit</th>
-            <th>Memo</th>
             <th>Amount</th>
         </tr>
     </thead>
     <tbody>
-        {% for entry in object_list %}
+        {% for entry in page %}
             {% for transaction in entry.transactions %}
             <tr>
                 <td>{{entry.id}}</td>
@@ -55,7 +66,6 @@ th {
                 <td></td>
                 <td>{{transaction.account}}</td>
                 {% endif %}
-                <td>{{entry.memo | truncatechars:50}}</td>
                 <td>{{transaction.amount}}</td>
             </tr>
             {% endfor %}
@@ -63,11 +73,11 @@ th {
     </tbody>
 </table>
 
-{% if pdf_link %}
-
-<a href="/accounting/csv/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-success">Generate CSV</a>
-<a href="/accounting/pdf/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-danger"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
-
+<p>{{page}}</p>
+{% if page.has_next %}
+    <p style="page-break-before:always;"></p>
 {% endif %}
+{% endfor %}
+
 
 {% endblock page_contents %}

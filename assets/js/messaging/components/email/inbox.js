@@ -30,7 +30,7 @@ class InboxList extends React.Component{
     }).then( res =>{
             this.setState(prevState => ({
                 currentPage: prevState.currentPage + 1,
-                messages: res.data.concat(prevState.messages) 
+                messages: prevState.messages.concat(res.data) 
             }))
         }).catch(error =>{
             alert('No more email messages')

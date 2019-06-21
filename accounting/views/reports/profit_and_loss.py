@@ -31,7 +31,7 @@ class ProfitAndLossFormView(ContextMixin, FormView):
 
 class ProfitAndLossReport(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join('accounting', 'reports', 
-        'profit_and_loss.html')
+        'profit_and_loss', 'report.html')
 
     @staticmethod
     def common_context(context, start, end):

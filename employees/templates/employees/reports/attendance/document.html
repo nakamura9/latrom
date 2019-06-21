@@ -24,6 +24,7 @@
     </tbody>
 </table>
 
+{% for page in pages %}
 <table >
     <thead>
         <tr>
@@ -34,7 +35,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for employee in employees %}
+        {% for employee in page %}
         <tr>
             <td class="day-content">
                 {% if employee.latest_timesheet %}
@@ -52,3 +53,10 @@
         {% endfor %}
     </tbody>
 </table>
+
+{{page}}
+{% if page.has_next %}
+    <p style="page-break-before:always;"></p>
+{% endif %}
+
+{% endfor %}
