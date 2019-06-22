@@ -47,7 +47,7 @@ class GenericPageTests(TestCase):
 
 
     def test_get_util_list_page(self):
-        resp = self.client.get(reverse('employees:util-list'))
+        resp = self.client.get(reverse('employees:dashboard'))
         self.assertTrue(resp.status_code == 200)
 
     def test_get_automated_config_page(self):

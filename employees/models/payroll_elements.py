@@ -21,7 +21,10 @@ class Allowance(SoftDeletionModel):
     taxable = models.BooleanField(default=True)
     def __str__(self):
         return self.name
-    #no detail view
+    
+    def get_absolute_url(self):
+        return reverse("employees:allowance-details", kwargs={"pk": self.pk})
+    
 
 class Deduction(SoftDeletionModel):
     '''
@@ -58,6 +61,14 @@ class Deduction(SoftDeletionModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def method_string(self):
+        return dict(self.DEDUCTION_METHODS)[self.method]
+
+    @property
+    def trigger_string(self):
+        return dict(self.DEDUCTION_TRIGGERS)[self.trigger]
     
     def deduct(self, payslip):
         if self.method == 0:
@@ -75,7 +86,9 @@ class Deduction(SoftDeletionModel):
         else:
             return self.amount
 
-    #no detail view
+    def get_absolute_url(self):
+        return reverse("employees:deduction-detail", kwargs={"pk": self.pk})
+    
 
 
 class CommissionRule(SoftDeletionModel):
@@ -89,7 +102,9 @@ class CommissionRule(SoftDeletionModel):
     def __str__(self):
         return self.name
 
-    #no detail view
+    def get_absolute_url(self):
+        return reverse("employees:commission-details", kwargs={"pk": self.pk})
+    
 
 
 class PayrollTax(models.Model):

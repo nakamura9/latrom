@@ -209,7 +209,7 @@ class TaxUpdateView( ContextMixin, UpdateView):
     form_class = forms.TaxUpdateForm
     model= models.Tax
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:util-list')
+    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Edit Sales Tax'
     }
@@ -217,7 +217,7 @@ class TaxUpdateView( ContextMixin, UpdateView):
 class TaxCreateView( ContextMixin, CreateView):
     form_class = forms.TaxForm
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:util-list')
+    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Add Sales Taxes',
         'description': 'Sales taxes are used in orders and invoices.',
@@ -237,7 +237,7 @@ class TaxListView( ContextMixin, PaginationMixin, FilterView):
 
 class TaxDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('employees:util-list')
+    success_url = reverse_lazy('employees:dashboard')
     model = models.Tax
 
 class DirectPaymentFormView( ContextMixin, FormView):

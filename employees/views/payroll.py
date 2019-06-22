@@ -31,10 +31,22 @@ from planner.models import Event
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 
+class DeductionListView(ContextMixin, ListView):
+    template_name = os.path.join('employees', 'deductions', 'list.html')
+    extra_context = {
+        'title': 'List of Payroll Deductions',
+        'new_link': '/employees/create-deduction'
+    }
+    paginate_by = 10
+    model = models.Deduction
+
+class DeductionDetailView(DetailView):
+    template_name = os.path.join('employees', 'deductions', 'detail.html')
+    model = models.Deduction
+
 class DeductionCreateView( ContextMixin, CreateView):
     form_class = forms.DeductionForm
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Add Deductions For Payroll'
     }
@@ -43,32 +55,32 @@ class DeductionUpdateView( ContextMixin, UpdateView):
     form_class = forms.DeductionUpdateForm
     model = models.Deduction
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:util-list')
     extra_context = {
         'title': 'Update existing deduction'
     }
 
 class DeductionDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('employees:util-list')
+    success_url = reverse_lazy('employees:dashboard')
     model = models.Deduction
 
-class UtilsListView( TemplateView):
-    template_name = os.path.join('employees', 'utils_list.html')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(UtilsListView, self).get_context_data(*args, **kwargs)
-        context['allowances'] = models.Allowance.objects.filter(active=True).order_by('name')
-        context['deductions'] = models.Deduction.objects.filter(active=True).order_by('name')
-        context['commissions'] = models.CommissionRule.objects.filter(active=True).order_by('name')
-        context['taxes'] = models.PayrollTax.objects.all().order_by('name')
-        return context
+class AllowanceListView(ContextMixin, ListView):
+    template_name = os.path.join('employees', 'benefits', 'list.html')
+    model = models.Allowance
+    paginate_by = 20
+    extra_context = {
+        'title': 'Payroll Benefits List',
+        'new_link': '/employees/create-allowance'
+    }
 
+class AllowanceDetailView(DetailView):
+    template_name = os.path.join('employees', 'benefits', 'detail.html')
+    model = models.Allowance
 
 class AllowanceCreateView( ContextMixin, CreateView):
     form_class = forms.AllowanceForm
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
         'title': 'Create New Allowance '
     }
@@ -77,36 +89,46 @@ class AllowanceUpdateView( ContextMixin, UpdateView):
     form_class = forms.AllowanceUpdateForm
     model = models.Allowance
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:util-list')
     extra_context = {
         'title': 'Edit Existing Allowance '
     }
 
 class AllowanceDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('employees:util-list')
+    success_url = reverse_lazy('employees:dashboard')
     model = models.Allowance
+
+class CommissionListView(ContextMixin, ListView):
+    template_name = os.path.join('employees', 'commissions', 'list.html')
+    model = models.CommissionRule
+    paginate_by=10
+    extra_context = {
+        'title': 'List of Commission Rules',
+        'new_link': '/employees/create-commission'
+    }
+
+class CommissionDetailView(DetailView):
+    template_name = os.path.join('employees', 'commissions', 'detail.html')
+    model = models.CommissionRule
 
 class CommissionCreateView( ContextMixin, CreateView):
     form_class = forms.CommissionForm
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:dashboard')
     extra_context = {
-        'title': 'Add Commission Rule for pay grades'
+        'title': 'Create Commission Rule'
     }
 
 class CommissionUpdateView( ContextMixin, UpdateView):
     form_class = forms.CommissionUpdateForm
     model = models.CommissionRule
     template_name = os.path.join('common_data','create_template.html')
-    success_url = reverse_lazy('employees:util-list')
     extra_context = {
         'title': 'Edit Existing Commission Rule'
     }
 
 class CommissionDeleteView( DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
-    success_url = reverse_lazy('employees:util-list')
+    success_url = reverse_lazy('employees:dashboard')
     model = models.CommissionRule
 
 

@@ -53,7 +53,7 @@ class CommissionForm(forms.ModelForm, BootstrapMixin):
 
 class CommissionUpdateForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude="active", " min_sales", "rate"
+        exclude="active", "min_sales", "rate"
         model = models.CommissionRule
 
 class DeductionForm(forms.ModelForm, BootstrapMixin):
@@ -67,7 +67,7 @@ class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
     account_paid_into = forms.ModelChoiceField(Account.objects.filter(
         Q(type="liability") | Q(type="expense")), required=False)
     class Meta:
-        fields = "name",
+        fields = "name", 'account_paid_into'
         model = models.Deduction
 
 

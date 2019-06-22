@@ -1,0 +1,44 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Commission Rule Details</h1>
+    <p class="lead">Overview of commission rules and the paygrades they are applied to</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href=" {% url 'employees:update-commission' pk=object.pk %} " role="button">Edit</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h4 class="card-title">Overview</h4>
+                    <p class="card-text">Name: {{object.name}}</p>
+                    <p class="card-text">Minimum Sales: {{object.min_sales}}</p>
+                    <p class="card-text">Commission Rate (%): {{object.rate}}</p>
+                </div>
+            </div>
+        
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Paygrades</h4>
+                    <ul>
+                        {% for grade in object.paygrade_set.all %}
+                            <li>{{grade}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
