@@ -175,6 +175,7 @@ class EmailTests(TestCase):
         )
 
         cls.email = Email.objects.create(
+            created_timestamp=datetime.datetime.now(),
             sent_from=cls.from_address,
             to=cls.to_address,
             server_id='1',
@@ -194,6 +195,7 @@ class EmailTests(TestCase):
         obj= Email.objects.create(
             sent_from=self.from_address,
             to=self.to_address,
+            created_timestamp=datetime.datetime.now(),
             server_id='123',
             body='<p>Hello world</p>',
             subject='subject',

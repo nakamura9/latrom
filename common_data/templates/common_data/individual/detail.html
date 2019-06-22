@@ -48,7 +48,7 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Organization <a href="{% url 'base:organization-detail' pk=object.organization.pk %}" class="btn btn-success">View</a></h4>
+                        <h4 class="card-title">Organization {% if object.organization %}<a href="{% url 'base:organization-detail' pk=object.organization.pk %}" class="btn btn-success">View</a>{% endif %}</h4>
                         <table class="table table-sm">
                             <tbody>
                                 <tr>

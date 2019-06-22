@@ -123,8 +123,13 @@ class ReportViewsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_get_sales_report_page(self):
+        encoded = urllib.parse.quote(json.dumps([]))
         resp = self.client.get(reverse('invoicing:sales-report'), data={
             'default_periods': 4,
+            'products': encoded,
+            'reps': encoded,
+            'customers': encoded,
+            'services': encoded,
         })
         self.assertEqual(resp.status_code, 200)
 

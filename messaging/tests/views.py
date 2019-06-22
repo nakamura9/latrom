@@ -101,6 +101,7 @@ class EmailViewTests(TestCase):
         cls.profile = UserProfile.objects.create(user=cls.user, email_address='test@gmail.com', email_password='123')
         cls.email_address = EmailAddress.objects.create(address='test@gmail.com')
         cls.email = Email.objects.create(
+                created_timestamp=datetime.datetime.now(),
                 body='hello', 
                 folder='inbox',
                 owner=cls.user,

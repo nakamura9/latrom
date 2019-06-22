@@ -10,8 +10,13 @@ from .trial_balance import TrialBalance
 from .profit_and_loss import ProfitAndLossReport
 from .account import AccountReport
 from .journal import JournalReport
-from accounting.models import Account
+from accounting.models import (Account, 
+                               Debit, 
+                               Credit, 
+                               Journal, 
+                               JournalEntry)
 from django.db.models import Q
+from itertools import chain
 
 def balance_sheet_csv(request):
     response = HttpResponse(content_type="text/csv")
@@ -79,19 +84,26 @@ def account_csv_report(request, start=None, end=None, account=None):
     end = datetime.datetime.strptime(urllib.parse.unquote(end), "%d %B %Y")
 
     writer = csv.writer(response)
-    string =render_to_string(
-        AccountReport.template_name, AccountReport.common_context({
-            'account': account
-            },start, end))
-    soup = BeautifulSoup(string)
-    data = soup.find_all('table')[1]
-
-    rows = data.find_all('tr')
+    acc = Account.objects.get(pk=account)
+    debits = Debit.objects.filter(account=acc, 
+                                        entry__date__gte=start, 
+                                        entry__date__lte=end)
+    credits = Credit.objects.filter(account=acc, 
+                                        entry__date__gte=start, 
+                                        entry__date__lte=end)
+    transactions = sorted(
+        chain(debits, credits), key=lambda transaction: transaction.entry.date)
 
     #for headings 
-    writer.writerow([i.string for i in rows[0].find_all('th')])
-    for row in rows[1:]:
-        writer.writerow([i.string for i in row.find_all('td')])
+    writer.writerow(['Date', 'Memo', 'Credit', 'Debit'])
+    for row in transactions:
+        if isinstance(row, Debit):
+            debit = row.amount
+            credit = 0
+        else:
+            debit = 0
+            credit = row.amount
+        writer.writerow([row.entry.date, row.entry.memo, credit, debit])
 
     return response 
 
@@ -102,19 +114,18 @@ def journal_csv_report(request, start=None, end=None, journal=None):
     end = datetime.datetime.strptime(urllib.parse.unquote(end), "%d %B %Y")
 
     writer = csv.writer(response)
-    string =render_to_string(
-        JournalReport.template_name, JournalReport.common_context({
-            'journal': journal
-            },start, end))
-    
-    soup = BeautifulSoup(string)
-    data = soup.find_all('table')[1]
-
-    rows = data.find_all('tr')
+    jour = Journal.objects.get(pk=journal)
+    entries = JournalEntry.objects.filter(
+            journal=jour,
+            date__gte=start,
+            date__lte=end)
 
     #for headings 
-    writer.writerow([i.string for i in rows[0].find_all('th')])
-    for row in rows[1:]:
-        writer.writerow([i.string for i in row.find_all('td')])
+    writer.writerow(['ID', 'Date', 'Credit', 'Debit', 'Amount'])
+    for row in entries:
+        for debit in row.debits:
+            writer.writerow([row.pk, row.date, '', debit.account, debit.amount])
+        for credit in row.credits:
+            writer.writerow([row.pk, row.date, credit.account, '', credit.amount])
 
     return response 

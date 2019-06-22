@@ -46,10 +46,6 @@ class GenericPageTests(TestCase):
         settings.save()
 
 
-    def test_get_util_list_page(self):
-        resp = self.client.get(reverse('employees:dashboard'))
-        self.assertTrue(resp.status_code == 200)
-
     def test_get_automated_config_page(self):
         resp = self.client.get(reverse('employees:config',
             kwargs={
@@ -60,6 +56,8 @@ class GenericPageTests(TestCase):
     def test_get_manual_config_page(self):
         resp = self.client.get(reverse('employees:manual-config'))
         self.assertTrue(resp.status_code == 200)
+
+
 
 
 class PayGradePageTests(TestCase):
@@ -371,6 +369,20 @@ class BenefitsPageTests(TestCase):
             kwargs={
                 'pk': self.allowance.pk
             }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_allowance_detail_page(self):
+        resp = self.client.get(reverse('employees:allowance-details',
+            kwargs={
+                'pk': self.allowance.pk
+            }))
+        self.assertEqual(resp.status_code, 200)
+        
+    
+    def test_get_allowance_list(self):
+        resp = self.client.get(reverse('employees:allowances-list'))
+        self.assertEqual(resp.status_code, 200)
+
 
     def test_post_allowance_update_page(self):
         resp = self.client.post(reverse('employees:update-allowance',
@@ -432,6 +444,20 @@ class CommissionPageTests(TestCase):
             kwargs={
                 'pk': self.commission.pk
             }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_commission_rule_detail_page(self):
+        resp = self.client.get(reverse('employees:commission-details',
+            kwargs={
+                'pk': self.commission.pk
+            }))
+        self.assertEqual(resp.status_code, 200)
+
+
+    def test_get_commission_rule_list_page(self):
+        resp = self.client.get(reverse('employees:commissions-list'))
+        self.assertEqual(resp.status_code, 200)
+        
 
     def test_post_commission__rule_update_page(self):
         resp = self.client.post(reverse('employees:update-commission',
@@ -486,6 +512,10 @@ class DeductionPageTests(TestCase):
         resp = self.client.get(reverse('employees:create-deduction'))
         self.assertTrue(resp.status_code == 200)
 
+    def test_get_deduction_page(self):
+        resp = self.client.get(reverse('employees:deductions-list'))
+        self.assertTrue(resp.status_code == 200)
+
     def test_post_deduction_page(self):
         resp = self.client.post(reverse('employees:create-deduction'),
             data=self.DEDUCTION_DATA)
@@ -497,6 +527,14 @@ class DeductionPageTests(TestCase):
             kwargs={
                 'pk': self.deduction.pk
             }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_deduction_detail_page(self):
+        resp = self.client.get(reverse('employees:deduction-detail',
+            kwargs={
+                'pk': self.deduction.pk
+            }))
+        self.assertEqual(resp.status_code, 200)
 
     def test_post_deduction_update_page(self):
         resp = self.client.post(reverse('employees:update-deduction',
@@ -779,7 +817,7 @@ class TimesheetViewTests(TestCase):
                 'recorded_by': 1,
                 'lines': urllib.parse.quote(json.dumps([
                     {
-                        'date': 1,
+                        'date': '1',
                         'timeIn': "08:00",
                         'timeOut': '17:00',
                         'breaksTaken': '00:30'
