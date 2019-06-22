@@ -235,6 +235,7 @@ def delete_messages(request):
     return JsonResponse({'status': 'ok'})
 
 def forward_messages(request, user=None):
+    #TODO support forwarding while crediting the originator
     user = get_object_or_404(User, pk=user)
     filters = Q(
         Q(

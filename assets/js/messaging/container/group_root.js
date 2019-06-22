@@ -3,7 +3,7 @@ import axios from 'axios';
 import GroupChatWidget from '../components/chat/group';
 import {Aux} from '../../src/common';
 import ChatHeader from '../components/chat/chat_header';
-
+import ReactModal from 'react-modal'
 
 export default class GroupChatRoot extends Component{
     constructor(props){
@@ -14,8 +14,78 @@ export default class GroupChatRoot extends Component{
             messages: [],
             currentUser: null,
             groupPk: pk,
+            selecting: false,
+            selected: [],
+            currentPage: 1,
+            users: [],
+            title: "",
+            modalIsOpen: false
         }    
     }
+
+    messageDeleteHandler = () => {
+        //used to delete selected messages, both in the list and on the server
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+    
+        axios
+          .post("/messaging/api/delete-messages/", {
+            message_ids: this.state.selected
+          })
+          .then(() => {
+            let newMessages = this.state.messages.filter(
+              msg => !this.state.selected.includes(msg.id)
+            );
+            this.setState({ messages: newMessages });
+          });
+      };
+
+      messageForwarding = (id) => {
+        //called after the user is selected from the modal
+      axios.defaults.xsrfCookieName = "csrftoken";
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      
+      axios.post('/messaging/api/forward-messages/' + id,
+      {
+          message_ids : this.state.selected
+      }).then(res =>{
+          window.location.href = res.data.redirect
+      })
+    };
+
+    messageSelectHandler = id => {
+        // adds or removes clicked messages based on whether they have already been selected.
+        let newlySelected = [...this.state.selected];
+        if (this.state.selected.includes(id)) {
+          newlySelected = newlySelected.filter(index => index != id);
+        } else {
+          newlySelected.push(id);
+        }
+        this.setState({
+          selected: newlySelected,
+          title: "(" + newlySelected.length + ") messages selected."
+        });
+      };
+      toggleUsersModal = () => {
+          //hides reveals the user modal
+        this.setState(prevState => ({ modalIsOpen: !prevState.modalIsOpen }));
+      };
+
+      toggleContext = () => {
+        //used to set up the context for selecting messages
+        // to allow users to bulk select messages
+        this.setState(
+          prevState => ({ selecting: !prevState.selecting }),
+          () => {
+            if (!this.state.selecting) {
+              this.setState({
+                selected: [],
+                title: this.state.name
+              });
+            }
+          }
+        );
+      };
 
    
     componentDidMount(){
@@ -33,6 +103,14 @@ export default class GroupChatRoot extends Component{
             },
         })
         })
+        axios({
+            method: "GET",
+            url: "/base/api/users"
+          }).then(res => {
+            this.setState({
+              users: res.data
+            });
+          });
         this.getMessages()
         this.intervalID = setInterval(this.getLatest, 1000);
     }
@@ -43,11 +121,14 @@ export default class GroupChatRoot extends Component{
             'method': 'GET',
             'url': '/messaging/api/group/' + this.state.groupPk
         }).then( res => {
-            console.log(res.data)
             this.setState({
                 messages: res.data.messages,
-                name: res.data.name
-            });
+                name: res.data.name,
+                title: this.state.selecting 
+                        ? "(" + this.state.selected.length + ") selected" 
+                        : res.data.name 
+            })
+            ;
         })
     }
 
@@ -138,9 +219,13 @@ export default class GroupChatRoot extends Component{
                 <div className="row">
                     <div className="col-sm-12">
                         <ChatHeader
+                            deleteHandler={this.messageDeleteHandler}
+                            toggleUsersModal={this.toggleUsersModal}
+                            toggleContext={this.toggleContext}
+                            selecting={this.state.selecting}
                             chatID={this.state.groupPk}
                             isGroup 
-                            title={this.state.name}
+                            title={this.state.title}
                             attachmentHandler={this.attachmentHandler} />
 
                     </div>
@@ -150,10 +235,31 @@ export default class GroupChatRoot extends Component{
                 <Aux>
                     <div className="col-sm-12 ">
                         <GroupChatWidget 
+                            selectedMessages={this.state.selected}
+                            selectingContext={this.state.selecting}
+                            messageSelectHandler={this.messageSelectHandler}
                             messages={this.state.messages}
                             client={this.state.currentUser}
                             group={this.state.groupPk}/>
                     </div>
+                    <ReactModal
+                        isOpen={this.state.modalIsOpen}
+                        parentSelector={() => document.getElementById('chat-body')}>
+                    <h4>Select a user to forward to.</h4>
+                    <ul className="list-group">
+                        {this.state.users.map(user => (
+                        <li
+                            className="list-group-item"
+                            onClick={() => this.messageForwarding(user.id)}
+                        >
+                            {user.username}
+                        </li>
+                        ))}
+                    </ul>
+                    <button 
+                        className="btn btn-danger"
+                        onClick={() => this.setState({modalIsOpen: false})}> <i className="fas fa-times"></i> Cancel</button>
+                    </ReactModal>
                 </Aux>
                 </div>
             </Aux>    

@@ -8,9 +8,13 @@ from .models import *
 
 
 class SalesRepsSerializer(serializers.ModelSerializer):
+    rep_name = serializers.SerializerMethodField()
     class Meta:
         model = SalesRepresentative
         fields = "__all__"
+
+    def get_rep_name(self, obj):
+        return obj.employee.full_name
     
 class CustomerSerializer(serializers.ModelSerializer):
     expense_set = ExpenseSerializer(many=True)

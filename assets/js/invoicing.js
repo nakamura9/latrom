@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import Invoice from './invoices/invoice';
+import SalesReportModifiers from './invoices/sales_report';
 import MutableTable from './src/mutable_table/container/root';
 
 const creditNote = document.getElementById('credit-note-table');
 const directPurchase =  document.getElementById('direct-purchase-table');
-const sales = document.getElementById('invoice-table')
+const sales = document.getElementById('invoice-table');
+const salesReport = document.getElementById('sales-report-modifiers')
 
 const URL = window.location.href;
 const  decomposed = URL.split('/');
@@ -39,4 +41,6 @@ if(sales){
         />, creditNote)
 }else if(directPurchase){
     ReactDOM.render(<PurchaseTable />, directPurchase);
+}else if(salesReport){
+    ReactDOM.render(<SalesReportModifiers />, salesReport)
 }

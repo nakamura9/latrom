@@ -1,6 +1,8 @@
 import datetime
 import itertools
 import os
+import json 
+import urllib
 from decimal import Decimal as D
 from functools import reduce
 from django.db.models import Q
@@ -12,8 +14,6 @@ from django.views.generic.edit import CreateView, FormView
 from wkhtmltopdf.views import PDFTemplateView
 import urllib
 from accounting.models import Credit, Debit
-
-
 from common_data.utilities import (ContextMixin, 
                                     extract_period,  
                                     MultiPageDocument,
@@ -22,7 +22,9 @@ from common_data.utilities import (ContextMixin,
                                     PeriodReportMixin)
 from invoicing import forms, models
 from invoicing.models.invoice import Invoice
-from .report_utils.plotters import plot_sales
+from .report_utils.plotters import plot_sales, plot_lines
+from inventory.models import InventoryItem
+from services.models import Service
 
 import pygal
 
@@ -167,7 +169,7 @@ class InvoiceAgingPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
         return InvoiceAgingReport.common_context(context)
 
 class SalesReportFormView(ContextMixin, FormView):
-    template_name = os.path.join('common_data', 'reports', 'report_template.html')
+    template_name = os.path.join('invoicing', 'reports', 'sales_report_form.html')
     form_class = forms.SalesReportForm
     extra_context = {
         "action": reverse_lazy("invoicing:sales-report")
@@ -177,14 +179,80 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
     template_name = os.path.join("invoicing", "reports", "sales_report.html")
 
     @staticmethod
-    def common_context(context, start, end):
+    def common_context(context, start, end, kwargs):
+        # if filtering reps and customers - use the entire invoice 
 
-        total_sales = sum([i.subtotal for i in Invoice.objects.filter(Q(date__gt=start) & Q(date__lte=end) & Q(
-            Q(status='invoice') | 
-            Q(status='paid') | 
-            Q(status='paid-partially')) & 
-            Q(draft=False))
-            ])
+        products = json.loads(urllib.parse.unquote(kwargs['products']))
+        services = json.loads(urllib.parse.unquote(kwargs['services']))
+
+        def get_invoice_filters(data):
+            rep_query = Q()
+            cus_query = Q()
+            reps = json.loads(urllib.parse.unquote(data['reps']))
+            for rep_str in reps:
+                id = rep_str.split('-')[0]
+                rep = models.SalesRepresentative.objects.get(pk=id)
+                rep_query.add(Q(salesperson=rep), Q.OR)
+            
+            customers = json.loads(urllib.parse.unquote(data['customers']))
+            for cus_str in customers:
+                id = cus_str.split('-')[0]
+                cus = models.Customer.objects.get(pk=id)
+                cus_query.add(Q(customer=cus), Q.OR)
+
+            
+            query = Q(rep_query & cus_query)
+            return query
+
+        def get_line_filters(services, products):
+            pro_query= Q()
+            srv_query= Q()
+            for pro_str in products:
+                id = pro_str.split('-')[0]
+                pro = InventoryItem.objects.get(pk=id)
+                pro_query.add(Q(product__product=pro), Q.OR)
+
+            for srv_str in services:
+                id = srv_str.split('-')[0]
+                srv = Service.objects.get(pk=id)
+                srv_query.add(Q(service__service=srv), Q.OR)
+            
+            query = Q(pro_query & srv_query)
+            return query
+
+        if len(products) == 0 and len(services) == 0:
+            additional_args = get_invoice_filters(kwargs)
+            total_sales = sum([i.subtotal for i in Invoice.objects.filter(
+                Q(date__gt=start) & 
+                Q(date__lte=end) & 
+                Q(draft=False) & Q(
+                    Q(status='invoice') | 
+                    Q(status='paid') | 
+                    Q(status='paid-partially')
+                ) & 
+                additional_args)
+                ])
+            context["report"] = plot_sales(start, end, filters=additional_args)
+            
+        else:
+            additional_args = get_line_filters(services, products)
+            
+            filters = Q(Q(invoice__date__gt=start) &
+                Q(invoice__date__lte=end) &
+                Q(invoice__draft=False) &
+                Q(
+                    Q(invoice__status='invoice') | 
+                    Q(invoice__status='paid') | 
+                    Q(invoice__status='paid-partially')
+                ) &
+                additional_args)
+            total_sales = sum([i.subtotal for i in \
+                     models.InvoiceLine.objects.filter(filters)])
+            context["report"] = plot_lines(start, end, filters=additional_args)
+
+            
+
+        
         average_sales  = total_sales / D(abs((end - start).days))
 
         context["total_sales"] = total_sales
@@ -193,7 +261,6 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
             'start': start.strftime("%d %B %Y"), 
             'end': end.strftime("%d %B %Y")
             })
-        context["report"] = plot_sales(start, end)
         return context
 
     def get_context_data(self, **kwargs):
@@ -201,7 +268,7 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
         kwargs = self.request.GET
         context['pdf_link'] = True
         start, end = extract_period(kwargs)
-        return SalesReportView.common_context(context, start, end)
+        return SalesReportView.common_context(context, start, end, kwargs)
 
 class SalesReportPDFView(ConfigMixin, PDFTemplateView):
     template_name = SalesReportView.template_name

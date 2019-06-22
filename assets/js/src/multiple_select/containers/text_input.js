@@ -17,7 +17,7 @@ class SearchableTextInputWidget extends Component{
             url: this.props.dataURL
         }).then(res => {
             let newChoices = res.data.map((item) =>{
-                return(item["id"] + " - " + item[this.props.nameField ? this.props.nameField : "name"])
+                return(item[this.props.idField ? this.props.idField : "id"] + " - " + item[this.props.nameField ? this.props.nameField : "name"])
             });
 
             this.setState({

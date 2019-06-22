@@ -267,6 +267,9 @@ export default class ChatRoot extends Component {
                   </li>
                 ))}
               </ul>
+              <button 
+              className="btn btn-danger"
+              onClick={() => this.setState({modalIsOpen: false})}> <i className="fas fa-times"></i> Cancel</button>
             </ReactModal>
           </div>
         </div>

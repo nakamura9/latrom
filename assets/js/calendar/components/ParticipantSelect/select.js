@@ -216,7 +216,7 @@ class ParticipantEntry extends Component{
                 onClick={this.clickHandler}>Vendor</li>
         </ul>
                 <div style={{display: "flex", width: '100%'}}>
-                    <div>{widgetSelector}</div>
+                    <div style={{width: "100%"}}>{widgetSelector}</div>
                     <div> <button 
                     className="btn"
                     type="button"

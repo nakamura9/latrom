@@ -6,7 +6,7 @@ import $ from "jquery";
 
 /**
  * props
- *  input field -string
+ *  input field -string naming the hidden input the widget adds to the form
  *  populatedURL - string
  *  resProcessor -function
  *  dataURL -string 
@@ -44,7 +44,6 @@ class MultipleSelectWidget extends Component{
                 method: 'GET'
             }).then((res) =>{
                 const dataList = this.props.resProcessor(res);
-                console.log(dataList)
                 this.setState({selectedItems: dataList}, () =>{
                     //this.removeDuplicates();
                     this.updateForm();
@@ -72,6 +71,7 @@ class MultipleSelectWidget extends Component{
             <div>
                 <SearchableTextInputWidget
                     nameField={this.props.nameField}
+                    idField={this.props.idField}
                     dataURL={this.props.dataURL} 
                     addItem={this.addItem}/>
                 <SelectedItemsListWidget 

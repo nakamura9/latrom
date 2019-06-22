@@ -47,6 +47,11 @@ class groupChatWidget extends Component{
                     {this.props.messages.map((message, i) =>(
                         <MessageBubble
                             showSender
+                            canBeSelected={this.props.selectingContext}
+                            selectHandler={this.props.messageSelectHandler}
+                            latest={this.props.messages.length -1 === i}
+
+                            selectedMessages={this.props.selectedMessages}
                             key={i}
                             MessageID={i} 
                             isSender={message.sender.id === this.props.client.id}
