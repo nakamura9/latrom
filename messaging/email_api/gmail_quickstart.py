@@ -40,7 +40,6 @@ def main():
     if not labels:
         print('No labels found.')
     else:
-        print('Labels:')
         for label in labels:
             print(label['name'])
 

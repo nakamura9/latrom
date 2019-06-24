@@ -78,7 +78,12 @@ class StockReceipt(models.Model):
         super(StockReceipt, self).save(*args, **kwargs)
         self.order.received_to_date = self.order.received_total
         self.order.save()
-        
+
+class StockReceiptLine(models.Model):
+    receipt = models.ForeignKey('inventory.StockReceipt'
+        ,on_delete=models.CASCADE)
+    line = models.ForeignKey('inventory.OrderItem', on_delete=models.CASCADE)
+    quantity = models.FloatField(default=0.0)
 
 
 #might need to rename

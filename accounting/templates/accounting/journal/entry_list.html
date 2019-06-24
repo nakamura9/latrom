@@ -13,7 +13,7 @@
         {% for t in object_list %}
         <tr>
             <td scope="row">{{t.date}}</td>
-            <td>{{t.reference}}</td>
+            <td><a target="_top" href="{% url 'accounting:entry-detail' pk=t.pk %}">{{t.pk}}</a></td>
             <td>{{t.draft}}</td>
             <td>{{t.str_total}}</td>
             <td>{{t.debit_set.all.count}}</td>

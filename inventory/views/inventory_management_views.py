@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 import os
 import urllib
+from decimal import Decimal as D
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -24,6 +25,7 @@ from common_data.utilities import *
 from common_data.views import PaginationMixin, PDFDetailView
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
+from accounting.models import Account, Journal, JournalEntry
 
 
 #######################################################
@@ -205,7 +207,11 @@ class StockReceiptCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         resp = super(StockReceiptCreateView, self).post(request, *args, **kwargs)
+        if not self.object:
+            return resp
+
         data = json.loads(urllib.parse.unquote(request.POST['received-items']))
+        subtotal = D(0)
         for line in data:
             pk = line['item'].split("-")[0]
             n = line['quantity_to_move']
@@ -214,10 +220,32 @@ class StockReceiptCreateView(CreateView):
 
             if line['receiving_location'] != "":
                 medium = line['receiving_location'].split('-')[0]
-                models.OrderItem.objects.get(pk=pk).receive(n, medium)
+                item = models.OrderItem.objects.get(pk=pk)
+                item.receive(n, medium=medium, receipt=self.object)
             else:
-                models.OrderItem.objects.get(pk=pk).receive(n)
+                item = models.OrderItem.objects.get(pk=pk)
+                item.receive(n, receipt=self.object)
+
+            subtotal += item.order_price * D(n)
+        # Only credit supplier account the money we owe them for received 
+        # inventory
+        tax = subtotal * (D(self.object.order.tax.rate) / D(100))
+        total = subtotal + tax
+        entry = JournalEntry.objects.create(
+            date = self.object.receive_date,
+            memo = f"Order {self.object.order.pk} received ",
+            journal = Journal.objects.get(pk=4),
+            created_by = self.object.order.issuing_inventory_controller.employee.user,
+            draft=False
+        )
+
+        if not self.object.order.supplier.account:
+            self.object.order.supplier.create_account()
             
+        entry.credit(total, self.object.order.supplier.account)
+        entry.debit(subtotal, Account.objects.get(pk=4006))#purchases
+        entry.debit(tax, Account.objects.get(pk=2001))#tax
+        
         return resp 
 
 class GoodsReceivedVoucherView(ContextMixin,
@@ -232,12 +260,20 @@ class GoodsReceivedVoucherView(ContextMixin,
     }
 
     def get_multipage_queryset(self):
-        return self.object.order.items.filter(received__gt=0.0)
+        return self.object.stockreceiptline_set.all()
         
 class GoodsReceivedVoucherPDFView( ConfigMixin, PDFDetailView):
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
     model = models.StockReceipt
-    
+class GoodsReceiptsList(TemplateView):
+    template_name=os.path.join('inventory','goods_received', 'list.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = models.Order.objects.get(
+            pk=self.kwargs['pk'])
+
+        return context 
     
 class TransferOrderAPIView(RetrieveAPIView):
     serializer_class = serializers.TransferOrderSerializer 

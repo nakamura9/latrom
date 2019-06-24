@@ -1,0 +1,71 @@
+{% extends "window.html" %} {% load static %} {% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> {% endblock %} {% block content %}
+
+<style>
+.my-icon {
+    font-size: 6rem;
+    text-align: center;
+}
+.row > div {
+    margin: 0px;
+    padding: 0px;
+    min-height: 100%;
+}
+.inner {
+    padding: 15px;
+}
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 jumbotron">
+            <div class="inner">
+                <h1 class="my-icon"><i class="fas fa-hourglass-half" aria-hidden="true"></i></h1>
+            <h1 class="display-3">Login / Logout</h1>
+            </div>
+            
+        </div>
+        <div class="col-6">
+            <div class="shadow card inner">
+                <div class="card-body">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table class="table table-sm">
+                            {{form.as_p}}
+                        </table>
+                        <button class="btn btn-lg btn btn-lg-default pull-right" type="submit">Submit</button>
+                    </form>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4"><button class="btn btn-lg">1</button></div>
+                        <div class="col-sm-4"><button class="btn btn-lg">2</button></div>
+                        <div class="col-sm-4"><button class="btn btn-lg">3</button></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><button class="btn btn-lg">4</button></div>
+                        <div class="col-sm-4"><button class="btn btn-lg">5</button></div>
+                        <div class="col-sm-4"><button class="btn btn-lg">6</button></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><button class="btn btn-lg">7</button></div>
+                        <div class="col-sm-4"><button class="btn btn-lg">8</button></div>
+                        <div class="col-sm-4"><button class="btn btn-lg">9</button></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-4"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

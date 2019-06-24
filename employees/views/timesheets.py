@@ -106,7 +106,7 @@ class TimeSheetViewset(viewsets.ModelViewSet):
     serializer_class = serializers.TimeSheetSerializer
 
 class TimeLoggerView(ContextMixin, FormView):
-    template_name = CREATE_TEMPLATE
+    template_name = CREATE_TEMPLATE#os.path.join('employees', 'timesheet', 'logger.html')
     extra_context = {
         'title': 'Log Time In/Out',
         'icon': 'hourglass-half'

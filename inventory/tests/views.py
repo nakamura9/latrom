@@ -536,7 +536,6 @@ class OrderViewTests(TestCase):
     def test_post_order_form(self):
         resp = self.client.post(reverse('inventory:order-create'), 
         data=self.ORDER_DATA)
-
         self.assertEqual(resp.status_code,  302)
 
     def test_post_order_form_with_error(self):

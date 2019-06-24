@@ -375,7 +375,10 @@ class ItemManagementModelTests(TestCase):
         self.assertTrue(self.order_item.fully_received)
         
     def test_order_item_receive(self):
-        self.order_item.receive(1)
+        receipt = models.StockReceipt.objects.create(
+            receive_date=datetime.date.today(),
+            order=self.order)
+        self.order_item.receive(1, receipt=receipt)
         self.assertTrue(self.order_item.fully_received)
 
     def test_order_item_received_total(self):

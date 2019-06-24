@@ -35,7 +35,6 @@ from accounting.models import Expense, JournalEntry, Account, Journal
 from .common import CREATE_TEMPLATE
 
 
-
 class OrderAPIView(ModelViewSet):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
@@ -59,7 +58,7 @@ class OrderPOSTMixin(object):
            return resp
 
         order = self.object
-        if update_flag:
+        if update_flag and len(items) > 0: 
             for i in self.object.orderitem_set.all():
                 i.delete()
 
@@ -83,7 +82,7 @@ class OrderPOSTMixin(object):
         #create transaction after loading all the items
         #vary based on order status
         
-        order.create_entry()
+        #order.create_entry()
         if not update_flag:
             if self.request.POST.get('make_payment', None):
                 pmt = models.OrderPayment.objects.create(

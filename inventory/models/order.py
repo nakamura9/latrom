@@ -75,6 +75,8 @@ class Order(SoftDeletionModel):
         default=1, on_delete=models.SET_NULL, null=True)
     entry = models.ForeignKey('accounting.JournalEntry',
          blank=True, on_delete=models.SET_NULL, null=True, related_name="order_entry")
+    entries = models.ManyToManyField('accounting.JournalEntry',
+        related_name="order_entries")
     shipping_cost_entries = models.ManyToManyField('accounting.JournalEntry', 
         related_name="shipping_cost_entries")
 
@@ -120,6 +122,10 @@ class Order(SoftDeletionModel):
     def total(self):
         return self.subtotal + self.tax_amount
         
+    @property
+    def latest_receipt_date(self):
+        return self.stockreceipt_set.all().latest('pk').receive_date
+
 
     @property
     def subtotal(self):
@@ -162,13 +168,14 @@ class Order(SoftDeletionModel):
 
     @property
     def percent_received(self):
+        ordered_quantity = 0
+        received_quantity = 0
         items = self.orderitem_set.all()
-        n_items = items.count()
-        received = 0
         for item in items:
-            if item.fully_received == True : 
-                received += 1
-        return (float(received) / float(n_items)) * 100.0
+            ordered_quantity += item.quantity
+            received_quantity += item.received
+
+        return (received_quantity / ordered_quantity) * 100.0
 
     def create_entry(self):
         #verified
@@ -205,7 +212,7 @@ class Order(SoftDeletionModel):
                     fully_received=True
                 )
             for item in self.orderitem_set.all():
-                item.receive(item.quantity)
+                item.receive(item.quantity, receipt=sr)
             self.status = 'received'
             self.save()
 
@@ -253,9 +260,14 @@ class OrderItem(models.Model):
             return False
         return True
 
-    def receive(self, n, medium=None):
+    def receive(self, n, medium=None, receipt=None):
         n= float(n)
         self.received += n
+        inventory.models.StockReceiptLine.objects.create(
+            quantity= n,
+            line=self,
+            receipt=receipt
+        )
         
         wh_item = self.order.ship_to.add_item(self.item, n, location=medium)
         

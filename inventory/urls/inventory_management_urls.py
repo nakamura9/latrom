@@ -11,6 +11,8 @@ inventory_management_urls = [
     re_path(r'^config-wizard', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^stock-receipt-create/(?P<pk>[\d]+)/?$', 
         views.StockReceiptCreateView.as_view(), name="stock-receipt-create"),
+    re_path(r'^stock-receipts-list/(?P<pk>[\d]+)/?$', 
+        views.GoodsReceiptsList.as_view(), name="stock-receipts-list"),
     re_path(r'^goods-received/(?P<pk>[\w]+)/?$', 
         views.GoodsReceivedVoucherView.as_view(), name="goods-received"),
     re_path(r'^goods-received-pdf/(?P<pk>[\w]+)/?$', 

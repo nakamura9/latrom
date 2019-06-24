@@ -19,9 +19,9 @@
         <tbody class="item-table" style="border:1px solid black;">
             {% for item in page %}
                 <tr>
-                    <td>{{item.item.name}}</td>
+                    <td>{{item.line.item.name}}</td>
+                    <td>{{item.line.quantity}}</td>
                     <td>{{item.quantity}}</td>
-                    <td>{{item.received}}</td>
                 </tr>
             {% endfor %}
             <tr style="height:100%">

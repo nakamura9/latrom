@@ -50,7 +50,6 @@ class ChatViewTests(TestCase):
             'name':'name',
             'admin': self.user.pk
         })
-        # print(resp.context['form'].errors)
         self.assertEqual(resp.status_code, 302)
 
     def test_get_group_list_view(self):
