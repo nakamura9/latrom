@@ -43,10 +43,13 @@ class ProfitAndLossReport(ConfigMixin, PeriodReportMixin, TemplateView):
         # TODO verify if opening inventory is considered in profit and loss statement
 
         purchases_acc = models.Account.objects.get(pk=4006)
-        purchases = purchases_acc.balance_over_period(start, end)
+        purchase_returns_acc = models.Account.objects.get(pk=4008)
+        purchase_returns = purchase_returns_acc.balance_over_period(start, end)
+        purchases = purchases_acc.balance_over_period(start, end) + purchase_returns
         
         opening_inventory = sum(
             [D(i.quantity_on_date(start)) * i.unit_value for i in inventory_models.InventoryItem.objects.filter(product_component__isnull=False)])
+        print(opening_inventory)
         
         closing_inventory = inventory_models.InventoryItem.total_inventory_value()
         cogs = opening_inventory +  purchases - closing_inventory

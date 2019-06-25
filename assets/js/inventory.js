@@ -203,7 +203,7 @@ if(inventoryCheck){
 }else if(debitNoteTable){
     ReactDOM.render(<MutableTable 
         dataURL={"/inventory/api/order/" + tail}
-        headings={["Item", "Orderd Quantity", "Unit Price", "Returned Quantity"]}
+        headings={["Item", "Ordered Quantity", "Unit Price", "Returned Quantity"]}
         resProcessor={(res)=>{
             return res.data.orderitem_set.map((line, i) =>{
                 

@@ -160,25 +160,44 @@ class ProductComponent(models.Model):
 
 
     def quantity_on_date(self, date):
+        '''
+        Starts with current quantity
+        going back subtract the received invetory
+        add the sold inventory
+        return the result
+        i.e.
+            on_date = current - orders( + debit notes ) + sold(- credit notes) + scrapped inventory
+        '''
         current_quantity = self.inventoryitem.quantity
-
+        print('Current: ', current_quantity)
         total_orders = inventory.models.order.OrderItem.objects.filter(
             Q(order__date__gte=date) &
             Q(order__date__lte=datetime.date.today()) &
             Q(item=self.inventoryitem)
-        )
+        ).exclude(order__status="draft")
 
-        ordered_quantity = sum([i.received for i in total_orders])
+        ordered_quantity = sum([i.received - i.returned_quantity \
+                for i in total_orders])
+        print('Ordered: ', ordered_quantity)
 
+        # will eventually replace with dispatch data
         total_sales = invoicing.models.InvoiceLine.objects.filter(
             Q(invoice__date__gte=date) &
             Q(invoice__date__lte=datetime.date.today()) &
-            Q(product__product=self.inventoryitem)
+            Q(product__product=self.inventoryitem) &
+            Q(invoice__draft=False) &
+            Q(
+                Q(invoice__status="paid") |
+                Q(invoice__status="invoice") |
+                Q(invoice__status="paid-partially")
+            )
         )
 
         sold_quantity = sum(
             [(i.product.quantity - D(i.product.returned_quantity)) \
                 for i in total_sales])
+
+        print('Sold: ', sold_quantity)
 
         return D(current_quantity) + sold_quantity - D(ordered_quantity)
     

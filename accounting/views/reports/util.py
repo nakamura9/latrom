@@ -15,7 +15,9 @@ def net_profit_calculator(start, end):
     # TODO verify if opening inventory is considered in profit and loss statement
 
     purchases_acc = models.Account.objects.get(pk=4006)
-    purchases = purchases_acc.balance_over_period(start, end)
+    purchase_returns_acc = models.Account.objects.get(pk=4008)
+    purchase_returns = purchase_returns_acc.balance_over_period(start, end)
+    purchases = purchases_acc.balance_over_period(start, end) + purchase_returns
     
     opening_inventory = sum(
         [D(i.product_component.quantity_on_date(start)) * \

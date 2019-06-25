@@ -12,13 +12,16 @@ from django.shortcuts import reverse
 expense_choices = [
     'Advertising', 
     'Bank Service Charges', 
-    'Equipment Rental', 
     'Dues and Subscriptions', 
+    'Equipment Rental', 
     'Telephone', 
     'Vehicles', 
     'Travel and Expenses',
+    'Supplies',
+    'Salaries and Wages',
     'Rent', 
     'Payroll Taxes', 
+    'Legal and Accounting',
     'Insurance', 
     'Office Expenses',
     'Carriage Outwards', 
@@ -58,18 +61,20 @@ class AbstractExpense(models.Model):
         mapping = {
             0: 5000,
             1: 5001,
-            2: 5003,
-            3: 5002,
+            2: 5002,
+            3: 5003,
             4: 5004,
             5: 5005,
             6: 5006,
             7: 5007,
-            8: 5009,
-            9: 50010,
-            10: 5012,
-            11: 5013,
-            12: 5014,
-            13: 5015
+            8: 5008,
+            9: 5009,
+            10: 5010,
+            11: 5011,
+            12: 5012,
+            13: 5013,
+            14: 5014,
+            15: 5015
        }
         return accounting.models.accounts.Account.objects.get(pk=mapping[self.category])
 

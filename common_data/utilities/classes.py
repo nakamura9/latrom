@@ -89,7 +89,6 @@ class ConfigWizardBase(SessionWizardView):
             if len(keys) > key:
                 return keys[key]
         else:
-            print(self.form_list)#ordered dict
             
             all_forms_keys = list(self.form_list.keys())
             

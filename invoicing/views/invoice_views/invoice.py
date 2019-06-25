@@ -243,6 +243,7 @@ def verify_invoice(request, pk=None):
 
         if inv.status == "invoice":
             inv.create_entry()
+            inv.update_inventory()
             inv.invoice_validated_by = form.cleaned_data['user']
             inv.save()
 
@@ -271,7 +272,7 @@ class ShippingAndHandlingView(
 
 
         expense = Expense.objects.create(
-            category=11,
+            category=14,
             amount=form.cleaned_data['amount'],
             description=form.cleaned_data['description'],
             debit_account=Account.objects.get(pk=1000),#cash

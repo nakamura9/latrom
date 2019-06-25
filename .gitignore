@@ -28,3 +28,4 @@ common_data/static/admin/
 *.c
 build_counter.json
 */settings.json
+*.code-workspace

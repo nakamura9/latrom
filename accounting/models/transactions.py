@@ -187,6 +187,14 @@ class JournalEntry(models.Model):
 
 
     def simple_entry(self, amount, credit_acc, debit_acc):
+        '''
+        Moves money between two accounts for the stated amount.
+        Args
+        =======
+        amount - decimal 
+        credit_acc - account object
+        debit_acc - account object 
+        '''
         self.credit(amount, credit_acc)
         self.debit(amount, debit_acc)
         

@@ -80,7 +80,6 @@ class AbstractAccount(SoftDeletionModel):
             Q(entry__date__gte=start) &
             Q(entry__date__lte=end)
             )
-
         credit_total = sum([c.amount for c in credits])
 
         debit_total = sum([d.amount for d in debits])

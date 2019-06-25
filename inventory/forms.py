@@ -337,7 +337,6 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
-        print(dir(instance))
 
         def create_asset():
             return Asset.objects.create(

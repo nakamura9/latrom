@@ -71,8 +71,7 @@ class CreditNoteCreateView( ContextMixin, CreateView):
             
             inv_line.product._return(float(line["returned_quantity"]))
 
-        if self.object:
-            self.object.create_entry()
+        self.object.create_entry()
 
         return resp
 

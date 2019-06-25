@@ -36,6 +36,19 @@ class DebitNote(models.Model):
         
     @property
     def returned_total(self):
+        return self.returned_subtotal + self.returned_tax
+
+    @property
+    def returned_tax(self):
+        if self.returned_items.count() == 0:
+            return 0
+        order = self.returned_items.first().item.order
+        if order.tax:
+            return self.returned_subtotal * (D(self.order.tax.rate) / D(100.0))
+        return 0
+
+    @property
+    def returned_subtotal(self):
         return sum([i.returned_value for i in self.returned_items ])
 
     def create_entry(self):
@@ -47,11 +60,13 @@ class DebitNote(models.Model):
             draft=False,
             created_by = self.order.issuing_inventory_controller.employee.user
         )
-        j.simple_entry(
-            self.returned_total,
-            self.order.supplier.account,
-            Account.objects.get(pk=4002))# sales returns 
-
+        
+        j.debit(self.returned_total, self.order.supplier.account)
+        #Purchase returns
+        j.credit(self.returned_subtotal, Account.objects.get(pk=4008))
+        #Vat accounr
+        j.credit(self.returned_tax, Account.objects.get(pk=2001))
+        
         self.entry = j
         self.save()
         

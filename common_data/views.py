@@ -456,21 +456,17 @@ class ConfigWizard(ConfigWizardBase):
     
     #TODO fix logo and file handling
     def post(self, request, *args, **kwargs):
-        print(request.POST)
 
         return super().post(request, *args, **kwargs)
     def done(self, form_list, **kwargs):
         """Because there is only one form"""
-        print('saving')
         for form in form_list:
-            print(form.files)
             form.save()
         return super().done(form_list, **kwargs)
     
 
 def reset_license_check(request):
     #delete the hash
-    print('resetting')
     config = GlobalConfig.objects.first()
     
     #remove all the completed tasks

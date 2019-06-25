@@ -65,7 +65,7 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
 
 class ExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "entry", 
+        exclude = "entry", 'debit_account',
         model = models.Expense
 
         widgets = {
@@ -77,10 +77,10 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
             TabHolder(
                 Tab('Basic',
-                    'date',
+                    
                     Row(
                         Column('amount', css_class='form-group col-6'),
-                        Column('debit_account', css_class='form-group col-6'),                        
+                        Column('date', css_class='form-group col-6'),                        
                     ),
                     'description',
                     'category',
@@ -99,7 +99,7 @@ class ExpenseForm(forms.ModelForm, BootstrapMixin):
 
 class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "last_created_date", 'entry'
+        exclude = "last_created_date", 'entry', 'debit_account'
         model = models.RecurringExpense
         widgets = {
             'description': forms.Textarea(attrs={
@@ -114,13 +114,12 @@ class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('basic',
                     Row(
-                        Column('start_date', css_class='form-group col-4'),
-                        Column('expiration_date', css_class='form-group col-4'),
-                        Column('cycle', css_class="form-group col-4")
+                        Column('start_date', css_class='form-group col-6'),
+                        Column('expiration_date', css_class='form-group col-6'),
                     ),
                     Row(
                         Column('amount', css_class='form-group col-6'),
-                        Column('debit_account', css_class='form-group col-6'),
+                        Column('cycle', css_class='form-group col-6'),
                     ),
                     'description',
                     Row(

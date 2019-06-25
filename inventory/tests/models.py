@@ -637,7 +637,7 @@ class ItemModelTests(TestCase):
 
     def test_inventory_on_date(self):
         quantity = self.product.quantity_on_date(datetime.date.today())
-        self.assertEqual(quantity, 10)
+        self.assertEqual(quantity, D(9))
 
 
 class WarehouseModelTests(TestCase):

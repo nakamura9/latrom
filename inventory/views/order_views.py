@@ -324,15 +324,16 @@ class DebitNoteCreateView(CreateView):
         for line in data:
             pk = line['item'].split('-')[0]
             item = models.OrderItem.objects.get(pk=pk)
-            if float(line['quantity']) > 0:
+            if float(line['returned_quantity']) > 0:
                 models.DebitNoteLine.objects.create(
                     note=self.object,
                     item=item,
-                    quantity=float(line['quantity'])
+                    quantity=float(line['returned_quantity'])
                 )
                 # TODO test
-                item._return_to_vendor(float(line['quantity']))
+                item._return_to_vendor(float(line['returned_quantity']))
                 
+        self.object.create_entry()
         return resp
 
 class DebitNoteListView(DetailView):

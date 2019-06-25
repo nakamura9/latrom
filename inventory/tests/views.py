@@ -635,7 +635,8 @@ class OrderViewTests(TestCase):
             data={
                 'returned-items': urllib.parse.quote(json.dumps([{
                     'item': '1 -item',
-                    'quantity': 1   
+                    'quantity': 1,
+                    'returned_quantity': 1
                 }])),
                 'date': datetime.date.today(),
                 'order': 1,

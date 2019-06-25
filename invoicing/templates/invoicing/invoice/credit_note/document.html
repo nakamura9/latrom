@@ -51,7 +51,6 @@
                     </tbody>
                     {% if not page.has_next %}
                     <tfoot>
-    {% if object.tax %}
     <tr>
         <td>
             <b>SubTotal:</b>
@@ -60,7 +59,7 @@
     </tr>
     <tr>
         <td>
-            <b>Tax Due @{{object.tax.rate}}%:</b>
+            <b>Tax Due :</b>
         </td>
         <td>{{object.tax_amount | floatformat:2 }}</td>
     </tr>
@@ -72,7 +71,6 @@
         <td>{{object.total | floatformat:2 }}</td>
     </tr>
 </tfoot>
-                    {% endif %}
                     </table>
                     <p>{{page}}</p>
                     {% if page.has_next %}

@@ -106,7 +106,7 @@ class Invoice(SoftDeletionModel):
         on_delete=models.SET_NULL,  blank=True, null=True)
     
     def get_absolute_url(self):
-        if self.status in ['invoice', 'paid', 'paid-partially']:
+        if self.status in ['invoice', 'proforma','paid', 'paid-partially']:
             return reverse("invoicing:invoice-details", kwargs={"pk": self.pk})
         else:
             return reverse("invoicing:quotation-details", kwargs={
@@ -136,7 +136,6 @@ class Invoice(SoftDeletionModel):
             )
             
         elif data['type'] == 'service':
-            print("## data: ", data)
             pk = data['selected'].split('-')[0]
             print(f'Primary Key ##: {pk}')
             service = Service.objects.get(pk=pk)
@@ -282,7 +281,7 @@ class Invoice(SoftDeletionModel):
         j = JournalEntry.objects.create(
                 memo= f'Journal entry for invoice #{self.invoice_number}.',
                 date=self.date,
-                journal =Journal.objects.get(pk=1),#Cash receipts Journal
+                journal =Journal.objects.get(pk=3),#Sales Journal
                 created_by = self.salesperson.employee.user,
                 draft=False
             )
@@ -540,6 +539,7 @@ class ProductLineComponent(models.Model):
 
     def _return(self, quantity):
         self.returned = True
+        #Must increment inventory here !! Important
         # increment inventory here. Can be scrapped later or just kept in 
         # inventory if ok
         self.invoiceline.invoice.ship_from.add_item(self.product, quantity)

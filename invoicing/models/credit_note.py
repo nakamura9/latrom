@@ -45,7 +45,7 @@ class CreditNote(models.Model):
 
     @property
     def tax_credit(self):
-        return sum([(i.line.tax.rate * i.quantity) \
+        return sum([(i.line.tax_) \
             for i in self.creditnoteline_set.all() if i.line and i.line.tax] ,0)
         
     @property
@@ -72,10 +72,14 @@ class CreditNote(models.Model):
             draft=False,
             created_by = self.invoice.salesperson.employee.user
         )
-        j.simple_entry(
-            self.returned_total_with_tax,
-            self.invoice.customer.account,
-            Account.objects.get(pk=4002))# sales returns 
+
+            
+        j.credit(self.returned_total_with_tax, self.invoice.customer.account)
+        # sales returns 
+        j.debit(self.returned_total, Account.objects.get(pk=4002))
+        # tax account 
+        j.debit(self.tax_credit, Account.objects.get(pk=2001))
+        
         self.entry = j
         self.save()
 
