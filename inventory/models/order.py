@@ -246,7 +246,14 @@ class OrderItem(models.Model):
     unit = models.ForeignKey('inventory.UnitOfMeasure', 
         on_delete=models.SET_NULL, null=True, default=1)
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
-    received = models.FloatField(default=0.0)
+
+    @property
+    def received(self):
+        return sum([
+            i.quantity for i in inventory.models.StockReceiptLine.objects.filter(
+                order_line=self
+            )
+        ])
 
     @property
     def returned_quantity(self):
@@ -262,10 +269,9 @@ class OrderItem(models.Model):
 
     def receive(self, n, medium=None, receipt=None):
         n= float(n)
-        self.received += n
         inventory.models.StockReceiptLine.objects.create(
             quantity= n,
-            line=self,
+            order_line=self,
             receipt=receipt
         )
         

@@ -518,7 +518,7 @@ class OrderPaymentForm(forms.ModelForm, BootstrapMixin):
         exclude = "entry",
         model = models.OrderPayment
         
-class StockReceiptForm(forms.ModelForm, BootstrapMixin):
+class OrderStockReceiptForm(forms.ModelForm, BootstrapMixin):
     order = forms.ModelChoiceField(models.Order.objects.all(),     
         widget=forms.HiddenInput)
     warehouse = forms.CharField(widget=forms.HiddenInput)
@@ -549,6 +549,36 @@ class StockReceiptForm(forms.ModelForm, BootstrapMixin):
 
         self.helper.add_input(Submit('submit', 'Submit'))
 
+class IncomingTransferStockReceiptForm(forms.ModelForm, BootstrapMixin):
+    transfer = forms.ModelChoiceField(models.TransferOrder.objects.all(),     
+        widget=forms.HiddenInput)
+    warehouse = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        exclude = 'fully_received',
+        model= models.StockReceipt
+        widgets = {
+            'note': forms.Textarea(attrs={
+                'rows': 5
+            })
+        }
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('received_by', 
+                    'receive_date',
+                    'transfer',
+                    'warehouse',
+                    css_class="col-sm-6"),
+            Column('note', css_class="col-sm-6")
+            )
+        )
+
+        self.helper.add_input(Submit('submit', 'Submit'))
 
 
 class UnitForm(forms.ModelForm, BootstrapMixin):
@@ -625,7 +655,7 @@ class TransferOrderForm(forms.ModelForm, BootstrapMixin):
     order_issuing_notes = forms.CharField(widget=forms.Textarea(
         attrs={'rows': 8}))
     class Meta:
-        exclude = ['actual_completion_date', 'receiving_inventory_controller','receive_notes', 'completed']
+        exclude = ['receiving_inventory_controller',]
         model = models.TransferOrder
 
     def __init__(self, *args, **kwargs):
@@ -651,24 +681,6 @@ class TransferOrderForm(forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
 
-class TransferReceiptForm(forms.ModelForm, BootstrapMixin):
-    class Meta:
-        fields = ['actual_completion_date', 'receive_notes', 'receiving_inventory_controller']
-        model = models.TransferOrder
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Row(
-            Column('actual_completion_date', 
-                    'receiving_inventory_controller', 
-                    css_class="col-sm-6"),
-            Column('receive_notes', css_class="col-sm-6")
-            )
-        )
-        self.helper.add_input(Submit('submit', 'Submit'))
 
 class InventoryControllerForm(forms.ModelForm, BootstrapMixin):
     class Meta:

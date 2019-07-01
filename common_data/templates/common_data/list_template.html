@@ -10,8 +10,9 @@
     <div class="container">
         <h1 class="display-3"><i class="fas fa-list"></i> {{title}}</h1>
         <p class="lead">{{description}}</p>
+        {% if new_link %}
         <p>Actions</p>
-            {% if new_link %}
+            
             <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New <i class="fas fa-pen"></i></a>
             {% endif %}    
         <p class="lead">

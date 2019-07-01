@@ -35,6 +35,13 @@ class WareHouseCreateView(ContextMixin, CreateView):
         'description': 'Register a new location as a warehouse for storing inventory. Further detail regarding inventory location is provided by the storage media model.'
     }
 
+class WarehouseSelectView(TemplateView):
+    template_name = os.path.join('inventory', 'warehouse', 'select.html')
+
+    def get_context_data(self, **kwargs):
+        context= super().get_context_data(**kwargs)
+        context['warehouses'] = models.WareHouse.objects.all()
+        return context
 
 class WareHouseUpdateView(ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
@@ -54,6 +61,10 @@ class WareHouseItemListView(ListView):
 
 class WareHouseDetailView(InventoryConfigMixin, DetailView):
     template_name = os.path.join('inventory', 'warehouse', 'detail.html')
+    model = models.WareHouse
+
+class WareHouseDashboardView(InventoryConfigMixin, DetailView):
+    template_name = os.path.join('inventory', 'warehouse', 'dashboard.html')
     model = models.WareHouse
 
 

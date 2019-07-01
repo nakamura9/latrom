@@ -71,11 +71,6 @@ class UnitSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
 class OrderItemSerializer(serializers.ModelSerializer):
     item = InventoryItemSerializer(many=False)
     unit = UnitSerializer(many=False)
@@ -91,9 +86,14 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class TransferOrderLineSerializer(serializers.ModelSerializer):
     item = InventoryItemSerializer(many=False)
+    moved_quantity = serializers.SerializerMethodField()
+
     class Meta:
         model = TransferOrderLine
         fields ="__all__"
+
+    def get_moved_quantity(self, obj):
+        return obj.received_quantity
 
 class TransferOrderSerializer(serializers.ModelSerializer):
     transferorderline_set = TransferOrderLineSerializer(many=True)

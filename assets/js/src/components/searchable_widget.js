@@ -11,6 +11,9 @@ import Radium from 'radium';
 //any params it requires.
 //we then provided a prepopulationHandler that takes the async response and 
 //returns the appropriate value to be set to the selected state value
+//props
+// asyncDataURL - string function
+// dataURLResProcessor - method takes res for asyncDataUrl promise and returns string with data url 
 
 class SearchableWidget extends Component {
     //currValue is whats being typed, selected is the value validated
@@ -19,7 +22,8 @@ class SearchableWidget extends Component {
         choices: [],
         currValue: "",
         selectedValue: "",
-        optionsHidden: true
+        optionsHidden: true,
+        url: ""
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -31,10 +35,10 @@ class SearchableWidget extends Component {
         }
     }
 
-    componentDidMount(){
+    getOptions = () =>{
         axios({
             method: "GET",
-            url: this.props.dataURL
+            url: this.state.url
         }).then(res => {
             let newChoices = res.data.map((item) =>{
                 return(item[this.props.idField] + " - " + item[this.props.displayField])
@@ -57,6 +61,23 @@ class SearchableWidget extends Component {
             });
             
         })
+    }
+
+    componentDidMount(){
+        
+        if(this.props.asyncDataURL){
+            axios({
+                'method': 'GET',
+                'url': this.props.asyncDataURL
+            }).then(res =>{
+                this.setState({url: this.props.dataURLResProcessor(res)}, this.getOptions)
+            })
+            
+        }else{
+            this.setState({url: this.props.dataURL});
+            this.getOptions()
+        }
+        
     }
 
     updateChoices = () =>{

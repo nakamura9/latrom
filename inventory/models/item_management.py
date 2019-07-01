@@ -49,42 +49,6 @@ class OrderPayment(models.Model):
             self.save()
 
 #Note as currently designed it cannot be known when exactly an item entered inventory
-class StockReceipt(models.Model):
-    '''
-    Part of the inventory ordering workflow.
-    When an order is generated this object is created to verify 
-    the receipt of items and comment on the condition of the 
-    products.
-
-    methods
-    ---------
-    create_entry - method only called for instances where inventory 
-    is paid for on receipt as per order terms.
-    '''
-    order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, 
-        null=True)
-    received_by = models.ForeignKey('inventory.InventoryController', 
-        on_delete=models.SET_NULL, 
-        null=True,
-        default=1)
-    receive_date = models.DateField()
-    note =models.TextField(blank=True, default="")
-    fully_received = models.BooleanField(default=False)
-
-    def __str__(self):
-        return str(self.pk) + ' - ' + str(self.receive_date)
-
-    def save(self, *args, **kwargs):
-        super(StockReceipt, self).save(*args, **kwargs)
-        self.order.received_to_date = self.order.received_total
-        self.order.save()
-
-class StockReceiptLine(models.Model):
-    receipt = models.ForeignKey('inventory.StockReceipt'
-        ,on_delete=models.CASCADE)
-    line = models.ForeignKey('inventory.OrderItem', on_delete=models.CASCADE)
-    quantity = models.FloatField(default=0.0)
-
 
 #might need to rename
 class InventoryCheck(models.Model):
@@ -141,32 +105,20 @@ class TransferOrder(models.Model):
         on_delete=models.SET_NULL, null=True)
     receiving_inventory_controller = models.ForeignKey('inventory.InventoryController', 
         on_delete=models.SET_NULL, null=True)
-    actual_completion_date =models.DateField(null=True)#provided later
     source_warehouse = models.ForeignKey('inventory.WareHouse',
         related_name='source_warehouse', on_delete=models.SET_NULL, null=True,)
     receiving_warehouse = models.ForeignKey('inventory.WareHouse', 
         on_delete=models.SET_NULL, null=True,)
     order_issuing_notes = models.TextField(blank=True)
-    receive_notes = models.TextField(blank=True)
-    completed = models.BooleanField(default=False)
     
-    def complete(self):
-        '''move all the outstanding items at the same time.'''
-        for line in self.transferorderline_set.filter(moved_quantity=0):
-            line.move(line.quantity)
-        self.completed = True
-        self.save()
+    @property
+    def completed(self):
+        klass = inventory.models.stock_receipt.StockReceipt.objects
+        if klass.filter(transfer=self).exists():
+            return klass.filter(transfer=self).first().fully_received
+        return False
 
-    def update_completed_status(self):
-        # TODO inefficient
-        completed = True
-        for line in self.transferorderline_set.all():
-            if line.quantity > line.moved_quantity:
-                completed = False
-
-        self.completed = completed
-        self.save()
-
+   
 class TransferOrderLine(models.Model):
     item = models.ForeignKey('inventory.inventoryitem', 
         on_delete=models.SET_NULL, 
@@ -174,7 +126,20 @@ class TransferOrderLine(models.Model):
     quantity = models.FloatField()
     transfer_order = models.ForeignKey('inventory.TransferOrder', 
         on_delete=models.SET_NULL, null=True)
-    moved_quantity = models.FloatField(default=0.0)
+    
+    @property
+    def moved_quantity(self):
+        return sum([
+            i.quantity for i in \
+                inventory.models.stock_dispatch.DispatchLine.objects.filter(
+                    transfer_line=self)])
+
+    @property
+    def received_quantity(self):
+        return sum([
+            i.quantity for i in \
+                inventory.models.stock_receipt.StockReceiptLine.objects.filter(
+                    transfer_line=self)], 0)
 
     def move(self, quantity, location=None):
         '''performs the actual transfer of the item between warehouses'''

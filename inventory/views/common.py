@@ -107,8 +107,7 @@ class InventoryDashboard(InventoryConfigMixin, TemplateView):
             ConsumablesRequisition.objects.filter(
                 released_by__isnull=True).count()
 
-        context['pending_transfers'] = models.TransferOrder.objects.filter(
-            completed=False).count()
+        context['pending_transfers'] = len([ i for i in models.TransferOrder.objects.all() if i.completed])
 
         context['products'] = models.InventoryItem.objects.filter(
             type=0).count()

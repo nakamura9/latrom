@@ -63,7 +63,7 @@ class WareHouse(models.Model):
                     
             return WareHouseItem.objects.get(item=item, warehouse=self)
         
-        return None # next code is dead for now
+        return None 
         
     def has_item(self, item):
         return self.get_item(item) is not None

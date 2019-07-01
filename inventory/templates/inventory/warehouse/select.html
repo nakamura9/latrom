@@ -1,0 +1,33 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Select Warehouse</h1>
+    <p class="lead">Click one of the options to work in a specific warehouse</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:warehouse-create' %}" role="button">Create New</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card text-left">
+              <div class="card-body">
+                <ul class="list-group">
+                    {% for warehouse in warehouses %}
+                    <li class="list-group-item">
+                        <a href="{% url 'inventory:warehouse-dashboard' pk=warehouse.pk %}">{{warehouse.name}}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

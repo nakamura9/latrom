@@ -223,10 +223,12 @@ if(inventoryCheck){
         ]}
         formHiddenFieldName="returned-items"/>, debitNoteTable)
 }else if(receiveTable){
+    
+
     ReactDOM.render(<MutableTable
             formHiddenFieldName="received-items" 
             dataURL={"/inventory/api/transfer-order/" + tail}
-            headings={["Item", "Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
+            headings={["Item", "Ordered Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
             resProcessor={(res) =>{
                 return res.data.transferorderline_set.map((item)=>({
                     'item': item.id + ' - ' + item.item.name,
@@ -248,7 +250,11 @@ if(inventoryCheck){
                     'widgetCreator': (component) =>{
                         return(<SearchableWidget 
                             bordered
-                            dataURL="/inventory/api/storage-media/1"
+                            asyncDataURL={'/inventory/api/transfer-order/' + 
+                                tail}
+                            dataURLResProcessor={(res) =>{
+                                return '/inventory/api/storage-media/' + res.data.receiving_warehouse
+                            }}
                             idField="id"
                             displayField="name"
                             onSelect={(val) => component.setState({})}

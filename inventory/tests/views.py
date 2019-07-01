@@ -185,7 +185,7 @@ class InventoryManagementViewTests(TestCase):
         self.client.login(username='Testuser', password='123')
 
     def test_get_stock_receipt_form(self):
-        resp = self.client.get(reverse('inventory:stock-receipt-create',
+        resp = self.client.get(reverse('inventory:order-stock-receipt-create',
             kwargs={'pk': 1}))
         self.assertEqual(resp.status_code,  200)
 

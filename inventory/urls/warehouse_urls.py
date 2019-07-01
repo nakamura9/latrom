@@ -22,6 +22,10 @@ api_urls = [
         views.StorageMediaNestedListAPIView.as_view()),
     re_path(r'^api/storage-media-detail/(?P<pk>[\w]+)/?$', 
         views.StorageMediaRetrieveAPIView.as_view()),
+    re_path(r'^warehouse-select/?$', 
+        views.WarehouseSelectView.as_view(), name='warehouse-select'),
+    re_path(r'^warehouse-dashboard/(?P<pk>[\d]+)/?$', 
+        views.WareHouseDashboardView.as_view(), name='warehouse-dashboard'),
 ]
 
 warehouse_urls = [

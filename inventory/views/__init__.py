@@ -8,3 +8,6 @@ from .scrapping_views import *
 from .storage_media_views import *
 from .reports import *
 from .item import *
+from .transfers import *
+from .stock_receipt import *
+from .stock_dispatch import *

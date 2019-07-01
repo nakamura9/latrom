@@ -34,12 +34,19 @@ class InventoryCheckFilter(django_filters.FilterSet):
         }
 
 
-class TransferOrderFilter(django_filters.FilterSet):
+class IncomingTransferOrderFilter(django_filters.FilterSet):
     class Meta:
         model = TransferOrder
         fields = {
             'date': ['exact'],
             'source_warehouse': ['exact'],
+        }
+
+class OutgoingTransferOrderFilter(django_filters.FilterSet):
+    class Meta:
+        model = TransferOrder
+        fields = {
+            'date': ['exact'],
             'receiving_warehouse': ['exact']
         }
 
