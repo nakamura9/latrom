@@ -17,7 +17,8 @@ class AutomatedPayrollService(object):
         schedule = models.PayrollSchedule.objects.first()
 
         if any([self.TODAY.day == i.date \
-                for i in schedule.payrolldate_set.all()]):
+                for i in schedule.payrolldate_set.all()]) and \
+                    self.settings.last_payroll_date != self.TODAY:
             
             payroll_date = models.PayrollDate.objects.get(date=self.TODAY.day)
             payroll_id = self.settings.payroll_counter + 1

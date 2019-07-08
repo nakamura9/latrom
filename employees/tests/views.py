@@ -491,11 +491,11 @@ class DeductionPageTests(TestCase):
         cls.client = Client()
         cls.DEDUCTION_DATA = {
                 'name': 'Other Test Deduction',
-                'method': 1,
-                'trigger':1,
-                'amount': 10,
+                'deduction_method': 1,
+                'fixed_amount': 10,
                 'rate': 0,
-                'account_paid_into': 5008
+                'account_paid_into': 5008,
+                'employer_contribution':0
             }
         
     @classmethod

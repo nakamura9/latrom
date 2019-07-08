@@ -38,7 +38,7 @@ class DeductionListView(ContextMixin, ListView):
         'new_link': '/employees/create-deduction'
     }
     paginate_by = 10
-    model = models.Deduction
+    queryset = models.Deduction.objects.filter(active=True)
 
 class DeductionDetailView(DetailView):
     template_name = os.path.join('employees', 'deductions', 'detail.html')
@@ -46,10 +46,15 @@ class DeductionDetailView(DetailView):
 
 class DeductionCreateView( ContextMixin, CreateView):
     form_class = forms.DeductionForm
-    template_name = os.path.join('common_data','create_template.html')
+    template_name = os.path.join('common_data','crispy_create_template.html')
     extra_context = {
         'title': 'Add Deductions For Payroll'
     }
+
+    def get_initial(self):
+        return {
+            'account_paid_into': 5008
+        }
 
 class DeductionUpdateView( ContextMixin, UpdateView):
     form_class = forms.DeductionUpdateForm
@@ -67,7 +72,7 @@ class DeductionDeleteView( DeleteView):
 
 class AllowanceListView(ContextMixin, ListView):
     template_name = os.path.join('employees', 'benefits', 'list.html')
-    model = models.Allowance
+    queryset = models.Allowance.objects.filter(active=True)
     paginate_by = 20
     extra_context = {
         'title': 'Payroll Benefits List',

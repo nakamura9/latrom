@@ -28,8 +28,8 @@ def create_test_employees_models(cls):
         )
     cls.deduction = Deduction.objects.create(
             name='Model test deduction',
-            method=1,
-            amount=10,
+            deduction_method=1,
+            fixed_amount=10,
         )
     cls.commission=CommissionRule.objects.create(
             name='Model Test Commission',
@@ -246,15 +246,15 @@ class DeductionModelTest(TestCase):
     def test_create_fixed_deduction(self):
         obj = Deduction.objects.create(
             name='test deduction',
-            method=1,
-            amount=10
+            deduction_method=1,
+            fixed_amount=10
             )
         self.assertIsInstance(obj, Deduction)
 
     def test_create_rated_deduction(self):
         obj = Deduction.objects.create(
             name='test deduction',
-            method=0,
+            deduction_method=0,
             rate=10)
         self.assertIsInstance(obj, Deduction)
 
@@ -262,31 +262,31 @@ class DeductionModelTest(TestCase):
     def test_deduction_from_payslip_if_fixed(self):
         fixed_deduction = Deduction.objects.create(
             name='test fixed deduction',
-            trigger=1,
-            method=1,
-            amount=10
+            deduction_method=1,
+            fixed_amount=10
             )
         deducted = fixed_deduction.deduct(self.slip)
-        self.assertEqual(deducted, fixed_deduction.amount)
+        self.assertEqual(deducted, fixed_deduction.fixed_amount)
 
 
     def test_deduction_from_payslip_if_rated(self):
         rated_deduction = Deduction.objects.create(
             name='test rated deduction',
-            method=0,
-            trigger=0,
-            rate=10
+            deduction_method=0,
+            rate=10,
+            basic_income=True
             )
         deducted = rated_deduction.deduct(self.slip)
-        self.assertEqual(deducted, (0.1 * self.slip.gross_pay))
+        self.assertEqual(deducted, 30)
 
     def test_deduction_from_payslip_paye_triggered(self):
         rated_deduction = Deduction.objects.create(
             name='test rated deduction',
-            method=0,
-            trigger=2,
-            rate=10
+            deduction_method=0,
+            rate=10,
             )
+        rated_deduction.payroll_taxes.add(self.prt)
+        rated_deduction.save()
         deducted = rated_deduction.deduct(self.slip)
         self.assertEqual(deducted, 5.5)
 

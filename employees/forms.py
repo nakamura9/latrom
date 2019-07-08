@@ -58,11 +58,43 @@ class CommissionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class DeductionForm(forms.ModelForm, BootstrapMixin):
     #only allow deduction accounts for 
-    account_paid_into = forms.ModelChoiceField(Account.objects.filter(Q(type="liability") | Q(type="expense")), required=False)
+    account_paid_into = forms.ModelChoiceField(
+        Account.objects.filter(Q(type="liability") | Q(
+            type="expense"))) 
+    benefits = forms.ModelMultipleChoiceField(
+        models.Allowance.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
+    commission = forms.ModelMultipleChoiceField(
+        models.CommissionRule.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
+    payroll_taxes = forms.ModelMultipleChoiceField(
+        models.PayrollTax.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
     class Meta:
         exclude="active",
         model = models.Deduction
+        
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'name',
+            'deduction_method',
+            HTML("""<h5>Custom Income Deductions:</h5>"""),
+            'basic_income',
+            'hourly_income',
+            'overtime_income',
+            'benefits',
+            'commission',
+            'payroll_taxes',
+            'rate',
+            HTML("""<h5>Fixed Income Deductions:</h5>"""),
+            'fixed_amount',
+            'employer_contribution',
+            'account_paid_into'
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
     account_paid_into = forms.ModelChoiceField(Account.objects.filter(
         Q(type="liability") | Q(type="expense")), required=False)
@@ -72,10 +104,10 @@ class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 
 class PayGradeForm(forms.ModelForm, BootstrapMixin):
-    allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.all(),
+    allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.filter(active=True),
         widget=forms.CheckboxSelectMultiple,
         required=False)
-    deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.all(),
+    deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.filter(active=True),
         widget=forms.CheckboxSelectMultiple,
         required=False)
     payroll_taxes = forms.ModelMultipleChoiceField(
@@ -213,7 +245,8 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
     def save(self, *args, **kwargs):
         '''The very first employee created in the application is automatically assigned a user.'''
         resp = super().save(*args, **kwargs)
-        if models.Employee.objects.all().count() == 1:
+        if models.Employee.objects.all().count() == 1 and not \
+                User.objects.filter(username=self.instance.first_name).exists():
             user = User.objects.create(
                 username=self.instance.first_name,
                 password="1234"

@@ -31,7 +31,7 @@
                     <a class="dropdown-item" href="{% url 'employees:pay-slip-pdf' pk=item.pk %}">
                         <i class="fas fa-file-pdf"></i> Generate PDF</a>
                     {% if item.status == "draft" %}
-                    <a class="dropdown-item" href="{% url 'employees:pay-slip-verify' pk=item.pk %}"><i class="fas fa-check"></i> Verify</a>
+                    <a class="dropdown-item" href="{% url 'employees:pay-slip-verify' pk=item.pk %}"><i class="fas fa-check"></i> Verify/Delete</a>
                     {% endif %}
                 </div>
             </div>
