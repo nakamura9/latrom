@@ -1,0 +1,28 @@
+{% load accounting %}
+
+
+{% for page in pages %}
+<table class="table-sm" style="width:100%;">
+    <thead>
+        <tr>
+            <th>Employee #</th>
+            <th>Full Name</th>
+            <th>ID Number</th>
+            <th>Pay Grade</th>
+            <th>PAYE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for emp in page %}
+        <tr>
+            <td>{{emp.employee_number}}</td>
+            <td>{{emp.name}}</td>
+            <td>{{emp.id}}</td>
+            <td>{{emp.grade}}</td>
+            <td>{{emp.paye | accounting}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endfor %}

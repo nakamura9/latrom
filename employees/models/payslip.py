@@ -45,8 +45,11 @@ class Payslip(models.Model):
     overtime_one_hours = models.FloatField()
     overtime_two_hours = models.FloatField()
     pay_roll_id = models.IntegerField()
-    pay_grade = models.ForeignKey('employees.paygrade', on_delete=models.SET_NULL, null=True, 
+    pay_grade = models.ForeignKey('employees.paygrade', 
+        on_delete=models.SET_NULL, 
+        null=True, 
         default=1)
+    created = models.DateTimeField(auto_now=True)
     pay_grade_version = models.PositiveSmallIntegerField(default=0)
     status = models.CharField(choices=[
         ('draft', 'Draft'),
