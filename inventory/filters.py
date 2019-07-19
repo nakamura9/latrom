@@ -79,3 +79,10 @@ class InventoryItemFilter(django_filters.FilterSet):
             }
 
 
+class PurchaseReturnsFilter(django_filters.FilterSet):
+    class Meta:
+        model = DebitNote
+        fields = {
+            'date': ['exact']
+            }
+        

@@ -1,0 +1,39 @@
+{% extends 'common_data/list_template.html' %}
+
+{% block list_headings %}
+<tr>
+    <th>Date</th>
+    <th>Debit Note</th>
+    <th>Order</th>
+    <th>Status</th>
+    <th>Actions</th>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+
+{% for obj in object_list %}
+
+<tr>
+    <td>{{obj.date}}</td>
+    <td>{{obj.pk}}</td>
+    <td>{{obj.order.pk}}</td>
+    <td>{{obj.status}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'inventory:debit-note-detail' pk=obj.pk %}">View Debit Note</a>
+                <a class="dropdown-item" href="#">Dispatch Returns</a>
+                <a class="dropdown-item" href="#">View Dispatch Note</a>
+            </div>
+        </div>
+    </td>
+</tr>
+
+{% endfor %}
+
+{% endblock list_content %}

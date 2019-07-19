@@ -71,10 +71,12 @@ class Order(SoftDeletionModel):
     status = models.CharField(max_length=24, 
         choices=ORDER_STATUS_CHOICES)
     received_to_date = models.FloatField(default=0.0)
-    issuing_inventory_controller = models.ForeignKey('inventory.InventoryController', 
+    issuing_inventory_controller = models.ForeignKey(
+        'inventory.InventoryController', 
         default=1, on_delete=models.SET_NULL, null=True)
     entry = models.ForeignKey('accounting.JournalEntry',
-         blank=True, on_delete=models.SET_NULL, null=True, related_name="order_entry")
+         blank=True, on_delete=models.SET_NULL, null=True, 
+         related_name="order_entry")
     entries = models.ManyToManyField('accounting.JournalEntry',
         related_name="order_entries")
     shipping_cost_entries = models.ManyToManyField('accounting.JournalEntry', 

@@ -12,15 +12,15 @@
         <thead  >
             <tr >
                 <td style="width:70%">Description</td>
-                <td>Ordered Qty</td>
+                <td>Expected Qty</td>
                 <td>Received Qty</td>
             </tr>
         </thead>
         <tbody class="item-table" style="border:1px solid black;">
             {% for item in page %}
                 <tr>
-                    <td>{{item.line.item.name}}</td>
-                    <td>{{item.line.quantity}}</td>
+                    <td>{{item.line}}</td>
+                    <td>{{item.expected_quantity}}</td>
                     <td>{{item.quantity}}</td>
                 </tr>
             {% endfor %}

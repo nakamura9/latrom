@@ -9,6 +9,8 @@ from .supplier_urls import supplier_urls
 from .transfer_urls import transfer_urls
 from .item import inventory_item_urls
 from rest_framework.routers import DefaultRouter
+from .dispatch_urls import dispatch_urls
+from .incoming_urls import incoming_urls
 
 unit_router = DefaultRouter()
 unit_router.register('api/unit', views.UnitAPIView)
@@ -49,3 +51,5 @@ urlpatterns += transfer_urls
 urlpatterns += supplier_urls
 urlpatterns += unit_router.urls
 urlpatterns += inventory_item_urls
+urlpatterns += dispatch_urls
+urlpatterns += incoming_urls

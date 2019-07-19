@@ -114,6 +114,12 @@ class TransferOrderReceiveView(ContextMixin, CreateView):
         'title': 'Receive Transfer of Inventory'
     }
 
+    def get_initial(self):
+        return {
+            'transfer': self.kwargs['pk'],
+            'warehouse': self.kwargs['warehouse']
+        }
+
 
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
@@ -131,7 +137,8 @@ class TransferOrderReceiveView(ContextMixin, CreateView):
             models.StockReceiptLine.objects.create(
                     transfer_line = line,
                     quantity=quantity,
-                    location = location
+                    location = location,
+                    receipt=self.object
                 )
             #dispatch is concerned with decrementing inventory
             line.transfer_order.receiving_warehouse.add_item(

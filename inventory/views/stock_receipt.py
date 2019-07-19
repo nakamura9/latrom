@@ -42,6 +42,20 @@ class TransferStockReceiptCreateView(CreateView):
 class CreditNoteStockReceiptCreateView(CreateView):
     pass
 
+class IncomingOrderListView(ContextMixin, PaginationMixin, FilterView):
+    paginate_by = 20
+    filterset_class = filters.OrderFilter
+    template_name = os.path.join('inventory', 'incoming', 'order', 'list.html')
+    extra_context = {
+        'title': 'List of Incoming Orders.'
+    }
+
+    def get_queryset(self):
+        warehouse = models.WareHouse.objects.get(pk=self.kwargs['pk'])
+        print(warehouse)
+        print(models.Order.objects.filter(ship_to=warehouse))
+        return models.Order.objects.filter(ship_to=warehouse)
+
 class OrderStockReceiptCreateView(CreateView):
     form_class = forms.OrderStockReceiptForm
     model = models.StockReceipt
@@ -113,9 +127,13 @@ class GoodsReceivedVoucherView(ContextMixin,
     def get_multipage_queryset(self):
         return self.object.stockreceiptline_set.all()
         
-class GoodsReceivedVoucherPDFView( ConfigMixin, PDFDetailView):
+class GoodsReceivedVoucherPDFView(ConfigMixin, MultiPageDocument,PDFDetailView):
     template_name = os.path.join("inventory", "goods_received", "voucher.html")
     model = models.StockReceipt
+    page_length=20
+
+    def get_multipage_queryset(self):
+        return self.object.stockreceiptline_set.all()
 
 class OrderGoodsReceiptsList(TemplateView):
     template_name=os.path.join('inventory','goods_received', 'list.html')

@@ -70,7 +70,7 @@
                     <i class="fas fa-share-square"></i> Receive order</a>
                 
                 {% if order.stockreceipt_set.all.count > 0 %}
-                <a href="{% url 'inventory:stock-receipts-list' pk=order.pk %}" class="dropdown-item">
+                <a href="{% url 'inventory:order-stock-receipt-list' pk=order.pk %}" class="dropdown-item">
                         <i class="fas fa-eye"></i> View Goods Receipts List</a>
                 {% endif %}
                 

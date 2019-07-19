@@ -24,7 +24,7 @@
                                 <tr>
                                     <th>Completed:</th>
                                     <td>
-                                        {% if object.completed %} Completed on {{object.actual_completion_date}} {% else %} No {% endif %}
+                                        {{object.completed | yesno }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -44,15 +44,11 @@
                                     <td>{{object.receiving_warehouse}}</td>
                                 </tr>
                                 <tr>
-                                    <th colspan="2">Notes</th>
-
-                                </tr>
-                                <tr>
-                                    <th>On Ordering</th>
+                                    <th>Notes On Order</th>
                                     <td>{{object.order_issuing_notes}}</td>
                                 </tr>
                                 <tr>
-                                    <th>On Receiving</th>
+                                    <th>Notes On Receipt</th>
                                     <td>{{object.receive_notes}}</td>
                                 </tr>
                         </tbody>
@@ -66,7 +62,8 @@
                 <thead>
                     <tr class="bg-primary text-white">
                         <th>Item</th>
-                        <th>Quantity</th>
+                        <th>Requested Quantity</th>
+                        <th>Received Quantity</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,6 +71,7 @@
                     <tr>
                         <td>{{line.item.name}}</td>
                         <td>{{line.quantity}}</td>
+                        <td>{{line.received_quantity}}</td>
                     </tr>
                     {% endfor  %}
                 </tbody>

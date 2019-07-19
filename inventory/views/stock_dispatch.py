@@ -25,3 +25,16 @@ from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from accounting.models import Account, Journal, JournalEntry
 
+class PurchaseReturnListView(ContextMixin, PaginationMixin, FilterView):
+    '''List of Debit Notes'''
+    template_name = os.path.join('inventory', 'dispatch', 'purchase_returns', 'list.html')
+    filterset_class = filters.PurchaseReturnsFilter
+    paginate_by = 20
+    extra_context = {
+        'title': 'List Of Purchase Returns'
+    }
+
+    def  get_queryset(self):
+        warehouse = models.WareHouse.objects.get(pk=self.kwargs['warehouse'])
+        return models.DebitNote.objects.filter(order__ship_to=warehouse)
+

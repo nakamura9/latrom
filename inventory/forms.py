@@ -554,7 +554,7 @@ class IncomingTransferStockReceiptForm(forms.ModelForm, BootstrapMixin):
         widget=forms.HiddenInput)
     warehouse = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = 'fully_received',
+        exclude = 'fully_received', 'order', 'credit_note'
         model= models.StockReceipt
         widgets = {
             'note': forms.Textarea(attrs={

@@ -53,3 +53,26 @@ class StockReceiptLine(models.Model):
     quantity = models.FloatField(default=0.0)
     location = models.ForeignKey('inventory.storagemedia', null=True, 
         blank=True, on_delete=models.SET_NULL)
+
+
+    @property
+    def line(self):
+        if self.order_line:
+            return self.order_line.item
+        elif self.transfer_line:
+            return self.transfer_line.item
+
+        elif self.credit_note_line:
+            return self.credit_note_line.line.product.product
+
+        else:
+            raise Exception('No line has been specified.')
+
+    @property
+    def expected_quantity(self):
+        if self.order_line:
+            return self.order_line.quantity
+        elif self.transfer_line:
+            return self.transfer_line.quantity
+        else:
+            return self.credit_note_line.quantity

@@ -27,7 +27,7 @@
                                 </div>
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a href="{% url 'inventory:order-list' %}">Orders</a>
+                                        <a href="{% url 'inventory:incoming-orders' pk=object.pk %}">Orders</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="{% url 'inventory:incoming-transfer-order-list' pk=object.pk %}">Incoming Transfers</a>
@@ -45,7 +45,7 @@
                                 </div>
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a href="">Returns To suppliers</a>
+                                        <a href="{% url 'inventory:dispatch-debit-note-list' warehouse=object.pk %}">Returns To suppliers</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="{% url 'inventory:outgoing-transfer-order-list' pk=object.pk %}">Outgoing Transfers</a>

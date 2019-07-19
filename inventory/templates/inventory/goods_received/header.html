@@ -6,11 +6,17 @@ Goods Received Note
 
 {% block left_content %}
 <div style="display:block;">
-    <p>
-        <b>Vendor:</b>
-    </p>
+    {% if object.order %}
+    <h5>Vendor:</h5>
     <h6>{{object.order.supplier}}</h6>
     <p>{{object.order.supplier.address | linebreaks}} </p>
+    {% elif object.transfer %}
+    <h6>Source Warehouse </h6>
+    <p>{{object.transfer.source_warehouse}}</p>
+    {% else %}
+    <h6>Customer</h6>
+    {{object.credit_note.invoice.customer}}
+    {% endif %}
 </div>
 {% endblock left_content %}
 
@@ -23,10 +29,6 @@ Goods Received Note
 <table style="width:100%;">
     <tbody >
         <tr>
-            <th>Purchase Order #</th>
-            <td>{{object.order.pk | stringformat:"06d"}}</td>
-        </tr>
-        <tr>
             <th>Goods Received Note #</th>
             <td>{{object.pk | stringformat:"06d"}}</td>
         </tr>
@@ -34,6 +36,22 @@ Goods Received Note
             <th>Date</th>
             <td>{{object.receive_date}}</td>
         </tr>
+        {% if object.order %}
+        <tr>
+            <th>Purchase Order #</th>
+            <td>{{object.order.pk | stringformat:"06d"}}</td>
+        </tr>
+        {% elif object.transfer %}
+        <tr>
+            <th>Transfer Order #</th>
+            <td>{{object.transfer.pk | stringformat:"06d"}}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th>Credit Note #</th>
+            <td>{{object.credit_note.pk | stringformat:"06d"}}</td>
+        </tr>
+        {% endif %}
     </tbody>
 </table>
 

@@ -6,3 +6,4 @@ from .order import *
 from .item import InventoryItem, ProductComponent, EquipmentComponent
 from .stock_receipt import *
 from .stock_dispatch import *
+from .transfer import TransferOrder, TransferOrderLine
