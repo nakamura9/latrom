@@ -3,14 +3,14 @@ from dateutil.relativedelta import relativedelta
 import inventory
 from django.db.models import Q 
 from planner.models import Event, EventParticipant
+from common_data.utilities import AutomatedServiceMixin
 
-
-class InventoryService(object):
+class InventoryService(AutomatedServiceMixin):
     def __init__(self):
         self.today = datetime.date.today()
         self.settings = inventory.models.InventorySettings.objects.first()
     
-    def run(self):
+    def _run(self):
         # set an inventory check date in the calendar if the event does not yet 
         # exist and there are less than 7 days to the date
         # iterate over warehouses

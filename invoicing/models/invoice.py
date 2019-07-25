@@ -393,7 +393,10 @@ class Invoice(SoftDeletionModel):
                     WorkOrderRequest.objects.create(
                         invoice=self, 
                         service=line.service.service,
-                        status="request"
+                        status="request",
+                        created=datetime.date.today(),
+                        created_by=self.salesperson.employee,
+                        description = f'{line.service.name}: {line.service.description}'
                     )
 
 class InvoiceLine(models.Model):

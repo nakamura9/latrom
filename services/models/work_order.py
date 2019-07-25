@@ -10,6 +10,10 @@ from decimal import Decimal as D
 from django.shortcuts import reverse 
 
 class WorkOrderRequest(models.Model):
+    created = models.DateField(blank=True, null=True)
+    created_by = models.ForeignKey('employees.employee', 
+        null=True, 
+        on_delete=models.SET_NULL)
     invoice = models.ForeignKey('invoicing.invoice', 
         blank=True, 
         null=True, 
@@ -21,6 +25,7 @@ class WorkOrderRequest(models.Model):
         ('in-progress', 'In Progress'),
         ('completed', 'Completed'),
         ])
+    description = models.TextField(blank=True, default="")
 
 
     def update_status(self):

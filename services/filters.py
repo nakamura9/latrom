@@ -49,3 +49,12 @@ class EquipmentRequisitionFilter(django_filters.FilterSet):
             'date': ['exact'],
             'requested_by': ['exact']
         }
+
+class WorkOrderRequestFilters(django_filters.FilterSet):
+    class Meta:
+        model = models.WorkOrderRequest
+        fields = {
+            'created': ['exact'],
+            'created_by': ['exact'],
+            'description': ['icontains']
+        }

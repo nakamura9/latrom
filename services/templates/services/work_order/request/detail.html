@@ -17,13 +17,20 @@
             <div class="card-deck">            
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Invoice Details</h4>
-                        <p class="card-text">Invoice Number:{{object.invoice.invoice_number}}</p>
-                        <p class="card-text">Services: {{object.invoice.serviceinvoiceline_set.all.count}}</p>
-                        <p class="card-text">Date Created: {{object.invoice.date}}</p>
-                        <p class="card-text">Due Date: {{object.invoice.due}}</p>
+                        <h4 class="card-title">Details</h4>
+                        <p class="card-text">Services: {{object.service}}</p>
+                        <p class="card-text">Date Created: {{object.created}}</p>
+                        <p class="card-text">Created By: {{object.created_by}}</p>
+                        <p class="card-text">Request Status: {{object.status}}</p>
+
+                        <p class="card-text">Description: {{object.description}}</p>
+                        {% if object.invoice %}
+                        <h5>Invoice Details</h5>
+                        <p class="card-text">Invoice Number: {{object.invoice.pk}}</p>
+                        <p class="card-text">Invoice Due Date: {{object.invoice.due}}</p>
                         <p class="card-text">Customer: {{object.invoice.customer}}</p>
                         <p class="card-text">Sales Representative: {{object.invoice.salesperson}}</p>
+                        {% endif %}
 
 
                     </div>

@@ -67,6 +67,7 @@ class EquipmentRequisitionAuthorizeView( DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['authorize_form'] = AuthenticateForm()
+        context['release_form'] = AuthenticateForm()
         return context
 
 class EquipmentRequisitionListView( ContextMixin, PaginationMixin, FilterView):
@@ -98,12 +99,14 @@ def equipment_requisition_authorize(request, pk=None):
             )
         if authenticated:
             if not hasattr(usr, 'employee'):
-                return HttpResponseRedirect(redirect_path)
+                messages.info(request, 'The selected user cannot authorize/release a requisition')
+                return HttpResponseRedirect(f"/services/equipment-requisition-auth-view/{pk}")
             req.authorized_by = usr.employee
             req.save()
-            return HttpResponseRedirect(reverse_lazy('services:equipment-requisition-list'))
+            return HttpResponseRedirect(redirect_path)
 
-    return HttpResponse(request.path)
+    messages.info(request, 'the form submitted was invalid')
+    return HttpResponseRedirect(f"/services/equipment-requisition-auth-view/{pk}")
 
 
 def equipment_requisition_release(request, pk=None):
@@ -121,13 +124,13 @@ def equipment_requisition_release(request, pk=None):
             )
         if authenticated:
             if not hasattr(usr, 'employee'):
-                return HttpResponseRedirect(redirect_path)            
+                messages.info(request, 'The selected user cannot authorize/release a requisition')
+                return HttpResponseRedirect(f"/services/equipment-requisition-auth-view/{pk}")            
             req.released_by = usr.employee
             req.save()
-            return HttpResponseRedirect(reverse_lazy(
-                    'services:equipment-requisition-list'))
-
-    return HttpResponseRedirect(redirect_path)
+            return HttpResponseRedirect(redirect_path)
+    messages.info(request, 'The form submitted was invalid')
+    return HttpResponseRedirect(f"/services/equipment-requisition-auth-view/{pk}")
 
 
 #################################################
@@ -163,7 +166,8 @@ class ConsumableRequisitionCreateView(ConsumableRequisitionMixin, CreateView):
     success_url = reverse_lazy('services:consumable-requisition-list')
 
     
-class WorkOrderConsumableRequisitionCreateView( CreateView):
+class WorkOrderConsumableRequisitionCreateView(ConsumableRequisitionMixin, 
+        CreateView):
     template_name = os.path.join('services', 'requisitions', 'consumables', 
         'create.html')
     form_class = forms.WorkOrderConsumablesRequisitionForm
@@ -174,10 +178,21 @@ class WorkOrderConsumableRequisitionCreateView( CreateView):
             'work_order': self.kwargs['pk']
         }
         
+class ConsumableRequisitionAuthorizeView( DetailView):
+    template_name = os.path.join('services', 'requisitions', 'consumables',
+        'authorize_release.html')
+    model = models.ConsumablesRequisition
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['authorize_form'] = AuthenticateForm()
+        context['release_form'] = AuthenticateForm()
+        return context
+
 
 class ConsumableRequisitionDetailView( DetailView):
     template_name = os.path.join('services', 'requisitions', 'consumables',
-        'authorize_release.html')
+        'detail.html')
     model = models.ConsumablesRequisition
 
     def get_context_data(self, *args, **kwargs):
@@ -211,12 +226,14 @@ def consumable_requisition_authorize(request, pk=None):
             )
         if authenticated:
             if not hasattr(usr, 'employee'):
-                return HttpResponseRedirect(redirect_path)
+                messages.info(request, 'The selected user cannot authorize/release a requisition')
+                return HttpResponseRedirect(f"/services/consumable-requisition-auth-view/{pk}")
             req.authorized_by = usr.employee
             req.save()
-            return HttpResponseRedirect(reverse_lazy('services:consumable-requisition-list'))
+            return HttpResponseRedirect(redirect_path)
 
-    return HttpResponse(request.path)
+    messages.info(request, 'the form submitted was invalid')
+    return HttpResponseRedirect(f"/services/consumable-requisition-auth-view/{pk}")
 
 
 def consumable_requisition_release(request, pk=None):
@@ -234,14 +251,14 @@ def consumable_requisition_release(request, pk=None):
             )
         if authenticated:
             if not hasattr(usr, 'employee'):
-                return HttpResponseRedirect(redirect_path)            
+                messages.info(request, 'The selected user cannot authorize/release a requisition')
+                return HttpResponseRedirect(f"/services/consumable-requisition-auth-view/{pk}")               
             req.released_by = usr.employee
             req.save()
-            return HttpResponseRedirect(reverse_lazy(
-                    'services:consumable-requisition-list'))
+            return HttpResponseRedirect(redirect_path)
 
-    return HttpResponseRedirect(redirect_path)
-
+    messages.info(request, 'The form submitted was invalid')
+    return HttpResponseRedirect(f"/services/consumable-requisition-auth-view/{pk}")
 
 class EquipmentReturnView(FormView):
     template_name = os.path.join('services', 'requisitions', 'equipment', 

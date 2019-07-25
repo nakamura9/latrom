@@ -66,3 +66,17 @@ class ContactsMixin(object):
                     models.PhoneNumber.objects.create(number=number)
 
         return ret
+
+
+class AutomatedServiceMixin(object):
+    '''
+    Ensures the service is only run once per day. Especially for servers 
+    that restart multiple times a day
+    '''
+    def run(self):
+        config = models.GlobalConfig.objects.first()
+        if config.last_automated_service_run and \
+                (config.last_automated_service_run - \
+                    datetime.datetime.now()).total_seconds() > 86400:
+            self._run()
+        print('service has already run for today')    

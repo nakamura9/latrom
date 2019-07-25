@@ -3,16 +3,17 @@ import datetime
 import planner
 from django.db.models import Q
 from dateutil.relativedelta import relativedelta
+from common_data.utilities import AutomatedServiceMixin
 
 class PayrollException(Exception):
     pass
 
-class AutomatedPayrollService(object):
+class AutomatedPayrollService(AutomatedServiceMixin):
     def __init__(self):
         self.settings = models.EmployeesSettings.objects.first()
         self.TODAY  = datetime.date.today()
 
-    def run(self):
+    def _run(self):
         print("running payroll service")
         schedule = models.PayrollSchedule.objects.first()
 

@@ -2,13 +2,14 @@ import datetime
 from accounting import models 
 from django.db.models import Q
 from calendar import monthrange
+from common_data.utilities import AutomatedServiceMixin
 
 
-class AccountingTaskService(object):
+class AccountingTaskService(AutomatedServiceMixin):
     def __init__(self):
         self.today  = datetime.date.today()
 
-    def run(self):
+    def _run(self):
         print('running accounting services')
         self.run_recurring_expenses()
         self.run_interest_on_accounts()
@@ -47,8 +48,8 @@ class AccountingTaskService(object):
     def depreciate_assets(self):
         print('depreciating assets')
         end_of_month = monthrange(self.today.year, self.today.month)[1]
-        if self.today.day ==  end_of_month:
-            #fix
+        if self.today.day == end_of_month:
+            #fix # how to make sure each month is depreciated
             for asset in models.Asset.objects.filter(
                     Q(category=1) | 
                     Q(category=2) | 

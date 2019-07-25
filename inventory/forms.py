@@ -27,7 +27,7 @@ VALUATION_OPTIONS = [
     ]
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "is_configured",
+        exclude = "is_configured", 'service_hash'
         model = models.InventorySettings
        
         widgets = {

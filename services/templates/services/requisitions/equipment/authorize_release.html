@@ -28,41 +28,33 @@
                     </ul>
                     <div class="tab-content panel-body">
                         <div id="authorize" class="tab-pane active">
-                            {% if request.user.is_superuser and object.authorized_by is None %}
+                            {% if object.authorized_by is None %}
                             <form action="{% url 'services:equipment-requisition-authorize' pk=object.pk %}"
                                 method="POST">
                                 {% csrf_token %}
                                 {{authorize_form.as_p}}
-                                <button class="btn">Submit</button>
+                                <button type='submit' class="btn">Submit</button>
                             </form>
                             {% elif object.authorized_by is not None %}
                             <h5>
                                 The Requisition has been authorized by {{object.authorized_by}}
                             </h5>
-                            {% else %}
-                            <h5>
-                                To authorize this requisition, please login with the proper credentials. <a
-                                    href="/login">Login</a>
-                            </h5>
+                            
                             {% endif %}
                         </div>
                         <div class="tab-pane" id="release">
-                            {% if request.user.is_superuser and object.released_by is None %}
+                            {% if object.released_by is None %}
                             <form action="{% url 'services:equipment-requisition-release' pk=object.pk %}"
                                 method="POST">
                                 {% csrf_token %}
-                                {{authorize_form.as_p}}
-                                <button class="btn btn-primary">Submit</button>
+                                {{release_form.as_p}}
+                                <button type='submit' class="btn btn-primary">Submit</button>
                             </form>
                             {% elif object.released_by is not None %}
                             <h5>
                                 The Requisition has been released by {{object.released_by}}
                             </h5>
-                            {% else %}
-                            <h5>
-                                To release this inventory, please login with the proper credentials. <a
-                                    href="/login">Login</a>
-                            </h5>
+                            
                             {% endif %}
                         </div>
                     </div>
