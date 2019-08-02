@@ -33,7 +33,6 @@ class TransferOrderCreateView(CreateView):
     '''
     template_name = os.path.join('inventory', 'transfer', 'create.html')
     form_class = forms.TransferOrderForm
-    success_url = reverse_lazy('inventory:home')
 
     def get_initial(self):
         return {
@@ -62,23 +61,7 @@ class TransferOrderCreateView(CreateView):
                 messages.info(request, 'The selected source warehouse has insufficient quantity of item %s to make the transfer' % item)
         return resp
 
-class IncomingTransferOrderListView(ContextMixin, PaginationMixin, FilterView):
-    filterset_class = filters.IncomingTransferOrderFilter
-    template_name = os.path.join('inventory', 'transfer', 'list.html')
-    paginate_by = 20
-    extra_context = {
-        'title': 'List of Incoming Transfer Orders',
-        
-    }
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['warehouse'] = int(self.kwargs['pk'])
-        
-        return context
 
-    def get_queryset(self):
-        warehouse = models.WareHouse.objects.get(pk=self.kwargs['pk'])
-        return models.TransferOrder.objects.filter(Q(receiving_warehouse=warehouse)).order_by('date').reverse()
 
 class OutgoingTransferOrderListView(ContextMixin, PaginationMixin, FilterView):
     filterset_class = filters.OutgoingTransferOrderFilter
@@ -104,48 +87,6 @@ class OutgoingTransferOrderListView(ContextMixin, PaginationMixin, FilterView):
 class TransferOrderDetailView(DetailView):
     model = models.TransferOrder
     template_name = os.path.join('inventory', 'transfer', 'detail.html')
-
-
-class TransferOrderReceiveView(ContextMixin, CreateView):
-    template_name = os.path.join('inventory', 'transfer', 'receive.html')
-    form_class = forms.IncomingTransferStockReceiptForm
-    model = models.StockReceipt
-    extra_context = {
-        'title': 'Receive Transfer of Inventory'
-    }
-
-    def get_initial(self):
-        return {
-            'transfer': self.kwargs['pk'],
-            'warehouse': self.kwargs['warehouse']
-        }
-
-
-    def post(self, request, *args, **kwargs):
-        resp = super().post(request, *args, **kwargs)
-        if not self.object:
-            return resp
-
-        for item in json.loads(urllib.parse.unquote(
-                request.POST['received-items'])):
-            line = models.TransferOrderLine.objects.get(
-                pk=item['item'].split('-')[0])
-            location = None
-            if item["receiving_location"] != "":
-                location = item["receiving_location"].split("-")[0]
-            quantity = float(item['quantity_to_move'])
-            models.StockReceiptLine.objects.create(
-                    transfer_line = line,
-                    quantity=quantity,
-                    location = location,
-                    receipt=self.object
-                )
-            #dispatch is concerned with decrementing inventory
-            line.transfer_order.receiving_warehouse.add_item(
-                line.item, quantity, location=location
-            )
-
-        return resp
 
 
 class TransferOrderAPIView(RetrieveAPIView):

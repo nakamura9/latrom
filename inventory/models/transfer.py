@@ -1,5 +1,6 @@
 from django.db import models 
 import inventory
+from django.shortcuts import reverse
 class TransferOrder(models.Model):
     date = models.DateField()
     expected_completion_date = models.DateField()
@@ -23,7 +24,25 @@ class TransferOrder(models.Model):
                 completed = False
 
         return completed 
+
+    def get_absolute_url(self):
+        return reverse('inventory:transfer-order-detail', kwargs={
+            'pk': self.pk
+        })
+
+    @property
+    def completed_date(self):
+        if self.completed:
+            receipts = \
+                inventory.models.stock_receipt.StockReceipt.objects.filter(
+                    transfer=self)
+
+            if receipts.count() > 0:
+                return receipts.latest('pk').receive_date
         
+        return None
+
+
 class TransferOrderLine(models.Model):
     item = models.ForeignKey('inventory.inventoryitem', 
         on_delete=models.SET_NULL, 

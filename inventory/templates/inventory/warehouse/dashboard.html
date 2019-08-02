@@ -33,7 +33,7 @@
                                         <a href="{% url 'inventory:incoming-transfer-order-list' pk=object.pk %}">Incoming Transfers</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="">Returns From Customers</a>
+                                        <a href="{% url 'inventory:incoming-credit-notes-list' pk=object.pk %}">Returns From Customers</a>
                                     </li>
                                 </ul>
                             </div>

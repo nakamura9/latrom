@@ -36,6 +36,7 @@ class SearchableWidget extends Component {
     }
 
     getOptions = () =>{
+        console.log(this.state.url)
         axios({
             method: "GET",
             url: this.state.url
@@ -70,12 +71,12 @@ class SearchableWidget extends Component {
                 'method': 'GET',
                 'url': this.props.asyncDataURL
             }).then(res =>{
-                this.setState({url: this.props.dataURLResProcessor(res)}, this.getOptions)
+                this.setState({url: this.props.dataURLResProcessor(res)}, 
+                    this.getOptions)
             })
             
         }else{
-            this.setState({url: this.props.dataURL});
-            this.getOptions()
+            this.setState({url: this.props.dataURL}, this.getOptions);
         }
         
     }

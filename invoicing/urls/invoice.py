@@ -6,6 +6,9 @@ from invoicing import views
 invoice_router = routers.DefaultRouter()
 invoice_router.register('api/invoice', views.InvoiceAPIViewSet)
 
+credit_note_router = routers.DefaultRouter()
+credit_note_router.register('api/credit-note', views.CreditNoteAPIViewSet)
+
 credit_note_urls = [
     re_path(r'^config-wizard', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^credit-note-create/(?P<pk>[\w]+)/?$', 
@@ -81,4 +84,5 @@ urls = [
     re_path(r'^invoice/shipping-costs/list/(?P<pk>[\d]+)/?$', 
         views.ShippingExpenseListView.as_view(), 
         name='invoice-shipping-costs-list'),
-] + invoice_router.urls + credit_note_urls + quotation_urls
+] + invoice_router.urls + credit_note_urls + quotation_urls + \
+    credit_note_router.urls

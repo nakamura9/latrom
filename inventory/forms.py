@@ -15,6 +15,7 @@ from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 from common_data.models import Individual, Organization
+from invoicing.models import CreditNote
 
 from . import models
 
@@ -523,7 +524,7 @@ class OrderStockReceiptForm(forms.ModelForm, BootstrapMixin):
         widget=forms.HiddenInput)
     warehouse = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        exclude = 'fully_received',
+        exclude = 'fully_received', 'credit_note', 'transfer'
         model= models.StockReceipt
         widgets = {
             'note': forms.Textarea(attrs={
@@ -580,7 +581,37 @@ class IncomingTransferStockReceiptForm(forms.ModelForm, BootstrapMixin):
 
         self.helper.add_input(Submit('submit', 'Submit'))
 
+class SalesReturnStockReceiptForm(forms.ModelForm, BootstrapMixin):
+    credit_note = forms.ModelChoiceField(CreditNote.objects.all(),     
+        widget=forms.HiddenInput)
+    warehouse = forms.CharField(widget=forms.HiddenInput)
+    
+    class Meta:
+        exclude = 'fully_received', 'order', 'transfer'
+        model= models.StockReceipt
+        widgets = {
+            'note': forms.Textarea(attrs={
+                'rows': 5
+            })
+        }
 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+            Column('received_by', 
+                    'receive_date',
+                    'credit_note',
+                    'warehouse',
+                    css_class="col-sm-6"),
+            Column('note', css_class="col-sm-6")
+            )
+        )
+
+        self.helper.add_input(Submit('submit', 'Submit'))
 class UnitForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "active", 'eval_string'

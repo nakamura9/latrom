@@ -81,10 +81,12 @@ class InventoryCheckListView(ContextMixin ,PaginationMixin, FilterView):
     template_name = os.path.join("inventory", "inventory_check", 'list.html')
     extra_context = {
         "title": "List of Inventory Checks",
-        "new_link": reverse_lazy('inventory:create-inventory-check')
-        
         }
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['new_link'] = reverse_lazy('inventory:create-inventory-check')
+        return context
     def get_queryset(self):
         w = models.WareHouse.objects.get(pk=self.kwargs['pk'])
         return models.InventoryCheck.objects.filter(

@@ -118,17 +118,16 @@ class inputLine extends Component{
                 break;
             case 'search': 
                 return <SearchableWidget 
-                    
-                    list={this.props.lines}
-                    dataURL={field.url}
-                    idField={field.idField}
-                    model={field.model}
-                    app={field.app}
-                    canCreateNewItem={field.canCreateNewItem}
-                    displayField={field.displayField}
-                    newLink={field.newLink}
-                    onSelect={(val) => this.searchHandler(field.name, val)}
-                    onClear={() => this.searchHandler(field.name, "")}/>
+                            list={this.props.lines}
+                            dataURL={field.url}
+                            idField={field.idField}
+                            model={field.model}
+                            app={field.app}
+                            canCreateNewItem={field.canCreateNewItem}
+                            displayField={field.displayField}
+                            newLink={field.newLink}
+                            onSelect={(val) => this.searchHandler(field.name, val)}
+                            onClear={() => this.searchHandler(field.name, "")}/>
                 break;
 
             case 'widget':

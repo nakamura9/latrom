@@ -68,3 +68,22 @@ class InvoiceSerializer(serializers.ModelSerializer):
         model = Invoice
         fields = ['invoiceline_set', 'customer', 'id']
 
+
+class CreditNoteLineSerializer(serializers.ModelSerializer):
+    line = InvoiceLineSerializer(many=False)
+    name = serializers.SerializerMethodField()
+    class Meta:
+        model = CreditNoteLine
+        fields = "__all__"
+
+    def get_name(self, obj):
+        item = obj.line.product.product
+        return f"{item.id} - {item.name}"
+
+
+
+class CreditNoteSerializer(serializers.ModelSerializer):
+    creditnoteline_set = CreditNoteLineSerializer(many=True)
+    class Meta:
+        model = CreditNote
+        fields = "__all__"

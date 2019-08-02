@@ -6,7 +6,9 @@ import SearchableWidget from './src/components/searchable_widget';
 
 const order = document.getElementById('order-root');
 const inventoryCheck =  document.getElementById('inventory-checker');
-const stockReceipt =  document.getElementById('item-table');
+const orderReceipt =  document.getElementById('order-receipt-table');
+const returnsReceipt =  document.getElementById('returns-receipt-table');
+const transferReceipt =  document.getElementById('transfer-receipt-table');
 const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
 const debitNoteTable = document.getElementById("debit-note-table");
@@ -110,45 +112,6 @@ if(inventoryCheck){
         />, order);
         
         
-}else if(stockReceipt){
-    ReactDOM.render(<MutableTable
-        formHiddenFieldName="received-items" 
-        dataURL={"/inventory/api/order/" + tail}
-        headings={["Item", "Quantity", "Quantity Received", "Quantity to Receive", "Receiving Location"]}
-        resProcessor={(res) =>{
-            const itemset = res.data.orderitem_set.filter((item)=>(
-                item.quantity > item.received
-            ))
-            return itemset.map((item)=>{
-               
-                return {'item': item.id + '-' + item.item.name.replace('-', '_'),
-                'quantity': item.quantity, 
-                'moved_quantity': item.received,
-                'quantity_to_move': 0,
-                'receiving_location': ""}
-            })
-        }}
-        fields={[
-            {'name': 'item', 'mutable': false},
-            {'name': 'quantity', 'mutable': false},
-            {'name': 'moved_quantity', 'mutable': false},
-            {'name': 'quantity_to_move', 'mutable': true},
-            {
-                'name': 'receiving_location', 
-                'mutable': true,
-                'widget': true,
-                'widgetCreator': (component) =>{
-                    return(<SearchableWidget 
-                        bordered
-                        dataURL="/inventory/api/storage-media/1"
-                        idField="id"
-                        displayField="name"
-                        onSelect={(val) => component.setState({})}
-                        onClear={() =>{}}/>)
-                }
-            } 
-            
-        ]}/>, stockReceipt);
 }else if(transferOrder){
     ReactDOM.render(<GenericTable
         fieldDescriptions={['Item', 'Quantity']}
@@ -222,15 +185,17 @@ if(inventoryCheck){
             {'name': 'returned_quantity', 'mutable': true},
         ]}
         formHiddenFieldName="returned-items"/>, debitNoteTable)
-}else if(receiveTable){
-    
-
+}else if(transferReceipt){
     ReactDOM.render(<MutableTable
             formHiddenFieldName="received-items" 
             dataURL={"/inventory/api/transfer-order/" + tail}
             headings={["Item", "Ordered Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
             resProcessor={(res) =>{
-                return res.data.transferorderline_set.map((item)=>({
+                console.log(res.data)
+                let lines = res.data.transferorderline_set.filter((item) =>{
+                    return item.quantity > item.moved_quantity
+                })
+                return lines.map((item)=>({
                     'item': item.id + ' - ' + item.item.name,
                     'quantity': item.quantity, 
                     'moved_quantity': item.moved_quantity,
@@ -262,5 +227,84 @@ if(inventoryCheck){
                     }
                 } 
                 
-            ]}/>, receiveTable)
+            ]}/>, transferReceipt)
+}else if(orderReceipt){
+    ReactDOM.render(<MutableTable
+            formHiddenFieldName="received-items" 
+            dataURL={"/inventory/api/order/" + tail}
+            headings={["Item", "Ordered Quantity", "Quantity Received",  "Receiving Location"]}
+            resProcessor={(res) =>{
+                return res.data.orderitem_set.map((item)=>({
+                    'item': item.id + ' - ' + item.item.name,
+                    'quantity': item.quantity, 
+                    'receiving_location': ""
+                }))
+            }}
+            fields={[
+                {'name': 'item', 'mutable': false},
+                {'name': 'quantity', 'mutable': false},
+                {'name': 'quantity_received', 'mutable': true},
+                {
+                    'name': 'receiving_location', 
+                    'mutable': true,
+                    'widget': true,
+                    'widgetCreator': (component) =>{
+                        return(<SearchableWidget 
+                            bordered
+                            asyncDataURL={'/inventory/api/order/' + 
+                                tail}
+                            dataURLResProcessor={(res) =>{
+                                return '/inventory/api/storage-media/' + res.data.ship_to
+                            }}
+                            idField="id"
+                            displayField="name"
+                            onSelect={(val) => component.setState({})}
+                            onClear={() =>{}}/>)
+                    }
+                } 
+                
+            ]}/>, orderReceipt)
+}else if(returnsReceipt){
+    ReactDOM.render(<MutableTable
+            formHiddenFieldName="received-items" 
+            dataURL={"/invoicing/api/credit-note/" + tail}
+            headings={["Item", "Ordered Quantity", "Quantity To Return", "Quantity", "Receiving Location"]}
+            resProcessor={(res) =>{
+                let lines = res.data.creditnoteline_set.filter(item =>{
+                    return item.line.product !== null// removes services and expenses
+                })
+                return lines.map((item)=>({
+                    'item': item.name,
+                    'ordered_quantity': item.line.product.quantity, 
+                    'return_quantity': item.quantity,
+                    'quantity': 0,
+                    'receiving_location': "",
+                    'id': item.id
+                }))
+            }}
+            fields={[
+                {'name': 'item', 'mutable': false},
+                {'name': 'ordered_quantity', 'mutable': false},
+                {'name': 'return_quantity', 'mutable': false},
+                {'name': 'quantity', 'mutable': true},
+                {
+                    'name': 'receiving_location', 
+                    'mutable': true,
+                    'widget': true,
+                    'widgetCreator': (component) =>{
+                        return(<SearchableWidget 
+                            bordered
+                            asyncDataURL={'/inventory/api/transfer-order/' + 
+                                tail}
+                            dataURLResProcessor={(res) =>{
+                                return '/inventory/api/storage-media/' + res.data.receiving_warehouse
+                            }}
+                            idField="id"
+                            displayField="name"
+                            onSelect={(val) => component.setState({})}
+                            onClear={() =>{}}/>)
+                    }
+                } 
+                
+            ]}/>, returnsReceipt)
 }

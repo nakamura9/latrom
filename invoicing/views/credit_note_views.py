@@ -120,3 +120,7 @@ class CreditNotePDFView(ConfigMixin, MultiPageDocument, PDFDetailView):
     def get_multipage_queryset(self):
         return CreditNoteLine.objects.filter(note=CreditNote.objects.get(
             pk=self.kwargs['pk']))
+
+class CreditNoteAPIViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.CreditNoteSerializer
+    queryset = CreditNote.objects.all()

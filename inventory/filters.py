@@ -3,6 +3,7 @@ import django_filters
 from django.db import models
 
 from .models import *
+from invoicing.models import CreditNote
 
 
 class OrderFilter(django_filters.FilterSet):
@@ -86,3 +87,11 @@ class PurchaseReturnsFilter(django_filters.FilterSet):
             'date': ['exact']
             }
         
+class IncomingCreditNoteFilters(django_filters.FilterSet):
+    class Meta:
+        model = CreditNote
+        fields = {
+            'date': ['exact'],
+            'invoice__customer': ['exact'],
+            'invoice__salesperson': ['exact']
+        }

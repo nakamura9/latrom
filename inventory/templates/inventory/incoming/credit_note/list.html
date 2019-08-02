@@ -1,0 +1,40 @@
+{% extends "common_data/list_template.html" %} {% block list_headings %}
+<tr>
+    <td class="info">Credit Note #</td>
+    <td class="info">Date</td>
+    <td class="info">Customer</td>
+    <td class="info"># of Items</td>
+    <td class="info">Actions</td>
+</tr>
+{% endblock %} {% block list_content %} {% for note in object_list %}
+<tr>
+    <td>{{note.pk}}</td>
+    <td>{{note.date}}</td>
+    <td>{{note.invoice.customer}}</td>
+    <td>{{note.creditnoteline_set.all.count}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+               
+                <a href="{% url 'invoicing:credit-note-detail' pk=note.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> View 
+                </a>
+
+                <a class="dropdown-item" href="{% url 'inventory:incoming-receive-returns' pk=note.pk %}">
+                    <i class="fas fa-share-square"></i> Receive Inventory</a>
+                
+                {% if note.stockreceipt_set.all.count > 0 %}
+                <a href="{% url 'inventory:incoming-credit-note-returned' pk=note.pk %}" class="dropdown-item">
+                        <i class="fas fa-eye"></i> View Goods Receipts</a>
+                {% endif %}
+                
+            </div>
+        </div>
+
+    </td>
+</tr>
+{% endfor %} {% endblock %}

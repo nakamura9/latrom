@@ -1,0 +1,54 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">List of Inventory Receipts</h1>
+    <p class="lead">Receipts of inventory from a credit note</p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'inventory:incoming-receive-returns' pk=note.pk  %}" role="button">Create New</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Details</h4>
+                    <p class="card-text">Credit Note #: {{credit_note.pk | stringformat:"06d"}}</p>
+                    <p class="card-text">Percent Received: {{note.percent_received}} %</p>
+                    <p class="card-text">Last Receipt Date: {{note.latest_receipt_date}}</p>
+                    <p class="card-text"># of Receipts: {{note.stockreceipt_set.all.count}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <table class="table table-sm">
+                <thead>
+                    <tr class="bg-primary">
+                        <th>Date</th>
+                        <th>ID</th>
+                        <th>Note</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in note.stockreceipt_set.all %}
+                    <tr>
+                        <td>{{r.receive_date}}</td>
+                        <td>{{r.pk}}</td>
+                        <td>{{r.note |truncatechars:50}}</td>
+                        <td><a href="{% url 'inventory:goods-received' pk=r.pk %}" class="btn">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
