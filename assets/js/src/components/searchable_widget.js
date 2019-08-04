@@ -6,7 +6,6 @@ import Radium from 'radium';
 
 // TODO make sure that on clear works, replace caret with times when deleting 
 //data
-
 //For prepopulated searchable widgets, we provide a prepoulating url, including 
 //any params it requires.
 //we then provided a prepopulationHandler that takes the async response and 
@@ -46,7 +45,8 @@ class SearchableWidget extends Component {
             }, () =>{
                 if(this.props.prePopulatedURL){
                     axios.get(this.props.prePopulatedURL).then(res => {
-                        const selected = this.props.prePopulationHandler(res.data);
+                        const selected = this.props.prePopulationHandler(
+                            res.data);
                         this.props.onSelect(selected);
                         this.setState({
                             selectedValue:  selected,
@@ -69,7 +69,6 @@ class SearchableWidget extends Component {
             url: '/base/models/get-latest/' + this.props.app+ '/' + this.props.model
         }).then((resp) =>{
             if(!(resp.data.data === -1)){
-                
                 const pk = resp.data.data[0];
                 const itemString = resp.data.data[1];
                 let label;
@@ -138,7 +137,6 @@ class SearchableWidget extends Component {
         let filtered = this.state.choices.filter((val) =>(
             val.toLowerCase().indexOf(evt.target.value.toLowerCase()) !== -1
         ))
-
         //checking if the selected value is in the list of options
         let index = this.state.choices.indexOf(evt.target.value);
         
@@ -157,7 +155,6 @@ class SearchableWidget extends Component {
         }
     }
     render(){
-        
         return(
             <div id={this.props.widgetID} style={this.props.widgetID ? {} :{
                 width:"100%",
@@ -192,7 +189,6 @@ class TextBoxWidget extends Component{
         input.addEventListener('focus', () =>{
             this.props.showOptions();
         })
-       
     }
 
     render(){
@@ -242,7 +238,6 @@ SearchableWidget.propTypes = {
     onSelect: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     idField: PropTypes.string.isRequired
-
 }
 
 export default Radium(SearchableWidget);

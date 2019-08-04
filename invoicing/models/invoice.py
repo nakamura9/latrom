@@ -396,7 +396,7 @@ class Invoice(SoftDeletionModel):
                         status="request",
                         created=datetime.date.today(),
                         created_by=self.salesperson.employee,
-                        description = f'{line.service.name}: {line.service.description}'
+                        description = f'{line.service.service.name}: {line.service.service.description}'
                     )
 
 class InvoiceLine(models.Model):

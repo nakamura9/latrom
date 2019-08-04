@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 TODAY = datetime.date.today() 
 
 class AutomatedServiceTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['accounts.json', 'employees.json', 'common.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -25,7 +25,7 @@ class AutomatedServiceTests(TestCase):
     def test_run_payroll_service(self):
         obj = AutomatedPayrollService()
         obj.run()
-        self.assertEqual(Payslip.objects.count(), 2)
+        self.assertEqual(Payslip.objects.count(), 1)
         Payslip.objects.latest('pk').delete()
 
 
