@@ -28,7 +28,7 @@ from background_task import background
 #constants
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
-class DashBoard( ContextMixin, TemplateView):
+class Dashboard(ContextMixin, TemplateView):
     template_name = os.path.join('employees', 'dashboard.html')
     extra_context = {
         'employees': models.Employee.objects.all()
@@ -49,6 +49,10 @@ class DashBoard( ContextMixin, TemplateView):
         else:
             return HttpResponseRedirect(reverse_lazy('employees:config-wizard'))
 
+
+class AsyncDashboard(ContextMixin, TemplateView):
+    template_name = os.path.join('employees', 'async_dashboard.html')
+    
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         TODAY = datetime.date.today()
@@ -70,7 +74,6 @@ class DashBoard( ContextMixin, TemplateView):
 
         context['tax'] = Account.objects.get(pk=5010).balance
         return context
-
 
 class PayrollConfig( ContextMixin, UpdateView):
     model = models.EmployeesSettings

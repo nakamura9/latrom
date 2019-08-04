@@ -16,6 +16,7 @@ unit_router.register('api/unit', views.UnitAPIView)
 
 urlpatterns = [
     re_path(r'^$', views.InventoryDashboard.as_view(), name="home"),
+    re_path(r'^async-dashboard/$', views.AsyncDashboard.as_view(), name="async-dashboard"),
     re_path(r'^unit-create/?$', views.UnitCreateView.as_view(), name="unit-create"),
     re_path(r'^unit-list/?$', views.UnitListView.as_view(), name="unit-list"),
     re_path(r'^unit-update/(?P<pk>\d+)/?$', views.UnitUpdateView.as_view(), name="unit-update"),

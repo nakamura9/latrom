@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block window %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item"><a data-toggle="pill" href="#Main" class="nav-link active">Data
+                        Grid</a></li>
+                <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-10">
+            <div class="tab-content panel-body">
+                <div id="Main" class="tab-pane active">
+                    <div id="dashboard" class="tab-pane">
+                        <div class="dash-container">
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Offered Services: {{services}}</h3>
+                            </div>
+                            <div class="dashbox white-on-blue">
+                                <h3># Open Work Orders: {{wo_open}}</h3>
+                            </div>
+                            <div class="bg-primary text-white dashbox">
+                                <h3># Work Orders Completed: {{wo_closed}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Graph" class="tab-pane fade in active">
+                    <hr class="my-4">
+                    <h3>Service Person Utilization over the last 30 days</h3>
+                    {% autoescape off %}
+                    {{graph}}
+                    {% endautoescape %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock window %}

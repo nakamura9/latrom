@@ -9,6 +9,7 @@ import services
 
 urlpatterns = [
     re_path(r'^$', views.Dashboard.as_view(), name='dashboard'),
+    re_path(r'^async-dashboard/?$', views.AsyncDashboard.as_view(), name='async-dashboard'),
     re_path(r'^create-category/?$', views.ServiceCategoryCreateView.as_view(), name='create-category'),
     re_path(r'^update-category/(?P<pk>[\d]+)/?$', views.ServiceCategoryUpdateView.as_view(), name='update-category'),
     re_path(r'^category-detail/(?P<pk>[\d]+)/?$', views.ServiceCategoryDetailView.as_view(), name='category-detail'),

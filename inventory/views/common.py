@@ -91,6 +91,9 @@ class InventoryDashboard(InventoryConfigMixin, TemplateView):
             return HttpResponseRedirect(reverse_lazy('inventory:config-wizard'))
 
             
+class AsyncDashboard(ContextMixin, TemplateView):
+    template_name = os.path.join('inventory', 'async_dashboard.html')
+
     def get_context_data(self, *args, **kwargs):
         context =  super().get_context_data(*args, **kwargs)
 

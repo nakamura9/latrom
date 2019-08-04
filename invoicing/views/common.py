@@ -42,6 +42,9 @@ class Home(SalesConfigMixin, TemplateView):
         else:
             return HttpResponseRedirect(reverse_lazy('invoicing:config-wizard'))
 
+class AsyncDashboard(TemplateView):
+    template_name = os.path.join('invoicing', 'async_dashboard.html')
+
     def get_context_data(self, **kwargs):
         TODAY =datetime.date.today()
 

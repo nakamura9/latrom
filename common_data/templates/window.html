@@ -3,12 +3,26 @@
     {% block head_extended %}{% endblock %}
 {% endblock %}
 {% block window %}
-
 {% include "nav.html" %}
 
 <article style="min-height:600px;">    
     {% block content %}{% endblock %}
 </article>
 {% include "footer.html" %}
+<script>
+//shrink jumbotrons on scroll
+
+/*$(document).ready(function(){
+    $(".jumbotron").addClass("sticky-top");
+
+})
+$(document).on("scroll", function(){
+	if($(document).scrollTop() > 100){
+		  $(".jumbotron").addClass("shrink");
+		}else{
+			$(".jumbotron").removeClass("shrink");
+		}
+	});*/
+</script>
 
 {% endblock %}

@@ -46,6 +46,11 @@ class Dashboard( TemplateView):
         else:
             return HttpResponseRedirect(reverse_lazy('accounting:config-wizard'))
 
+    
+
+class AsyncDashboard(TemplateView):
+    template_name = os.path.join('accounting', 'async_dashboard.html')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
