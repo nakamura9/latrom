@@ -69,14 +69,56 @@ class ContactsMixin(object):
 
 
 class AutomatedServiceMixin(object):
+    service_name = None
+
+    DEFAULT_CONFIG = {
+                    'inventory': False,
+                    'employees': False,
+                    'accounting': False,
+                    'common': False,
+                    'messaging': False
+                }
     '''
     Ensures the service is only run once per day. Especially for servers 
-    that restart multiple times a day
+    that restart multiple times a day.
+    Uses two features,
+        1. On global config, stores the last service run date.
+        2. In a json file, stores the the services run on that date.
+
+    If there is no record of a service being run, create a record and execute the service.
+    If a record exists but it is more than a day old, reset the config file and 
+    execute the service
+    if the record exists is less than a day old check the config file against the specific service, if run skip else run again
     '''
+    def __init__(self):
+        if not os.path.exists('service_config.json'):
+            with open('service_config.json', 'w') as conf:
+                json.dump(self.DEFAULT_CONFIG, conf)
+        
+        with open('service_config.json', 'r') as conf:
+            self.config = json.load(conf)
+        
+    def update_config(self):
+        config = models.GlobalConfig.objects.first()
+        config.last_automated_service_run = datetime.datetime.now()
+        config.save()
+        self.config[self.service_name] = True
+        with open('service_config.josn', 'w') as conf:
+            json.dump(self.config, conf)
+
+    
     def run(self):
         config = models.GlobalConfig.objects.first()
+        if not config.last_automated_service_run:
+            self._run()
+            self.update_config()
+
+
         if config.last_automated_service_run and \
                 (config.last_automated_service_run - \
-                    datetime.datetime.now()).total_seconds() > 86400:
+                    datetime.datetime.now()).total_seconds() > 86400 and \
+                        not self.config[self.service_name]:
             self._run()
-        print('service has already run for today')    
+            self.update_config()
+
+        

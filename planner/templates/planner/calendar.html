@@ -12,8 +12,17 @@ a:hover {
     text-decoration: none;
 }
 </style>
-            <div id="calendar-root">
-</div>
+<article>
+<div id="calendar-root"></div>
+
+</article>
+
+<script>
+$(document).ready(function(){
+    $(navbar).removeClass('fixed-top');
+})
+
+</script>
 
 {% render_bundle 'calendar' %}
 {% endblock window %}

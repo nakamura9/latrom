@@ -6,6 +6,8 @@ from common_data.utilities import AutomatedServiceMixin
 
 
 class AccountingTaskService(AutomatedServiceMixin):
+    service_name = 'accounting'
+
     def __init__(self):
         self.today  = datetime.date.today()
 

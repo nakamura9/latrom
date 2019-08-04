@@ -118,23 +118,38 @@ background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100
     text-decoration: none;
     display: inline-block;
 }
-
-
+/* Replaces the bootstrap default */
+.animated-jumbotron {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0.3rem;
+    background-color: #e9ecef;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    transition: padding 0.5s;
+}
 
 .shrink {
     padding: 0 2rem;
+    margin-bottom: 0.7rem;
 }
 
 .shrink p {
     display: none;
+    transition: display 0.4s;
 }
 
 .shrink a {
     display: none;
+    transition: display 0.4s;
+
 }
 
 .shrink hr {
     display: none;
+    transition: display 0.4s;
+
 }
 
 .shrink i {

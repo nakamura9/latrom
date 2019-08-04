@@ -50,6 +50,13 @@ class Dashboard(ContextMixin, TemplateView):
             return HttpResponseRedirect(reverse_lazy('employees:config-wizard'))
 
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        TODAY = datetime.date.today()
+        context['calendar_url'] = '/employees/leave-calendar/month/{}'.format(
+            datetime.date.today().strftime('%Y/%m'))
+        return context
+
 class AsyncDashboard(ContextMixin, TemplateView):
     template_name = os.path.join('employees', 'async_dashboard.html')
     

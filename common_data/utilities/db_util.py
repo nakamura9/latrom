@@ -7,6 +7,7 @@ import datetime
 
 
 class DBBackupService(AutomatedServiceMixin):
+    service_name = 'common'
     
     @property 
     def should_backup_db(self):

@@ -11,18 +11,24 @@
 {% include "footer.html" %}
 <script>
 //shrink jumbotrons on scroll
+/*
+var scrolling = false;
+$(document).scroll(function(){
+    scrolling = true;
+});
 
-/*$(document).ready(function(){
-    $(".jumbotron").addClass("sticky-top");
-
-})
-$(document).on("scroll", function(){
-	if($(document).scrollTop() > 100){
+setInterval(function(){
+    if(scrolling){
+        scrolling = false;
+        if($(document).scrollTop() > 100){
 		  $(".jumbotron").addClass("shrink");
-		}else{
-			$(".jumbotron").removeClass("shrink");
 		}
-	});*/
+        if($(document).scrollTop() === 0){
+		  $(".jumbotron").removeClass("shrink");
+		}
+    }
+}, 250)
+*/
 </script>
 
 {% endblock %}

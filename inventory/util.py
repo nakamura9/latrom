@@ -6,6 +6,8 @@ from planner.models import Event, EventParticipant
 from common_data.utilities import AutomatedServiceMixin
 
 class InventoryService(AutomatedServiceMixin):
+    service_name = 'inventory'
+    
     def __init__(self):
         self.today = datetime.date.today()
         self.settings = inventory.models.InventorySettings.objects.first()

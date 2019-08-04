@@ -9,6 +9,8 @@ class PayrollException(Exception):
     pass
 
 class AutomatedPayrollService(AutomatedServiceMixin):
+    service_name = 'employees'
+
     def __init__(self):
         self.settings = models.EmployeesSettings.objects.first()
         self.TODAY  = datetime.date.today()
