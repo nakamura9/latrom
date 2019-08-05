@@ -72,3 +72,9 @@ class InventoryItemFilter(django_filters.FilterSet):
             }
 
 
+class InventorySearchField(django_filters.FilterSet):
+    
+    class Meta:
+        model = InventoryItem
+        fields = {'name':['icontains']}
+

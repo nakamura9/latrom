@@ -23,7 +23,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            {% block other%}{% endblock %}
+            {% block other %}{% endblock %}
         </div>
     </div>
     <div class="row">
@@ -92,6 +92,11 @@
                     {% block list_headings %}{% endblock %}
                 </thead>
                 <tbody>
+                        {% if object_list.count == 0 %}
+                            <tr>
+                                <td>This List has no Elements.</td>
+                            </tr>
+                        {% endif %}
                         {% block list_content %}{% endblock %}
                 </tbody>
             </table>

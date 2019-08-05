@@ -61,6 +61,7 @@ class ProductListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
     extra_context = {
         'title': 'Product List',
+        'search': filters.InventorySearchField(),
         "new_link": reverse_lazy("inventory:product-create")
     }
 

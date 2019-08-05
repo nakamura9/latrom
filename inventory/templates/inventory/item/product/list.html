@@ -1,4 +1,24 @@
-{% extends "common_data/list_template.html" %} {% block list_headings %}
+{% extends "common_data/list_template.html" %} 
+{% block other %}
+
+<div style="float:right;">
+<form action="" method="get" class='form-inline'>
+            {{search.form.as_p}}
+
+    <button class="btn btn-primary" type="submit"> <i class="fas fa-search"></i> </button>
+</form>
+
+<script>
+$(document).ready(function(){
+    $('#id_name__icontains').attr({'placeholder': 'Search...'});
+    $("label[for='id_name__icontains']").hide();
+})
+</script>
+</div>
+
+{% endblock other %}
+
+{% block list_headings %}
 <tr>
     <td class="info">Code</td>
     <td class="info">Item Name</td>
