@@ -8,8 +8,8 @@ from common_data.utilities import AutomatedServiceMixin
 class InventoryService(AutomatedServiceMixin):
     service_name = 'inventory'
     
-    def __init__(self):
-        self.today = datetime.date.today()
+    def __init__(self, *args, **kwargs):
+        self.today = datetime.date.today(*args, **kwargs)
         self.settings = inventory.models.InventorySettings.objects.first()
     
     def _run(self):

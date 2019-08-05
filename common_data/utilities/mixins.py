@@ -91,13 +91,16 @@ class AutomatedServiceMixin(object):
     if the record exists is less than a day old check the config file against the specific service, if run skip else run again
     '''
     def __init__(self):
+        print('called')
         if not os.path.exists('service_config.json'):
             with open('service_config.json', 'w') as conf:
                 json.dump(self.DEFAULT_CONFIG, conf)
         
         with open('service_config.json', 'r') as conf:
             self.config = json.load(conf)
-        
+            print('finished')
+
+            
     def update_config(self):
         config = models.GlobalConfig.objects.first()
         config.last_automated_service_run = datetime.datetime.now()

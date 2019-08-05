@@ -25,7 +25,7 @@ class AutomatedServiceTests(TestCase):
     def test_run_payroll_service(self):
         obj = AutomatedPayrollService()
         obj.run()
-        self.assertEqual(Payslip.objects.count(), 1)
+        self.assertEqual(Payslip.objects.count(), 2)
         Payslip.objects.latest('pk').delete()
 
 

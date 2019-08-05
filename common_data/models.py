@@ -217,6 +217,7 @@ class GlobalConfig(SingletonModel):
             fields = copy.deepcopy(self.__dict__)
             del fields['hardware_id']
             del fields['last_license_check']
+            del fields['last_automated_service_run']
             del fields['_state']
             json.dump(fields, fil)
 

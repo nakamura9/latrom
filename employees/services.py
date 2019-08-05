@@ -11,7 +11,8 @@ class PayrollException(Exception):
 class AutomatedPayrollService(AutomatedServiceMixin):
     service_name = 'employees'
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.settings = models.EmployeesSettings.objects.first()
         self.TODAY  = datetime.date.today()
 
