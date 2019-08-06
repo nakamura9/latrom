@@ -15,7 +15,7 @@ from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 from common_data.models import Individual, Organization
-
+import datetime
 from . import models
 
 #models ommitted UnitOfMeasure OrderItem Category
@@ -169,6 +169,24 @@ class ItemInitialMixin(forms.Form):
             self.cleaned_data['warehouse'] is not None:
             wh = self.cleaned_data['warehouse']
             wh.add_item(self.instance, self.cleaned_data['initial_quantity'])
+            #create an order item for initial stock valuuation 
+            order = models.Order.objects.create(
+                date=datetime.date.today(),#might need to add form field
+                expected_receipt_date=datetime.date.today(),
+                ship_to=wh,
+                status='received',
+                tax=self.cleaned_data.get('tax', Tax.objects.first()),#none
+                notes='Auto generated order for items with initial inventory',
+            )
+            
+            models.OrderItem.objects.create(
+                item=self.instance,
+                order=order,
+                quantity=self.cleaned_data['initial_quantity'],
+                received=self.cleaned_data['initial_quantity'],
+                unit=self.instance.unit,
+                order_price=self.cleaned_data['unit_purchase_price']
+            )
         
         return obj
 

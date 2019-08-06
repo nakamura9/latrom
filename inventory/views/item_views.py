@@ -24,6 +24,7 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition
+from inventory.views.dash_plotters import single_item_composition_plot
 
 from .common import CREATE_TEMPLATE
 
@@ -50,10 +51,15 @@ class ProductUpdateView( ContextMixin, UpdateView):
             'tax': self.object.tax
         }
 
-class ProductDetailView( DetailView):
+class ProductDetailView(ContextMixin, DetailView):
     model = models.InventoryItem
     template_name = os.path.join("inventory", "item", "product", "detail.html")
-
+    
+    def get_context_data(self, *args, **kwargs):
+        context =super().get_context_data(*args, **kwargs)
+        context['graph'] = single_item_composition_plot(
+            self.object).render(is_unicode=True)
+        return context
 
 class ProductListView( ContextMixin, PaginationMixin, FilterView):
     paginate_by = 20
