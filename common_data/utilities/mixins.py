@@ -68,7 +68,7 @@ class ContactsMixin(object):
         return ret
 
 
-class AutomatedServiceMixin(object):
+class AutomatedServiceMixin(object):#not really a mixin
     service_name = None
 
     DEFAULT_CONFIG = {
@@ -91,7 +91,6 @@ class AutomatedServiceMixin(object):
     if the record exists is less than a day old check the config file against the specific service, if run skip else run again
     '''
     def __init__(self):
-        print('called')
         if not os.path.exists('service_config.json'):
             with open('service_config.json', 'w') as conf:
                 json.dump(self.DEFAULT_CONFIG, conf)
@@ -118,9 +117,7 @@ class AutomatedServiceMixin(object):
 
 
         if config.last_automated_service_run and \
-                (config.last_automated_service_run - \
-                    datetime.datetime.now()).total_seconds() > 86400 and \
-                        not self.config[self.service_name]:
+                (datetime.datetime.now() - config.last_automated_service_run).total_seconds() > 86400 and not self.config[self.service_name]:
             self._run()
             self.update_config()
 

@@ -44,6 +44,7 @@ const InventorySelectWidgets = (props) => {
                 inputField = 'equipment'
                 populatedURL = {populatedURL}
                 resProcessor = {(res) =>{
+                    console.log(res.data);
                     return res.data.required_equipment.map((c) => (
                         c.id + '-' + c.name
                         ))}}

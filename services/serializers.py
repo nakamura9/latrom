@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from inventory.serializers import InventoryItemSerializer
 
 from . import models
 
@@ -30,6 +30,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class ProcedureSerializer(serializers.ModelSerializer):
     steps = TaskSerializer(many=True)
+    required_equipment = InventoryItemSerializer(many=True)
+    required_consumables = InventoryItemSerializer(many=True)
 
     class Meta:
         fields = ['required_equipment', 'required_consumables', 'steps']
