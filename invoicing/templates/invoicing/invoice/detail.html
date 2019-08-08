@@ -2,15 +2,80 @@
 
 {% block pre_page %}
 
-{% if object.draft %}
+
 <div class="jumbotron">
 <script>
     function toggleValidateForm(){
         $('#validate-form').toggle();
     }
 </script>
-<h4>Actions:</h4>
-<button class="btn" onclick="toggleValidateForm()">Validate Invoice</button>
+<div class="dropdown ">
+            <button class=" btn btn-primary btn-lg dropdown-toggle " type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                
+                {% if object.status == "quotation" %}
+                {% if object.quotation_is_valid %}
+                    <a class="dropdown-item" href="{% url 'invoicing:make-invoice' pk=object.pk %}"> <i class="fa fa-file-alt" aria-hidden="true"></i> Make Invoice from Quotation</a>
+                    <a class="dropdown-item" href="{% url 'invoicing:make-proforma' pk=object.pk %}"> <i class="fa fa-file" aria-hidden="true"></i> Make Proforma Invoice from Quotation</a>
+                {% else %}
+                    <p class="dropdown-item" style="color:red;"><i class="fas fa-times    "></i> Quotation is no longer valid</p>
+                {% endif %}
+                
+                    <a class="dropdown-item" href="{% url 'invoicing:make-invoice' pk=object.pk %}"> <i class="fa fa-file-alt" aria-hidden="true"></i> Make Invoice from Proforma Invoice</a>
+                {% else %} <!-- Invoice or paid -->
+
+                {% if object.draft %}
+
+                <button class="dropdown-item" onclick="toggleValidateForm()">Validate Invoice</button>
+
+                <a class="dropdown-item" href="{% if object.status == 'quotation' %} {% url 'invoicing:quotation-update' pk=object.pk %} {% else %} {% url 'invoicing:invoice-update' pk=object.pk %} {% endif %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+                {% endif %}
+
+                    <h6 class="dropdown-header">Payments</h6>
+                <a class="dropdown-item" href="{% url 'invoicing:invoice-payment' pk=object.pk %}">
+                    <i class="fas fa-money-bill-alt"></i> Apply Payment
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:invoice-payment-detail' pk=object.pk %}">
+                        <i class="fas fa-list-ol"></i> View Payments
+                    </a>
+                
+                <h6 class="dropdown-header">Credit Notes</h6>
+                
+                <a class="dropdown-item" href="{% url 'invoicing:credit-note-create' pk=object.pk %}">
+                    <i class="fas fa-trash"></i> Create Credit Note
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:invoice-returns' pk=object.pk %}">
+                        <i class="fas fa-list-ol"></i> Manage Credit Notes
+                </a>
+
+                <h6 class="dropdown-header">Shipping and Handling</h6>                
+                <a class="dropdown-item" href="{% url 'invoicing:invoice-shipping-costs' pk=object.pk %}">
+                    <i class="fas fa-truck"></i> Record shipping expenses
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:invoice-shipping-costs-list' pk=object.pk %}">
+                    <i class="fas fa-list-ol"></i> View recorded shipping expenses
+                </a>
+                
+                {% endif %}
+                <h6 class="dropdown-header">Other</h6>
+                
+                <a class="dropdown-item" href="{% if object.status == 'quotation' %} {% url 'invoicing:quotation-pdf' pk=object.pk %} {% else %} {% url 'invoicing:invoice-pdf' pk=object.pk %} {% endif %}">
+                    <i class="fas fa-file-pdf"></i> Create PDF
+                </a>
+
+                <a class="dropdown-item" href="{% if object.status == 'quotation' %} {% url 'invoicing:quotation-email' pk=object.pk %} {% else %} {% url 'invoicing:invoice-email' pk=object.pk %} {% endif %}">
+                        <i class="fas fa-at"></i> Send Email
+                    </a>
+                
+            </div>
+        </div>
+
+
 <div id="validate-form" style="margin:0px auto;width:320px;padding:10px;display:none" >
     <form action="{% url 'invoicing:invoice-verify' pk=object.pk %}" method="POST">
     <h5>Validate Document</h5>
@@ -22,10 +87,6 @@
 
 
 </div>
-
-
-
-{% endif %}
 
 {% endblock %}
 

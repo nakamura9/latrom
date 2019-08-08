@@ -41,6 +41,7 @@ class SupplierCreateView(ContextMixin, FormView):
         }
 
     def get_success_url(self):
+        
         return reverse("inventory:supplier-detail", kwargs={
             "pk": models.Supplier.objects.latest('pk').pk + 1
             })

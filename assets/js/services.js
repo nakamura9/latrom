@@ -214,6 +214,7 @@ if(notes){
     const token= document.querySelector(
         'input[name="csrfmiddlewaretoken"]').value;
     ReactDOM.render(<NotesWidget 
+        dataURL={'/base/api/notes/service/' + tail}
         token={token}
         target={target}
         targetID={tail} />, notes)

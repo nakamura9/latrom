@@ -173,6 +173,7 @@ class SearchableWidget extends Component {
                     bordered={this.props.bordered}/>
                    
                 <OptionsWidget 
+                    closeDropdown={() => this.setState({optionsHidden: true})}
                     choices={this.state.filteredChoices}
                     onSelectValue={this.onSelectValue}
                     hidden={this.state.optionsHidden}
