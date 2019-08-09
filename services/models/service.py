@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Q
 from common_data.utilities import time_choices
 from common_data.models import SingletonModel
+import services
 
 # Create your models here.
 
@@ -62,6 +63,31 @@ class ServicePerson(models.Model):
     @property
     def name(self):
         return str(self.employee)
+
+    @property
+    def current_orders(self):
+        return services.models.work_order.ServiceWorkOrder.objects.filter(Q(
+            Q(status='requested') | Q(status='progress') | Q(status='declined')) & Q(
+            Q(team__manager__id=self.id) | Q(service_people__in=[self.id])
+        ))
+
+    @property
+    def teams(self):
+        teams = []
+        for team in ServiceTeam.objects.all():
+            if team.manager and team.manager.pk == self.pk:
+                teams.append(team)
+            if self.pk in [i.pk for i in team.members.all()]:
+                teams.append(team)
+
+        return teams
+
+    @property
+    def completed_orders(self):
+        return services.models.work_order.ServiceWorkOrder.objects.filter(Q(
+            Q(status='completed') | Q(status='authorized')) & Q(
+            Q(team__manager=self) | Q(service_people__in=[self.id])
+        ))
 
 class ServiceTeam(models.Model):
     name = models.CharField(max_length=255)

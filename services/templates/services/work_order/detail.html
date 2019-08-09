@@ -132,7 +132,7 @@
             </div>
         </div>
         <div class="col-sm-4">
-            {% if request.user.is_superuser and object.status != 'authorized' %}
+            {% if  object.status != 'authorized' %}
             <h5>Authorization Form</h5>
             <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
                 {% csrf_token %}
@@ -141,8 +141,8 @@
             </form>
             {% else  %}
             {% if object.status == 'authorized' %}
-            {% else %}
-            <h6>Login as a super user to authorize this work order.</h6>
+                <h6>Authorized By:</h6>
+                <h5>{{object.authorized_by}}</h5>
             {% endif %}
             {% endif %}
 
