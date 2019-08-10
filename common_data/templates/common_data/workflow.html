@@ -83,7 +83,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="/calendar/month/{{month}}">View Calendar</a>
-                                    <a class="dropdown-item" href="{% url 'planner:agenda'  %}">View Agenda</a>
+                                    <a class="dropdown-item" href="{% url 'planner:agenda' pk=request.user.pk %}">View Agenda</a>
                                     <a class="dropdown-item" href="{% url 'planner:event-create'  %}">Create Event</a>
                                 </div>
                             </span></h6>

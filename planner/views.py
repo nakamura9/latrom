@@ -12,11 +12,13 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters.views import FilterView
 from rest_framework import viewsets
+from rest_framework.generics import ListAPIView
 
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
@@ -131,7 +133,7 @@ class EventDeleteView(LoginRequiredMixin, DeleteView):
     template_name = os.path.join('common_data', 'delete_template.html')
     success_url = "/planner/dashboard"
 
-class AgendaView(LoginRequiredMixin, ListView):
+class AgendaView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join('planner', 'agenda.html')
     
     def get(self, *args, **kwargs):
@@ -142,16 +144,24 @@ class AgendaView(LoginRequiredMixin, ListView):
 
         return super().get(*args, **kwargs)
 
+
+class AgendaAPIView(ListAPIView):
+    serializer_class = serializers.EventSerializer
+
     def get_queryset(self):
+        pk = self.kwargs['pk']
         filter = None
-        agenda_items = models.PlannerConfig.objects.first().number_of_agenda_items
-        if not hasattr(self.request.user, "employee"):
+        agenda_items = \
+            models.PlannerConfig.objects.first().number_of_agenda_items
+        user = User.objects.get(pk=pk)
+        if not hasattr(user, "employee"):
             return None
 
-        if self.request.user.employee:
-            filter = Q(Q(owner=self.request.user) | Q(eventparticipant__employee=self.request.user.employee))
+        if user.employee:
+            filter = Q(Q(owner=user) | 
+                Q(eventparticipant__employee__in=[user.employee.pk]))
         else:
-            filter = Q(owner=self.request.user)
+            filter = Q(owner=user)
         
         return models.Event.objects.filter(
             Q(date__gte=datetime.date.today()) & 

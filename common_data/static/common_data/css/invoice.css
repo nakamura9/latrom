@@ -126,8 +126,8 @@ background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100
     background-color: #e9ecef;
     position: sticky;
     top: 0;
-    z-index: 1020;
-    transition: padding 0.5s;
+    z-index: 999;
+    transition: padding 0.1s;
 }
 
 .shrink {

@@ -45,14 +45,7 @@ class MutableTable extends Component{
 
         let form = document.forms[0];
 
-        let input = document.createElement("input");
-        setMultipleAttrs(input, {
-            'type': 'hidden',
-            'name': this.props.formHiddenFieldName,
-            'value': '',
-            'id': `id_${this.props.formHiddenFieldName}`
-        })
-        form.appendChild(input);
+        
 
         axios({
             'url': this.props.dataURL,
@@ -61,7 +54,16 @@ class MutableTable extends Component{
             this.setState({data: this.props.resProcessor(res).map((data) =>({
                 ...data,
                 verified: false
-            }))})
+            }))}, () =>{
+                let input = document.createElement("input");
+                setMultipleAttrs(input, {
+                    'type': 'hidden',
+                    'name': this.props.formHiddenFieldName,
+                    'value': encodeURIComponent(JSON.stringify(this.state.data)),
+                    'id': `id_${this.props.formHiddenFieldName}`
+                })
+                form.appendChild(input);
+            })
         });
     }
 

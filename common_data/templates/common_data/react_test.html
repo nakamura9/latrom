@@ -27,4 +27,105 @@
 <input type="text" id="test-input">
 {% render_bundle 'widgets' %}
 
+
+<div>
+    <h4>TimeLine</h4>
+    <style>
+        .timeline-container {
+            width: 400px;
+            box-shadow: 3px 5px 20px grey;
+            border: 1px solid grey;
+            max-height: 300px;
+            min-height: 300px;
+            overflow-y: auto;
+            margin: 5px;
+            position:relative;
+        }
+
+        .timeline-bg {
+            width: 100%;
+            height: 100%;
+            padding:0px;
+            margin:0px;
+        }
+
+        .timeline-bg-left {
+            width: 25%;
+            height: 100%;
+            padding:0px;
+            margin:0px;
+        }
+
+        .timeline-bg-right {
+            width: 75%;
+            height: 100%;
+            padding:0px;
+            margin:0px;
+        }
+
+        .timeline-line {
+            width: 1px;
+            background-color:black;
+            height: 1000px;
+            padding:0px;
+            margin: 0px auto;
+        }
+
+        .timeline-card {
+            box-shadow: 3px 5px 20px grey;
+            margin: 5px 0px;
+            height: 100px;
+            width: 100%;
+            z-index: 100;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .timeline-card-left {
+            width: 25%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            display: inline-block;
+        }
+
+        .timeline-card-right {
+            height: 100%;  
+            display: inline-block;
+            margin: 0px;
+            padding: 3px;
+        }
+
+        .timeline-point {
+            width: 15px;
+            height: 15px;
+            border-radius: 15px;
+            border: 1px solid black;
+            background-color: white;
+            margin: 42.5px auto ;
+        }
+    </style>
+    <div class='timeline-container'>
+        <div class="timeline-bg">
+            <div class='timeline-bg-left'>
+                <div class="timeline-line"></div>
+            </div>
+            <div class='timeline-bg-right'></div>
+        </div>
+        <div class="timeline-card">
+            <div class="timeline-card-left">
+                <div class="timeline-point"></div>
+            </div>
+            <div class="timeline-card-right">
+                <h6>Date Time</h6>
+                <p>Title</p>
+                <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

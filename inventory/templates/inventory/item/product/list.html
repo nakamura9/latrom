@@ -47,7 +47,7 @@ $(document).ready(function(){
                 <a class="dropdown-item" href="{% url 'inventory:product-update'  pk=item.pk  %}">
                     <i class="fas fa-edit"></i> Update
                 </a>
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{% url 'inventory:product-delete' pk=item.pk %}">
                     <i class="fas fa-trash"></i> Delete
                 </a>
 

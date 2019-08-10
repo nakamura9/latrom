@@ -32,7 +32,7 @@
                                         <a href="{{calendar_url}}"> View Calendar</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'planner:agenda' %}">View Agenda</a>
+                                        <a href="/planner/agenda/{{request.user.pk}}">View Agenda</a>
                                     </li>
                                 </ul>
                             </div>
