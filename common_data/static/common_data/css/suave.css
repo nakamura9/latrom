@@ -148,7 +148,6 @@ background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100
 .shrink hr {
     display: none;
     transition: display 0.4s;
-
 }
 
 .shrink i {

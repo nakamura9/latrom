@@ -19,7 +19,7 @@
         href="{% static 'common_data/css/animate.css' %}" />
     
     
-    <link rel="stylesheet" type='text/css' href="{% static 'common_data/css/invoice.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'common_data/css/suave.css' %}">
     <script type="text/javascript" src="{% static 'common_data/js/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/popper.js' %}"></script>
     
@@ -46,31 +46,7 @@
     {% block window %}{% endblock %}
     <script type="text/javascript" src="{% static 'common_data/js/async_select.js' %}"></script>
 <style>
-    .my-modal{
-        display: none;
-        position: fixed;
-        z-index: 100;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgb(0,0,0);
-        background-color: rgba(0,0,0,0.4);
-    } 
-
-    .modal-content{
-        background-color: #eee;
-        margin: 20px auto;
-        padding: 20px;
-        width: 80%;
-        height: 80%;
-    }   
-
-    .frame-style {
-        width: 100%;
-        height: 100%
-    }
+    
 
     
     .notification-overlay {
@@ -95,11 +71,9 @@
     }
 
 </style>
-<div class="my-modal" id="id-my-modal">
-    <div class="modal-content">
-        <iframe class="frame-style" frameborder="0" id="popup-frame" src=""></iframe>
-    </div>
-</div>    
+
+{% include 'iframe_window.html' %}
+
 
 <div>
 <!-- The notification overlay -->
@@ -120,37 +94,15 @@
 </div>
 <script>
     //iframe redirect detection
-    var timesLoaded = 0;
-
-    $("iframe").on('load', function(){
-        timesLoaded++;
-        if(timesLoaded > 2){
-            $("#id-my-modal").hide();
-            $('#popup-frame').empty();
-            timesLoaded = 0;
-        }
-    });
-
+    
 
        $(".ui-date-picker").datepicker({
         changeYear: true,
         dateFormat: 'yy-mm-dd' 
         });
-    var modal = document.getElementById('id-my-modal');
     
-    window.onclick = function(evt){
-        if(evt.target == modal){
-        modal.style.display = 'none';
-        }
-    }
 
-    function inIframe () {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
-    }
+    
     function updateNotifications(){
         $.ajax({
             'method': 'GET',
@@ -192,12 +144,7 @@
         setNavbarActive()
         updateNotifications();
         setInterval(updateNotifications, 60000)
-     if(inIframe()){
-         $("#navbar").hide();
-         $("#footer").hide();
-         $('a.btn').each(function(){$(this).hide()})
-         
-     }
+     
      
      $('.notification-overlay').click(function(){
          $('.notification-overlay').hide()
