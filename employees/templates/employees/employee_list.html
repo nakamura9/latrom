@@ -28,6 +28,8 @@
         {% if item.user %}
             <a class="dropdown-item" href="{% url 'employees:employee-user-password-reset' pk=item.pk %}"> 
                 <i class="fas fa-redo"></i> Reset Password</a>
+            <a class="dropdown-item" href="{% url 'employees:employee-user-password-change' pk=item.pk %}"> 
+                <i class="fas fa-edit"></i> Change Password</a>
             <a class="dropdown-item" href="{% url 'employees:employee-delete-user' pk=item.pk %}"> 
                 <i class="fas fa-user-minus"></i> Remove User</a>
         {% else %}

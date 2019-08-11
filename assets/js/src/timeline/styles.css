@@ -1,0 +1,93 @@
+.timelineContainer {
+    width: 100%;
+    box-shadow: 3px 5px 20px grey;
+    border: 1px solid grey;
+    max-height: 500px;
+    min-height: 300px;
+    overflow-y: auto;
+    margin: 5px;
+    position:relative;
+
+}
+
+.transparentOverlay {
+    width: 100%;
+    padding:0px;
+    margin:0px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+
+.timelineBg {
+    width: 100%;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+
+.timelineBgLeft {
+    width: 25%;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+
+.timelineBgRight {
+    width: 75%;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+
+.timelineLine {
+    width: 1px;
+    background-color:black;
+    height: 1000px;
+    padding:0px;
+    margin: 0px auto;
+}
+
+.timelineCard {
+    box-shadow: 3px 5px 20px grey;
+    margin: 5px 0px;
+    height: 100px;
+    min-height: 100px;
+    width: 100%;
+    display: flex;
+    transition: height 0.3s;
+    flex-direction: row;
+}
+
+.timelineCardLeft {
+    width: 25%;
+    min-width: 25%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+.timelineCardRight {
+    height: 100%;  
+    display: inline-block;
+    margin: 0px;
+    padding: 3px;
+    position:relative;
+    width: 100%;
+}
+
+.timelinePoint {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    border: 1px solid black;
+    background-color: white;
+    margin: 42.5px auto ;
+}
+
+.cardOptions  {
+}

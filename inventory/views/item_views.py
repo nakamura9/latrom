@@ -72,7 +72,7 @@ class ProductListView( ContextMixin, PaginationMixin, FilterView):
     }
 
     def get_queryset(self):
-        return models.InventoryItem.objects.filter(type=0).order_by('pk')
+        return models.InventoryItem.objects.filter(type=0, active=True).order_by('pk')
 
 
 class ProductCreateView( ContextMixin, 
@@ -148,7 +148,7 @@ class ConsumableListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.InventoryItem.objects.filter(type=2).order_by('pk')
+        return models.InventoryItem.objects.filter(type=2, active=True).order_by('pk')
 
 
 class ConsumableCreateView( ContextMixin, 
@@ -239,7 +239,7 @@ class EquipmentListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.InventoryItem.objects.filter(type=1).order_by('pk')
+        return models.InventoryItem.objects.filter(type=1,active=True).order_by('pk')
 
 
 class EquipmentCreateView( ContextMixin, 

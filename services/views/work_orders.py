@@ -67,16 +67,26 @@ class WorkOrderUpdateView( WorkOrderCRUDMixin, UpdateView):
     model = models.ServiceWorkOrder
 
 
-class WorkOrderCompleteView( UpdateView):
+class WorkOrderCompleteView(UpdateView):
     template_name = os.path.join('services', 'work_order', 'complete.html')
     form_class = forms.ServiceWorkOrderCompleteForm
     model = models.ServiceWorkOrder
 
+    def get(self, *args, **kwargs):
+        if not hasattr(self, 'object'):
+            obj = self.get_object()
+        obj.status = 'progress'
+        obj.save()
+        
+        return super().get(*args, **kwargs)
+    
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)
 
         if not self.object:
             self.get_object()
+
+        
         
         log_data = json.loads(urllib.parse.unquote(request.POST['service_time'])) if request.POST['service_time'] != '' else []
 
@@ -188,7 +198,12 @@ class WorkOrderExpenseCreateView(ContextMixin, CreateView):
     extra_context = {
         'title': 'Record Work Order Expense'
     }
-    success_url = "/services/work-order-list"
+    def get_success_url(self):
+        #TODO fix
+        '''pk = models.WorkOrderExpense.objects.latest('pk').pk
+        if pk:
+            return reverse_lazy('services:work-order-costing', kwargs={'pk': pk})'''
+        return reverse_lazy('services:work-order-list')
 
     def post(self, *args, **kwargs):
         resp = super().post(*args, **kwargs)

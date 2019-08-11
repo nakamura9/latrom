@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from rest_framework import routers
 
 from services import views
@@ -15,6 +15,7 @@ personnel_urls = [
         name='service-person-create'),
     re_path(r'^service-person-update/(?P<pk>\d+)/?$', 
         views.ServicePersonUpdateView.as_view(), name='service-person-update'),
+    path('service-portal', views.ServicePortalView.as_view() ,name='service-portal'),
     re_path(r'^service-person-dashboard/(?P<pk>\d+)/?$', 
         views.ServicePersonDashboardView.as_view(), 
         name='service-person-dashboard'),

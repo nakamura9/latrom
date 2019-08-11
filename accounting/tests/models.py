@@ -414,10 +414,7 @@ class JournalEntryModelTests(TestCase):
 
         self.assertIsInstance(obj, JournalEntry)
 
-    def test_entry_post(self):
-        self.assertIsNone(self.entry.post)
-        # TODO add post for alternative execution
-
+    
 
 class AccountModelTests(TestCase):
     # use fixtures later

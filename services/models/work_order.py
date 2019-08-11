@@ -151,6 +151,9 @@ class ServiceWorkOrder(models.Model):
     def get_absolute_url(self):
         return reverse("services:work-order-detail", kwargs={"pk": self.pk})
 
+    @property
+    def status_string(self):
+        return dict(self.STATUS_CHOICES)[self.status]
 
 class TimeLog(models.Model):
     work_order = models.ForeignKey('services.serviceworkorder', null=True, 

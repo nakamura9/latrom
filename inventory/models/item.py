@@ -56,6 +56,14 @@ class InventoryItem(SoftDeletionModel):
         on_delete=models.SET_NULL,
         null=True)
 
+
+    def save(self, *args, **kwargs):
+        #Strange bug where active is defaulting to false
+        if self.pk is None:
+            self.active =True
+        
+        return super().save(*args, **kwargs)
+
     def __getattribute__(self, name):
         try:
             return super().__getattribute__(name)

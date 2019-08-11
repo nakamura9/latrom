@@ -1,4 +1,4 @@
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 
 from common_data import views
 workflow = views.WorkFlowView.as_view()
@@ -40,10 +40,12 @@ urlpatterns = [
     re_path(r'^license-error/users/?$', views.UsersErrorPage.as_view(),
         name='license-error-users'),
     re_path(r'^api/users/?$', views.UserAPIView.as_view(), name='api-users'),
+    re_path(r'^api/users/(?P<pk>[\d]+)/?$', views.UserDetailAPIView.as_view(), name='api-users'),
     re_path(r'^create-note/?$', views.create_note, name='create-note'),
     re_path(r'^reset-license-check/?$', views.reset_license_check, 
         name='reset-license-check'),
     re_path(r'^models/get-latest/(?P<app>[\w ]+)/(?P<model_name>[\w ]+)/?$', 
         views.get_model_latest, name='get-latest-model'),
-    
+    path('api/notes/<str:document>/<int:id>', views.document_notes_api,
+        name='notes-list')
 ]

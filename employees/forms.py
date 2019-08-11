@@ -179,7 +179,7 @@ class CreateEmployeeUserForm(BootstrapMixin, forms.Form):
 
         return cleaned_data 
 
-class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
+class EmployeePasswordChangeForm(BootstrapMixin, forms.Form):
     employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
     old_password = forms.CharField(widget=forms.PasswordInput)
     new_password = forms.CharField(widget=forms.PasswordInput)
@@ -194,6 +194,32 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
             raise forms.ValidationError('The old password is incorrect')
         '''
         if new_password != cleaned_data['confirm_new_password']:
+            raise forms.ValidationError(' The new passwords do not match')
+
+        usr.set_password(new_password)
+        usr.save()
+
+        return cleaned_data 
+
+class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    superuser = forms.CharField()
+    superuser_password = forms.CharField(widget=forms.PasswordInput)
+    new_user_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_new_user_password = forms.CharField(widget=forms.PasswordInput)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        usr = cleaned_data['employee'].user
+        superuser = cleaned_data['superuser']
+        
+        if not authenticate(username=superuser, 
+                password=cleaned_data['superuser_password']):
+            raise forms.ValidationError('Only a superuser can reset an ordinary user account. Please provide correct credentials for the superuser.')
+        
+        new_password = cleaned_data['new_user_password']
+
+        if new_password != cleaned_data['confirm_new_user_password']:
             raise forms.ValidationError(' The new passwords do not match')
 
         usr.set_password(new_password)

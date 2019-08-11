@@ -1,0 +1,32 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Sign In to the Services Portal</h1>
+    <p class="lead">Please Select Service Person from the list and enter your unique employee pin</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4">
+            <div class="shadow card">
+                <div class="card-body">
+                    <h4 class="card-title">Login</h4>
+                    <form action="" method="POST">
+                    {% csrf_token %}
+                        {{form.as_p}}
+                        <button class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -4,6 +4,7 @@ import json
 import os
 import urllib
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -143,7 +144,20 @@ class EmployeeUserCreateView( FormView):
         
         return super().get(request, *args, **kwargs)
 
-class EmployeeUserPasswordResetView( FormView):
+class EmployeeUserPasswordChangeView( FormView):
+    success_url = reverse_lazy('employees:dashboard')
+    template_name = CREATE_TEMPLATE
+    extra_context = {
+        'title': 'Change Employee User Password'
+    }
+    form_class = forms.EmployeePasswordChangeForm
+
+    def get_initial(self):
+        return {
+            'employee': self.kwargs['pk']
+        }
+
+class EmployeeUserPasswordResetView(FormView):
     success_url = reverse_lazy('employees:dashboard')
     template_name = CREATE_TEMPLATE
     extra_context = {
@@ -155,6 +169,11 @@ class EmployeeUserPasswordResetView( FormView):
         return {
             'employee': self.kwargs['pk']
         }
+    
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        messages.info(self.request, f'The password for {form.cleaned_data["employee"]} has been reset')
+        return resp
 
 
 def remove_employee_user(request, pk=None):

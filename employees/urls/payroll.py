@@ -34,7 +34,7 @@ pay_urls = [
         name='list-pay-grades'),
     re_path(r'^list-pay-slips/?$', views.PayslipListView.as_view(), 
         name='list-pay-slips'),
-    re_path(r'^list-pay-slips/(?P<pk>[\w]+)/?$', 
+    re_path(r'^list-employee-pay-slips/(?P<pk>[\w]+)/?$', 
         views.EmployeePayslipListView.as_view(), 
         name='list-pay-slips-employee'),
     re_path(r'^pay-slip-detail/(?P<pk>[\w]+)/?$', views.PayslipView.as_view(), 

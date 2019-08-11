@@ -71,6 +71,10 @@ class CommonViewTests(TestCase):
         config.is_configured=False
         config.save()
 
+    def test_accounting_async_dashboard(self):
+        resp = self.client.get(reverse('accounting:async-dashboard'))
+        self.assertTrue(resp.status_code, 200)
+
 
     def test_get_transfer_form(self):
         resp = self.client.get(reverse('accounting:transfer'))

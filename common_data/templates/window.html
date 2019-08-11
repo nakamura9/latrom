@@ -9,9 +9,11 @@
     {% block content %}{% endblock %}
 </article>
 {% include "footer.html" %}
+
 <script>
-//shrink jumbotrons on scroll
-/*
+
+    //shrink jumbotrons on scroll
+
 var scrolling = false;
 $(document).scroll(function(){
     scrolling = true;
@@ -20,15 +22,13 @@ $(document).scroll(function(){
 setInterval(function(){
     if(scrolling){
         scrolling = false;
-        if($(document).scrollTop() > 100){
+        if($(document).scrollTop() > 0){
 		  $(".jumbotron").addClass("shrink");
 		}
         if($(document).scrollTop() === 0){
 		  $(".jumbotron").removeClass("shrink");
 		}
     }
-}, 250)
-*/
+}, 100)
 </script>
-
 {% endblock %}

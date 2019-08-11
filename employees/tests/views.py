@@ -12,6 +12,7 @@ from employees.models import *
 from accounting.models import Account, JournalEntry
 from .models import create_test_employees_models
 import common_data
+from calendar import monthrange
 
 TODAY = datetime.date.today()
 
@@ -56,6 +57,18 @@ class GenericPageTests(TestCase):
     def test_get_manual_config_page(self):
         resp = self.client.get(reverse('employees:manual-config'))
         self.assertTrue(resp.status_code == 200)
+
+    def test_post_manual_config_employees(self):
+        today = datetime.date.today()
+        start, end = monthrange(today.year, today.month)
+        
+        resp = self.client.post(reverse('employees:manual-config'), 
+            data={
+                'start_period': start,
+                'end_period': end,
+                'payroll_officer': ,
+                'employees': ['1']
+            })
 
 
 
@@ -151,6 +164,12 @@ class PaySlipPageTests(TestCase):
     def test_get_pay_slips_list_page(self):
         resp = self.client.get(reverse('employees:list-pay-slips'))
         self.assertEqual(resp.status_code, 200)
+
+        def test_get_employee_pay_slips_list_page(self):
+            resp = self.client.get(reverse('employees:list-employee- pay-slips', kwargs={
+                'pk': 1
+            }))
+            self.assertEqual(resp.status_code, 200)
 
     def test_get_pay_slip_detail_page(self):
         resp = self.client.get(reverse('employees:pay-slip-detail', kwargs={

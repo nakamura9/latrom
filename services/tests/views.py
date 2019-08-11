@@ -156,9 +156,9 @@ class ServicePersonnelViewTests(TestCase):
             'name': 'name',
             'description': 'descritopm',
             'manager': 1,
-            'members': urllib.parse.quote(json.dumps([{
-                'value': '1 - Service'
-            }]))
+            'members': urllib.parse.quote(json.dumps([
+                '1 - Service'
+            ]))
         })
         self.assertEqual(resp.status_code, 302)
 
@@ -171,9 +171,9 @@ class ServicePersonnelViewTests(TestCase):
             'name': 'name',
             'description': 'descritopm',
             'manager': 1,
-            'members': urllib.parse.quote(json.dumps([{
-                'value': '1 - Service'
-            }]))
+            'members': urllib.parse.quote(json.dumps([
+                '1 - Service'
+            ]))
         })
         self.assertEqual(resp.status_code, 302)
 
@@ -669,6 +669,8 @@ class WorkOrderViewTests(TestCase):
         resp = self.client.get("/services/work-order/1/expense-create")
         self.assertEqual(resp.status_code, 200)
 
+
+    #TODO fix
     def test_post_work_order_expense_view(self):
         resp = self.client.post("/services/work-order/1/expense-create", data={
             'description': 'description',
