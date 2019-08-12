@@ -98,14 +98,20 @@ export default class TimeSheet extends Component{
         this.setState({lines: newLines}, this.formUpdateMethod);
     }
     render(){
-        let body = null;
-        if(this.state.lines.length === 0){
-            body = <tbody>
-                    <DataEntryLine 
-                        insertLine={this.lineHandler}/>
-                </tbody>
-        }else{
-            body = <tbody>
+        
+        return(
+            <table className="table table-sm">
+                <thead>
+                    <tr className="bg-primary">
+                        <th>Date</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Breaks Taken</th>
+                        <th>Total Working Hours</th> 
+                        <th>Action</th>   
+                    </tr>    
+                </thead>
+                <tbody>
                     {this.state.lines.map((line, i) =>{
                         if(line.editing){
                             return (<EditLine 
@@ -128,19 +134,6 @@ export default class TimeSheet extends Component{
                         insertLine={this.lineHandler}/>
             </tbody>
         }
-        return(
-            <table className="table table-sm">
-                <thead>
-                    <tr className="bg-primary">
-                        <th>Date</th>
-                        <th>Time In</th>
-                        <th>Time Out</th>
-                        <th>Breaks Taken</th>
-                        <th>Total Working Hours</th> 
-                        <th>Action</th>   
-                    </tr>    
-                </thead>
-                {body}
             </table>
         );
     }

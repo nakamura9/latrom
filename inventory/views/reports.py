@@ -13,7 +13,7 @@ class InventoryReport( ConfigMixin, MultiPageDocument,TemplateView):
     page_length = 20
 
     def get_multipage_queryset(self):
-        return models.WareHouseItem.objects.filter(item__type=0)
+        return models.InventoryItem.objects.filter(type=0, active=True)
 
     def get_context_data(self, *args, **kwargs):
         context = super(InventoryReport, self).get_context_data(*args, **kwargs)

@@ -22,7 +22,12 @@ class TimeField extends Component{
     
 
     handler = (evt) => {
+
         const value = evt.target.value;
+        if(value.length == 2){
+            this.setState({value: value + ":"});
+            return;
+        }
         const valid = /[012]\d:[0-5]\d/.test(value);
         this.setState({
             value: value,

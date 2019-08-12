@@ -120,7 +120,6 @@ class PayrollReport(ConfigMixin,
         'payroll', 'report.html')
     page_length=20
 
-        
     
     def get_multipage_queryset(self):
         start, end = extract_period(self.request.GET)
@@ -164,3 +163,6 @@ class PayrollReport(ConfigMixin,
         context['pdf_link'] = True
         # sales
         return PayrollReport.common_context(context, start, end)
+
+class PayrollPDFReport(ConfigMixin, MultiPageDocument, PDFTemplateView):
+    pass

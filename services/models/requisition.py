@@ -14,7 +14,10 @@ class BaseRequisition(models.Model):
     date = models.DateField()
     warehouse = models.ForeignKey('inventory.WareHouse', 
         on_delete=models.CASCADE, default=1)
-    department = models.CharField(max_length=255)
+    department = models.ForeignKey('employees.department', 
+        null=True, 
+        on_delete=models.SET_NULL, 
+        blank=True)
     reference = models.CharField(max_length=255)
     work_order = models.ForeignKey('services.serviceworkorder', null=True, 
         limit_choices_to=Q(Q(status="progress") | Q(status="requested")),

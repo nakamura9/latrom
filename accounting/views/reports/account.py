@@ -71,7 +71,9 @@ class AccountReport(ConfigMixin,
         context.update({
             'account': account,
             'start': start.strftime("%d %B %Y"),
-            'end': end.strftime("%d %B %Y")
+            'end': end.strftime("%d %B %Y"),
+            'remaining_balance': account.balance_on_date(end),
+            'starting_balance': account.balance_on_date(start)
         })
         
         return context

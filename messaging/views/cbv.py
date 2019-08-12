@@ -22,7 +22,9 @@ from messaging.email_api.email import EmailSMTP
 from draftjs_exporter.html import HTML as exporterHTML
 from cryptography.fernet import Fernet
 from messaging.email_api.secrets import get_secret_key
-
+import imaplib
+import smtplib
+from django.contrib import messages
 
 class UserEmailConfiguredMixin(object):
     def get(self, *args, **kwargs):
@@ -264,6 +266,25 @@ class UserProfileView(ContextMixin, LoginRequiredMixin, UpdateView):
             )
 
         return profile
+
+    def form_valid(self, form):
+        #TODO try validate credentials before allowing a user to submit settings
+        
+        try:
+            print(self.object.get_plaintext_password)
+            mailbox = imaplib.IMAP4_SSL(form.cleaned_data['pop_imap_host'], 
+                form.cleaned_data['pop_port'])
+            mailbox.login(form.cleaned_data['email_address'], self.object.get_plaintext_password)
+        except smtplib.SMTPAuthenticationError:
+            messages.info(self.request, f'The email settings for {form.cleaned_data["email_address"]} could not be verified. Please check again to ensure these settings are correct.')
+        except Exception as e:
+            messages.info(self.request, 'An error prevented the settings from being verified')
+            print(e)
+
+        else:
+            messages.info(self.request, 'Settings verified successfully')
+
+        return super().form_valid(form)
 
 
 class NewChatView(TemplateView):

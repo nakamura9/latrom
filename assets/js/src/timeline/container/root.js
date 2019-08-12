@@ -3,7 +3,7 @@ import axios from 'axios';
 import styles from '../styles.css';
 import Bg from '../components/bg'
 import Card from '../components/card';
-
+import {Aux} from '../../common';
 
 class TimelineWidget extends Component{
     state = {
@@ -24,14 +24,17 @@ class TimelineWidget extends Component{
 
     render(){
         return(
-            <div className={styles.timelineContainer}>
-                <Bg />
-                <div className={styles.transparentOverlay}>
-                    {this.state.data.map((details, i) =>(
-                        <Card {...details} index={i}/>
-                    ))}
+            <Aux>
+                <h4 style={{fontWeight: 200}}>Timeline</h4>
+                <div className={styles.timelineContainer}>
+                    <Bg cards={this.state.data.length}/>
+                    <div className={styles.transparentOverlay}>
+                        {this.state.data.map((details, i) =>(
+                            <Card {...details} index={i}/>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            </Aux>
         )
     }
 }

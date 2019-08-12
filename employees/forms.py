@@ -319,6 +319,12 @@ class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 
+class PayrollTaxUpdateForm(forms.ModelForm, BootstrapMixin):
+    
+    class Meta:
+        model = models.PayrollTax
+        fields = 'name',
+        
 class TimesheetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.EmployeeTimeSheet
