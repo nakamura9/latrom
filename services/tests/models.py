@@ -75,6 +75,7 @@ class ServiceModelTests(TestCase):
             can_authorize_consumables_requisitions = True
         )
 
+
     def test_create_service(self):
         obj = Service.objects.create(
             name="test service",
@@ -136,7 +137,6 @@ class ServiceModelTests(TestCase):
     def test_create_equipment_requisition(self):
         obj = EquipmentRequisition.objects.create(
             date=TODAY,
-            department="dept",
             reference="ref",
             requested_by=self.employee
         )
@@ -158,7 +158,6 @@ class ServiceModelTests(TestCase):
     def test_create_consumables_requistion(self):
         obj = ConsumablesRequisition.objects.create(
             date=TODAY,
-            department="dept",
             reference="ref",
             requested_by=self.employee
         )

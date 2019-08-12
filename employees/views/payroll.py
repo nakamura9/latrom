@@ -353,7 +353,7 @@ class ManualPayrollService(object):
 
     def run(self):
         print('running manual payroll service')
-        paysli_count = 0
+        payslip_count = 0
         for employee in self.employees:
             if not employee.pay_grade:
                 messages.info(

@@ -64,13 +64,12 @@ class AbstractAccount(SoftDeletionModel):
     def balance_on_date(self, date):
         #TODO fix
         # 920 + 150
-        print(self.balance_over_period(
-            date, datetime.date.today()))
+        if date == datetime.date.today():
+            return self.balance
 
         return self.balance - self.balance_over_period(
-            date, datetime.date.today())
-
-    
+                date, datetime.date.today())
+        
     def balance_over_period(self, start, end):
         # TODO test
         credits = Credit.objects.filter(

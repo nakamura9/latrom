@@ -202,7 +202,8 @@ class EmployeePasswordChangeForm(BootstrapMixin, forms.Form):
         return cleaned_data 
 
 class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
-    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), 
+        widget=forms.HiddenInput)
     superuser = forms.CharField()
     superuser_password = forms.CharField(widget=forms.PasswordInput)
     new_user_password = forms.CharField(widget=forms.PasswordInput)

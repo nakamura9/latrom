@@ -61,12 +61,19 @@ class AccountingTaskService(AutomatedServiceMixin):
                 
                 amount = asset.depreciation_for_month(self.today.month, 
                     self.today.year)
+                settings = models.AccountingSettings.objects.first()
+                bkkpr = models.Bookkeeper.objects.first()
+                if settings.default_bookkeeper:
+                    created_by= settings.default_bookkeeper
+                else:
+                    created_by=bkkpr
+                    
                 j = models.JournalEntry.objects.create(
                         date=self.today,
                         draft=False,
                         memo="Asset depreciation",
                         journal=models.Journal.objects.get(pk=5),
-                        created_by=models.AccountingSettings.objects.first().default_bookkeeper
+                        created_by=created_by.employee.user
                     )
                 j.simple_entry(amount, asset.account, 
                     asset.depreciation_account)

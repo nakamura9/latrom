@@ -7,18 +7,26 @@ from accounting.models import (
     Expense, 
     RecurringExpense,
     InterestBearingAccount,
-    Asset
+    AccountingSettings,
+    Asset,
+    Bookkeeper
     )
 from django.contrib.auth.models import User
+import employees 
 import datetime
 from calendar import monthrange
 
 class AccountingServiceTest(TestCase):
-    fixtures = ['journals.json', 'accounts.json']
+    fixtures = ['settings.json','common.json','journals.json', 'accounts.json']
 
     @classmethod 
     def setUpTestData(cls):
+        employees.tests.model_util.EmployeeModelCreator(cls).create_employee()
         cls.service = AccountingTaskService()
+        cls.bookkeeper = Bookkeeper.objects.create(employee=cls.employee)
+        cls.employee.user = User.objects.create_user('user')
+        cls.employee.save()
+        
 
     def test_service_run(self):
         self.service.run()
@@ -49,7 +57,7 @@ class AccountingServiceTest(TestCase):
             reference=""
         )
         self.service.run_recurring_expenses()
-        self.assertEqual(Expense.objects.all().count(), 2)
+        self.assertEqual(Expense.objects.all().count(), 1)
 
     def test_run_interest_on_accounts(self):
         InterestBearingAccount.objects.create(

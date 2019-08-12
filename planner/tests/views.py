@@ -168,7 +168,7 @@ class PlannerViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_get_event_list(self):
-        resp = self.client.get('/planner/agenda')
+        resp = self.client.get('/planner/agenda/1')
         self.assertEqual(resp.status_code, 200)
 
     def test_get_event_complete_view(self):

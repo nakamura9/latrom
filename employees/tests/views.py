@@ -66,7 +66,7 @@ class GenericPageTests(TestCase):
             data={
                 'start_period': start,
                 'end_period': end,
-                'payroll_officer': ,
+                'payroll_officer': 1,
                 'employees': ['1']
             })
 
@@ -337,12 +337,14 @@ class EmployeePageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_employees_reset_password_page_post(self):
+        su = User.objects.create_superuser('admin', 'test@email.com', 'password')
         resp = self.client.post('/employees/employee/user/reset-password/1',
             data={
                 'employee': 1,
-                'old_password': 'password',
-                'new_password': 'new_password',
-                'confirm_new_password': 'new_password'
+                'superuser': 'admin',
+                'superuser_password': 'password',
+                'new_user_password': 'new_password',
+                'confirm_new_user_password': 'new_password'
             })
         self.assertEqual(resp.status_code, 302)
 

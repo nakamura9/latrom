@@ -316,14 +316,12 @@ class RequisitionViewTests(TestCase):
         )
         cls.eq_requisition = EquipmentRequisition.objects.create(
             date=TODAY,
-            department="dept",
             reference="ref",
             requested_by=cls.employee
         )
 
         cls.con_requsition = ConsumablesRequisition.objects.create(
             date=TODAY,
-            department="dept",
             reference="ref",
             requested_by=cls.employee
         )
@@ -347,7 +345,6 @@ class RequisitionViewTests(TestCase):
                 }])),
                 'date': TODAY,
                 'warehouse': 1,
-                'department': 'dept',
                 'reference': 'ref',
                 'requested_by': 1,
                 "work_order": self.wo.pk
@@ -396,7 +393,6 @@ class RequisitionViewTests(TestCase):
                 }])),
                 'date': TODAY,
                 'warehouse': 1,
-                'department': 'dept',
                 'reference': 'ref',
                 'requested_by': 1,
                 'work_order': self.wo.pk
