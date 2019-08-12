@@ -19,8 +19,8 @@ class Card extends Component{
                 <div className={styles.timelineCardLeft}>
                     <div className={styles.timelinePoint}></div>
                 </div>
-                <div className={styles.timelineCardRight}>
-                    <h6>{this.props.timestamp}</h6>
+                <div className={styles.timelineCardRight + ' hvr-grow'}>
+                    <h6 style={{fontWeight: 200}}>{this.props.timestamp}</h6>
                     <p>{this.props.title}</p>
                             
                     <i onClick={this.toggleOptions} className="fa fa-ellipsis-h" ></i>

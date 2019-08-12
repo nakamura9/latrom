@@ -22,10 +22,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'database' ,get_current_database()),
     },
-    'email': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'database' ,'email.sqlite3'),
-    }
+    
 }
 
 #DATABASE_ROUTERS = ['messaging.db.router.MessagingRouter']

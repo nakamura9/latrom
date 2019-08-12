@@ -6,7 +6,7 @@ const Month = (props) => {
     const days = [...Array(31).keys()];
 
     return(
-        <div style={{maxHeight: "600px"}}>
+        <div>
             <div style={{
                 minHeight: "820px",
                 position: "relative"
@@ -22,7 +22,7 @@ const Month = (props) => {
                                 height={20}
                                 key={i}
                                 style={{
-                                    borderTop: "1px solid black"
+                                    borderTop: "1px solid #ccc"
                                 }}>
                                 <td
                                     style={{width:"20%"}}>
@@ -35,7 +35,10 @@ const Month = (props) => {
                     </tbody>
                 </table>
                 {props.data.map((leave, i) =>(
-                    <Leave data={leave} key={i} />
+                    <Leave 
+                        data={leave} 
+                        key={i}
+                        offset={-20} />
                 ))}
             </div>
             
@@ -61,8 +64,9 @@ class YearView extends Component{
     render(){
         return(
             <div style={{
-                width: "960px",
-                overflowX: 'auto'
+                width: "100%",
+                overflowX: 'auto',
+                maxHeight: 'inherit'
             }}>
                 <table>
                     <tr>

@@ -1,13 +1,15 @@
 .timelineContainer {
     width: 100%;
-    box-shadow: 3px 5px 20px grey;
-    border: 1px solid grey;
     max-height: 500px;
     min-height: 300px;
     overflow-y: auto;
     margin: 5px;
     position:relative;
+    
+}
 
+::-webkit-scrollbar { 
+    display: none; 
 }
 
 .transparentOverlay {
@@ -30,14 +32,14 @@
 }
 
 .timelineBgLeft {
-    width: 25%;
+    width: 26%;
     height: 100%;
     padding:0px;
     margin:0px;
 }
 
 .timelineBgRight {
-    width: 75%;
+    width: 72%;
     height: 100%;
     padding:0px;
     margin:0px;
@@ -46,17 +48,17 @@
 .timelineLine {
     width: 1px;
     background-color:black;
-    height: 1000px;
+    height: 100px;
     padding:0px;
     margin: 0px auto;
 }
 
 .timelineCard {
     box-shadow: 3px 5px 20px grey;
-    margin: 5px 0px;
+    margin: 1%;
     height: 100px;
     min-height: 100px;
-    width: 100%;
+    width: 98%;
     display: flex;
     transition: height 0.3s;
     flex-direction: row;
@@ -75,9 +77,15 @@
     height: 100%;  
     display: inline-block;
     margin: 0px;
-    padding: 3px;
+    padding: 5px;
     position:relative;
     width: 100%;
+    transition: background-color 0.5s;
+}
+
+.timelineCardRight:hover {
+    background-color: powderblue;
+    z-index: 10000;
 }
 
 .timelinePoint {

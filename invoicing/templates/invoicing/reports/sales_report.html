@@ -1,26 +1,45 @@
 {% extends "base.html" %}
 
 {% block window %}
-<div class="jumbotron">
-    <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Actions
-        </button>
-        <div class="dropdown-menu" aria-labelledby="triggerId">
-            <a href="/invoicing/sales-report-pdf/{{start|urlencode}}/{{end|urlencode}}"class="dropdown-item"><i class="fas fa-file-pdf"></i>Generate PDF</a>
+
+<style>
+    .shrink a {
+    display: block;
+}
+
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Actions
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="triggerId">
+                        <a href="/invoicing/sales-report-pdf/{{start|urlencode}}/{{end|urlencode}}"class="dropdown-item"><i class="fas fa-file-pdf"></i>Generate PDF</a>
+                    </div>
+                </div>
+                
+            </div>
+            
         </div>
-
     </div>
-    
+    <div class="row">
+        <div class="col-12">
+            <h1>Sales Report</h1>
+
+            <h4>Period Covering: {{start}} to {{end}}</h4>
+            <p>Total Sales over period: ${{total_sales | floatformat:2}}</p>
+            <p>Average daily sales: ${{average_sales | floatformat:2}}</p>
+            {% autoescape off %}
+            {{report}}
+            {% endautoescape %}
+        </div>
+    </div>
 </div>
-<h1>Sales Report</h1>
 
-<h4>Period Covering: {{start}} to {{end}}</h4>
-<p>Total Sales over period: ${{total_sales | floatformat:2}}</p>
-<p>Average daily sales: ${{average_sales | floatformat:2}}</p>
 
-{% autoescape off %}
-{{report}}
-{% endautoescape %}
 {% endblock window %}

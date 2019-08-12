@@ -44,6 +44,10 @@ class LeaveCalendar extends Component{
     }
 
     render(){
+
+        const navHeight = document.getElementById('navbar').offsetHeight;
+        const height = document.documentElement.clientHeight - navHeight -2;
+    
         return(
             <Router >
             <div className="container">
@@ -51,7 +55,8 @@ class LeaveCalendar extends Component{
                     <div 
                         className="col-sm-2" 
                         style={{
-                        backgroundColor: "#07f"
+                        backgroundColor: "#07f",
+                        height: height + 'px',
                     }}>
                         <div className="btn-group">            
                             <Link className="btn btn-primary" 
@@ -84,7 +89,10 @@ class LeaveCalendar extends Component{
                     </div>
                 <div>
                     </div>
-                    <div className="col-sm-10">
+                    <div className="col-sm-10" style={{
+                        maxHeight: height + 'px',
+                        overflowY: 'auto'
+                    }}>
                         <Route 
                             path='/employees/leave-calendar/month/:year/:month'
                             render={(props) => <MonthView 
@@ -94,6 +102,7 @@ class LeaveCalendar extends Component{
                             path='/employees/leave-calendar/year/:year/'
                             render={(props) => <YearView 
                                 {...props}
+                                innerHeight={height}
                                 linkUpdater={this.setLinks} />}/>
                     </div>
                 </div>

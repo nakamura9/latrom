@@ -202,7 +202,8 @@ class EmployeePasswordChangeForm(BootstrapMixin, forms.Form):
         return cleaned_data 
 
 class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
-    employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), 
+        widget=forms.HiddenInput)
     superuser = forms.CharField()
     superuser_password = forms.CharField(widget=forms.PasswordInput)
     new_user_password = forms.CharField(widget=forms.PasswordInput)
@@ -319,6 +320,12 @@ class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 
+class PayrollTaxUpdateForm(forms.ModelForm, BootstrapMixin):
+    
+    class Meta:
+        model = models.PayrollTax
+        fields = 'name',
+        
 class TimesheetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.EmployeeTimeSheet

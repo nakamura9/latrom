@@ -2,7 +2,6 @@ import os
 import datetime
 from dateutil import *
 from dateutil.relativedelta import relativedelta
-from messaging.models import Notification
 from django.contrib import messages
 
 from django.db.models import Q

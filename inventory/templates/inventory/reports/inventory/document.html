@@ -13,7 +13,7 @@
                     <thead>
                         <tr>
                             <th>Item</th>
-                            <th>Location</th>
+                            <th>Locations</th>
                             <th>Quantity</th>
                             <th>Stock Value</th>
                         </tr>
@@ -21,10 +21,14 @@
                     <tbody>
                         {% for i in page %}
                         <tr>
-                            <td>{{i.item.name}}</td>
-                            <td>{{i.warehouse}}</td>
+                            <td>{{i.name}}</td>
+                            <td>
+                                {% for l in i.locations %}
+                                    {{l.warehouse}},
+                                {% endfor %}
+                            </td>
                             <td>{{i.quantity | floatformat:2 }}</td>
-                            <td>{{i.item.product_component.stock_value | floatformat:2 }}</td>
+                            <td>{{i.product_component.stock_value | floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

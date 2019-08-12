@@ -127,7 +127,7 @@ class Email(models.Model):
     attachment=models.FileField(null=True, blank=True, upload_to=os.path.join(
         MEDIA_ROOT, 'messaging'
     ))
-    created_timestamp = models.DateTimeField()
+    created_timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         if self.sent_from and self.to:

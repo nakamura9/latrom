@@ -35,7 +35,7 @@ class MonthView extends Component{
                 </div>
                 <div>
                     <table style={{
-                        width: "100%",
+                        width: "95%",
                         position: "absolute",
                         top: "90px"
                     }}>
@@ -45,7 +45,7 @@ class MonthView extends Component{
                                     height={20}
                                     key={i}
                                     style={{
-                                        borderTop: "1px solid black"
+                                        borderTop: "1px solid #ccc"
                                     }}>
                                     <td
                                         style={{width:"20%"}}>
@@ -58,7 +58,7 @@ class MonthView extends Component{
                         </tbody>
                     </table>
                     {this.state.leave.map((leave, i) =>(
-                        <Leave data={leave} offset={i * 20} key={i} />
+                        <Leave data={leave} offset={i * 151} key={i} />
                     ))}
                 </div>
             </div>
