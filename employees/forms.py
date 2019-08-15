@@ -125,7 +125,10 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('basic',
                     'name',
-                    'monthly_leave_days',
+                    Row(
+                        Column('monthly_leave_days', css_class='form-group col-6'),
+                        Column('maximum_leave_days', css_class='form-group col-6')
+                    ),                    
                     Row(
                         Column('salary', css_class='form-group col-6'),
                         Column('pay_frequency', css_class='form-group col-6'),

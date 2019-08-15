@@ -85,6 +85,7 @@ class PayGradePageTests(TestCase):
             'name': 'Other Test Grade',
             'salary': 0,
             'monthly_leave_days': 1.5,
+            'maximum_leave_days': 20,
             'hourly_rate': 1.5,
             'overtime_rate': 2.25,
             'overtime_two_rate': 3,
@@ -351,6 +352,10 @@ class EmployeePageTests(TestCase):
     def test_employees_delete_user_post(self):
         resp = self.client.get('/employees/employee/delete-user/1')
         self.assertEqual(resp.status_code, 302)
+
+    def test_get_employee_payslips(self):
+        resp = self.client.get('/employees/list-employee-pay-slips/1')
+        self.assertEqual(resp.status_code, 200)
         
 
 class BenefitsPageTests(TestCase):
@@ -1087,3 +1092,17 @@ class DepartmentViewTests(TestCase):
         })
 
         self.assertEqual(resp.status_code, 302)
+
+class EmployeesReportViewTests(TestCase):
+    fixtures = ['common.json', 'accounts.json', 'journals.json', 
+        'employees.json']
+
+    @property
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+
+    @property
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        

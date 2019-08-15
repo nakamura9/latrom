@@ -29,41 +29,39 @@
 
 
 <div>
-    <h4>TimeLine</h4>
+    <h4>steps</h4>
     <style>
-        .timeline-container {
-            width: 400px;
+        .steps-container {
+            width: 300px;
             box-shadow: 3px 5px 20px grey;
             border: 1px solid grey;
             max-height: 300px;
-            min-height: 300px;
-            overflow-y: auto;
             margin: 5px;
             position:relative;
         }
 
-        .timeline-bg {
+        .steps-bg {
             width: 100%;
             height: 100%;
             padding:0px;
             margin:0px;
         }
 
-        .timeline-bg-left {
+        .steps-bg-left {
             width: 25%;
             height: 100%;
             padding:0px;
             margin:0px;
         }
 
-        .timeline-bg-right {
+        .steps-bg-right {
             width: 75%;
             height: 100%;
             padding:0px;
             margin:0px;
         }
 
-        .timeline-line {
+        .steps-line {
             width: 1px;
             background-color:black;
             height: 1000px;
@@ -71,10 +69,9 @@
             margin: 0px auto;
         }
 
-        .timeline-card {
-            box-shadow: 3px 5px 20px grey;
+        .step {
             margin: 5px 0px;
-            height: 100px;
+            height: 40px;
             width: 100%;
             z-index: 100;
             position: absolute;
@@ -82,9 +79,10 @@
             left: 0px;
             display: flex;
             flex-direction: row;
+            font-weight: 250;
         }
 
-        .timeline-card-left {
+        .step-left {
             width: 25%;
             height: 100%;
             margin: 0px;
@@ -92,39 +90,48 @@
             display: inline-block;
         }
 
-        .timeline-card-right {
+        .step-right {
             height: 100%;  
             display: inline-block;
             margin: 0px;
             padding: 3px;
         }
 
-        .timeline-point {
-            width: 15px;
-            height: 15px;
-            border-radius: 15px;
+        .step-point {
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
             border: 1px solid black;
-            background-color: white;
-            margin: 42.5px auto ;
+            background-color: #00ff7b;
+            margin: 10px auto ;
+            color: white;
+            font-size: 12px;
         }
+
+        .step-point i {
+            margin: 3px 3px;
+        }
+
+
     </style>
-    <div class='timeline-container'>
-        <div class="timeline-bg">
-            <div class='timeline-bg-left'>
-                <div class="timeline-line"></div>
+    <div class='steps-container'>
+        <div class="steps-bg">
+            <div class='steps-bg-left'>
+                <div class="steps-line"></div>
             </div>
-            <div class='timeline-bg-right'></div>
+            <div class='steps-bg-right'></div>
         </div>
-        <div class="timeline-card">
-            <div class="timeline-card-left">
-                <div class="timeline-point"></div>
+        <div class="step">
+            <div class="step-left">
+                <div class="step-point">
+                    <i class="fas fa-check"></i>
+                </div>
             </div>
-            <div class="timeline-card-right">
-                <h6>Date Time</h6>
-                <p>Title</p>
-                <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+            <div class="step-right">
+                <p>Step Name</p>
             </div>
         </div>
+        
     </div>
 </div>
 

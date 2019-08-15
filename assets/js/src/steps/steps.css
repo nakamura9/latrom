@@ -1,0 +1,79 @@
+.stepsContainer {
+    width: 300px;
+    box-shadow: 3px 5px 20px grey;
+    border: 1px solid grey;
+    max-height: 300px;
+    margin: 5px;
+    position:relative;
+}
+
+.stepsBg {
+    width: 100%;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+
+.stepsBgLeft {
+    width: 25%;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+
+.stepsBgRight {
+    width: 75%;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+
+.stepsLine {
+    width: 1px;
+    background-color:black;
+    height: 1000px;
+    padding:0px;
+    margin: 0px auto;
+}
+
+.stepPoint {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: 1px solid black;
+    margin: 10px auto ;
+    color: white;
+    font-size: 12px;
+}
+
+.stepPoint i {
+    margin: 3px 3px;
+}
+
+.step {
+    margin: 5px 0px;
+    height: 40px;
+    width: 100%;
+    z-index: 100;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-direction: row;
+    font-weight: 250;
+}
+
+.stepLeft {
+    width: 25%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+.stepRight {
+    height: 100%;  
+    display: inline-block;
+    margin: 0px;
+    padding: 3px;
+}

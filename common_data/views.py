@@ -181,11 +181,6 @@ class WorkFlowView(LoginRequiredMixin, TemplateView):
 class ReactTestView(TemplateView):
     template_name = os.path.join("common_data", "react_test.html")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = AxiosEmailForm
-        return context
-    
 
 class AboutView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "about.html")

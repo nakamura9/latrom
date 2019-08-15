@@ -555,3 +555,30 @@ class LeaveModelTests(TestCase):
     def test_leave_category_string(self):
         self.assertEqual(self.leave.category_string, 'Annual Leave')
 
+class PayrollDateModelTests(TestCase):
+    fixtures = ['accounts.json', 'employees.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        
+    def test_create_payroll_schedule(self):
+        self.assertIsInstance(PayrollSchedule.objects.first(),
+            PayrollSchedule)
+
+    def test_create_payroll_date(self):
+        date = PayrollDate.objects.create(
+            date = TODAY.day,
+            schedule=self.schedule
+        )
+
+        self.assertIsInstance(date, PayrollDate)
+
+    def test_number_of_employees(self):
+        self.assertEqual(self.pay_date.number_of_employees, 1)
+
+    def test_z_all_employees(self):
+        self.assertEqual(self.pay_date.all_employees, [self.employee])
+
+    def test_date_suffix(self):
+        self.assertIsInstance(self.pay_date.date_suffix, str)

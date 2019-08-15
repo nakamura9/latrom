@@ -6,6 +6,7 @@ import PricingWidget from "../js/inventory/pricing_widget";
 import {ImgPreview} from '../js/src/common';
 import FilePickerUI from '../js/src/components/custom_file_picker';
 import TimelineWidget from '../js/src/timeline/container/root';
+import StepsWidget from '../js/src/steps/container/root';
 
 const storageMedia = document.getElementById('storage-media-select-widget');
 const category = document.getElementById('category-select-widget');
@@ -65,7 +66,7 @@ if(storageMedia){
         detailUrlRoot='/inventory/storage-media-detail/'
         dataMapper={dataMapper}/>, storageMediaView);
 }else if(testView){
-    ReactDOM.render(<TimelineWidget />, testView);
+    ReactDOM.render(<StepsWidget />, testView);
 }else if(pricing){
     ReactDOM.render(<PricingWidget />, pricing);
 }else if(depts){
