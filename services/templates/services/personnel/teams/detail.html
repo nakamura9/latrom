@@ -6,16 +6,22 @@
     <h1 class="display-3">Service Team</h1>
     <p class="lead">View Details about the selected Service Team</p>
     <hr class="my-2">
-    <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:team-update' pk=object.pk %}" role="button">Edit</a>
-    </p>
+    <div class="dropdown">
+                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item" href="{% url 'services:team-create' %}"><i class="fas fa-plus"></i>Create Service Team</a>
+                    <a class="dropdown-item" href="{% url 'services:team-update' pk=object.pk %}"><i class="fas fa-edit"></i>Update</a>
+                </div>
+            </div>
 </div>
 
 <div class="container">
     <div class="row">
             <div class="col-sm-4">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Team Details</h4>
                         <p class="card-text">Name: {{object.name}}</p>

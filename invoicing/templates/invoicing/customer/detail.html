@@ -9,12 +9,34 @@
         <hr class="my-2">
         <p>Actions</p>
         <p class="lead">
-            <a class="btn btn-primary" href="{% url 'invoicing:update-customer' pk=object.pk %}" role="button">Edit</a>
+            <div class="dropdown">
+            <button class=" btn btn-primary btn-lg dropdown-toggle " type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a class="dropdown-item" href="{% url 'invoicing:create-customer' %}">
+                    <i class="fas fa-plus"></i> New Customer
+                </a>
+            <a href="{% url 'invoicing:update-customer' pk=customer.pk %}" class="dropdown-item">
+                    <i class="fas fa-edit"></i> Update Customer Data
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:delete-customer' pk=customer.pk %}">
+                    <i class="fas fa-trash"></i> Delete Customer
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:create-quotation' customer=customer.pk %}">
+                    <i class="fas fa-receipt"></i> Create Quotation
+                </a>
+                <a class="dropdown-item" href="{% url 'invoicing:customer-statement-form' pk=customer.pk %}">
+                    <i class="fas fa-file-alt"></i> View Customer Account Statement
+                </a>
+            </div>
+            </div>
         </p>
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <div class="card bg-primary text-white" >
+            <div class="card shadow" >
                 <div class="card-body">
                     <h4 class="card-title">Customer Info</h4>
                     <p class="card-text">Name: {{object.name}}</p>

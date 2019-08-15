@@ -2,28 +2,96 @@
 {% block pre_page %}
 
 <div class="jumbotron">
-<div class="btn-group">
-    <a href="{% url 'inventory:order-pdf' pk=object.pk %}" class="btn btn-danger">Generate PDF</a>
-    {% if order.status == 'draft' %}
-    <a href="{% url 'inventory:order-update' pk=object.pk %}" class="btn btn-primary">Update</a>
-    <button class="btn" onclick="toggleValidateForm()">Validate Order</button>
-    {% endif %}
-</div>
-<script>
-    function toggleValidateForm(){
-        $('#validate-form').toggle();
-    }
-</script>
-<div id="validate-form" style="margin:0px auto;width:320px;padding:10px;display:none" >
-    <form action="{% url 'inventory:verify-order' pk=object.pk %}" method="POST">
-    <h5>Validate Document</h5>
-    {% csrf_token %}
-    <table>
-        {{form.as_table}}
-    </table>
-    <button class="btn btn-primary">Submit</button>
-    </form>
-</div>
+    <div class="btn-group">
+        <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                {% if order.status == "draft" %}
+                <a href="{% url 'inventory:order-create' %}" class="dropdown-item">
+                    <i class="fas fa-plus"></i> Create New Purchase Order
+                </a>
+                <a href="{% url 'inventory:order-update' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-file"></i> Update
+                </a>
+                {% endif %}
+                <a href="{% url 'inventory:order-delete' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+                <a href="{% url 'inventory:order-status' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> Status
+                    <!--Change this ! -->
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'inventory:order-pdf' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-file-pdf"></i> Generate PDF
+                    <!--Change this ! -->
+                </a>
+                <a href="{% url 'inventory:order-email' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-at"></i> Send Email
+                    <!--Change this ! -->
+                </a>
+                {% if order.status != 'draft' %}
+                <h6 class="dropdown-header">Returns</h6>
+
+                <a class="dropdown-item" href="{% url 'inventory:debit-note-create' pk=object.pk %}">
+                    <i class="fas fa-trash"></i> Create Debit Note
+                </a>
+                <a class="dropdown-item" href="{% url 'inventory:debit-note-list' pk=object.pk %}">
+                    <i class="fas fa-list-ol"></i> View Debit Notes
+                </a>
+
+                <h6 class="dropdown-header">Shipping and Handling</h6>
+                <a href="{% url 'inventory:order-expense' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-truck"></i> Add Shipping And Handling Expenses
+                </a>
+                <a href="{% url 'inventory:order-expense-list' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-list-ol"></i> List Shipping And Handling Expenses
+                </a>
+                <h6 class="dropdown-header">Goods Receipts</h6>
+
+                <a class="dropdown-item" href="{% url 'inventory:stock-receipt-create' pk=object.pk %}">
+                    <i class="fas fa-share-square"></i> Receive order</a>
+
+                {% if order.stockreceipt_set.all.count > 0 %}
+                <a href="{% url 'inventory:stock-receipts-list' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> View Goods Receipts List</a>
+                {% endif %}
+
+
+
+                <h6 class="dropdown-header">Payments</h6>
+                {% if order.payment_status != "paid" %}
+                <a href="{% url 'inventory:order-payment' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-receipt"></i> Make Payment
+                    <!--Change this ! -->
+                </a>
+                {% endif %}
+                <a class="dropdown-item" href="{% url 'inventory:order-payment-list' pk=object.pk %}">
+                    <i class="fas fa-list-ol"></i> View Payments
+                    <!--Change this ! -->
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleValidateForm() {
+            $('#validate-form').toggle();
+        }
+    </script>
+    <div id="validate-form" style="margin:0px auto;width:320px;padding:10px;display:none">
+        <form action="{% url 'inventory:verify-order' pk=object.pk %}" method="POST">
+            <h5>Validate Document</h5>
+            {% csrf_token %}
+            <table>
+                {{form.as_table}}
+            </table>
+            <button class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </div>
 
 {% endblock pre_page %}

@@ -4,10 +4,16 @@
     <h1 class="display-3">Service Listing</h1>
     <p class="lead">Review details and features of a service offering</p>
     <hr class="my-2">
-    <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:service-update' pk=object.pk %}" role="button">Edit Listing</a>
-    </p>
+    <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="{% url 'services:create-service' %}" class="dropdown-item"><i class="fas fa-plus"></i>Create Service</a>
+                <a class="dropdown-item" href="{% url 'services:service-update' pk=object.pk %}"><i class="fas fa-edit"></i>Update</a>
+            </div>
+        </div>
 </div>
 <div class="container">
     <div class="row">

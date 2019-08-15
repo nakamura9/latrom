@@ -34,6 +34,7 @@
                         <th>Date</th>
                         <th>Payment ID</th>
                         <th>Amount</th>
+                        <th>Actions
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +43,8 @@
                         <td>{{pmt.date}}</td>
                         <td>{{pmt.pk}}</td>
                         <td>{{pmt.amount}}</td>
+                        <td>
+                            <a class='btn btn-primary btn-sm' href="{% url 'accounting:entry-detail' pk=pmt.entry.id %}">View</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

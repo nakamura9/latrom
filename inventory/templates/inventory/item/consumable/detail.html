@@ -3,10 +3,20 @@
     <h1 class="display-3">Consumable Detail</h1>
     <p class="lead">Information concerning consumable stock items. </p>
     <hr class="my-2">
-    <p class="lead">
-        <a class="btn btn-success btn-lg" href="{% url 'inventory:consumable-update' pk=object.pk %}"
-            role="button">Edit</a>
-    </p>
+    <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'inventory:consumable-create' %}">
+                    <i class="fas fa-plus"></i> Add New Consumable
+                </a>
+                <a class="dropdown-item" href="{% url 'inventory:consumable-update'  pk=object.pk  %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+            </div>
+        </div>
 </div>
 
 <div class="container">
@@ -31,7 +41,7 @@
                             </div>
                         </div>
                         <div class="col-sm-8">
-                            <div class="card bg-primary text-white">
+                            <div class="card shadow">
                                 <div class="card-header">
                                     <h4 class="card-title">Basic Information</h4>
                                 </div>
