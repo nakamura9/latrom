@@ -4,10 +4,16 @@
     <h1 class="display-3">Pay Grade Details</h1>
     <p class="lead">View features of a paygrade as well as a list of the employees under it.</p>
     <hr class="my-2">
-    <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary " href="{% url 'employees:update-pay-grade' pk=object.pk %}" role="button">Edit</a>
-    </p>
+    <div class="dropdown">
+                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="actions" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="actions">
+                    <a class="dropdown-item" href="{% url 'employees:create-pay-grade' %}"> <i class="fas fa-plus"></i> Add Pay Grade</a>
+                    <a class="dropdown-item" href="{% url 'employees:update-pay-grade' pk=object.pk %}"> <i class="fas fa-edit"></i> Update</a> 
+                </div>
+            </div>
 </div>
 
 <div class="container">

@@ -5,15 +5,35 @@
     <h1 class="display-3">Vendor Detail</h1>
     <p class="lead">Information Regarding supplier Products, Contact Information and Accounting Data</p>
     <hr class="my-2">
-    <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary " href="{% url 'inventory:supplier-update' pk=object.pk %}" role="button">Edit</a>
-    </p>
+    <div class="dropdown">
+        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a href="{% url 'inventory:supplier-create' %}" class="dropdown-item">
+                <i class="fas fa-plus"></i> Create Vendor
+            </a>
+            <a href="{% url 'inventory:supplier-update' pk=object.pk %}" class="dropdown-item">
+                <i class="fas fa-file"></i> Update
+            </a>
+            <a class="dropdown-item" href="{% url 'inventory:supplier-delete'  pk=object.pk  %}">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+            <a class="dropdown-item" href="{% url 'inventory:order-create'  supplier=object.pk  %}">
+                <i class="fas fa-receipt"></i> Make Purchase Order
+            </a>
+            <a class="dropdown-item" href="{% url 'accounting:direct-payment-supplier'  supplier=object.pk  %}">
+                <i class="fas fa-money-check"></i> Make Payment To supplier
+            </a>
+
+        </div>
+    </div>
 </div>
 <div class="container">
     <div class="row">
         <div class="col-sm-6">
-            <div class="card bg-primary text-white">
+            <div class="card shadow">
                 <div class="card-body">
                     <h4 class="card-title">Vendor Information</h4>
                     <p class="card-text">Type: {% if object.is_organization %} Organization {% else %} Individual
@@ -25,49 +45,19 @@
                     <h4 class="card-title">Vendor Account</h4>
                     <p class="card-text">Name: {{object.account}}</p>
                     <p class="card-text">Balance: {{object.account.balance}}</p>
-                    <a href="{% url 'accounting:account-detail' pk=object.account.pk %}" class="btn btn-secondary">View</a>
+                    <a href="{% url 'accounting:account-detail' pk=object.account.pk %}"
+                        class="btn btn-secondary">View</a>
                 </div>
             </div>
-            {% if object.is_organization %}
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Members</h4>
-                    <button onclick="linkClickHandler('/inventory/supplier/add-member/{{object.organization.pk}}')" target='popup' class="btn btn-primary">Add Member</button>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Full Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for m in object.organization.members %}
-                            <tr>
-                               
-                                <td>{{m.full_name}}</td>
-                                <td>{{m.phone}}</td>
-                                <td><a href="{% url 'messaging:create-message' %}">{{m.email}}</a></td>
-                                <td>
-                                    <a href="{% url 'base:individual-detail' pk=m.pk %}" class="btn btn-success btn-sm">View</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% endif %}
         </div>
         <div class='col-sm-6'>
-            <div class="card">
+            <div class="card" style='min-height:300px;'>
                 <div class="card-body">
                     <nav class="nav nav-tabs nav-stacled">
-                        <a href="#invoices" class="nav-link active"
-                                data-toggle="tab">Products</a>
+                        <a href="#invoices" class="nav-link active" data-toggle="tab">Products</a>
                         <a href="#quotations" class="nav-link" data-toggle="tab">Consumables</a>
-                        <a href="#credit-notes" class="nav-link" data-toggle="tab">Equipment</a></li>
+                        <a href="#credit-notes" class="nav-link" data-toggle="tab">Equipment</a>
+                        <a href="#members" class="nav-link" data-toggle="tab">Memebers</a></li>
                     </nav>
                     <div class="tab-content panel-body">
                         <div id="invoices" class="tab-pane active">
@@ -84,7 +74,8 @@
                                     <tr>
                                         <td>{{p.name}}</td>
                                         <td>{{p.unit_purchase_price}}</td>
-                                        <td><a href="{% url 'inventory:product-detail' pk=p.pk %}" class="btn btn-primary">Detail</a></td>
+                                        <td><a href="{% url 'inventory:product-detail' pk=p.pk %}"
+                                                class="btn btn-primary">Detail</a></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -104,7 +95,8 @@
                                     <tr>
                                         <td>{{p.name}}</td>
                                         <td>{{p.unit_purchase_price}}</td>
-                                        <td><a href="{% url 'inventory:consumable-detail' pk=p.pk %}" class="btn btn-primary">Detail</a></td>
+                                        <td><a href="{% url 'inventory:consumable-detail' pk=p.pk %}"
+                                                class="btn btn-primary">Detail</a></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -124,7 +116,37 @@
                                     <tr>
                                         <td>{{p.name}}</td>
                                         <td>{{p.unit_purchase_price}}</td>
-                                        <td><a href="{% url 'inventory:equipment-detail' pk=p.pk %}" class="btn btn-primary">Detail</a></td>
+                                        <td><a href="{% url 'inventory:equipment-detail' pk=p.pk %}"
+                                                class="btn btn-primary">Detail</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="members" class="tab-pane">
+                            <button
+                                onclick="linkClickHandler('/inventory/supplier/add-member/{{object.organization.pk}}')"
+                                target='popup' class="btn btn-primary">Add Member</button>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for m in object.organization.members %}
+                                    <tr>
+
+                                        <td>{{m.full_name}}</td>
+                                        <td>{{m.phone}}</td>
+                                        <td><a href="{% url 'messaging:create-message' %}">{{m.email}}</a></td>
+                                        <td>
+                                            <a href="{% url 'base:individual-detail' pk=m.pk %}"
+                                                class="btn btn-success btn-sm">View</a>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -138,11 +160,11 @@
 </div>
 
 <script>
-function linkClickHandler(link){
-    $('#popup-frame').attr('src', link);
-    var modal = document.getElementById('id-my-modal');
-    modal.style.display = 'block';
-    
-}
+    function linkClickHandler(link) {
+        $('#popup-frame').attr('src', link);
+        var modal = document.getElementById('id-my-modal');
+        modal.style.display = 'block';
+
+    }
 </script>
 {% endblock content %}

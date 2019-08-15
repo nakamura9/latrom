@@ -5,13 +5,39 @@
     <p class="lead">Personal, Salary and Employee Details</p>
     <hr class="my-2">
     <p class="lead">
-        {% if request.user.is_superuser or request.user.employee.is_payroll_officer  %}
-
-        <a class="btn btn-primary btn-lg" href="{% url 'employees:employee-update' pk=object.pk %}" role="button">Edit</a>
-        {% elif request.user.employee %}
-        <a class="btn btn-primary btn-lg" href="{% url 'employees:employee-portal-update' pk=object.pk %}" role="button">Edit</a>
-        {% endif %}
-        NB: The first user linked to an employee is assigned a default password of '1234'. Please change it at the first opportunity
+        <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'employees:employee-update' pk=object.pk %}"> <i
+                        class="fas fa-file"></i> Update</a>
+                {% if item.user %}
+                <a class="dropdown-item" href="{% url 'employees:employee-user-password-reset' pk=object.pk %}">
+                    <i class="fas fa-redo"></i> Reset Password</a>
+                <a class="dropdown-item" href="{% url 'employees:employee-user-password-change' pk=object.pk %}">
+                    <i class="fas fa-edit"></i> Change Password</a>
+                {% endif %}
+                {% if request.user.employee and request.user.employee.is_payroll_officer %}
+                
+                    <a class="dropdown-item" href="{% url 'employees:create-employee' %}"> <i
+                            class="fas fa-plus"></i> Create Employee</a>
+                    {% if item.user %}
+                    
+                    <a class="dropdown-item" href="{% url 'employees:employee-delete-user' pk=object.pk %}">
+                        <i class="fas fa-user-minus"></i> Remove User</a>
+                    {% else %}
+                    <a class="dropdown-item" href="{% url 'employees:employee-user-create' pk=object.pk %}">
+                        <i class="fas fa-user-plus"></i> Create User</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="{% url 'employees:employee-delete' pk=object.pk %}"> <i
+                            class="fas fa-trash"></i> Delete Employee Data</a>
+                {% endif %}
+            </div>
+        </div>
+        NB: The first user linked to an employee is assigned a default password of '1234'. Please change it at the first
+        opportunity
     </p>
 </div>
 
@@ -19,43 +45,38 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card-deck">
-                <div class="card bg-primary text-white">
-                    <div class="card-header">
-                            <h4 class="card-title">Personal Details</h4>
-                    </div>
+                <div class="card shadow">
+                        <h4 class="card-title">Personal Details</h4>
                     <div class="card-body">
                         <p class="card-text">First name: {{object.first_name}}</p>
                         <p class="card-text">Last name: {{object.last_name}}</p>
-                        <p class="card-text">Email: <a href="{% url 'messaging:create-message' %}">{{object.email}}</a></p>
+                        <p class="card-text">Email: <a href="{% url 'messaging:create-message' %}">{{object.email}}</a>
+                        </p>
                         <p class="card-text">Phone #: {{object.phone}}</p>
                         <p class="card-text">Address: {{object.address}}</p>
                     </div>
                 </div>
-                <div class="card bg-info text-white">
-                        <div class="card-header">
-                                <h4 class="card-title">Employee Details</h4>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Employee Number: {{object.employee_number}}</p>
-                            <p class="card-text">Title: {{object.title}}</p>
-                            <p class="card-text">Hire Date: {{object.hire_date}}</p>
-                            <p class="card-text">Username : {{object.user.username}}</p>
-                            <p class="card-text">Address: {{object.address}}</p>
-                            <p class="card-text">Pin Code:{{object.pin}}</p>
-                        </div>
-                </div>
-                <div class="card ">
-                        <div class="card-header">
-                                <h4 class="card-title">Pay Details</h4>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Hourly Rate: {{object.pay_grade.hourly_rate}}</p>
-                            <p class="card-text">Over time rate(1): {{object.pay_grade.overtime_rate}}</p>
-                            <p class="card-text">Over time rate(2): {{object.pay_grade.overtime_two_rate}}</p>
-                            <p class="card-text">Salary: {{object.pay_grade.monthly_salary}}</p>
-                            <p class="card-text">Leave Days: {{object.leave_days}}</p>
-                        </div>
+                <div class="card shadow">
+                        <h4 class="card-title">Employee Details</h4>
+                    <div class="card-body">
+                        <p class="card-text">Employee Number: {{object.employee_number}}</p>
+                        <p class="card-text">Title: {{object.title}}</p>
+                        <p class="card-text">Hire Date: {{object.hire_date}}</p>
+                        <p class="card-text">Username : {{object.user.username}}</p>
+                        <p class="card-text">Address: {{object.address}}</p>
+                        <p class="card-text">Pin Code:{{object.pin}}</p>
                     </div>
+                </div>
+                <div class="card shadow">
+                        <h4 class="card-title">Pay Details</h4>
+                    <div class="card-body">
+                        <p class="card-text">Hourly Rate: {{object.pay_grade.hourly_rate}}</p>
+                        <p class="card-text">Over time rate(1): {{object.pay_grade.overtime_rate}}</p>
+                        <p class="card-text">Over time rate(2): {{object.pay_grade.overtime_two_rate}}</p>
+                        <p class="card-text">Salary: {{object.pay_grade.monthly_salary}}</p>
+                        <p class="card-text">Leave Days: {{object.leave_days}}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

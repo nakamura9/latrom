@@ -19,10 +19,16 @@ $(document).scroll(function(){
     scrolling = true;
 });
 
+function isScrollable(){
+    var windowHeight = $(window).height();
+    var pageHeight = $(document).height();
+    return pageHeight / windowHeight  > 1.5;
+}
+
 setInterval(function(){
     if(scrolling){
         scrolling = false;
-        if($(document).scrollTop() > 0){
+        if($(document).scrollTop() > 0  && isScrollable()){
 		  $(".jumbotron").addClass("shrink");
 		}
         if($(document).scrollTop() === 0){
