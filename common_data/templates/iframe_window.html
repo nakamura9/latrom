@@ -54,7 +54,7 @@
             <button onclick="closeModal()"  class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
             <button onclick="minimizeModal()"  class="btn btn-sm btn-warning"><i class="far fa-window-minimize"></i></button>
         </div>
-        <iframe class="frame-style" frameborder="0" id="popup-frame" src=""></iframe>
+        <iframe  class="frame-style" frameborder="0" id="popup-frame" src=""></iframe>
     </div>
 </div>
 
@@ -66,15 +66,23 @@
 </div>
 
 <script>
-var timesLoaded = 0;
+var iframeURL = '';
+var curURL = '';
+    $("#popup-frame").on('load', function(){
+        iframeURL = $('#popup-frame').attr('src');
+        curURL = document.getElementById('popup-frame').contentWindow.location.href;
+        curURL = '/' + curURL.replace(/^(?:\/\/|[^\/]+)*\//, "");
 
-    $("iframe").on('load', function(){
-        timesLoaded++;
-        if(timesLoaded > 2){
+        console.log(iframeURL)
+        console.log(curURL)
+        console.log(iframeURL != '')
+        console.log(curURL != iframeURL)
+        
+        if(iframeURL != '' && curURL != iframeURL){
             $("#id-my-modal").hide();
             $('#popup-frame').empty();
-            timesLoaded = 0;
-            
+            iframeURL = '';
+            curURL = '';
         }
     });
 

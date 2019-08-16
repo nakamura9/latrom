@@ -487,3 +487,7 @@ def document_notes_api(request, document=None, id=None):
                     for i in doc.notes.all()]
     
     return JsonResponse(notes, safe=False)
+
+
+class ReportBlankView(TemplateView):
+    template_name = os.path.join('common_data', 'reports', 'blank.html')

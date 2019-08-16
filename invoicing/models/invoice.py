@@ -143,7 +143,7 @@ class Invoice(SoftDeletionModel):
                 service=service,
                 hours=data['hours'],
                 flat_fee=service.flat_fee,
-                hourly_rate=service.hourly_rate
+                hourly_rate=data['rate']
             )
             self.invoiceline_set.create(
                 line_type=2,#service
@@ -443,16 +443,23 @@ class InvoiceLine(models.Model):
             return '[PRODUCT] {} x {} @ ${:0.2f}{}'.format(
                 self.component.quantity,
                 str(self.component.product).split('-')[1],
-                self.nominal_price,
+                self.unit_price,
                 self.component.product.unit
             )
         elif self.line_type == 2:
-            return '[SERVICE] {} Flat fee: ${:0.2f} + {}Hrs @ ${:0.2f}/Hr'.format(
-                self.component.service.name,
-                self.component.service.flat_fee,
-                self.component.hours,
-                self.component.service.hourly_rate
-            )
+            ret_string = f'[SERVICE] {self.component.service.name}'
+            if self.component.service.flat_fee > 0:
+                ret_string += ' Flat rate: {:0.2f}'.format(
+                    self.component.service.flat_fee
+                )
+            if self.component.hours > 0 and \
+                    self.component.hourly_rate > 0:
+                ret_string +=  '+ {}Hrs @ ${:0.2f}/Hr'.format(
+                    self.component.hours,
+                    self.component.hourly_rate)
+            
+            return ret_string
+
         elif self.line_type ==3:
             return '[BILLABE EXPENSE] %s' % self.expense.expense.description
 

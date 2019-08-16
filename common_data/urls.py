@@ -47,5 +47,7 @@ urlpatterns = [
     re_path(r'^models/get-latest/(?P<app>[\w ]+)/(?P<model_name>[\w ]+)/?$', 
         views.get_model_latest, name='get-latest-model'),
     path('api/notes/<str:document>/<int:id>', views.document_notes_api,
-        name='notes-list')
+        name='notes-list'),
+    path('blank-report/', views.ReportBlankView.as_view(),
+        name='blank-report')
 ]
