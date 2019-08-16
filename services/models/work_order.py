@@ -8,6 +8,7 @@ from common_data.utilities import time_choices
 from functools import reduce
 from decimal import Decimal as D
 from django.shortcuts import reverse 
+import invoicing
 
 class WorkOrderRequest(models.Model):
     created = models.DateField(blank=True, null=True)
@@ -46,6 +47,14 @@ class WorkOrderRequest(models.Model):
     @property
     def work_orders(self):
         return self.serviceworkorder_set.all()
+
+    @property
+    def invoice_line(self):
+        qs = invoicing.models.InvoiceLine.objects.filter(invoice=self.invoice, 
+                service__service=self.service)
+        
+        if qs.exists():
+            return qs.first()
 
     def get_absolute_url(self):
         return reverse("services:work-order-request-detail", 
@@ -115,6 +124,12 @@ class ServiceWorkOrder(models.Model):
     def expenses(self):
         return self.workorderexpense_set.all()
 
+    @property
+    def unbilled_expenses(self):
+        return self.workorderexpense_set.filter(
+            expense__billable=False
+        )
+
     @property 
     def time_logs(self):
         # may decide to remove the .all() and use a filter of uses timesheet
@@ -168,6 +183,9 @@ class TimeLog(models.Model):
         default=D(0.0))
     overtime_cost = models.DecimalField(max_digits=8, decimal_places=2,
         default=D(0.0))
+
+    def __str__(self):
+        return f'{self.employee} {self.normal_time} + {self.overtime} O/T'
 
     @property
     def total_cost(self):

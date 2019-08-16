@@ -124,11 +124,21 @@
                             <div class="card-body">
                                 <ul class="list-group">
                                     <li class="list-group-item hvr-grow">
-                                        <a href="" style="color:grey;">Services History</a>
+                                        <a href="{% url 'services:reports-job-profitability-form' %}" >Job Profitability Report</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'services:reports-service-person-utilization-form' %}">Service
+                                        
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a href="{% url 'services:reports-service-person-utilization-form' %}" class="dropdown-item">Service
                                             Personnel utilization report</a>
+                                                <a href="{% url 'services:reports-unbilled-costs-by-job-form' %}" class="dropdown-item">Unbilled Costs By Job report</a>
+
+                                            </div>
+
+                                        </div>
                                     </li>
                                 </ul>
                             </div>

@@ -103,13 +103,14 @@ class WorkOrderCompleteView(UpdateView):
             overtime = datetime.datetime.strptime(log['overtime'], "%H:%M")
             overtime = datetime.timedelta(
                 hours=overtime.hour, minutes=overtime.minute)
+            
 
             models.TimeLog.objects.create(
                 work_order=self.object,
                 date=date,
                 employee=employee,
                 normal_time=normal_time,
-                overtime=overtime
+                overtime=overtime,
             )
 
         # get the progress
@@ -220,16 +221,3 @@ class WorkOrderExpenseCreateView(ContextMixin, CreateView):
         return resp 
 
 
-class WorkOrderCostingView(DetailView):
-    template_name = os.path.join('services', 'work_order', 'costing.html')
-    model = models.ServiceWorkOrder
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        labour = sum([i.total_cost for i in self.object.time_logs])
-        expenses = sum([i.expense.amount for i in self.object.workorderexpense_set.all()])
-    
-        context['total_labour_cost'] = labour 
-        context['total_expense_costs'] = expenses
-        context['total_costs'] = labour + expenses
-        return context

@@ -1,0 +1,44 @@
+
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "inventory/reports/payments_due/header.html"%}
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Order ID</th>
+                            <th>Vendor Ref</th>
+                            <th>Maturity Date</th>
+                            <th>Invoiced </th>
+                            <th> Due</th>
+                            <th> Paid</th>
+                            <th>Days Overdue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{order.supplier}}</td>
+                            <td>{{order.pk | stringformat:"06d"}}</td>
+                            <td>{% if not order.supplier_invoice_number %} <center>- </center>{% endif %} {{order.supplier_invoice_number}}</td>
+                            <td>{{order.due}}</td>
+                            <td>{{order.total}}</td>
+                            <td>{{order.total_due}}</td>
+                            <td>{{order.amount_paid}}</td>
+                            <td>{{order.amount_paid}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+               
+            </td>
+        </tr>
+    </tbody>
+</table>

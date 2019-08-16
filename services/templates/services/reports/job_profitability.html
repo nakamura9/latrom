@@ -1,0 +1,81 @@
+
+
+{% extends "common_data/page/pdf_page.html" %}
+
+{% block pre_page %}
+
+<div class="jumbotron">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="" class="dropdown-item"><i class="fas fa-file-pdf"></i>Generate PDF</a>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}
+
+{% block page_contents %}
+
+<h1>Job Profitability Report</h1>
+<h3>Period spanning: {{start}} to {{end}}</h3>
+<style>
+    td {
+        padding: 5px;
+        align: left;
+    }
+</style>
+<table class="table table-sm">
+    <tbody>
+        <tr>
+            <th>Date Created</th>
+            <td>{{date}}</td>
+        </tr>
+        <tr>
+            <th>Number of Jobs Summarized</th>
+            <td>{{jobs.count}}</td>
+        </tr>
+        <tr>
+            <th>Service Revenue</th>
+            <td>{{revenue | floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Total Costs</th>
+            <td>{{expenses | floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Gross Income</th>
+            <td>{{income | floatformat:2 }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>Job Summary</h4>
+
+<table class="table-striped table-sm">
+    <thead>
+        <tr>
+            <th>Invoice</th>
+            <th>Description</th>
+            <th>Revenue</th>
+            <th>Expenses</th>
+            <th>Income</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+            <tr>
+                <td>{{job.invoice.pk |stringformat:"06d"}}</td>
+                <td>{{job.service.service.description |truncatechars:40}}</td>
+                <td>{{job.subtotal | floatformat:2 }}</td>
+                <td>{{job.service.cost_of_sale  | floatformat:2  }}</td>
+                <td>{{job.service.gross_income  | floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

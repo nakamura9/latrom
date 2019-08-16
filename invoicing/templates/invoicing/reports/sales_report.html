@@ -35,8 +35,74 @@
             <p>Total Sales over period: ${{total_sales | floatformat:2}}</p>
             <p>Average daily sales: ${{average_sales | floatformat:2}}</p>
             {% autoescape off %}
-            {{report}}
+            {{bar_graph}}
+            <p style="page-break-before:always;"></p>
+
+            {{pie_chart}}
+            <p style="page-break-before:always;"></p>
+
             {% endautoescape %}
+            <p style="page-break-before:always;"></p>
+
+            <h4>Sales By Customer Table</h4>
+            <table class="table table-sm">
+                {% for customer in customer_invoices %}
+                    <tbody>
+                        <tr>
+                            <th class='bg-primary text-white' colspan='3'>{{customer.name}}</th>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice</th>
+                            <th>Amount</th>
+                        </tr>
+                        {% for sale in customer.sales %}
+                            <tr>
+                                <td>{{sale.date}}</td>
+                                <td>{{sale.id | stringformat:'06d'}}</td>
+                                <td>{{sale.subtotal | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <th colspan='2'>Total</th>
+                            <th>{{customer.total | floatformat:2}}</th>
+                        </tr>
+
+                    </tbody>
+                {% endfor %}
+            </table>
+
+            {% autoescape off %}
+            {{pie_chart_2}}
+
+            {% endautoescape %}
+
+            <h4>Sales By Products and Services Table</h4>
+            <table class="table table-sm">
+                <thead>
+                    <tr class='bg-primary text-white' >
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in products_and_services %}
+                        <tr>
+                            <td>{{item.type_string}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{% if item.product %}
+                                {{item.product.quantity}}
+                                {% else %}
+                                N/A
+                            {% endif %}</td>
+                            <td>{{item.subtotal | floatformat:2}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
         </div>
     </div>
 </div>

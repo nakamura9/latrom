@@ -22,9 +22,15 @@ from common_data.utilities import (ContextMixin,
                                     PeriodReportMixin)
 from invoicing import forms, models
 from invoicing.models.invoice import Invoice
-from .report_utils.plotters import plot_sales, plot_lines
+from .report_utils.plotters import (plot_sales, 
+                                    plot_lines,
+                                    plot_sales_by_customer,
+                                    plot_sales_by_products_and_services,
+                                    plot_ar_by_customer,
+                                    plot_ar_by_aging)
 from inventory.models import InventoryItem
 from services.models import Service
+
 
 import pygal
 
@@ -134,6 +140,7 @@ class CustomerStatementPDFView(ConfigMixin, MultiPageDocument,PDFTemplateView):
         
 
 
+
 class InvoiceAgingReport(ConfigMixin, MultiPageDocument, TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'aging.html')
     page_length = 20
@@ -182,78 +189,35 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
     def common_context(context, start, end, kwargs):
         # if filtering reps and customers - use the entire invoice 
 
-        products = json.loads(urllib.parse.unquote(kwargs['products']))
-        services = json.loads(urllib.parse.unquote(kwargs['services']))
+        context["bar_graph"] = plot_sales(start, end)
+        context["pie_chart"] = plot_sales_by_customer(start, end)
+        context["pie_chart_2"] = plot_sales_by_products_and_services(start, end)
+        
+        customer_list = set([i.customer for i in Invoice.objects.filter(date__gte=start, date__lte=end, draft=False)])
+        
+        context['customer_invoices'] = [{
+            'name': str(c), 
+            'sales': c.sales_over_period(start, end),
+            'total': sum([j.subtotal for j in c.sales_over_period(start, end)])
+            } for c in customer_list]
 
-        def get_invoice_filters(data):
-            rep_query = Q()
-            cus_query = Q()
-            reps = json.loads(urllib.parse.unquote(data['reps']))
-            for rep_str in reps:
-                id = rep_str.split('-')[0]
-                rep = models.SalesRepresentative.objects.get(pk=id)
-                rep_query.add(Q(salesperson=rep), Q.OR)
-            
-            customers = json.loads(urllib.parse.unquote(data['customers']))
-            for cus_str in customers:
-                id = cus_str.split('-')[0]
-                cus = models.Customer.objects.get(pk=id)
-                cus_query.add(Q(customer=cus), Q.OR)
 
-            
-            query = Q(rep_query & cus_query)
-            return query
-
-        def get_line_filters(services, products):
-            pro_query= Q()
-            srv_query= Q()
-            for pro_str in products:
-                id = pro_str.split('-')[0]
-                pro = InventoryItem.objects.get(pk=id)
-                pro_query.add(Q(product__product=pro), Q.OR)
-
-            for srv_str in services:
-                id = srv_str.split('-')[0]
-                srv = Service.objects.get(pk=id)
-                srv_query.add(Q(service__service=srv), Q.OR)
-            
-            query = Q(pro_query & srv_query)
-            return query
-
-        if len(products) == 0 and len(services) == 0:
-            additional_args = get_invoice_filters(kwargs)
-            total_sales = sum([i.subtotal for i in Invoice.objects.filter(
-                Q(date__gt=start) & 
-                Q(date__lte=end) & 
-                Q(draft=False) & Q(
-                    Q(status='invoice') | 
-                    Q(status='paid') | 
-                    Q(status='paid-partially')
-                ) & 
-                additional_args)
-                ])
-            context["report"] = plot_sales(start, end, filters=additional_args)
-            
-        else:
-            additional_args = get_line_filters(services, products)
-            
-            filters = Q(Q(invoice__date__gt=start) &
-                Q(invoice__date__lte=end) &
-                Q(invoice__draft=False) &
-                Q(
-                    Q(invoice__status='invoice') | 
-                    Q(invoice__status='paid') | 
-                    Q(invoice__status='paid-partially')
-                ) &
-                additional_args)
-            total_sales = sum([i.subtotal for i in \
-                     models.InvoiceLine.objects.filter(filters)])
-            context["report"] = plot_lines(start, end, filters=additional_args)
-
-            
-
+        filters = Q(Q(invoice__date__gt=start) &
+            Q(invoice__date__lte=end) &
+            Q(invoice__draft=False) &
+            Q(
+                Q(invoice__status='invoice') | 
+                Q(invoice__status='paid') | 
+                Q(invoice__status='paid-partially')
+            ) )
+        lines = models.InvoiceLine.objects.filter(filters)
+        context['products_and_services'] = lines
+        
+        total_sales = sum([i.subtotal for i in \
+                     lines])
         
         average_sales  = total_sales / D(abs((end - start).days))
+
 
         context["total_sales"] = total_sales
         context["average_sales"] = average_sales
@@ -281,3 +245,31 @@ class SalesReportPDFView(ConfigMixin, PDFTemplateView):
             urllib.parse.unquote(self.kwargs['end']), "%d %B %Y")
         return SalesReportView.common_context(context, start, end)
         
+
+class AccountsReceivableDetailReportView(ConfigMixin, TemplateView):
+    template_name = os.path.join('invoicing', 'reports', 'accounts_receivable', 
+        'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        invs = Invoice.objects.filter(status__in=['invoice', 'paid-partially'])
+        context["current"] = list(filter(lambda x: x.overdue_days == 0, invs))
+        context['week'] = list(filter(
+            lambda x: x.overdue_days > 0 and x.overdue_days < 7, invs))
+        context['week_two'] = list(filter(
+            lambda x: x.overdue_days > 6 and x.overdue_days < 15, invs))
+        context['month'] = list(filter(
+            lambda x: x.overdue_days > 14 and x.overdue_days < 31, invs))
+        context['two_months'] = list(filter(
+            lambda x: x.overdue_days > 30 and x.overdue_days < 61, invs))
+        context['more'] = list(filter(
+            lambda x: x.overdue_days > 60, invs))
+
+        context['ar_by_customer'] = plot_ar_by_customer()
+        context['ar_by_aging'] = plot_ar_by_aging()
+        context['date'] = datetime.date.today()
+        context['pdf_link'] = True
+
+
+        return context
+    

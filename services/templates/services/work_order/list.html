@@ -46,10 +46,14 @@
                 <a class="dropdown-item" href="{% url 'services:work-order-expense-create' pk=wo.pk %}">
                     <i class="fas fa-dollar-sign"></i> Record Work Related Expense
                 </a>
-                <a class="dropdown-item" href="{% url 'services:work-order-costing' pk=wo.pk %}">
-                    <i class="fas fa-receipt"></i> Costing
+                
+                {% endif %}
+                {% if  wo.works_request.invoice %}
+                    <a class="dropdown-item" href="{% url 'services:work-order-costing' pk=wo.pk %}">
+                    <i class="fas fa-receipt"></i> Profitability Analysis
                 </a>
                 {% endif %}
+                
             </div>
         </div>
 

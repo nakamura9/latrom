@@ -1,0 +1,44 @@
+
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "inventory/reports/vendor_balance/header.html"%}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+            {% for page in pages %}
+                <table class="table table-sm  table-striped ">
+                    <thead>
+                        <tr class='bg-primary text-white'>
+                            <th style="width:75%;">Vendor</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vendor in page %}
+                        <tr>
+                            <td>{{vendor}}</td>
+                            <td>{{vendor.account.balance | floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if not page.has_next %}
+                    <tfoot>
+                        <tr class='bg-primary text-white'>
+                            <th>Total:</th>
+                            <td>{{total}}</td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+                <p>{{page}}</p>
+            {% if page.has_next %}
+                <p style="page-break-before:always;"></p>
+                {% endif %}
+            {% endfor %}
+            </td>
+        </tr>
+    </tbody>
+</table>

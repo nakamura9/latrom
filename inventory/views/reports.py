@@ -4,12 +4,15 @@ import os
 from django.views.generic import TemplateView
 
 from . import models
-from common_data.utilities import ConfigMixin, MultiPageDocument
+from common_data.utilities import (ConfigMixin, 
+                                   MultiPageDocument,
+                                   ContextMixin)
 from inventory.views.common import CREATE_TEMPLATE
 from wkhtmltopdf.views import PDFTemplateView
 
 class InventoryReport( ConfigMixin, MultiPageDocument,TemplateView):
-    template_name = os.path.join('inventory', 'reports', 'inventory','report.html')
+    template_name = os.path.join('inventory', 'reports', 'inventory',
+        'report.html')
     page_length = 20
 
     def get_multipage_queryset(self):
@@ -68,3 +71,44 @@ class OutstandingOrderReportPDFView( ConfigMixin, PDFTemplateView):
         context['date'] = datetime.date.today()
         #insert config
         return context
+
+
+class PaymentsDueReportView(ConfigMixin, TemplateView):
+    template_name = os.path.join('inventory', 'reports', 'payments_due',
+        'report.html')
+    
+
+    def get_multipage_queryset(self):
+        return models.Order.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = datetime.date.today()
+        context["orders"] = [o for o in  models.Order.objects.filter(
+                due__lte=today,
+                status__in=['order', 'received', 'received_partially']) \
+                    if o.total_due > 0]
+        context['date'] = today
+        context['pdf_link'] = True
+        return context
+    
+class VendorBalanceReportView(ContextMixin, 
+                          ConfigMixin, 
+                          MultiPageDocument, 
+                          TemplateView):
+    template_name = os.path.join('inventory', 'reports', 'vendor_balance',
+        'report.html')
+    page_length = 20
+    extra_context = {
+        'date': datetime.date.today(),
+        'pdf_link': True,
+        'total': lambda: sum([i.account.balance \
+                             for i in models.Supplier.objects.all()])
+    }
+
+    def get_multipage_queryset(self):
+        return models.Supplier.objects.all()
+
+    
+
+    

@@ -1,5 +1,4 @@
 {% extends "window.html" %}
-{% load render_bundle from webpack_loader %}
 
 {% block content %}
 
@@ -19,7 +18,6 @@
                 <form method="GET" action="{{action}}" target="report_frame">
                 {% csrf_token %}
                 {{form.as_p}}
-                <div id="sales-report-modifiers"></div>
                 
                     <button class="btn btn-primary">Generate Report</button>
                 </form>
@@ -33,6 +31,5 @@
     </div>
 </div>
 
-{% render_bundle "invoicing" %}
 
 {% endblock content %}  

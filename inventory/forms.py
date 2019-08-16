@@ -462,6 +462,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
+        self.fields['due'].required = True
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
@@ -474,18 +475,19 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     Column('supplier', css_class='form group col-6'),
                     Column('ship_to', css_class='form group col-6'),
                 ),
-                    'issuing_inventory_controller'
+                    
+                Row(
+                    Column('issuing_inventory_controller', css_class='col-6'),
+                    Column('supplier_invoice_number',css_class='col-6')
                     ),
-                Tab('Payment',
-                        'tax',
-                        'make_payment',
-                        'due'
+                'due',
+                'tax',
                     ),
-                Tab('Shipping and Notes', 
+                Tab('Shipping and Payment', 
                     Row(
                         Column('bill_to', 
                             'tracking_number',
-                            'supplier_invoice_number',
+                            'make_payment',
                             css_class='col-6'),
                         Column('notes', css_class='col-6'),
                     )),

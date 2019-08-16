@@ -162,7 +162,20 @@
                                         <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
                                             Report</a>
                                     </li>
-                                    <li class="list-group-item hvr-grow">...</li>
+                                    <li class="list-group-item hvr-grow">
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a class='dropdown-item' href="{% url 'inventory:payments-due-report' %}">
+                                            Payments Due Report
+                                        </a>
+                                        <a class='dropdown-item' href="{% url 'inventory:vendor-balance-report' %}">
+                                            Vendor Balance Report
+                                        </a>
+                                            </div>
+                                        </div>
+                                    </li>
 
                                 </ul>
                             </div>

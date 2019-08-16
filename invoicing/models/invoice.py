@@ -425,6 +425,15 @@ class InvoiceLine(models.Model):
 
     #what it is sold for
     
+    @property
+    def type_string(self):
+        mapping = {
+            1: 'product',
+            2: 'service',
+            3: 'expense'
+        }
+        return mapping[self.line_type]
+
     @property 
     def component(self):
         mapping = {
@@ -435,6 +444,15 @@ class InvoiceLine(models.Model):
 
         return mapping[self.line_type]
     
+    @property
+    def name(self):
+        if self.line_type == 1:
+            return str(self.component.product).split('-')[1]
+        elif self.line_type == 2:
+            return self.component.service.name
+        return ''
+
+
     def __str__(self):
         if not self.component:
             return "<INVALID INVOICE LINE>"
@@ -442,12 +460,12 @@ class InvoiceLine(models.Model):
         if self.line_type == 1:
             return '[PRODUCT] {} x {} @ ${:0.2f}{}'.format(
                 self.component.quantity,
-                str(self.component.product).split('-')[1],
+                self.name,
                 self.unit_price,
                 self.component.product.unit
             )
         elif self.line_type == 2:
-            ret_string = f'[SERVICE] {self.component.service.name}'
+            ret_string = f'[SERVICE] {self.name}'
             if self.component.service.flat_fee > 0:
                 ret_string += ' Flat rate: {:0.2f}'.format(
                     self.component.service.flat_fee
@@ -634,6 +652,37 @@ class ServiceLineComponent(models.Model):
 
         return None
 
+    @property
+    def cost_of_sale(self):
+        '''
+        Calculate the total cost of sales for the line 
+        based on expenses recorded and wages earned
+        returns total of wages and expenses
+        '''
+        if not WorkOrderRequest.objects.filter(
+                invoice=self.invoiceline.invoice,
+                service=self.service).exists():
+            return 0
+
+        orders = WorkOrderRequest.objects.filter(
+                    invoice=self.invoiceline.invoice,
+                    service=self.service).first().work_orders
+
+        total_expenses = 0
+        total_wages = 0
+        for order in orders:
+            total_expenses += sum([i.expense.amount \
+                    for i in order.expenses])
+            total_wages += sum([i.total_cost for i in order.time_logs])
+            print(order.pk)
+            print(order.time_logs)
+
+
+        return total_expenses + total_wages
+
+    @property
+    def gross_income(self):
+        return self.invoiceline.subtotal - self.cost_of_sale
 
 class ExpenseLineComponent(models.Model):
     expense = models.ForeignKey('accounting.Expense', 

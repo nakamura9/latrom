@@ -61,17 +61,22 @@
                                     <li class="list-group-item hvr-grow"><a class="card-link"
                                         href="{% url 'invoicing:customer-statement-form' %}">Customer
                                         Statement</a></li>
-                                <!--
-                            <li class="list-group-item hvr-grow"><a class="card-link" href="#">Unpaid Accounts Report</a></li>
-                            <li class="list-group-item hvr-grow"><a class="card-link" href="#">Sales Rep reports</a></li>
-                            <li class="list-group-item hvr-grow"><a class="card-link" href="#">Statement</a></li>
-                            -->
                                 <li class="list-group-item hvr-grow"><a class="card-link"
                                         href="/invoicing/sales-report-form">Sales
                                         Report</a></li>
-                                <li class="list-group-item hvr-grow"><a class="card-link"
-                                        href="{% url 'invoicing:invoice-aging' %}">Invoice
-                                        Aging Report</a></li>
+                                <li class="list-group-item hvr-grow">
+                                    <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item"
+                                        href="{% url 'invoicing:invoice-aging' %}">Invoice Aging Report</a>   
+                                            <a class="dropdown-item"
+                                        href="{% url 'invoicing:accounts-receivable-report' %}">Accounts Receivable Report</a>            
+                                            
+                                            </div>
+                                    </div>
+                                </li>
                                 </ul>
                             </div>
                         </div>

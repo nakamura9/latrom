@@ -2,8 +2,8 @@ import datetime
 import os
 import urllib
 
-from services.models import TimeLog
-from django.views.generic import TemplateView
+from services.models import TimeLog, ServiceWorkOrder
+from django.views.generic import TemplateView, DetailView
 from common_data.utilities import extract_period, PeriodReportMixin, PeriodSelectionException
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -12,8 +12,9 @@ from common_data.views import ContextMixin
 from common_data.forms import PeriodReportForm
 from functools import reduce
 from wkhtmltopdf.views import PDFTemplateView
-
+from invoicing.models import InvoiceLine
 import pygal
+from services.views.report_utils.plotters import plot_expense_breakdown
 
 class ServicePersonUtilizationFormView(ContextMixin, FormView):
     template_name = os.path.join('common_data', 'reports', 
@@ -80,3 +81,81 @@ class ServicePersonUtilizationReportPDFView(PDFTemplateView):
 
         return ServicePersonUtilizationReport.common_context(context, start, 
             end)
+
+class JobProfitabilityReportFormView(ContextMixin, FormView):
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
+    form_class = PeriodReportForm
+    
+    extra_context = {
+        'action':reverse_lazy('services:reports-job-profitability'),
+    }
+
+class JobProfitabilityReport(TemplateView):
+    template_name = os.path.join('services', 'reports', 'job_profitability.html')
+
+    def get_context_data(self, *args, **kwargs):
+        context =super().get_context_data(*args, **kwargs)
+        start, end = extract_period(self.request.GET)
+        jobs = InvoiceLine.objects.filter(
+                Q(invoice__date__gte=start) &
+                Q(invoice__date__lte=end) &
+                Q(invoice__draft=False) &
+                Q(invoice__status__in=['paid', 'invoice', 'paid-partially']) &
+                Q(service__isnull=False))
+        revenue = sum([i.subtotal for i in jobs])
+        expenses = sum([i.service.cost_of_sale for i in jobs])
+
+        context['jobs'] = jobs
+        context['revenue'] = revenue
+        context['expenses'] = expenses
+        context['income'] = revenue - expenses
+        context.update({
+            'start': start,
+            'end': end,
+            'date': datetime.date.today()
+        })
+
+        return context
+
+class WorkOrderCostingView(DetailView):
+    template_name = os.path.join('services', 'work_order', 'costing.html')
+    model = ServiceWorkOrder
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        labour = sum([i.total_cost for i in self.object.time_logs])
+        expenses = sum([i.expense.amount \
+            for i in self.object.workorderexpense_set.all()])
+    
+        context['total_labour_cost'] = labour 
+        context['total_expense_costs'] = expenses
+        context['total_costs'] = labour + expenses
+        context['graph'] = plot_expense_breakdown(self.object)
+        return context
+
+
+class UnbilledCostsByJobReportFormView(ContextMixin, FormView):
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
+    form_class = PeriodReportForm
+    
+    extra_context = {
+        'action':reverse_lazy('services:reports-unbilled-costs-by-job'),
+    }
+
+class UnbilledCostsByJobReportView(TemplateView):
+    template_name = os.path.join('services', 'reports', 'unbilled_costs.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start, end = extract_period(self.request.GET)
+        context["jobs"] = ServiceWorkOrder.objects.filter(date__gte=start, 
+            date__lte=end)
+        context.update({
+            'start': start,
+            'end': end,
+            'date': datetime.date.today()
+        })
+        return context
+    

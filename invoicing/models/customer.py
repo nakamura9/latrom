@@ -71,7 +71,7 @@ class Customer(SoftDeletionModel):
     @property
     def credit_invoices(self):
         return [i for i in self.invoices \
-            if i.status == 'invoice']
+            if i.status in ('invoice', 'paid-partially')]
         
     @property 
     def address(self):
@@ -80,6 +80,13 @@ class Customer(SoftDeletionModel):
 
         return self.individual.address
 
+    def sales_over_period(self, start, end):
+        return Invoice.objects.filter(
+                draft=False,
+                status__in=['invoice', 'paid',' paid-partially'],
+                customer=self, date__gte=start,
+                                        date__lte=end)
+
     @property
     def age_list(self):
         #returns a 7 element tuple that enumerates the number of invoices 
@@ -87,17 +94,21 @@ class Customer(SoftDeletionModel):
         
         age_list = [0, 0, 0, 0, 0, 0]
         for inv in self.credit_invoices:
-            if inv.overdue == 0:
-                age_list[0] += inv.total
-            elif inv.overdue < 8:
-                age_list[1] += inv.total
-            elif inv.overdue < 15:
-                age_list[2] += inv.total
-            elif inv.overdue < 31:
-                age_list[3] += inv.total
-            elif inv.overdue < 61:
-                age_list[4] += inv.total
+            if inv.overdue_days == 0:
+                age_list[0] += inv.total_due
+            elif inv.overdue_days < 8:
+                age_list[1] += inv.total_due
+            elif inv.overdue_days < 15:
+                age_list[2] += inv.total_due
+            elif inv.overdue_days < 31:
+                age_list[3] += inv.total_due
+            elif inv.overdue_days < 61:
+                age_list[4] += inv.total_due
             else:
-                age_list[5] += inv.total
+                age_list[5] += inv.total_due
         
         return age_list
+
+    @property
+    def total_accounts_receivable(self):
+        return sum([inv.total_due for inv in self.credit_invoices])

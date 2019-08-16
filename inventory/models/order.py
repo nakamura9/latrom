@@ -63,7 +63,8 @@ class Order(SoftDeletionModel):
         default="")
     ship_to = models.ForeignKey('inventory.WareHouse', 
         on_delete=models.SET_NULL, null=True)
-    tax = models.ForeignKey('accounting.Tax',on_delete=models.SET_NULL, null=True, 
+    tax = models.ForeignKey('accounting.Tax',on_delete=models.SET_NULL, 
+        null=True, 
         default=1)
     tracking_number = models.CharField(max_length=64, blank=True, 
         default="")
@@ -71,10 +72,12 @@ class Order(SoftDeletionModel):
     status = models.CharField(max_length=24, 
         choices=ORDER_STATUS_CHOICES)
     received_to_date = models.FloatField(default=0.0)
-    issuing_inventory_controller = models.ForeignKey('inventory.InventoryController', 
+    issuing_inventory_controller = models.ForeignKey(
+        'inventory.InventoryController', 
         default=1, on_delete=models.SET_NULL, null=True)
     entry = models.ForeignKey('accounting.JournalEntry',
-         blank=True, on_delete=models.SET_NULL, null=True, related_name="order_entry")
+         blank=True, on_delete=models.SET_NULL, null=True, 
+         related_name="order_entry")
     entries = models.ManyToManyField('accounting.JournalEntry',
         related_name="order_entries")
     shipping_cost_entries = models.ManyToManyField('accounting.JournalEntry', 
@@ -98,7 +101,10 @@ class Order(SoftDeletionModel):
     def __str__(self):
         return 'ORD' + str(self.pk)
 
-    # TODO test
+    @property
+    def days_overdue(self):
+        return (datetime.date.today() - self.due).days
+
     @property
     def product_total(self):
         return sum([i.subtotal for i in self.orderitem_set.filter(
@@ -141,10 +147,14 @@ class Order(SoftDeletionModel):
     def payments(self):
         return inventory.models.item_management.OrderPayment.objects.filter(order=self)
     
+    @property 
+    def amount_paid(self):
+        return sum([i.amount for i in self.payments])
+    
+    
     @property
     def total_due(self):
-        total_paid = sum([i.amount for i in self.payments])
-        return self.total - total_paid
+        return self.total - self.amount_paid
 
     @property
     def payment_status(self):

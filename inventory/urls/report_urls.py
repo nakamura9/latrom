@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 
 from inventory import views
 
@@ -12,5 +12,9 @@ report_urls = [
         name='inventory-report-pdf'),
     re_path(r'^outstanding-orders-report-pdf/?$', 
         views.OutstandingOrderReportPDFView.as_view(),    
-            name='outstanding-orders-report-pdf')
+            name='outstanding-orders-report-pdf'),
+    path('payments-due-report', views.PaymentsDueReportView.as_view(), 
+        name='payments-due-report'),
+    path('vendor-balance-report', views.VendorBalanceReportView.as_view(), 
+        name='vendor-balance-report'),
 ]

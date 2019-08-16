@@ -1,0 +1,42 @@
+{% extends 'common_data/page/pdf_page.html' %}
+
+{% block page_contents %}
+
+<h4>Unbilled Costs By Job report</h4>
+<p>Created: {{date}}</p>
+<p>For period spanning {{start}} to {{end}}</p>
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Cost ID</th>
+            <th>Date</th>
+            <th>Memo</th>
+            <th>Account</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+            {% if job.unbilled_expenses.count > 0 %}
+            
+                <tr class="bg-primary text-white">
+                    <th colspan="5">Job ID: {{job.pk | stringformat:"06d"}}</th>
+                </tr>
+                {% for exp in job.unbilled_expenses %}
+                    <tr>
+                        <td>{{exp.expense.id| stringformat:"06d"}}</td>
+                        <td>{{exp.expense.date}}</td>
+                        <td>{{exp.expense.description}}</td>
+                        <td>{{exp.expense.expense_account}}</td>
+                        <td>{{exp.expense.amount}}</td>
+                    </tr>
+                {% endfor %}
+            
+            {% endif %}
+            
+        {% endfor %}
+    </tbody>
+    
+</table>
+{% endblock  %}
