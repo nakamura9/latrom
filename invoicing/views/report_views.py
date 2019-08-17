@@ -252,7 +252,8 @@ class AccountsReceivableDetailReportView(ConfigMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        invs = Invoice.objects.filter(status__in=['invoice', 'paid-partially'])
+        invs = Invoice.objects.filter(status__in=['invoice', 'paid-partially'], 
+            draft=False)
         context["current"] = list(filter(lambda x: x.overdue_days == 0, invs))
         context['week'] = list(filter(
             lambda x: x.overdue_days > 0 and x.overdue_days < 7, invs))
@@ -273,3 +274,54 @@ class AccountsReceivableDetailReportView(ConfigMixin, TemplateView):
 
         return context
     
+class SalesByCustomerReportFormView(ContextMixin, FormView):
+    template_name = os.path.join('common_data', 'reports', 'report_template.html')
+    form_class = forms.SalesReportForm
+    extra_context = {
+        "action": reverse_lazy("invoicing:sales-by-customer-report")
+    }
+
+class SalesByCustomerReportView(ConfigMixin, TemplateView):
+    template_name = os.path.join('invoicing', 'reports', 'sales_by_customer', 
+        'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start, end = extract_period(self.request.GET)
+        context["customers"] = [{
+            'name': str(c),
+            'sales': sum([i.subtotal for i in c.sales_over_period(start, end)])
+            } for c in models.Customer.objects.all()]
+        context["sales"] = models.Invoice.objects.filter(date__gte=start,
+            date__lte=end)
+        context.update({
+            'start': start.strftime("%d %B '%y"),
+            'end': end.strftime("%d %B '%y")
+        })
+        return context
+    
+class CustomerPaymentsReportFormView(ContextMixin, FormView):
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
+    form_class = forms.SalesReportForm
+    extra_context = {
+        "action": reverse_lazy("invoicing:customer-payments-report")
+    }
+
+
+
+class CustomerPaymentsReportView(ConfigMixin, TemplateView):
+    template_name = os.path.join('invoicing', 'reports', 'customer_payments', 
+        'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start, end = extract_period(self.request.GET)
+        context["payments"] = models.Payment.objects.filter(date__gte=start, 
+            date__lte=end)
+        
+        context.update({
+            'start': start.strftime("%d %B '%y"),
+            'end': end.strftime("%d %B '%y")
+        })
+        return context

@@ -1,0 +1,30 @@
+
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "invoicing/reports/sales_by_customer/header.html"%}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table-sm table">
+                    <thead>
+                        <tr class='bg-primary text-white'>
+                            <th>Customer</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cus in customers %}
+                            <tr>
+                                <td>{{cus.name}}</td>
+                                <td>{{cus.sales |floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>

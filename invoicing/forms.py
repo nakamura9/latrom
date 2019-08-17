@@ -232,5 +232,5 @@ class InvoicePaymentForm(forms.ModelForm, BootstrapMixin):
         )
     
     class Meta:
-        exclude = [ 'active']
+        exclude = [ 'active', 'entry']
         model = models.Payment
