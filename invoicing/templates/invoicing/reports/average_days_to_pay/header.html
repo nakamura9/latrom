@@ -1,0 +1,13 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Average Days To Pay Report
+{% endblock title %}
+
+{% block left_content %}
+<h5>As of: {{date}}</h5>
+{% endblock left_content %}
+
+{% block right_content %}
+{% include "common_data/common/business.html" %}
+{% endblock right_content %}

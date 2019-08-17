@@ -8,6 +8,7 @@ import inventory
 from accounting.models import Account
 
 from invoicing.models.invoice import Invoice
+from invoicing.models.payment import Payment
 from common_data.models import  SoftDeletionModel
 
 class Customer(SoftDeletionModel):
@@ -79,6 +80,28 @@ class Customer(SoftDeletionModel):
             return self.organization.business_address
 
         return self.individual.address
+
+    @property
+    def last_transaction_date(self):
+        if not Payment.objects.filter(invoice__customer=self):
+            return None
+        return Payment.objects.filter(
+                invoice__customer=self).latest('date').date
+
+    @property
+    def average_days_to_pay(self):
+        total_days = 0
+        total_full_payments = 0
+        for inv in Invoice.objects.filter(customer=self, 
+                                          draft=False,
+                                          status='paid'):
+            last_payment_date = inv.payment_set.latest('date').date
+            total_days += (last_payment_date - inv.date).days
+            total_full_payments += 1
+
+        if total_full_payments == 0:
+            return 0
+        return total_days / total_full_payments
 
     def sales_over_period(self, start, end):
         return Invoice.objects.filter(

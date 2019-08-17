@@ -294,6 +294,8 @@ class SalesByCustomerReportView(ConfigMixin, TemplateView):
             } for c in models.Customer.objects.all()]
         context["sales"] = models.Invoice.objects.filter(date__gte=start,
             date__lte=end)
+        context['pdf_link'] =True
+        
         context.update({
             'start': start.strftime("%d %B '%y"),
             'end': end.strftime("%d %B '%y")
@@ -319,9 +321,30 @@ class CustomerPaymentsReportView(ConfigMixin, TemplateView):
         start, end = extract_period(self.request.GET)
         context["payments"] = models.Payment.objects.filter(date__gte=start, 
             date__lte=end)
+        context['pdf_link'] =True
         
         context.update({
             'start': start.strftime("%d %B '%y"),
             'end': end.strftime("%d %B '%y")
         })
+        return context
+
+class AverageDaysToPayReportView(ConfigMixin, TemplateView):
+    template_name = os.path.join('invoicing', 'reports', 'average_days_to_pay', 
+        'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["customers"] = models.Customer.objects.all()
+        chart = pygal.Bar()
+        chart.title = 'Average Days to Pay'
+        customer_names = [str(i) for i in models.Customer.objects.all()]
+        customer_averages = [i.average_days_to_pay \
+            for i in models.Customer.objects.all()]
+        chart.x_labels = customer_names
+        chart.add('Days To Pay', customer_averages)
+
+        context['pdf_link'] =True
+        context['graph'] = chart.render(is_unicode=True)
+        
         return context

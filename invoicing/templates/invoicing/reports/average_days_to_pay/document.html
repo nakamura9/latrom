@@ -1,0 +1,48 @@
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "invoicing/reports/average_days_to_pay/header.html"%}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Account ID</th>
+                            <th>Last Transaction Date</th>
+                            <th>Average Days to Pay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cus in customers %}
+                        <tr>
+                            <td>{{cus}}</td>
+                            <td>{{cus.account.pk}}</td>
+                            <td>{{cus.last_transaction_date}}</td>
+                            <td>{{cus.average_days_to_pay}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p style='page-break-after:always;'></p>
+
+                {% autoescape off %}
+
+                    {{graph}}
+                {% endautoescape %}
+
+
+
+            </td>
+        </tr>
+                
+    </tbody>
+</table>
+<script>
+$(document).ready(function(){
+    $('footer').hide();
+})
+</script>

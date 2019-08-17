@@ -40,4 +40,7 @@ report_urls = [
     path("customer-payments-form/", 
         views.CustomerPaymentsReportFormView.as_view(), 
         name="customer-payments-form"),
+    path("average-days-to-pay-report/", 
+        views.AverageDaysToPayReportView.as_view(), 
+        name="average-days-to-pay-report"),
 ]
