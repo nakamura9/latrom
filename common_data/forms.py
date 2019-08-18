@@ -104,7 +104,7 @@ class GlobalConfigForm(forms.ModelForm, BootstrapMixin):
     #            ], required=False)
     
     class Meta:
-        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization', "backup_location_type", "backup_location", 'is_configured'
+        exclude = "hardware_id", "application_version", "last_license_check",'document_theme', 'currency', 'organization', "backup_location_type", "backup_location", 'is_configured', 'last_automated_service_run',
         model = models.GlobalConfig
 
         widgets = {
@@ -191,6 +191,7 @@ class AuthenticateForm(BootstrapMixin, forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
+        print(cleaned_data)
         user = authenticate(username=cleaned_data['user'].username,
                             password=cleaned_data['password'])
         

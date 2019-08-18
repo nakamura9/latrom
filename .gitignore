@@ -1,4 +1,4 @@
-db.sqlite3
+*.sqlite3
 *.pyc
 /assets/node_modules/
 /assets/electron/
@@ -29,3 +29,5 @@ common_data/static/admin/
 build_counter.json
 */settings.json
 *.code-workspace
+/database/config.json
+database/gui/

@@ -17,3 +17,5 @@ from .views import (CommonViewTests,
 from .model_util import AccountingModelCreator
 
 from .reports import ReportTests
+
+from .util import AccountingServiceTest

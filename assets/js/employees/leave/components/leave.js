@@ -21,20 +21,17 @@ const leave = (props) =>{
         height: "100%",
         width: "100%",
         color: 'white',
-        backgroundColor: '#07f'
+        backgroundColor: '#07f',
+        zIndex: 1,
+        position: "absolute",
+        left: `${40 + props.offset}px`,
+        border: '1px solid white',
+        top: `${startY}px`,
+        height: `${height}px`, 
+        width: "150px",
     };
     return(
         <a 
-            style={{
-                zIndex: 1,
-                position: "absolute",
-                left: `${40 + props.offset}px`,
-                border: '1px solid white',
-                top: `${startY}px`,
-                height: `${height}px`, 
-                width: "150px",
-                
-            }} 
             href={"/employees/leave-detail/" + props.data.id}>
             <div style={style}>
                 <div>

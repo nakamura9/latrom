@@ -16,14 +16,25 @@ from django.shortcuts import reverse
 
 class EmployeeTimeSheet(models.Model):
     MONTH_CHOICES = [
-        (i, i) for i in range(0, 13)
+        'January',
+        'February',
+        'March', 
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
     ] 
     YEAR_CHOICES = [
         (i, i) for i in range(2000, 2051)
     ] 
     employee = models.ForeignKey('employees.employee', on_delete=models.SET_NULL, null=True, 
         related_name='target')
-    month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
+    month = models.PositiveSmallIntegerField(choices=enumerate(MONTH_CHOICES, start=1))
     year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
     recorded_by = models.ForeignKey('employees.employee', on_delete=models.SET_NULL, 
         related_name='recorder', null=True)
@@ -51,6 +62,7 @@ class EmployeeTimeSheet(models.Model):
 
     def get_absolute_url(self):
         return reverse("employees:timesheet-detail", kwargs={"pk": self.pk})
+    
     
 
 

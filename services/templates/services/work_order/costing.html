@@ -3,13 +3,13 @@
 {% block content %}
 
 <style>
-.roomy {
-    padding: 5px;
-}
+    .roomy {
+        padding: 5px;
+    }
 </style>
 
 <div class="jumbotron">
-    <h1 class="display-3">Work Order Costing</h1>
+    <h1 class="display-3">Job Profitability Analysis</h1>
     <p class="lead">This page lists and totals all the costs incurred in executing a work order</p>
     <hr class="my-2">
     <p>Actions</p>
@@ -21,74 +21,115 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-6">
-            <h4 class="text-white roomy bg-primary">Direct Labour expenses</h4>
-            <p><b>NB</b> Direct labour costs are only recorded for employees on wages whose payment depends on the
-                number of hours worked.</p>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Employee</th>
-                        <th>Normal Time</th>
-                        <th>Overtime</th>
-                        <th>Labour($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in object.time_logs %}
-                    <tr>
-                        <td>{{log.date}}</td>
-                        <td>{{log.employee}}</td>
-                        <td>{{log.normal_time}}</td>
-                        <td>{{log.overtime}}</td>
-                        <td>{{log.total_cost}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="4">Total</th>
-                        <td>{{total_labour_cost}}</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        <div class="col-6">
-            <h4 class="bg-primary text-white roomy">Cost of revenue expenses</h4>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Expense ID</th>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for expense in object.workorderexpense_set.all %}
-                    <tr>
-                        <td>{{expense.expense.id}}</td>
-                        <td>{{expense.expense.date}}</td>
-                        <td>{{expense.expense.category}}</td>
-                        <td>{{expense.expense.amount}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="2">Total</th>
-                        <td>{{total_expense_costs}}</td>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="col-2"></div>
+        <div class="col-8">
+            <div class="card shadow">
+                <div class="card-body">
 
+                    <div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Invoice #</th>
+                                <td>{{object.works_request.invoice.pk |stringformat:"06d"}}</td>
+                            </tr>
+                            <tr>
+                                <th>Date Invoiced</th>
+                                <td>{{object.works_request.invoice.date}}</td>
+                            </tr>
+                            <tr>
+                                <th>Date Completed</th>
+                                <td>{{object.completed}}</td>
+                            </tr>
+                            <tr>
+                                <th>Job ID</th>
+                                <td>{{object.pk |stringformat:"06d"}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div>
+                        {% autoescape off %}
+                            {{graph}}
+                        {% endautoescape %}
+                    </div>
+                    <p style="page-break-before:always;"></p>
+
+                    <h4 class="text-white roomy bg-primary">Revenue: <span
+                            style="float:right;">${{object.works_request.invoice_line.subtotal | floatformat:2}}</span>
+                    </h4>
+                    <div style="margin-left:2rem;">
+                        <h5 class="text-white roomy bg-primary">Direct Labour expenses*</h5>
+                        <p style="font-size: 0.6rem;"><b>*NB</b> Direct labour costs are only recorded for employees on
+                            wages whose payment depends on
+                            the
+                            number of hours worked.</p>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Employee</th>
+                                    <th>Normal Time</th>
+                                    <th>Overtime</th>
+                                    <th>Labour($)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in object.time_logs %}
+                                <tr>
+                                    <td>{{log.date}}</td>
+                                    <td>{{log.employee}}</td>
+                                    <td>{{log.normal_time}}</td>
+                                    <td>{{log.overtime}}</td>
+                                    <td>{{log.total_cost}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4">Total</th>
+                                    <td>{{total_labour_cost}}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div style="margin-left:2rem;">
+                        <h5 class="bg-primary text-white roomy">Cost of revenue expenses</h5>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Expense ID</th>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in object.workorderexpense_set.all %}
+                                <tr>
+                                    <td>{{expense.expense.id}}</td>
+                                    <td>{{expense.expense.date}}</td>
+                                    <td>{{expense.expense.category_string}}</td>
+                                    <td>{{expense.expense.amount}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">Total</th>
+                                    <td>{{total_expense_costs}}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <h4 class="text-white roomy bg-primary">Total Expenses: <span
+                            style="float:right;">${{total_costs}}</span></h4>
+                    <h4 class="text-white roomy bg-primary">Gross Profit: <span
+                            style="float:right;">${{object.works_request.invoice_line.service.gross_income | floatformat:2}}</span>
+                    </h4>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <h4 class="text-white roomy bg-primary">Total Expenses: <span style="float:right;">${{total_costs}}</span></h4>
-        </div>
+        <div class="col-2"></div>
     </div>
 </div>
 

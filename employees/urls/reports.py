@@ -10,4 +10,12 @@ report_urls = [
         name='leave-report'),
     path('leave-report-pdf', LeaveReportPDFView.as_view(), 
         name='leave-report-pdf'),
+    path('payroll-report', PayrollReport.as_view(), 
+        name='payroll-report'),
+    path('payroll-report-form', PayrollReportFormView.as_view(), 
+        name='payroll-report-form'),
+    
 ]
+
+'''path('payroll-report-pdf', LeaveReport.as_view(), 
+        name='payroll-report-pdf'),'''

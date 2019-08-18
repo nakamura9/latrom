@@ -56,6 +56,14 @@ class InventoryItem(SoftDeletionModel):
         on_delete=models.SET_NULL,
         null=True)
 
+
+    def save(self, *args, **kwargs):
+        #Strange bug where active is defaulting to false
+        if self.pk is None:
+            self.active =True
+        
+        return super().save(*args, **kwargs)
+
     def __getattribute__(self, name):
         try:
             return super().__getattribute__(name)
@@ -238,8 +246,14 @@ class ProductComponent(models.Model):
 
         #getting the latest orderitems in order of date ordered
         order_items = inventory.models.OrderItem.objects.filter(
-            item=self.parent, order__status="order").order_by("order__date").reverse()
+            Q(item=self.parent) & 
+            Q(
+                Q(order__status="order") | 
+                Q(order__status="received-partially") |
+                Q(order__status="received")
+            )).order_by("order__date").reverse()
 
+        print(order_items)
         #iterate over items
         for item in order_items:
             # orders for which cumulative ordered quantities are less than

@@ -45,8 +45,11 @@ class Payslip(models.Model):
     overtime_one_hours = models.FloatField()
     overtime_two_hours = models.FloatField()
     pay_roll_id = models.IntegerField()
-    pay_grade = models.ForeignKey('employees.paygrade', on_delete=models.SET_NULL, null=True, 
+    pay_grade = models.ForeignKey('employees.paygrade', 
+        on_delete=models.SET_NULL, 
+        null=True, 
         default=1)
+    created = models.DateTimeField(auto_now=True)
     pay_grade_version = models.PositiveSmallIntegerField(default=0)
     status = models.CharField(choices=[
         ('draft', 'Draft'),
@@ -69,7 +72,7 @@ class Payslip(models.Model):
         return all_versions[-self.pay_grade_version].field_dict
         
     def __str__(self):
-        return str(self.employee) 
+        return f'Payslip #{self.pk} for {self.employee}' 
     
 
     @property
@@ -87,6 +90,7 @@ class Payslip(models.Model):
         else:
             rep = invoicing.models.SalesRepresentative.objects.get(
                 employee=self.employee)
+            # sales only count for paid invoices
             total_sales = rep.sales(
                 self.start_period, 
                 self.end_period)
@@ -134,6 +138,15 @@ class Payslip(models.Model):
         return total
 
     @property
+    def tax_deductable_deductions(self):
+        total = 0
+        for deduction in self.deductions:
+            if deduction.tax_deductable:
+                total += deduction.deduct(self)
+
+        return total
+
+    @property
     def gross_pay(self):
         gross = self.paygrade_['salary']
         gross += self.normal_pay
@@ -145,7 +158,12 @@ class Payslip(models.Model):
 
     @property 
     def taxable_gross_pay(self):
-        return self.gross_pay - self.tax_free_benefits
+        '''
+        Taxable gross income consists of gross earnings minus the 
+        income from tax free benefits like some bonuses minus 
+        deductions that are removed from income before the calculation of PAYE
+        '''
+        return self.gross_pay - self.tax_free_benefits - self.tax_deductable_deductions
 
 
     @property
@@ -180,6 +198,10 @@ class Payslip(models.Model):
             ]
 
     @property
+    def calculated_deductions(self):
+        return [{'name': d.name, 'amount': d.deduct(self)} for d in self.deductions]
+
+    @property
     def calculated_payroll_taxes(self):
         taxes = [
             PayrollTax.objects.get(pk=pk) \
@@ -188,7 +210,7 @@ class Payslip(models.Model):
         return [
             {
                 'name': tax.name,
-                'amount': tax.tax(self.gross_pay)
+                'amount': tax.tax(self.taxable_gross_pay)
             } for tax in taxes
         ]
             
@@ -230,11 +252,14 @@ class Payslip(models.Model):
             self.save()
 
     def create_entry(self):
-        '''This method updates the accounting system for payroll actions
-        the selected account from settingsis deducted for all payments.
-        deductions with specific accounts deposit into those accounts 
-        payroll taxes deposit into their own account
-        net income is deposited into account 5008
+        '''
+        This method updates the accounting system for payroll actions
+        the selected account from settings is deducted for all payments.
+        Deductions with specific accounts deposit into those accounts, if an 
+        employer has a contribution to deductions, their contribution is 
+        factored in. 
+        Payroll taxes deposit into their own account.
+        Net income is deposited into account 5008.
         '''
         settings = EmployeesSettings.objects.first()
         if settings.require_verification_before_posting_payslips and \
@@ -243,23 +268,23 @@ class Payslip(models.Model):
             return
         
         j = accounting.models.JournalEntry.objects.create(
-                memo= 'Auto generated entry from verified payslip. ',
+                memo= f'Auto generated entry from verified payslip #{self.pk}.',
                 date=datetime.date.today(),
                 journal =accounting.models.Journal.objects.get(
                     pk=2),#Cash disbursements Journal
                 created_by = settings.payroll_officer.employee.user,
                 draft=False
         )
-        j.credit(self.gross_pay, settings.payroll_account)#default cash account
         
         deduction_total = 0
+        total_employer_deductions = 0
         for pk in self.paygrade_['deductions']:
             deduction = Deduction.objects.get(pk=pk)
-            amount = deduction.deduct(self)
+            employer_deduction = deduction.employer_deduction(self)
+            amount = deduction.deduct(self) + employer_deduction
             deduction_total += amount
             # create a NSSA account etc
             j.debit(amount, deduction.account_paid_into)
-
         
         j.debit(D(self.gross_pay) - \
                 (self.total_payroll_taxes + D(deduction_total)), 
@@ -267,7 +292,8 @@ class Payslip(models.Model):
         j.debit(self.total_payroll_taxes, 
             accounting.models.Account.objects.get(pk=5010))#payroll taxes
         
-        
+        j.credit(self.gross_pay + total_employer_deductions,
+            settings.payroll_account)#default cash account
 
         self.entry = j
         self.status = 'paid'

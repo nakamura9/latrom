@@ -6,13 +6,42 @@
     <h1 class="display-3">Complete Work Order </h1>
     <p class="lead">Page for Work Order Resolvers to complete their work orders</p>
     <hr class="my-2">
-    <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:work-order-detail' pk=object.pk %}" role="button">View
-            Details</a>
-        <a class="btn btn-primary btn-lg" href="{% url 'services:work-order-update' pk=object.pk %}"
-            role="button">Update</a>
-    </p>
+    <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'services:work-order-update' pk=object.pk %}">
+                    <i class="fas fa-edit"></i> Update 
+                </a>
+
+                <a class="dropdown-item" href="{% url 'services:work-order-detail' pk=object.pk %}">
+                    <i class="fas fa-eye"></i> Detail View / Authorize
+                </a>
+                {% if object.procedure_pk %}
+                <a class="dropdown-item" href="{% url 'services:procedure-details' pk=object.procedure_pk %}">
+                    <i class="fas fa-list-ul"></i> View Procedure
+                </a>
+                
+                {% endif %}
+                {% if object.status != 'authorized' %}
+                
+                <a class="dropdown-item" href="{% url 'services:work-order-equipment-requisition-create' pk=object.pk %}">
+                    <i class="fas fa-file-invoice"></i> Request Equipment
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-consumable-requisition-create' pk=object.pk %}">
+                    <i class="fas fa-file-invoice"></i> Request Consumables
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-expense-create' pk=object.pk %}">
+                    <i class="fas fa-dollar-sign"></i> Record Work Order  Expense
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-costing' pk=object.pk %}">
+                    <i class="fas fa-receipt"></i>Work Order Costing
+                </a>
+                {% endif %}
+            </div>
+        </div>
 </div>
 
 <div class="container">
@@ -21,16 +50,19 @@
         <div class="row">
             <div class="col-sm-12">
                 <nav class="nav nav-tabs nav-stacked">
-                    <a href="#basic" class="nav-link active" data-toggle="tab">Basic</a>
-                    <a href="#work" class="nav-link" data-toggle="tab">Work Order Hours</a>
+                    <a href="#basic" class="nav-link active" data-toggle="tab">Details</a>
+                    <a href="#progress" class="nav-link" data-toggle="tab">Progress</a>
+                    <a href="#notes-tab" class="nav-link" data-toggle="tab">Notes</a>
+                    <a href="#work" class="nav-link" data-toggle="tab">Working Hours</a>
                 </nav>
 
 
                 <div class="tab-content panel-body">
                     <div class="tab-pane active" id="basic">
                         <div class="row">
-                            <div class="col-sm-4">
-                                <div class="card">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-6">
+                                <div class="card shadow">
                                     <div class="card-body" style="min-height:500px;">
                                         <h4 class="card-title">Work Order Details</h4>
                                         <p class="card-text">Date: {{object.date}}</p>
@@ -55,60 +87,92 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="card">
-                                    <div class="card-body" style="min-height:500px;max-height:500px;overflow-y:auto;">
-                                        <h4 class="card-title">Work Order Progress</h4>
-                                        <h5>Procedure: {{object.works_request.service.procedure}}
-                                        </h5>
-                                        <div>
-                                            <div
-                                                style="width:85%;height:30px;border:1px solid #bbb;background-color:#eee;display:inline-block;">
-                                                <div
-                                                    style="width:{{object.progress_percentage}}%;background-color:#3f2;height:100%">
-                                                </div>
-                                            </div>
-                                            <div style="display:inline-block;width:12%;">
-                                                <strong>{{object.progress_percentage}}%</strong>
-                                            </div>
-                                        </div>
+                            <div class="col-sm-3">
 
-                                        <ol>
-                                            {% for step in object.works_request.service.procedure.steps %}
-                                            <li> {% if forloop.counter in object.progress_list %} <input checked
-                                                    style="display:inline;" type="checkbox" name="steps[]"
-                                                    value="{{forloop.counter}}">{% else %} <input
-                                                    style="display:inline;" type="checkbox" name="steps[]"
-                                                    value="{{forloop.counter}}">
-                                                {% endif %}
-                                                {{step}}
-                                            </li>
-                                            {% endfor %}
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="card">
-                                    <div class="card-body" style="min-height:500px;">
-                                        <h4 class="card-title">Notes</h4>
-                                        {% csrf_token %}
-                                        <div style="max-height:400px;overflow-y:auto;">
-                                            {% for note in object.notes.all %}
-                                            <p class="card-text">{{note | linebreaks }}</p>
-                                            {% endfor %}
-                                        </div>
-
-                                        <div id="notes-widget"></div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane" id="progress">
+                        <div class="row">
+                            <div class="col-sm-3"></div>
+                        <div class="col-sm-6">
+                            <div class="card shadow">
+                                <div class="card-body" style="min-height:500px;max-height:500px;overflow-y:auto;">
+                                    <script>
+                                        var checks = 0;
+                                        var checked = 0;
+
+                                        setInterval(function () {
+                                            checked = 0;
+                                            checks = 0;
+                                            $('input[type="checkbox"]').each(function (i) {
+                                                checks++;
+                                                if ($(this).prop("checked") == true) {
+                                                    checked++;
+                                                }
+                                            });
+                                            var percent = (checked / checks) * 100.0;
+                                            $('#progress-bar').css('width', percent + '%')
+                                            $('#progress-percentage').text(percent.toFixed(0) + '%')
+                                        }, 1000)
+                                    </script>
+
+                                    <h4 class="card-title">Work Order Progress</h4>
+                                    <h5>Procedure: {{object.works_request.service.procedure}}
+                                    </h5>
+                                    <div>
+                                        <div
+                                            style="width:85%;height:30px;border:1px solid #bbb;background-color:#eee;display:inline-block;">
+                                            <div id='progress-bar'
+                                                style="width:{{object.progress_percentage}}%;background-color:#3f2;height:100%">
+                                            </div>
+                                        </div>
+                                        <div style="display:inline-block;width:12%;">
+                                            <strong><span
+                                                    id='progress-percentage'>{{object.progress_percentage}}<span>%</strong>
+                                        </div>
+                                    </div>
+                                    script
+
+
+                                    <ol>
+                                        {% for step in object.works_request.service.procedure.steps %}
+                                        <li> {% if forloop.counter in object.progress_list %} <input checked
+                                                style="display:inline;" type="checkbox" name="steps[]"
+                                                value="{{forloop.counter}}">{% else %} <input style="display:inline;"
+                                                type="checkbox" name="steps[]" value="{{forloop.counter}}">
+                                            {% endif %}
+                                            {{step}}
+                                        </li>
+                                        {% endfor %}
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="notes-tab">
+                        <div class="row">
+                            <div class="col-sm-3"></div>
+                        <div class="col-sm-6">
+                            <div class="card shadow">
+                                <div class="card-body" style="min-height:500px;">
+                                    <h4 class="card-title">Notes</h4>
+                                    {% csrf_token %}
+                                    <div id="notes-widget"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3"></div>
+                        </div>
+                    </div>
+
 
                     <div class="tab-pane" id="work">
                         <div class="row">
-                            <div class="col-sm-12">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-10">
                                 <hr class="my-4">
                                 <table class="table table-sm">
                                     <thead>
@@ -138,11 +202,14 @@
                                     </tfoot>
                                 </table>
                                 <div id="service-time"></div>
-                                <button class="btn btn-primary">Submit</button>
                             </div>
+                            <div class="col-sm-1"></div>
                         </div>
                     </div>
                 </div>
+                <hr class="my-4">
+                <button class="btn btn-primary">Submit</button>
+
             </div>
         </div>
     </form>

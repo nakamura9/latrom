@@ -25,6 +25,9 @@ class SalesRepresentative(SoftDeletionModel):
         return self.employee.first_name + ' ' + self.employee.last_name
 
     def sales(self, start, end):
+        '''
+        Sales only count for paid invoices
+        '''
         invoices = Invoice.objects.filter(Q(status="paid") & 
             Q(salesperson=self) 
             & (Q(due__lt=end) 

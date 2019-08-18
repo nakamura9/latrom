@@ -63,7 +63,8 @@ class Order(SoftDeletionModel):
         default="")
     ship_to = models.ForeignKey('inventory.WareHouse', 
         on_delete=models.SET_NULL, null=True)
-    tax = models.ForeignKey('accounting.Tax',on_delete=models.SET_NULL, null=True, 
+    tax = models.ForeignKey('accounting.Tax',on_delete=models.SET_NULL, 
+        null=True, 
         default=1)
     tracking_number = models.CharField(max_length=64, blank=True, 
         default="")
@@ -100,7 +101,10 @@ class Order(SoftDeletionModel):
     def __str__(self):
         return 'ORD' + str(self.pk)
 
-    # TODO test
+    @property
+    def days_overdue(self):
+        return (datetime.date.today() - self.due).days
+
     @property
     def product_total(self):
         return sum([i.subtotal for i in self.orderitem_set.filter(
@@ -143,10 +147,14 @@ class Order(SoftDeletionModel):
     def payments(self):
         return inventory.models.item_management.OrderPayment.objects.filter(order=self)
     
+    @property 
+    def amount_paid(self):
+        return sum([i.amount for i in self.payments])
+    
+    
     @property
     def total_due(self):
-        total_paid = sum([i.amount for i in self.payments])
-        return self.total - total_paid
+        return self.total - self.amount_paid
 
     @property
     def payment_status(self):

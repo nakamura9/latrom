@@ -80,6 +80,7 @@ class InventoryItemFilter(django_filters.FilterSet):
             }
 
 
+<<<<<<< HEAD
 class PurchaseReturnsFilter(django_filters.FilterSet):
     class Meta:
         model = DebitNote
@@ -95,3 +96,11 @@ class IncomingCreditNoteFilters(django_filters.FilterSet):
             'invoice__customer': ['exact'],
             'invoice__salesperson': ['exact']
         }
+=======
+class InventorySearchField(django_filters.FilterSet):
+    
+    class Meta:
+        model = InventoryItem
+        fields = {'name':['icontains']}
+
+>>>>>>> master

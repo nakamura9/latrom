@@ -33,7 +33,10 @@ class Payment(SoftDeletionModel):
     sales_rep = models.ForeignKey("invoicing.SalesRepresentative", 
         on_delete=models.SET_NULL, null=True,)
     comments = models.TextField(default="Thank you for your business")
-
+    entry = models.ForeignKey('accounting.JournalEntry', null=True, blank=True, 
+        on_delete=models.SET_NULL)
+    
+    
     def __str__(self):
         return 'PMT' + str(self.pk)
 
@@ -43,6 +46,8 @@ class Payment(SoftDeletionModel):
 
     def create_entry(self):
         '''payment entries credit the customer account and debits the cash book'''
+        if self.entry:
+            return 
         j = JournalEntry.objects.create(
                 memo= f'Journal entry for payment #{self.pk} from invoice #{self.invoice.invoice_number}.',
                 date=self.date,
@@ -67,3 +72,5 @@ class Payment(SoftDeletionModel):
         self.entry = j
         self.save()
         self.invoice.save()
+
+    

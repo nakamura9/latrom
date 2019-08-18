@@ -3,21 +3,26 @@ import datetime
 import planner
 from django.db.models import Q
 from dateutil.relativedelta import relativedelta
+from common_data.utilities import AutomatedServiceMixin
 
 class PayrollException(Exception):
     pass
 
-class AutomatedPayrollService(object):
-    def __init__(self):
+class AutomatedPayrollService(AutomatedServiceMixin):
+    service_name = 'employees'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.settings = models.EmployeesSettings.objects.first()
         self.TODAY  = datetime.date.today()
 
-    def run(self):
+    def _run(self):
         print("running payroll service")
         schedule = models.PayrollSchedule.objects.first()
 
         if any([self.TODAY.day == i.date \
-                for i in schedule.payrolldate_set.all()]):
+                for i in schedule.payrolldate_set.all()]) and \
+                    self.settings.last_payroll_date != self.TODAY:
             
             payroll_date = models.PayrollDate.objects.get(date=self.TODAY.day)
             payroll_id = self.settings.payroll_counter + 1

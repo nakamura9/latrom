@@ -1,0 +1,40 @@
+
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "invoicing/reports/customer_payments/header.html"%}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table-sm table">
+                    <thead>
+                        <tr class='bg-primary text-white'>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Invoice</th>
+                            <th>Payment ID</th>
+                            <th>Transaction Ref</th>
+                            <th>Payment Method</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pmt in payments %}
+                            <tr>
+                                <td>{{pmt.date}}</td>
+                                <td>{{pmt.invoice.customer}}</td>
+                                <td>{{pmt.invoice.pk | stringformat:"06d"}}</td>
+                                <td>{{pmt.pk |stringformat:"06d"}}</td>
+                                <td>{{pmt.entry.id}}</td>
+                                <td>{{pmt.method}}</td>
+                                <td>{{pmt.amount}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>

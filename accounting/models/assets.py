@@ -121,7 +121,7 @@ class Asset(models.Model):
 
     @property 
     def daily_depreciation(self):
-        return self.annual_depreciation / 365.0
+        return self.annual_depreciation / D(365.0)
 
     def depreciation_for_month(self, month, year):
         month_length = monthrange(year, month)[1]

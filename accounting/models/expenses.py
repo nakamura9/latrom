@@ -76,7 +76,8 @@ class AbstractExpense(models.Model):
             14: 5014,
             15: 5015
        }
-        return accounting.models.accounts.Account.objects.get(pk=mapping[self.category])
+        return accounting.models.accounts.Account.objects.get(
+            pk=mapping[self.category])
 
 
 class Expense(AbstractExpense):

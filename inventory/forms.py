@@ -15,8 +15,12 @@ from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 from common_data.models import Individual, Organization
+<<<<<<< HEAD
 from invoicing.models import CreditNote
 
+=======
+import datetime
+>>>>>>> master
 from . import models
 
 #models ommitted UnitOfMeasure OrderItem Category
@@ -28,7 +32,7 @@ VALUATION_OPTIONS = [
     ]
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
-        exclude = "is_configured",
+        exclude = "is_configured", 'service_hash'
         model = models.InventorySettings
        
         widgets = {
@@ -170,6 +174,24 @@ class ItemInitialMixin(forms.Form):
             self.cleaned_data['warehouse'] is not None:
             wh = self.cleaned_data['warehouse']
             wh.add_item(self.instance, self.cleaned_data['initial_quantity'])
+            #create an order item for initial stock valuuation 
+            order = models.Order.objects.create(
+                date=datetime.date.today(),#might need to add form field
+                expected_receipt_date=datetime.date.today(),
+                ship_to=wh,
+                status='received',
+                tax=self.cleaned_data.get('tax', Tax.objects.first()),#none
+                notes='Auto generated order for items with initial inventory',
+            )
+            
+            models.OrderItem.objects.create(
+                item=self.instance,
+                order=order,
+                quantity=self.cleaned_data['initial_quantity'],
+                received=self.cleaned_data['initial_quantity'],
+                unit=self.instance.unit,
+                order_price=self.cleaned_data['unit_purchase_price']
+            )
         
         return obj
 
@@ -445,6 +467,7 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
+        self.fields['due'].required = True
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
@@ -457,18 +480,19 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
                     Column('supplier', css_class='form group col-6'),
                     Column('ship_to', css_class='form group col-6'),
                 ),
-                    'issuing_inventory_controller'
+                    
+                Row(
+                    Column('issuing_inventory_controller', css_class='col-6'),
+                    Column('supplier_invoice_number',css_class='col-6')
                     ),
-                Tab('Payment',
-                        'tax',
-                        'make_payment',
-                        'due'
+                'due',
+                'tax',
                     ),
-                Tab('Shipping and Notes', 
+                Tab('Shipping and Payment', 
                     Row(
                         Column('bill_to', 
                             'tracking_number',
-                            'supplier_invoice_number',
+                            'make_payment',
                             css_class='col-6'),
                         Column('notes', css_class='col-6'),
                     )),

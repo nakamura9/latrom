@@ -1,0 +1,127 @@
+
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "invoicing/reports/accounts_receivable/header.html"%}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Due</th>
+                            <th>Aging</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th colspan="6">Current</th>
+                        </tr>
+                        {% for inv in current %}
+                            <tr>
+                                <td>{{inv.pk|stringformat:"06d"}}</td>
+                                <td>{{inv.date}}</td>
+                                <td>{{inv.customer}}</td>
+                                <td>{{inv.due}}</td>
+                                <td>{{inv.overdue_days}}</td>
+                                <td>{{inv.total_due | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <th colspan="6">0-7 Days</th>
+                        </tr>
+                        {% for inv in week %}
+                            <tr>
+                                <td>{{inv.pk|stringformat:"06d"}}</td>
+                                <td>{{inv.date}}</td>
+                                <td>{{inv.customer}}</td>
+                                <td>{{inv.due}}</td>
+                                <td>{{inv.overdue_days}}</td>
+                                <td>{{inv.total_due | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <th colspan="6">8-14 Days</th>
+                        </tr>
+                        {% for inv in week_two %}
+                            <tr>
+                                <td>{{inv.pk|stringformat:"06d"}}</td>
+                                <td>{{inv.date}}</td>
+                                <td>{{inv.customer}}</td>
+                                <td>{{inv.due}}</td>
+                                <td>{{inv.overdue_days}}</td>
+                                <td>{{inv.total_due | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <th colspan="6">15-30 Days</th>
+                        </tr>
+                        {% for inv in month %}
+                            <tr>
+                                <td>{{inv.pk|stringformat:"06d"}}</td>
+                                <td>{{inv.date}}</td>
+                                <td>{{inv.customer}}</td>
+                                <td>{{inv.due}}</td>
+                                <td>{{inv.overdue_days}}</td>
+                                <td>{{inv.total_due | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <th colspan="6">31-60 Days</th>
+                        </tr>
+                        {% for inv in month_two %}
+                            <tr>
+                                <td>{{inv.pk|stringformat:"06d"}}</td>
+                                <td>{{inv.date}}</td>
+                                <td>{{inv.customer}}</td>
+                                <td>{{inv.due}}</td>
+                                <td>{{inv.overdue_days}}</td>
+                                <td>{{inv.total_due | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <th colspan="6">61+ Days</th>
+                        </tr>
+                        {% for inv in more %}
+                            <tr>
+                                <td>{{inv.pk|stringformat:"06d"}}</td>
+                                <td>{{inv.date}}</td>
+                                <td>{{inv.customer}}</td>
+                                <td>{{inv.due}}</td>
+                                <td>{{inv.overdue_days}}</td>
+                                <td>{{inv.total_due | floatformat:2}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p style='page-break-after:always;'></p>
+                {% autoescape off %}
+                    <div>
+                        {{ar_by_customer}}
+                    </div>
+
+                    {% endautoescape %}
+
+                <p style='page-break-after:always;'></p>
+                    
+                    {% autoescape off %}
+
+                    <div>
+                        {{ar_by_aging}}
+                    </div>
+                {% endautoescape %}
+                
+            </td>
+        </tr>
+    </tbody>
+</table>

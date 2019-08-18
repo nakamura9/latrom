@@ -24,6 +24,7 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition
+from inventory.views.dash_plotters import single_item_composition_plot
 
 from .common import CREATE_TEMPLATE
 
@@ -50,10 +51,15 @@ class ProductUpdateView( ContextMixin, UpdateView):
             'tax': self.object.tax
         }
 
-class ProductDetailView( DetailView):
+class ProductDetailView(ContextMixin, DetailView):
     model = models.InventoryItem
     template_name = os.path.join("inventory", "item", "product", "detail.html")
-
+    
+    def get_context_data(self, *args, **kwargs):
+        context =super().get_context_data(*args, **kwargs)
+        context['graph'] = single_item_composition_plot(
+            self.object).render(is_unicode=True)
+        return context
 
 class ProductListView( ContextMixin, PaginationMixin, FilterView):
     paginate_by = 20
@@ -61,11 +67,12 @@ class ProductListView( ContextMixin, PaginationMixin, FilterView):
     template_name = os.path.join('inventory', 'item', "product", 'list.html')
     extra_context = {
         'title': 'Product List',
+        'search': filters.InventorySearchField(),
         "new_link": reverse_lazy("inventory:product-create")
     }
 
     def get_queryset(self):
-        return models.InventoryItem.objects.filter(type=0).order_by('pk')
+        return models.InventoryItem.objects.filter(type=0, active=True).order_by('pk')
 
 
 class ProductCreateView( ContextMixin, 
@@ -141,7 +148,7 @@ class ConsumableListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.InventoryItem.objects.filter(type=2).order_by('pk')
+        return models.InventoryItem.objects.filter(type=2, active=True).order_by('pk')
 
 
 class ConsumableCreateView( ContextMixin, 
@@ -232,7 +239,7 @@ class EquipmentListView( ContextMixin,
     }
 
     def get_queryset(self):
-        return models.InventoryItem.objects.filter(type=1).order_by('pk')
+        return models.InventoryItem.objects.filter(type=1,active=True).order_by('pk')
 
 
 class EquipmentCreateView( ContextMixin, 

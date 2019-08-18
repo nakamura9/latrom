@@ -58,11 +58,43 @@ class CommissionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class DeductionForm(forms.ModelForm, BootstrapMixin):
     #only allow deduction accounts for 
-    account_paid_into = forms.ModelChoiceField(Account.objects.filter(Q(type="liability") | Q(type="expense")), required=False)
+    account_paid_into = forms.ModelChoiceField(
+        Account.objects.filter(Q(type="liability") | Q(
+            type="expense"))) 
+    benefits = forms.ModelMultipleChoiceField(
+        models.Allowance.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
+    commission = forms.ModelMultipleChoiceField(
+        models.CommissionRule.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
+    payroll_taxes = forms.ModelMultipleChoiceField(
+        models.PayrollTax.objects.all(),
+        widget=forms.CheckboxSelectMultiple, required=False)
     class Meta:
         exclude="active",
         model = models.Deduction
+        
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'name',
+            'deduction_method',
+            HTML("""<h5>Custom Income Deductions:</h5>"""),
+            'basic_income',
+            'hourly_income',
+            'overtime_income',
+            'benefits',
+            'commission',
+            'payroll_taxes',
+            'rate',
+            HTML("""<h5>Fixed Income Deductions:</h5>"""),
+            'fixed_amount',
+            'employer_contribution',
+            'account_paid_into'
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
 class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
     account_paid_into = forms.ModelChoiceField(Account.objects.filter(
         Q(type="liability") | Q(type="expense")), required=False)
@@ -72,10 +104,10 @@ class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 
 class PayGradeForm(forms.ModelForm, BootstrapMixin):
-    allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.all(),
+    allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.filter(active=True),
         widget=forms.CheckboxSelectMultiple,
         required=False)
-    deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.all(),
+    deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.filter(active=True),
         widget=forms.CheckboxSelectMultiple,
         required=False)
     payroll_taxes = forms.ModelMultipleChoiceField(
@@ -93,7 +125,10 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
             TabHolder(
                 Tab('basic',
                     'name',
-                    'monthly_leave_days',
+                    Row(
+                        Column('monthly_leave_days', css_class='form-group col-6'),
+                        Column('maximum_leave_days', css_class='form-group col-6')
+                    ),                    
                     Row(
                         Column('salary', css_class='form-group col-6'),
                         Column('pay_frequency', css_class='form-group col-6'),
@@ -147,7 +182,7 @@ class CreateEmployeeUserForm(BootstrapMixin, forms.Form):
 
         return cleaned_data 
 
-class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
+class EmployeePasswordChangeForm(BootstrapMixin, forms.Form):
     employee = forms.ModelChoiceField(models.Employee.objects.all(), widget=forms.HiddenInput)
     old_password = forms.CharField(widget=forms.PasswordInput)
     new_password = forms.CharField(widget=forms.PasswordInput)
@@ -162,6 +197,33 @@ class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
             raise forms.ValidationError('The old password is incorrect')
         '''
         if new_password != cleaned_data['confirm_new_password']:
+            raise forms.ValidationError(' The new passwords do not match')
+
+        usr.set_password(new_password)
+        usr.save()
+
+        return cleaned_data 
+
+class EmployeePasswordResetForm(BootstrapMixin, forms.Form):
+    employee = forms.ModelChoiceField(models.Employee.objects.all(), 
+        widget=forms.HiddenInput)
+    superuser = forms.CharField()
+    superuser_password = forms.CharField(widget=forms.PasswordInput)
+    new_user_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_new_user_password = forms.CharField(widget=forms.PasswordInput)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        usr = cleaned_data['employee'].user
+        superuser = cleaned_data['superuser']
+        
+        if not authenticate(username=superuser, 
+                password=cleaned_data['superuser_password']):
+            raise forms.ValidationError('Only a superuser can reset an ordinary user account. Please provide correct credentials for the superuser.')
+        
+        new_password = cleaned_data['new_user_password']
+
+        if new_password != cleaned_data['confirm_new_user_password']:
             raise forms.ValidationError(' The new passwords do not match')
 
         usr.set_password(new_password)
@@ -213,7 +275,8 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
     def save(self, *args, **kwargs):
         '''The very first employee created in the application is automatically assigned a user.'''
         resp = super().save(*args, **kwargs)
-        if models.Employee.objects.all().count() == 1:
+        if models.Employee.objects.all().count() == 1 and not \
+                User.objects.filter(username=self.instance.first_name).exists():
             user = User.objects.create(
                 username=self.instance.first_name,
                 password="1234"
@@ -260,6 +323,12 @@ class PayrollTaxForm(forms.ModelForm, BootstrapMixin):
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 
+class PayrollTaxUpdateForm(forms.ModelForm, BootstrapMixin):
+    
+    class Meta:
+        model = models.PayrollTax
+        fields = 'name',
+        
 class TimesheetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.EmployeeTimeSheet

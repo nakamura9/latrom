@@ -35,15 +35,12 @@ class SupplierCreateView(ContextMixin, FormView):
         "description": "Record details of business partners that provide your organization with goods and services"
         }
 
+    success_url = '/inventory/supplier/list'
+
     def get_initial(self):
         return {
             'vendor_type': 'organization'
         }
-
-    def get_success_url(self):
-        return reverse("inventory:supplier-detail", kwargs={
-            "pk": models.Supplier.objects.latest('pk').pk + 1
-            })
         
 
     def form_valid(self, form, *args, **kwargs):

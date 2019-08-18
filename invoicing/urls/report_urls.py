@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from invoicing import views
 
 report_urls = [
@@ -24,5 +24,23 @@ report_urls = [
              name='sales-report'),
     re_path(r'^sales-report-pdf/(?P<start>[\w %]+)/(?P<end>[\w %]+)/?$', 
         views.SalesReportPDFView.as_view(),
-             name='sales-report-pdf'),        
+             name='sales-report-pdf'),
+    path("accounts-receivable-report/", 
+        views.AccountsReceivableDetailReportView.as_view(), 
+        name="accounts-receivable-report"),
+    path("sales-by-customer-report/", 
+        views.SalesByCustomerReportView.as_view(), 
+        name="sales-by-customer-report"),
+    path("sales-by-customer-form/", 
+        views.SalesByCustomerReportFormView.as_view(), 
+        name="sales-by-customer-form"),
+    path("customer-payments-report/", 
+        views.CustomerPaymentsReportView.as_view(), 
+        name="customer-payments-report"),
+    path("customer-payments-form/", 
+        views.CustomerPaymentsReportFormView.as_view(), 
+        name="customer-payments-form"),
+    path("average-days-to-pay-report/", 
+        views.AverageDaysToPayReportView.as_view(), 
+        name="average-days-to-pay-report"),
 ]

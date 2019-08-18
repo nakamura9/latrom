@@ -42,18 +42,20 @@ class Deduction(SoftDeletionModel):
     based on the rules defined in the model. 
 
     '''
-    DEDUCTION_METHODS = ((0, 'Rated'), (1, 'Fixed'))
-    DEDUCTION_TRIGGERS = (
-        (0, 'All Income'), 
-        (1, 'Taxable Income'), 
-        (2, 'Tax')
-    )
+    DEDUCTION_METHODS = ((0, 'Custom'), (1, 'Fixed'))
+    deduction_method = models.PositiveSmallIntegerField(
+        choices=DEDUCTION_METHODS)
     name = models.CharField(max_length=32)
-    method = models.IntegerField(choices=DEDUCTION_METHODS)
-    trigger = models.IntegerField(choices = DEDUCTION_TRIGGERS,
-        default=0)
+    tax_deductable = models.BooleanField(default=False)
+    basic_income = models.BooleanField(default=False)
+    hourly_income = models.BooleanField(default=False)
+    overtime_income = models.BooleanField(default=False)
+    benefits = models.ManyToManyField('employees.allowance')
+    commission = models.ManyToManyField('employees.commissionrule')
+    payroll_taxes = models.ManyToManyField('employees.payrolltax')
     rate = models.FloatField(default=0)
-    amount = models.FloatField(default=0)
+    fixed_amount = models.FloatField(default=0)
+    employer_contribution = models.FloatField(default=0.0)#percentage of deduction total
     account_paid_into = models.ForeignKey(
         'accounting.account',
         on_delete=models.SET_DEFAULT,
@@ -64,32 +66,44 @@ class Deduction(SoftDeletionModel):
 
     @property
     def method_string(self):
-        return dict(self.DEDUCTION_METHODS)[self.method]
+        return dict(self.DEDUCTION_METHODS)[self.deduction_method]
 
-    @property
-    def trigger_string(self):
-        return dict(self.DEDUCTION_TRIGGERS)[self.trigger]
-    
+    def employer_deduction(self, payslip):
+        employee_deduction = self.deduct(payslip)
+        return employee_deduction * (self.employer_contribution / 100.0)
+
     def deduct(self, payslip):
-        if self.method == 0:
-            if self.trigger == 0:
-                #all income
-                return (self.rate / 100) * payslip.gross_pay
-            elif self.trigger == 1:
-                #taxable income
-                return (self.rate / 100) * (payslip.taxable_gross_pay)
-            elif self.trigger == 2:
-                # % PAYE
-                return (self.rate / 100) * float(payslip.total_payroll_taxes)
-            else:
-                return 0
+        if self.deduction_method == 0:
+            tax_total = 0
+            income = 0            
+            if self.payroll_taxes.all().count() > 0:
+                for pk in payslip.paygrade_['payroll_taxes']:
+                    tax = PayrollTax.objects.get(pk=pk)
+                    tax_total += tax.tax(payslip.taxable_gross_pay)
+
+            if self.basic_income:
+                income += payslip.paygrade_['salary']
+            if self.overtime_income:
+                income += payslip.overtime_pay
+            if self.hourly_income:
+                income += payslip.normal_pay
+            for benefit in self.benefits.all():
+                if benefit.pk in payslip.paygrade_['allowances']:
+                    income += benefit.amount
+                
+            for commission in self.commission.all():
+                if commission.pk == payslip.paygrade_['commission_id']:
+                    income += self.paygrade.commission_pay
+
+            deduction = (income + float(tax_total)) * (self.rate / 100.0)
+            
         else:
-            return self.amount
+            deduction = self.fixed_amount
+
+        return deduction
 
     def get_absolute_url(self):
         return reverse("employees:deduction-detail", kwargs={"pk": self.pk})
-    
-
 
 class CommissionRule(SoftDeletionModel):
     '''simple model for giving sales representatives commission based on 
@@ -104,16 +118,19 @@ class CommissionRule(SoftDeletionModel):
 
     def get_absolute_url(self):
         return reverse("employees:commission-details", kwargs={"pk": self.pk})
-    
 
 
 class PayrollTax(models.Model):
     name = models.CharField(max_length=64)
-    paid_by = models.IntegerField(choices=[(0, 'Employees'), (1, 'Employer')])
+    paid_by = models.IntegerField(choices=[(0, 'Employees'), (1, 'Employer'), (2, 'Both')])
+
+    def get_absolute_url(self):
+        return reverse("employees:payroll-tax", kwargs={"pk": self.pk})
+    
 
     @property
     def paid_by_string(self):
-        return ['Employees', 'Employer'][self.paid_by]
+        return ['Employees', 'Employer', 'Both'][self.paid_by]
 
     def tax(self, gross):
         bracket = self.get_bracket(gross)
@@ -149,12 +166,12 @@ class PayrollTax(models.Model):
 
 
 class TaxBracket(models.Model):
-    payroll_tax = models.ForeignKey('employees.PayrollTax', on_delete=models.SET_NULL, null=True)
+    payroll_tax = models.ForeignKey('employees.PayrollTax', 
+        on_delete=models.SET_NULL, null=True)
     lower_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     upper_boundary = models.DecimalField(max_digits=9, decimal_places=2)
     rate = models.DecimalField(max_digits=5, decimal_places=2)
     deduction = models.DecimalField(max_digits=9, decimal_places=2)
-
 
 
 class PayrollSchedule(SingletonModel):

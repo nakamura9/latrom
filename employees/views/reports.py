@@ -1,11 +1,15 @@
 import datetime
 import os 
-from django.views.generic import TemplateView
-from employees.models import Employee, Leave
+from django.shortcuts import reverse
+from django.db.models import Q
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, FormView
+from employees.models import Employee, Leave, Payslip
 from common_data.utilities import (ConfigMixin, 
                                     MultiPageDocument,
                                     ContextMixin,
-                                    PeriodReportMixin)
+                                    PeriodReportMixin,
+                                    extract_period)
 from wkhtmltopdf.views import PDFTemplateView
 from common_data.forms import PeriodReportForm
 
@@ -97,3 +101,68 @@ class LeaveReportPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
         
 
         return context
+
+class PayrollReportFormView(ContextMixin, FormView):
+    form_class = PeriodReportForm
+    template_name = os.path.join('common_data', 'reports', 'report_template.html')
+    
+    extra_context = {
+        'action': reverse_lazy('employees:payroll-report'),
+    }
+
+
+class PayrollReport(ConfigMixin,
+                    MultiPageDocument,
+                    PeriodReportMixin,  
+                    TemplateView,
+                    ):
+    template_name = os.path.join('employees', 'reports', 
+        'payroll', 'report.html')
+    page_length=20
+
+    
+    def get_multipage_queryset(self):
+        start, end = extract_period(self.request.GET)
+        slips = Payslip.objects.filter(Q(
+            Q(status='verified') | Q(status='paid')
+            ) & Q(created__date__gte=start)
+            & Q(created__date__lte=end))
+        employees = {}
+        for i in slips:
+            employees.setdefault(i.employee.pk , []).append(i)
+        
+        data = []
+        for key in employees.keys():
+            employee = Employee.objects.get(pk=key)
+            data.append({
+                'name': employee.full_name,
+                'employee_number': employee.employee_number,
+                'id': employee.id_number,
+                'grade': employee.pay_grade,
+                'paye': sum([i.total_payroll_taxes for i in employees[key]]),
+            })
+
+        return data
+
+    @staticmethod
+    def common_context(context, start, end):
+        context.update({
+            'start': start.strftime("%d %B %Y"),
+            'end': end.strftime("%d %B %Y"),
+            'date': datetime.date.today()
+        })
+        
+        return context
+
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        kwargs =  self.request.GET
+        start, end = extract_period(kwargs)
+        
+        context['pdf_link'] = True
+        # sales
+        return PayrollReport.common_context(context, start, end)
+
+class PayrollPDFReport(ConfigMixin, MultiPageDocument, PDFTemplateView):
+    pass

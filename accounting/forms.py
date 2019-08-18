@@ -18,7 +18,7 @@ from . import models
 class ConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         model = models.AccountingSettings
-        exclude = "is_configured",
+        exclude = "is_configured", 'service_hash'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -266,7 +266,6 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
                         Column('type', css_class='form-group col-6'),
                     ),
                     'description',
-                    'balance_sheet_category'
                 ),
                 Tab('account',
                     'bank_account_number',

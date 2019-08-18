@@ -59,6 +59,7 @@ class PayGrade(models.Model):
         choices=LUNCH_CHOICES,
         default=datetime.timedelta(hours=1)
         )
+    maximum_leave_days = models.FloatField(default=60.0)
 
     def __str__(self):
         return self.name

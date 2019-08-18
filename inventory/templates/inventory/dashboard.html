@@ -5,7 +5,8 @@
     }
 </style>
 <div class="jumbotron jumbo-gradient">
-    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128px;"></i> Inventory Dashboard</h1>
+    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128px;"></i> Inventory Dashboard
+    </h1>
     <p class="lead">Manage inventory items and warehouses</p>
     <hr class="my-2">
     {% if use_warehousing_model %}
@@ -25,9 +26,16 @@
                         {% if use_warehousing_model %}
                             <div class="card bg-primary text-white">
                             <div class="card-header">
+<<<<<<< HEAD
                                 <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Inventory</h4>
                             </div>
                             <div class="card-body">
+=======
+                                <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouses</h4>
+                            </div>
+                            <div class="card-body">
+
+>>>>>>> master
                                 <ul class="list-group">
                                     {% if use_product_inventory %}
                                     <li class="list-group-item hvr-grow">
@@ -152,11 +160,11 @@
                         {% endif %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                    <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
-                                </div>
-                            
+                                <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
+                            </div>
+
                             <div class="card-body">
-                                
+
                                 <ul class="list-group">
 
                                     <li class="list-group-item hvr-grow">
@@ -167,7 +175,30 @@
                                         <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
                                             Report</a>
                                     </li>
-                                    <li class="list-group-item hvr-grow">...</li>
+                                    <li class="list-group-item ">
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:payments-due-report' %}">
+                                                    Payments Due Report
+                                                </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-balance-report' %}">
+                                                    Vendor Balance Report
+                                                </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-average-days-to-deliver-report' %}">
+                                                    Vendor Average Days To Deliver Report
+                                                </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-transactions-form' %}">
+                                                    Vendor Transactions Report
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
 
                                 </ul>
                             </div>
@@ -198,73 +229,7 @@
                     </div>
                 </div>
                 <div id="dashboard" class="tab-pane">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <ul class="nav nav-pills flex-column">
-                                    <li class="nav-item" ><a data-toggle="pill" href="#Main"
-                                            class="nav-link active">Data Grid</a></li>
-                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-10">
-                                <div class="tab-content panel-body">
-
-                                    <div id="Main" class="tab-pane active">
-                                        <div class="dash-container">
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Orders Yet to Be Delivered: <br>{{undelivered_orders}}</h3>
-                                            </div>
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
-                                            </div>
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3>Money Owed to Vendors: <br>${{money_owed}}</h3>
-                                            </div>
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="dash-container">
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Active Vendors: <br>{{vendors}}</h3>
-                                            </div>
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Warehouses: <br>{{warehouses}}</h3>
-                                            </div>
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Open Requisitions: <br>{{open_requisitions}}</h3>
-                                            </div>
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="dash-container">
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Pending Inventory Transfers: <br>{{pending_transfers}}</h3>
-                                            </div>
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Equipment Items: <br>{{equipment}}</h3>
-                                            </div>
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Unique Consumable Items: <br>{{consumables}}</h3>
-                                            </div>
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="dash-container">
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Unique Products: <br>{{products}}</h3>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div id="Graph" class="tab-pane fade in">
-                                        <h4>Inventory Movement in the last 7 days</h4>
-                                        {% autoescape off %}
-                                        {{graph}}
-                                        {% endautoescape %}
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
+                    <iframe src="/inventory/async-dashboard/" style="width:100%;height:600px;" frameborder="0"></iframe>
 
 
                 </div>

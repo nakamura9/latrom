@@ -114,8 +114,21 @@ class ReportViewsTests(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
 
+    def test_get_customer_statement_pdf_page(self):
+        resp = self.client.get(reverse('invoicing:customer-statement-pdf', kwargs={
+            'customer': 1,
+            'start': (TODAY - datetime.timedelta(days=30)).strftime(
+                    '%d %B %Y'),
+            'end': TODAY.strftime('%d %B %Y')
+        }))
+        self.assertEqual(resp.status_code, 200)
+
     def test_get_invoice_aging_report_page(self):
         resp = self.client.get(reverse('invoicing:invoice-aging'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_invoice_aging_report_pdf_page(self):
+        resp = self.client.get(reverse('invoicing:invoice-aging-pdf'))
         self.assertEqual(resp.status_code, 200)
 
     def test_get_sales_report_form_page(self):

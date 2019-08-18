@@ -65,7 +65,7 @@
                             <th>Total Deductions(breakdown below)</th>
                             <td>{{object.total_deductions | floatformat:2}}</td>
                         </tr>
-                        {% for d in object.deductions %}
+                        {% for d in object.calculated_deductions %}
                         <tr>
                             <td>{{d.name}}</td>
                             <td>{{d.amount | floatformat:2}}</td>

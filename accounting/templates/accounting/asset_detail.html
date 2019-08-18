@@ -6,47 +6,81 @@
     <h1 class="display-3">Asset Details</h1>
     <p class="lead">Information regarding current and future value of assets</p>
     <hr class="my-2">
-    <a href="{% url 'accounting:asset-update' pk=object.pk %}" class="btn btn-primary">Update</a>
+    <div class="dropdown">
+                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                    Actions
+                </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                 <a class="dropdown-item" href="{% url 'accounting:asset-create' %}"><i class="fas fa-plus"></i>Register New Asset</a>
+                    <a class="dropdown-item" href="{% url 'accounting:asset-update' pk=object.pk %}"><i class="fas fa-edit"></i>Update</a>
+                    
+                </div>
+            </div>
 </div>
 
 <div class="container">
     <div class="row">
-            <div class="col-sm-3">
-                <div class="card bg-primary text-white" >
-                    <div class="card-body ">
-                        <h3 class="card-title">Details</h3>
-                        <p class="card-text">Name: {{object.name}}</p>
-                        <p class="card-text">
-                            Date Created: {{object.init_date}}</p>
-                        <p class="card-text">
-                            Category: {{object.category_string}}</p>
-                            <hr class="my-2">
-                        <p class="card-text">
-                           <b>Description:</b> {{object.description}}</p>
-                        
+        <div class="col-12">
+            <nav class="nav nav-tabs nav-stacked">
+                <a href="#data" class="nav-link active" data-toggle="tab">Data</a>
+                <a href="#graph" class="nav-link" data-toggle="tab">Graph</a>
+            </nav>
+            <div class="tab-content panel-body">
+                <div class="tab-pane active" id="data">
+                    <div class="row">
+                        <div class="col-2"></div>
+                        <div class="col-4">
+                            <div class="card shadow">
+                                <div class="card-body ">
+                                    <h3 class="card-title">Details</h3>
+                                    <p class="card-text">Name: {{object.name}}</p>
+                                    <p class="card-text">
+                                        Date Created: {{object.init_date}}</p>
+                                    <p class="card-text">
+                                        Category: {{object.category_string}}</p>
+                                    <hr class="my-2">
+                                    <p class="card-text">
+                                        <b>Description:</b> {{object.description}}</p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Depreciation</h4>
+                                    <p class="card-text">
+                                        Initial Value: {{object.initial_value}}</p>
+                                    <p class="card-text">
+                                        Current Value: {{object.current_value}}</p>
+                                    <p class="card-text">
+                                        Total depreciation: {{object.total_depreciation}}
+                                    </p>
+                                    <p class="card-text">
+                                        Disposal Value: {{object.salvage_value}}</p>
+                                    <p class="card-text">
+                                        Disposal Date: {{object.salvage_date}}</p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2"></div>
+                    </div>
+                </div>
+                <div class="tab-pane " id="graph">
+                    <div class="row">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            {% autoescape off %}
+                            {{graph}}
+                            {% endautoescape %}
+                        </div>
+                        <div class="col-2"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Depreciation</h4>
-                        <p class="card-text">
-                            Initial Value: {{object.initial_value}}</p>
-                        <p class="card-text">
-                            Current Value: {{object.current_value}}</p>
-                        <p class="card-text">
-                            Total depreciation: {{object.total_depreciation}}
-                            </p>
-                        <p class="card-text">
-                            Disposal Value: {{object.salvage_value}}</p>
-                        <p class="card-text">
-                            Disposal Date: {{object.salvage_date}}</p>
-
-                    </div>
-                </div>                
-            </div>
-            <div class="col-sm-3"></div>
+        </div>
     </div>
 </div>
 

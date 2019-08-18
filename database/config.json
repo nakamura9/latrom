@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"current": "accounts.sqlite3", "db_list": ["2018.sqlite3", "2018b.sqlite3", "2018c.sqlite3", "2018d.sqlite3", "2018e.sqlite3", "2018f.sqlite3", "2018g.sqlite3", "2018h.sqlite3", "2018i.sqlite3", "2018j.sqlite3", "2019.sqlite3", "2019b.sqlite3", "2202.sqlite3", "accounts.sqlite3", "db.sqlite3", "email.sqlite3", "master_db.sqlite3", "payroll.sqlite3"], "backup_dir": ""}
+=======
+{"current": "payroll.sqlite3", "db_list": ["2018.sqlite3", "2018b.sqlite3", "2018c.sqlite3", "2018d.sqlite3", "2018e.sqlite3", "2018f.sqlite3", "2018g.sqlite3", "2018h.sqlite3", "2018i.sqlite3", "2018j.sqlite3", "2019.sqlite3", "2019b.sqlite3", "2202.sqlite3", "accounts.sqlite3", "db.sqlite3", "email.sqlite3", "master_db.sqlite3", "migration.sqlite3", "payroll.sqlite3"], "backup_dir": ""}
+>>>>>>> master

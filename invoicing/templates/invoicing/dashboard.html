@@ -1,7 +1,8 @@
 {% extends "window.html" %} {% block content %}
 {% load static %}
 <div class="jumbotron jumbo-gradient">
-    <h1 class="display-3"><i class=" fas fa-cash-register" style="color:#07f; font-size:128px;"></i> Sales Dashboard</h1>
+    <h1 class="display-3"><i class=" fas fa-cash-register" style="color:#07f; font-size:128px;"></i> Sales Dashboard
+    </h1>
     <p class="lead">Create invoices, apply customer payments, generate reports</p>
 
 </div>
@@ -59,19 +60,32 @@
 
                                 <ul class="list-group">
                                     <li class="list-group-item hvr-grow"><a class="card-link"
-                                        href="{% url 'invoicing:customer-statement-form' %}">Customer
-                                        Statement</a></li>
-                                <!--
-                            <li class="list-group-item hvr-grow"><a class="card-link" href="#">Unpaid Accounts Report</a></li>
-                            <li class="list-group-item hvr-grow"><a class="card-link" href="#">Sales Rep reports</a></li>
-                            <li class="list-group-item hvr-grow"><a class="card-link" href="#">Statement</a></li>
-                            -->
-                                <li class="list-group-item hvr-grow"><a class="card-link"
-                                        href="/invoicing/sales-report-form">Sales
-                                        Report</a></li>
-                                <li class="list-group-item hvr-grow"><a class="card-link"
-                                        href="{% url 'invoicing:invoice-aging' %}">Invoice
-                                        Aging Report</a></li>
+                                            href="{% url 'invoicing:customer-statement-form' %}">Customer
+                                            Statement</a></li>
+                                    <li class="list-group-item hvr-grow"><a class="card-link"
+                                            href="/invoicing/sales-report-form">Sales
+                                            Report</a></li>
+                                    <li class="list-group-item ">
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item"
+                                                    href="{% url 'invoicing:invoice-aging' %}">Invoice Aging Report</a>
+                                                <a class="dropdown-item"
+                                                    href="{% url 'invoicing:accounts-receivable-report' %}">Accounts
+                                                    Receivable Report</a> <a class="dropdown-item"
+                                                    href="{% url 'invoicing:sales-by-customer-form' %}">Sales By
+                                                    Customer Report</a>
+                                                <a class="dropdown-item"
+                                                    href="{% url 'invoicing:customer-payments-form' %}">Customer
+                                                    Payments Report</a>
+                                                <a class="dropdown-item"
+                                                    href="{% url 'invoicing:average-days-to-pay-report' %}">Average Days
+                                                    To Pay</a>
+                                            </div>
+                                        </div>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -93,58 +107,7 @@
                     </div>
                 </div>
                 <div id="dashboard" class="tab-pane">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <ul class="nav nav-pills flex-column">
-                                    <li class="nav-item"><a data-toggle="pill" href="#Main" class="nav-link active">Data
-                                            Grid</a></li>
-                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-10">
-                                <div class="tab-content panel-body">
-                                    <div id="Main" class="tab-pane active">
-                                        <div id="dashboard" class="tab-pane">
-                                            <div class="dash-container">
-                                                <div class="bg-success text-white dashbox">
-                                                    <h4>Sales This Month:</h4>
-                                                    <h3>${{sales_to_date | floatformat:2}}</h3>
-                                                </div>
-                                                <div class="bg-primary text-white dashbox">
-                                                    <h4>Active Customers: </h4>
-                                                    <h3>{{customers}}</h3>
-                                                </div>
-                                                <div class="bg-warning text-white dashbox">
-                                                    <h4>Outstanding Invoices: </h4>
-                                                    <h3>{{outstanding_invoices}}</h3>
-                                                </div>
-                                            </div>
-                                            <hr class="my-4">
-                                            <div class="dash-container">
-                                                <div class="bg-warning text-white dashbox">
-                                                    <h4>Money Owed: </h4>
-                                                    <h3>${{money_owed | floatformat:2 }}</h3>
-                                                </div>
-                                                <div class="bg-danger text-white dashbox">
-                                                    <h4>Overdue Invoices: </h4>
-                                                    <h3>{{overdue}}</h3>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="Graph" class="tab-pane fade in active">
-                                        <h4>Sales for the last 30 days</h4>
-                                        {% autoescape off %}
-                                        {{graph}}
-                                        {% endautoescape %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <iframe src="/invoicing/async-dashboard/" style='width:100%;height:600px;' frameborder="0"></iframe>
                 </div>
             </div>
         </div>

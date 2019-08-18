@@ -4,14 +4,15 @@ import urllib
 
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
 from common_data.utilities import ContextMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models, serializers
-
+from employees.forms import EmployeeAuthenticateForm
+from django.db.models import Q
 
 ####################################################
 #                Service Employees                 #
@@ -43,8 +44,18 @@ class ServicePersonListView( ContextMixin, PaginationMixin, FilterView):
     }
     filterset_class = filters.ServicePersonFilter
 
-class ServicePersonDashboardView( DetailView):
-    template_name = os.path.join('services', 'personnel', 'dashboard.html')
+class ServicePortalView(FormView):
+    template_name = os.path.join("services", "personnel", "portal", "login.html")
+    form_class = EmployeeAuthenticateForm
+
+    def get_success_url(self):
+        pk = self.request.POST['employee']
+        return reverse_lazy('services:service-person-dashboard', kwargs={
+            'pk': pk
+        })
+
+class ServicePersonDashboardView(DetailView):
+    template_name = os.path.join('services', 'personnel', 'portal', 'dashboard.html')
     model = models.ServicePerson
 
 ####################################################
@@ -62,7 +73,7 @@ class ServiceTeamCRUDMixin(object):
         
         members_list = json.loads(urllib.parse.unquote(request.POST['members']))
         for data in members_list:
-            pk = data['value'].split('-')[0]
+            pk = data.split('-')[0]
             service_person = models.ServicePerson.objects.get(pk=pk)
             self.object.members.add(service_person)
 

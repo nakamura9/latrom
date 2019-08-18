@@ -2,13 +2,17 @@ import datetime
 from accounting import models 
 from django.db.models import Q
 from calendar import monthrange
+from common_data.utilities import AutomatedServiceMixin
 
 
-class AccountingTaskService(object):
-    def __init__(self):
+class AccountingTaskService(AutomatedServiceMixin):
+    service_name = 'accounting'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.today  = datetime.date.today()
 
-    def run(self):
+    def _run(self):
         print('running accounting services')
         self.run_recurring_expenses()
         self.run_interest_on_accounts()
@@ -47,8 +51,8 @@ class AccountingTaskService(object):
     def depreciate_assets(self):
         print('depreciating assets')
         end_of_month = monthrange(self.today.year, self.today.month)[1]
-        if self.today.day ==  end_of_month:
-            #fix
+        if self.today.day == end_of_month:
+            #fix # how to make sure each month is depreciated
             for asset in models.Asset.objects.filter(
                     Q(category=1) | 
                     Q(category=2) | 
@@ -57,12 +61,19 @@ class AccountingTaskService(object):
                 
                 amount = asset.depreciation_for_month(self.today.month, 
                     self.today.year)
+                settings = models.AccountingSettings.objects.first()
+                bkkpr = models.Bookkeeper.objects.first()
+                if settings.default_bookkeeper:
+                    created_by= settings.default_bookkeeper
+                else:
+                    created_by=bkkpr
+                    
                 j = models.JournalEntry.objects.create(
                         date=self.today,
                         draft=False,
                         memo="Asset depreciation",
                         journal=models.Journal.objects.get(pk=5),
-                        created_by=models.AccountingSettings.objects.first().default_bookkeeper
+                        created_by=created_by.employee.user
                     )
                 j.simple_entry(amount, asset.account, 
                     asset.depreciation_account)

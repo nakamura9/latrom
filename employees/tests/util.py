@@ -1,4 +1,4 @@
-from django.test import Client, TestCase
+from django.test import Client, TestCase, RequestFactory
 from employees.services import AutomatedPayrollService
 from employees.views import  ManualPayrollService
 from employees.models import *
@@ -7,10 +7,11 @@ import datetime
 from django.contrib.auth.models import User
 
 
+
 TODAY = datetime.date.today() 
 
 class AutomatedServiceTests(TestCase):
-    fixtures = ['accounts.json', 'employees.json']
+    fixtures = ['accounts.json', 'employees.json', 'common.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
@@ -83,7 +84,14 @@ class ManualServiceTests(TestCase):
             'end_period': TODAY,
             'payroll_officer': cls.employee
         }
-        cls.service = ManualPayrollService(cls.form_data)
+        cls.request =  RequestFactory()
+        
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        setattr(cls.request, 'session', 'session')
+        messages = FallbackStorage(cls.request)
+        setattr(cls.request, '_messages', messages)
+        
+        cls.service = ManualPayrollService(cls.form_data,cls.request)
     
     def setUp(self):
         self.employee_two = Employee.objects.create(
@@ -101,7 +109,7 @@ class ManualServiceTests(TestCase):
         self.employee_two.hard_delete()
 
     def test_create_service(self):
-        obj = ManualPayrollService(self.form_data)
+        obj = ManualPayrollService(self.form_data, self.request)
         self.assertIsInstance(obj, ManualPayrollService)
 
     def test_manual_payroll_service_run(self):

@@ -10,6 +10,9 @@ class OptionsWidget extends Component{
         modal.style.display = 'block';
         modal.addEventListener()
     }
+
+
+
     
     render(){
         let rendered;
@@ -48,7 +51,14 @@ class OptionsWidget extends Component{
                 maxWidth: "300px",
                 minWidth: "150px"
             }}>
-            
+
+            <div style={linkStyle} >
+                <button onClick={this.props.closeDropdown}
+                        type="button"
+                        className="btn btn-sm btn-danger">
+                            <i className="fas fa-times"></i>
+                </button>
+            </div>
             {this.props.newLink ? 
                 <div onClick={this.openPopup} style={linkStyle}>Create new</div>
                 : null

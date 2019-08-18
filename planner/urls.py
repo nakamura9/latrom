@@ -35,6 +35,7 @@ urlpatterns = [
         views.complete_event, name='event-complete'),
     re_path(r'^event-create/?$', views.EventCreateView.as_view(), 
         name='event-create'),
-    re_path(r'event-list', views.EventListView.as_view(), name='event-list'),
-    re_path(r'agenda', views.AgendaView.as_view(), name='agenda'),
+    re_path(r'^event-list/?$', views.EventListView.as_view(), name='event-list'),
+    re_path(r'^agenda/(?P<pk>\d+)/?$', views.AgendaView.as_view(), name='agenda'),
+    re_path(r'^api/agenda/(?P<pk>\d+)/?$', views.AgendaAPIView.as_view(), name='agenda-api'),
 ] + event_router.urls + api_urls

@@ -37,6 +37,7 @@
                         </tr>
                         <tr>
                             <th></th>
+                            <th>Total A/R</th>
                             <th>Current</th>
                             <th>0-7 Days</th>
                             <th>8-14 Days</th>
@@ -49,6 +50,7 @@
                         {% for c in page %}
                         <tr>
                             <td>{{c}}</td>
+                            <td>${{c.total_accounts_receivable |floatformat:2}}</td>
                             {% for amount in c.age_list %}
                             <td>${{amount |floatformat:2}}</td>
                             {% endfor %}

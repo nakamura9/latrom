@@ -5,11 +5,21 @@
     <h1 class="display-3">Procedure Details</h1>
     <p class="lead">Information and steps that represent a procedure</p>
     <hr class="my-2">
-    <p>More info</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:procedure-update' pk=object.pk %}"
-            role="button">Edit</a>
-    </p>
+<div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a class="dropdown-item" href="{% url 'services:create-procedure' %}">
+                        <i class="fas fa-eye"></i> Create New Procedure
+                    </a>
+                <a class="dropdown-item" href="{% url 'services:procedure-update' pk=object.pk %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+                
+            </div>
+        </div>
 </div>
 
 <div class="container">
@@ -23,7 +33,7 @@
             <div class="tab-content panel-body">
                 <div class="tab-pane active" id="summary">
                     <div class="row shadow">
-                        <div class="card bg-primary text-white col-4">
+                        <div class="card shadow col-4">
                             <div class="card-body">
                                 <h4 class="card-title">Summary Details</h4>
                                 <p class="card-text">Name: {{object.name}}</p>

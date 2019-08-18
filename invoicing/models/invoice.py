@@ -143,7 +143,7 @@ class Invoice(SoftDeletionModel):
                 service=service,
                 hours=data['hours'],
                 flat_fee=service.flat_fee,
-                hourly_rate=service.hourly_rate
+                hourly_rate=data['rate']
             )
             self.invoiceline_set.create(
                 line_type=2,#service
@@ -393,7 +393,10 @@ class Invoice(SoftDeletionModel):
                     WorkOrderRequest.objects.create(
                         invoice=self, 
                         service=line.service.service,
-                        status="request"
+                        status="request",
+                        created=datetime.date.today(),
+                        created_by=self.salesperson.employee,
+                        description = f'{line.service.service.name}: {line.service.service.description}'
                     )
 
 class InvoiceLine(models.Model):
@@ -422,6 +425,15 @@ class InvoiceLine(models.Model):
 
     #what it is sold for
     
+    @property
+    def type_string(self):
+        mapping = {
+            1: 'product',
+            2: 'service',
+            3: 'expense'
+        }
+        return mapping[self.line_type]
+
     @property 
     def component(self):
         mapping = {
@@ -432,6 +444,15 @@ class InvoiceLine(models.Model):
 
         return mapping[self.line_type]
     
+    @property
+    def name(self):
+        if self.line_type == 1:
+            return str(self.component.product).split('-')[1]
+        elif self.line_type == 2:
+            return self.component.service.name
+        return ''
+
+
     def __str__(self):
         if not self.component:
             return "<INVALID INVOICE LINE>"
@@ -439,17 +460,24 @@ class InvoiceLine(models.Model):
         if self.line_type == 1:
             return '[PRODUCT] {} x {} @ ${:0.2f}{}'.format(
                 self.component.quantity,
-                str(self.component.product).split('-')[1],
-                self.nominal_price,
+                self.name,
+                self.unit_price,
                 self.component.product.unit
             )
         elif self.line_type == 2:
-            return '[SERVICE] {} Flat fee: ${:0.2f} + {}Hrs @ ${:0.2f}/Hr'.format(
-                self.component.service.name,
-                self.component.service.flat_fee,
-                self.component.hours,
-                self.component.service.hourly_rate
-            )
+            ret_string = f'[SERVICE] {self.name}'
+            if self.component.service.flat_fee > 0:
+                ret_string += ' Flat rate: {:0.2f}'.format(
+                    self.component.service.flat_fee
+                )
+            if self.component.hours > 0 and \
+                    self.component.hourly_rate > 0:
+                ret_string +=  '+ {}Hrs @ ${:0.2f}/Hr'.format(
+                    self.component.hours,
+                    self.component.hourly_rate)
+            
+            return ret_string
+
         elif self.line_type ==3:
             return '[BILLABE EXPENSE] %s' % self.expense.expense.description
 
@@ -624,6 +652,37 @@ class ServiceLineComponent(models.Model):
 
         return None
 
+    @property
+    def cost_of_sale(self):
+        '''
+        Calculate the total cost of sales for the line 
+        based on expenses recorded and wages earned
+        returns total of wages and expenses
+        '''
+        if not WorkOrderRequest.objects.filter(
+                invoice=self.invoiceline.invoice,
+                service=self.service).exists():
+            return 0
+
+        orders = WorkOrderRequest.objects.filter(
+                    invoice=self.invoiceline.invoice,
+                    service=self.service).first().work_orders
+
+        total_expenses = 0
+        total_wages = 0
+        for order in orders:
+            total_expenses += sum([i.expense.amount \
+                    for i in order.expenses])
+            total_wages += sum([i.total_cost for i in order.time_logs])
+            print(order.pk)
+            print(order.time_logs)
+
+
+        return total_expenses + total_wages
+
+    @property
+    def gross_income(self):
+        return self.invoiceline.subtotal - self.cost_of_sale
 
 class ExpenseLineComponent(models.Model):
     expense = models.ForeignKey('accounting.Expense', 

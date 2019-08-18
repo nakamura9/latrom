@@ -3,12 +3,38 @@
     {% block head_extended %}{% endblock %}
 {% endblock %}
 {% block window %}
-
 {% include "nav.html" %}
 
-<article style="min-height:600px;">    
+<article style="min-height:500px;">    
     {% block content %}{% endblock %}
 </article>
 {% include "footer.html" %}
 
+<script>
+
+    //shrink jumbotrons on scroll
+
+var scrolling = false;
+$(document).scroll(function(){
+    scrolling = true;
+});
+
+function isScrollable(){
+    var windowHeight = $(window).height();
+    var pageHeight = $(document).height();
+    return pageHeight / windowHeight  > 1.5;
+}
+
+setInterval(function(){
+    if(scrolling){
+        scrolling = false;
+        if($(document).scrollTop() > 0  && isScrollable()){
+		  $(".jumbotron").addClass("shrink");
+		}
+        if($(document).scrollTop() === 0){
+		  $(".jumbotron").removeClass("shrink");
+		}
+    }
+}, 100)
+</script>
 {% endblock %}

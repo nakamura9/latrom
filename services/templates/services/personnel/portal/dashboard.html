@@ -1,0 +1,129 @@
+{% extends "window.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Service Person Portal</h1>
+    <p class="lead">Welcome {{object}}! </p>
+    <hr class="my-2">
+    <p>Actions</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'services:service-portal' %}" role="button">Login</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title">Personal Details</h4>
+                    <p class="card-text">Full Name: {{object.employee}}</p>
+                    <p class="card-text">Role: {% if object.is_manager %}Manager {% else %} Technician {% endif %} </p>
+                    <p class="card-text">Number of Teams : {{object.teams|length}}</p>
+                    <p class="card-text">Number of open Work Orders: {{object.current_orders.count}}</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <nav class="nav nav-tabs nav-stacked">
+                <a href="#current" data-toggle="tab" class="nav-link active">Current WorkOrders</a>
+                <a href="#complete" class="nav-link" data-toggle="tab">Complete Work Orders</a>
+                <a href="#teams" class="nav-link" data-toggle="tab">Teams</a>
+            </nav>
+            <div class="tab-content panel-body">
+                <div class="tab-pane active" id='current'>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table">
+                                <thead>
+                                    <tr class="bg-primary">
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>WR ID</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in object.current_orders %}
+                                        <tr>
+                                            <td>{{i.pk}}</td>
+                                            <td>{{i.date}}</td>
+                                            <td>{{i.works_request.pk}}</td>
+                                            <td>{{i.description |truncatechars:30}}</td>
+                                            <td>
+                                                <a href="{% url 'services:work-order-complete' pk=i.pk %}" class="btn btn-primary">Complete</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id='complete'>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table">
+                                <thead>
+                                    <tr class="bg-primary">
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>WR ID</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in object.completed_orders %}
+                                        <tr>
+                                            <td>{{i.pk}}</td>
+                                            <td>{{i.date}}</td>
+                                            <td>{{i.works_request.pk}}</td>
+                                            <td>{{i.description |truncatechars:30}}</td>
+                                            <td>
+                                                <a href="{% url 'services:work-order-detail' pk=i.pk %}" class="btn btn-primary">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id='teams'>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table">
+                                <thead>
+                                    <tr class="bg-primary">
+                                        <th>Name</th>
+                                        <th>Team Leader</th>
+                                        <th>Number of members</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in object.teams %}
+                                    <tr>
+                                        <td>{{t.name}}</td>
+                                        <td>{{t.manager}}</td>
+                                        <td>{{t.members.all.count}}</td>
+                                        <td><a class="btn btn-primary" href="{% url 'services:team-detail' pk=t.pk %}">Details</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+

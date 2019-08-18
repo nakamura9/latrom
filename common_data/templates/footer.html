@@ -5,7 +5,12 @@
         <div class="text-white" style="padding:1cm;display:inline-block;">
         <h5><i class="fas fa-user"></i> Users</h5>
         <ul style="list-style-type:none">
-            <li style="color:white;"> <i class="fa fa-user-circle" aria-hidden="true"></i> {{request.user.username}} is currently logged in.</li>
+            <li style="color:white;"> {% if request.user.is_superuser %} 
+            
+                <i class="fa fa-user-astronaut" aria-hidden="true"></i>
+            {% else %}
+            <i class="fa fa-user-circle" aria-hidden="true"></i>
+            {% endif %} {{request.user.username}} is currently logged in.</li>
             <li ><a style="color:white;" href="/logout?next=/login/"> <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Logout</a></li>    
         </ul>
     </div>

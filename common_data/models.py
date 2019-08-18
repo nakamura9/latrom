@@ -8,9 +8,7 @@ from django.db import models
 
 from latrom import settings
 import subprocess
-from common_data.utilities import db_util
 from background_task.models import Task
-from messaging.models import EmailAddress
 from common_data.utilities.mixins import ContactsMixin
 from django.shortcuts import reverse
 class PhoneNumber(models.Model):
@@ -164,6 +162,7 @@ class GlobalConfig(SingletonModel):
         blank=True, 
         default="")
     last_license_check = models.DateField(null=True)
+    last_automated_service_run = models.DateTimeField(null=True, blank=True)
     use_backups = models.BooleanField(
         blank=True,
         default=False)
@@ -198,7 +197,7 @@ class GlobalConfig(SingletonModel):
             'D': Task.DAILY,
             'W': Task.WEEKLY,
             'M': Task.EVERY_4_WEEKS,
-            '': 5
+            '': Task.DAILY
         }
         return mapping[self.backup_frequency]
 
@@ -218,6 +217,7 @@ class GlobalConfig(SingletonModel):
             fields = copy.deepcopy(self.__dict__)
             del fields['hardware_id']
             del fields['last_license_check']
+            del fields['last_automated_service_run']
             del fields['_state']
             json.dump(fields, fil)
 

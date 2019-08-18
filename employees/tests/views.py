@@ -12,6 +12,7 @@ from employees.models import *
 from accounting.models import Account, JournalEntry
 from .models import create_test_employees_models
 import common_data
+from calendar import monthrange
 
 TODAY = datetime.date.today()
 
@@ -57,6 +58,18 @@ class GenericPageTests(TestCase):
         resp = self.client.get(reverse('employees:manual-config'))
         self.assertTrue(resp.status_code == 200)
 
+    def test_post_manual_config_employees(self):
+        today = datetime.date.today()
+        start, end = monthrange(today.year, today.month)
+        
+        resp = self.client.post(reverse('employees:manual-config'), 
+            data={
+                'start_period': start,
+                'end_period': end,
+                'payroll_officer': 1,
+                'employees': ['1']
+            })
+
 
 
 
@@ -72,6 +85,7 @@ class PayGradePageTests(TestCase):
             'name': 'Other Test Grade',
             'salary': 0,
             'monthly_leave_days': 1.5,
+            'maximum_leave_days': 20,
             'hourly_rate': 1.5,
             'overtime_rate': 2.25,
             'overtime_two_rate': 3,
@@ -151,6 +165,12 @@ class PaySlipPageTests(TestCase):
     def test_get_pay_slips_list_page(self):
         resp = self.client.get(reverse('employees:list-pay-slips'))
         self.assertEqual(resp.status_code, 200)
+
+        def test_get_employee_pay_slips_list_page(self):
+            resp = self.client.get(reverse('employees:list-employee- pay-slips', kwargs={
+                'pk': 1
+            }))
+            self.assertEqual(resp.status_code, 200)
 
     def test_get_pay_slip_detail_page(self):
         resp = self.client.get(reverse('employees:pay-slip-detail', kwargs={
@@ -318,18 +338,24 @@ class EmployeePageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_employees_reset_password_page_post(self):
+        su = User.objects.create_superuser('admin', 'test@email.com', 'password')
         resp = self.client.post('/employees/employee/user/reset-password/1',
             data={
                 'employee': 1,
-                'old_password': 'password',
-                'new_password': 'new_password',
-                'confirm_new_password': 'new_password'
+                'superuser': 'admin',
+                'superuser_password': 'password',
+                'new_user_password': 'new_password',
+                'confirm_new_user_password': 'new_password'
             })
         self.assertEqual(resp.status_code, 302)
 
     def test_employees_delete_user_post(self):
         resp = self.client.get('/employees/employee/delete-user/1')
         self.assertEqual(resp.status_code, 302)
+
+    def test_get_employee_payslips(self):
+        resp = self.client.get('/employees/list-employee-pay-slips/1')
+        self.assertEqual(resp.status_code, 200)
         
 
 class BenefitsPageTests(TestCase):
@@ -491,11 +517,11 @@ class DeductionPageTests(TestCase):
         cls.client = Client()
         cls.DEDUCTION_DATA = {
                 'name': 'Other Test Deduction',
-                'method': 1,
-                'trigger':1,
-                'amount': 10,
+                'deduction_method': 1,
+                'fixed_amount': 10,
                 'rate': 0,
-                'account_paid_into': 5008
+                'account_paid_into': 5008,
+                'employer_contribution':0
             }
         
     @classmethod
@@ -1066,3 +1092,17 @@ class DepartmentViewTests(TestCase):
         })
 
         self.assertEqual(resp.status_code, 302)
+
+class EmployeesReportViewTests(TestCase):
+    fixtures = ['common.json', 'accounts.json', 'journals.json', 
+        'employees.json']
+
+    @property
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+
+    @property
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        

@@ -55,6 +55,10 @@
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <td colspan="3">Balance Brought Forward</td>
+            <td>{{starting_balance}}</td>
+        </tr>
         {% for transaction in page %}
         <tr>
             <td>{{transaction.entry.date}}</td>
@@ -68,6 +72,10 @@
             {% endif %}
         </tr>
         {% endfor %}
+        <tr>
+            <td colspan="3">Remaining Balance</td>
+            <td>{{remaining_balance}}</td>
+        </tr>
     </tbody>
 </table>
 <p>{{page}}</p>

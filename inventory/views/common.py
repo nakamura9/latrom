@@ -24,7 +24,7 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition, ConsumablesRequisition
-from inventory.views.dash_plotters import stock_movement_plot
+from inventory.views.dash_plotters import stock_movement_plot, composition_plot
 from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -91,6 +91,9 @@ class InventoryDashboard(InventoryConfigMixin, TemplateView):
             return HttpResponseRedirect(reverse_lazy('inventory:config-wizard'))
 
             
+class AsyncDashboard(ContextMixin, TemplateView):
+    template_name = os.path.join('inventory', 'async_dashboard.html')
+
     def get_context_data(self, *args, **kwargs):
         context =  super().get_context_data(*args, **kwargs)
 
@@ -115,7 +118,7 @@ class InventoryDashboard(InventoryConfigMixin, TemplateView):
             type=1).count()
         context['consumables'] = models.InventoryItem.objects.filter(
             type=2).count()
-        context['graph'] = stock_movement_plot().render(is_unicode=True)
+        context['graph'] = composition_plot().render(is_unicode=True)
 
         return context
 

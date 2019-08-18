@@ -55,7 +55,11 @@ def get_month_data(array, user):
     events = []
     filters = get_filters(flat[0], flat[len(flat)- 1])
     
-    event_objs = Event.objects.filter(filters & Q(owner=user))
+    if hasattr(user, 'employee'):
+        event_objs = Event.objects.filter(filters & Q(
+            Q(owner=user) | Q(eventparticipant__employee__in=[user.employee.pk])))
+    else:
+        event_objs = Event.objects.filter(filters & Q(owner=user))
     events += [{
         'label': e.label,
         'icon': e.icon,
@@ -139,6 +143,11 @@ def get_day(request, year=None, month=None, day=None):
     })
 
 def _get_day(date, user):
+    if hasattr(user, 'employee'):
+        qs = Event.objects.filter(Q(date=date) & 
+            Q(Q(owner=user) | Q(eventparticipant__employee__in=[user.employee.pk])))
+    else:
+        qs = Event.objects.filter(Q(date=date) & Q(owner=user))
     events = [{
         'label': e.label,
         'icon': e.icon,
@@ -146,7 +155,8 @@ def _get_day(date, user):
         'start': e.start_time.strftime('%H:%M'),
         'end': e.end_time.strftime('%H:%M'),
         'id': e.pk 
-    } for e in Event.objects.filter(Q(date=date) & Q(owner=user))]
+
+    } for e in qs]
 
     events += [{
         'label': e.label,

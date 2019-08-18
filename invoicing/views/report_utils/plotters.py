@@ -1,5 +1,6 @@
 import datetime
 from invoicing.models.invoice import Invoice, InvoiceLine
+from invoicing.models.customer import Customer
 from dateutil import relativedelta
 from django.db.models import Q
 
@@ -68,6 +69,47 @@ def plot_lines(start, end, filters=Q()):
 
     return chart.render(is_unicode=True)
 
+def plot_sales_by_customer(start, end):
+    invs = Invoice.objects.filter(
+        Q(date__gte=start) & Q(date__lte=end) &
+        Q(draft=False) &
+        Q(status__in=['paid', 'paid-partially', 'invoice']))
+
+    sbc = {}
+    for i in invs:
+        sbc.setdefault(str(i.customer), 0) 
+        sbc[str(i.customer)] += i.subtotal
+
+    chart = pygal.Pie()
+    chart.title = 'Sales By Customer'
+    for key in sbc.keys():
+        chart.add(key, sbc[key])
+
+    return chart.render(is_unicode=True)
+
+
+def plot_sales_by_products_and_services(start, end):
+    lines = InvoiceLine.objects.filter(
+        Q(invoice__date__gte=start) & 
+        Q(invoice__date__lte=end) &
+        Q(invoice__draft=False) &
+        Q(expense__isnull=True) &
+        Q(invoice__status__in=['paid', 'paid-partially', 'invoice']))
+
+    sbps = {}
+    for l in lines:
+        sbps.setdefault(l.name, 0) 
+        sbps[l.name] += l.subtotal
+
+    chart = pygal.Pie()
+    chart.title = 'Sales By Products and Services'
+    for key in sbps.keys():
+        chart.add(key, sbps[key])
+
+    return chart.render(is_unicode=True)
+
+
+
 def get_sales_totals(queryset):
     total = 0
     for invoice in queryset:
@@ -98,6 +140,9 @@ def get_queryset_list(obj, start, end, delta, filters=Q()):
     return query_list
 
 def get_line_queryset_list(obj, start, end, delta, filters=Q()):
+    '''
+    List returned has elements that represent a single bar on the bar chart
+    '''
     curr_date = start
     prev_date = start
     query_list = []
@@ -145,3 +190,33 @@ def pygal_date_formatter(start, end):
 
     return [d.strftime(formatter) for d in dates]
 
+def plot_ar_by_customer():
+    chart = pygal.Pie()
+    chart.title = 'A/R By Customer'
+    for cus in Customer.objects.filter(account__balance__gt=0):
+        chart.add(str(cus), cus.total_accounts_receivable)
+
+    return chart.render(is_unicode=True)
+
+def plot_ar_by_aging():
+    chart = pygal.Pie()
+    chart.title = 'A/R By Aging'
+
+    invs = Invoice.objects.filter(status__in=['invoice', 'paid-partially'])
+
+
+    chart.add("Current", sum([i.total for i in filter(
+        lambda x: x.overdue_days == 0, invs)]))
+    chart.add('0-7 Days',sum([i.total for i in filter(
+        lambda x: x.overdue_days > 0 and x.overdue_days < 7, invs)]))
+    chart.add('8-14 Days', sum([i.total for i in filter(
+        lambda x: x.overdue_days > 6 and x.overdue_days < 15, invs)]))
+    chart.add('15-30 Days', sum([i.total for i in filter(
+        lambda x: x.overdue_days > 14 and x.overdue_days < 31, invs)]))
+    chart.add('31-60 Days', sum([i.total for i in filter(
+        lambda x: x.overdue_days > 30 and x.overdue_days < 61, invs)]))
+    chart.add('61+ Days', sum([i.total for i in filter(
+        lambda x: x.overdue_days > 60, invs)]))
+    
+
+    return chart.render(is_unicode=True)

@@ -14,23 +14,70 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
             <div class="card text-white bg-primary">
                 <div class="card-body">
                     <h4 class="card-title">Overview</h4>
                     <p class="card-text">Name: {{object.name}}</p>
                     <p class="card-text">Method: {{object.method_string}}</p>
-                    <p class="card-text">Deduction Trigger: {{object.trigger_string}}</p>
+                    {% if object.deduction_method == 0 %} 
                     <p class="card-text">Percentage of Deductables Deducted (%): {{object.rate}}</p>
+                    {% else %} 
                     <p class="card-text">Fixed Amount: {{object.amount}}</p>
+                    {% endif %}
                     <p class="card-text">Account Paid Into: {{object.account_paid_into}}</p>
-                    
+                    <p class="card-text">Employer Contribution (% of deducted amount): {{object.employer_contribution}}</p>
+                    <p class="card-text">Tax Deductable? : {{object.tax_deductable |yesno}}</p>
 
                 </div>
             </div>
         
         </div>
-        <div class="col-6">
+        <div class="col-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Income deducted from:</h4>
+                {% if deduction_method == 1 %}
+                <p class="card-text">Since the deduction is a fixed amount, the income sources deducted from are not considered</p>
+                {% endif %}
+                <h5>Income</h5>
+                <ul>
+                    {% if object.basic_income %}
+                        <li>Basic Income</li>
+                    {% endif %}
+                    {% if object.hourly_income %}
+                        <li>Hourly Income</li>
+                    {% endif %}
+                    {% if object.overtime_income %}
+                        <li>Overtime Income</li>
+                    {% endif %}
+                    
+
+                </ul>
+                <h5>Benefits</h5>
+                <ul>
+                    {% for benefit in object.benefits.all %}
+                        <li>{{benefit}}</li>
+                    {% endfor%}
+                </ul>
+                <h5>Commission Rules</h5>
+                <ul>
+                    {% for c in object.commission.all %}
+                        <li>{{c}}</li>
+                    {% endfor %}
+                </ul>
+                <h5>Payroll Taxes</h5>
+                <ul>
+                    {% for tax in object.payroll_taxes.all %}
+                    <li>{{tax}}</li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+        
+        </div>
+        <div class="col-4">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Paygrades</h4>

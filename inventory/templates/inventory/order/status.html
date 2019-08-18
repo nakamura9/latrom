@@ -3,11 +3,84 @@
 
 <div class="jumbotron">
     <h1 class="display-3">Order Status Page</h1>
+    <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                {% if order.status == "draft" %}
+                    <a href="{% url 'inventory:order-create' %}" class="dropdown-item">
+                        <i class="fas fa-plus"></i> Create New Purchase Order
+                    </a>
+                    <a href="{% url 'inventory:order-update' pk=object.pk %}" class="dropdown-item">
+                        <i class="fas fa-file"></i> Update
+                    </a>
+                {% endif %}
+                <a href="{% url 'inventory:order-detail' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-eye"></i> View {% if object.status == "draft" %} / Verify {% endif %}
+                </a>
+                <a href="{% url 'inventory:order-delete' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'inventory:order-pdf' pk=object.pk %}" class="dropdown-item">
+                        <i class="fas fa-file-pdf"></i> Generate PDF
+                        <!--Change this ! -->
+                    </a>
+                    <a href="{% url 'inventory:order-email' pk=object.pk %}" class="dropdown-item">
+                            <i class="fas fa-at"></i> Send Email
+                            <!--Change this ! -->
+                        </a>
+                {% if order.status != 'draft' %}
+                <h6 class="dropdown-header">Returns</h6>
+                
+                <a class="dropdown-item" href="{% url 'inventory:debit-note-create' pk=object.pk %}">
+                    <i class="fas fa-trash"></i> Create Debit Note
+                </a>
+                <a class="dropdown-item" href="{% url 'inventory:debit-note-list' pk=object.pk %}">
+                        <i class="fas fa-list-ol"></i> View Debit Notes
+                </a>
+
+                <h6 class="dropdown-header">Shipping and Handling</h6>                
+                <a href="{% url 'inventory:order-expense' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-truck"></i> Add Shipping And Handling Expenses
+                </a>
+                <a href="{% url 'inventory:order-expense-list' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-list-ol"></i> List Shipping And Handling Expenses
+                </a>
+                <h6 class="dropdown-header">Goods Receipts</h6>                
+
+                <a class="dropdown-item" href="{% url 'inventory:stock-receipt-create' pk=object.pk %}">
+                    <i class="fas fa-share-square"></i> Receive order</a>
+                
+                {% if order.stockreceipt_set.all.count > 0 %}
+                <a href="{% url 'inventory:stock-receipts-list' pk=object.pk %}" class="dropdown-item">
+                        <i class="fas fa-eye"></i> View Goods Receipts List</a>
+                {% endif %}
+                
+                
+
+                <h6 class="dropdown-header">Payments</h6>                
+                {% if order.payment_status != "paid" %}
+                <a href="{% url 'inventory:order-payment' pk=object.pk %}" class="dropdown-item">
+                    <i class="fas fa-receipt"></i> Make Payment
+                    <!--Change this ! -->
+                </a>
+                {% endif %}
+                <a  class="dropdown-item"
+                    href="{% url 'inventory:order-payment-list' pk=object.pk %}">
+                    <i class="fas fa-list-ol"></i> View Payments
+                    <!--Change this ! -->
+                </a>
+                {% endif %}
+            </div>
+        </div>
 </div>
 <div class="container">
     <div class="row">
         <div class="card-deck">
-            <div class="card bg-primary text-white col-sm-4">
+            <div class="card shadow col-sm-4">
                 <div class="card-body">
                     <h4 class="card-title">Order Details</h4>
                     <p class="card-text">Order ID: ORD{{object.id}} </p>

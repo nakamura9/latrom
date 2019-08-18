@@ -6,17 +6,27 @@ from accounting.models import (
     Account,
     Expense, 
     RecurringExpense,
-    InterestBearingAccount
+    InterestBearingAccount,
+    AccountingSettings,
+    Asset,
+    Bookkeeper
     )
 from django.contrib.auth.models import User
-
+import employees 
+import datetime
+from calendar import monthrange
 
 class AccountingServiceTest(TestCase):
-    fixtures = ['journals.json', 'accounts.json']
+    fixtures = ['settings.json','common.json','journals.json', 'accounts.json']
 
     @classmethod 
     def setUpTestData(cls):
+        employees.tests.model_util.EmployeeModelCreator(cls).create_employee()
         cls.service = AccountingTaskService()
+        cls.bookkeeper = Bookkeeper.objects.create(employee=cls.employee)
+        cls.employee.user = User.objects.create_user('user')
+        cls.employee.save()
+        
 
     def test_service_run(self):
         self.service.run()
@@ -47,7 +57,7 @@ class AccountingServiceTest(TestCase):
             reference=""
         )
         self.service.run_recurring_expenses()
-        self.assertEqual(Expense.objects.all().count(), 2)
+        self.assertEqual(Expense.objects.all().count(), 1)
 
     def test_run_interest_on_accounts(self):
         InterestBearingAccount.objects.create(
@@ -64,3 +74,24 @@ class AccountingServiceTest(TestCase):
         )
         self.service.run_interest_on_accounts()
         self.assertTrue(InterestBearingAccount.objects.first().balance != 100)
+
+    def test_depreciate_assets(self):
+        #create asset
+        asset = Asset.objects.create(
+            name='Test Asset',
+            description='Test description',
+            category = 1,
+            initial_value = 100,
+            credit_account = Account.objects.get(pk=1000),
+            depreciation_period = 5,
+            init_date = datetime.date.today() - datetime.timedelta(days=365),
+            depreciation_method = 0,
+            salvage_value = 20,
+        )
+        #get the month end
+        today = datetime.date.today()
+        
+        monthend = monthrange(today.year, today.month)[1]
+        self.service.today = datetime.date(today.year, today.month, monthend)
+        self.service.depreciate_assets()
+

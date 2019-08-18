@@ -181,11 +181,6 @@ class WorkFlowView(LoginRequiredMixin, TemplateView):
 class ReactTestView(TemplateView):
     template_name = os.path.join("common_data", "react_test.html")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = AxiosEmailForm
-        return context
-    
 
 class AboutView(LoginRequiredMixin, TemplateView):
     template_name = os.path.join("common_data", "about.html")
@@ -382,6 +377,11 @@ class UserAPIView(ListAPIView):
     queryset = User.objects.all()
     model = User
 
+class UserDetailAPIView(RetrieveAPIView):
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
+    model = User
+
 
 def get_current_user(request):
     if request.user:
@@ -478,3 +478,16 @@ def reset_license_check(request):
 
     return HttpResponseRedirect('/login')
 
+def document_notes_api(request, document=None, id=None):
+    notes =[]
+    
+    if document == 'service':
+        doc = services.models.ServiceWorkOrder.objects.get(pk=id)
+        notes = [{'note': i.note, 'author': i.author.pk} \
+                    for i in doc.notes.all()]
+    
+    return JsonResponse(notes, safe=False)
+
+
+class ReportBlankView(TemplateView):
+    template_name = os.path.join('common_data', 'reports', 'blank.html')

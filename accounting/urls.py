@@ -210,6 +210,7 @@ journal_urls = [
 urlpatterns =[
     re_path(r'^config-wizard/?$', views.ConfigWizard.as_view(), name='config-wizard'),
     re_path(r'^$', views.Dashboard.as_view(), name='dashboard'),
+    re_path(r'^async-dashboard/$', views.AsyncDashboard.as_view(), name='async-dashboard'),
 ] + tax_router.urls +  misc_urls + account_urls  + journal_urls + \
     entry_urls  + account_router.urls  + expense_urls + report_urls + \
     expense_router.urls + recurring_expense_urls + asset_urls + \

@@ -36,7 +36,7 @@ class EmailBaseClass():
                 context=context) as server:
             server.login(
                     self.profile.email_address, 
-                    self.profile.email_password)
+                    self.profile.get_plaintext_password)
             try:
                 resp = server.sendmail(self.profile.email_address, to, message)
             except smtplib.SMTPException:
@@ -111,7 +111,7 @@ class EmailBaseClass():
                             a=attachment)
 
     def fetch_mailbox(self):
-        '''Used to retrueve an instance of the mailbox'''
+        '''Used to retrieve an instance of the mailbox'''
         self.configured = True
         mailbox = imaplib.IMAP4_SSL(self.IMAP_HOST, self.IMAP_PORT)
         mailbox.login(self.profile.email_address, self.profile.get_plaintext_password)

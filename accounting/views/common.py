@@ -29,7 +29,7 @@ from accounting.views.reports.balance_sheet import BalanceSheet
 from accounting.views.dash_plotters import expense_plot, revenue_vs_expense_plot
 from employees.forms import EmployeeForm
 from employees.models import Employee
-
+import pygal
 #constants
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -45,6 +45,11 @@ class Dashboard( TemplateView):
             return super().get(*args, **kwargs)
         else:
             return HttpResponseRedirect(reverse_lazy('accounting:config-wizard'))
+
+    
+
+class AsyncDashboard(TemplateView):
+    template_name = os.path.join('accounting', 'async_dashboard.html')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -386,6 +391,21 @@ class AssetListView(ContextMixin,  PaginationMixin,
 class AssetDetailView( DetailView):
     template_name = os.path.join('accounting', 'asset_detail.html')
     model = models.Asset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        chart = pygal.Line()
+        start = self.object.init_date.year
+        period = list(range(start, start + self.object.depreciation_period + 1))
+        chart.x_labels = map(str, period)
+        chart.add(self.object.name, [self.object.initial_value - \
+            (i * self.object.annual_depreciation) \
+                for i in range(self.object.depreciation_period + 1)])
+
+        chart.title='Depreciation Plot'
+        context['graph'] = chart.render(is_unicode=True)
+        return context
+
 
 class ExpenseCreateView(ContextMixin,  CreateView):
     form_class = forms.ExpenseForm

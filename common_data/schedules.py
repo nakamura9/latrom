@@ -4,27 +4,14 @@ from background_task.models import Task
 import os 
 from latrom import settings
 from common_data.models import GlobalConfig
+from common_data.utilities.db_util import DBBackupService
 
 @background
 def backup_db():
-    os.chdir(settings.BASE_DIR)
-    ret = subprocess.run(['python', 'manage.py', 'dbbackup', '-z'])
-    if ret.returncode != 0:
-        raise Exception('Failed to backup db')
+    DBBackupService().run()
 
-    if os.path.exists('debug.log'):
-        try:
-            os.remove('debug.log')
-        except:
-            pass
-
-
-mapping = {
-    'D': Task.DAILY,
-    'W': Task.WEEKLY,
-    'M': Task.MONTHLY
-}
-
-config = GlobalConfig.objects.first()
-
-backup_db(repeat=mapping[config.backup_frequency])
+try:
+    backup_db(repeat=Task.DAILY)
+except:
+    # TODO handle exceptions better
+    pass

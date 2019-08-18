@@ -5,11 +5,41 @@
     <h1 class="display-3">Work Order Details </h1>
     <p class="lead">Information regarding work orders</p>
     <hr class="my-2">
-    <p>Actions</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'services:work-order-update' pk=object.pk  %}"
-            role="button">Update</a>
-    </p>
+    <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'services:work-order-update' pk=object.pk %}">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+
+                {% if wo.procedure_pk %}
+                <a class="dropdown-item" href="{% url 'services:procedure-details' pk=object.procedure_pk %}">
+                    <i class="fas fa-list-ul"></i> View Procedure
+                </a>
+                
+                {% endif %}
+                {% if wo.status != 'authorized' %}
+                <a class="dropdown-item" href="{% url 'services:work-order-complete' pk=object.pk %}">
+                    <i class="fas fa-check"></i> Update Progress
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-equipment-requisition-create' pk=object.pk %}">
+                    <i class="fas fa-file-invoice"></i> Request Equipment
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-consumable-requisition-create' pk=object.pk %}">
+                    <i class="fas fa-file-invoice"></i> Request Consumables
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-expense-create' pk=object.pk %}">
+                    <i class="fas fa-dollar-sign"></i> Record Work Related Expense
+                </a>
+                <a class="dropdown-item" href="{% url 'services:work-order-costing' pk=object.pk %}">
+                    <i class="fas fa-receipt"></i> Costing
+                </a>
+                {% endif %}
+            </div>
+        </div>
 </div>
 
 <div class="container">
@@ -28,6 +58,7 @@
                         <div class="card-body">
                             <p class="card-text">Date: {{object.date}}</p>
                             <p class="card-text">Time: {{object.time}}</p>
+                            <p class="card-text">Invoice: {{object.works_request.invoice.pk | stringformat:"06d"}}</p>
                             <p class="card-text">Status: {{object.status}}</p>
                             <p class="card-text">Description: {{object.description}}</p>
                             <h4>Resolvers</h4>
@@ -132,7 +163,7 @@
             </div>
         </div>
         <div class="col-sm-4">
-            {% if request.user.is_superuser and object.status != 'authorized' %}
+            {% if  object.status != 'authorized' %}
             <h5>Authorization Form</h5>
             <form action="{% url 'services:work-order-authorize' pk=object.pk %}" method="POST">
                 {% csrf_token %}
@@ -141,8 +172,8 @@
             </form>
             {% else  %}
             {% if object.status == 'authorized' %}
-            {% else %}
-            <h6>Login as a super user to authorize this work order.</h6>
+                <h6>Authorized By:</h6>
+                <h5>{{object.authorized_by}}</h5>
             {% endif %}
             {% endif %}
 

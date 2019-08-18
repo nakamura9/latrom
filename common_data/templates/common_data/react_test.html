@@ -27,4 +27,112 @@
 <input type="text" id="test-input">
 {% render_bundle 'widgets' %}
 
+
+<div>
+    <h4>steps</h4>
+    <style>
+        .steps-container {
+            width: 300px;
+            box-shadow: 3px 5px 20px grey;
+            border: 1px solid grey;
+            max-height: 300px;
+            margin: 5px;
+            position:relative;
+        }
+
+        .steps-bg {
+            width: 100%;
+            height: 100%;
+            padding:0px;
+            margin:0px;
+        }
+
+        .steps-bg-left {
+            width: 25%;
+            height: 100%;
+            padding:0px;
+            margin:0px;
+        }
+
+        .steps-bg-right {
+            width: 75%;
+            height: 100%;
+            padding:0px;
+            margin:0px;
+        }
+
+        .steps-line {
+            width: 1px;
+            background-color:black;
+            height: 1000px;
+            padding:0px;
+            margin: 0px auto;
+        }
+
+        .step {
+            margin: 5px 0px;
+            height: 40px;
+            width: 100%;
+            z-index: 100;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            display: flex;
+            flex-direction: row;
+            font-weight: 250;
+        }
+
+        .step-left {
+            width: 25%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            display: inline-block;
+        }
+
+        .step-right {
+            height: 100%;  
+            display: inline-block;
+            margin: 0px;
+            padding: 3px;
+        }
+
+        .step-point {
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            border: 1px solid black;
+            background-color: #00ff7b;
+            margin: 10px auto ;
+            color: white;
+            font-size: 12px;
+        }
+
+        .step-point i {
+            margin: 3px 3px;
+        }
+
+
+    </style>
+    <div class='steps-container'>
+        <div class="steps-bg">
+            <div class='steps-bg-left'>
+                <div class="steps-line"></div>
+            </div>
+            <div class='steps-bg-right'></div>
+        </div>
+        <div class="step">
+            <div class="step-left">
+                <div class="step-point">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="step-right">
+                <p>Step Name</p>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
 {% endblock %}

@@ -156,9 +156,9 @@ class ServicePersonnelViewTests(TestCase):
             'name': 'name',
             'description': 'descritopm',
             'manager': 1,
-            'members': urllib.parse.quote(json.dumps([{
-                'value': '1 - Service'
-            }]))
+            'members': urllib.parse.quote(json.dumps([
+                '1 - Service'
+            ]))
         })
         self.assertEqual(resp.status_code, 302)
 
@@ -171,9 +171,9 @@ class ServicePersonnelViewTests(TestCase):
             'name': 'name',
             'description': 'descritopm',
             'manager': 1,
-            'members': urllib.parse.quote(json.dumps([{
-                'value': '1 - Service'
-            }]))
+            'members': urllib.parse.quote(json.dumps([
+                '1 - Service'
+            ]))
         })
         self.assertEqual(resp.status_code, 302)
 
@@ -316,14 +316,12 @@ class RequisitionViewTests(TestCase):
         )
         cls.eq_requisition = EquipmentRequisition.objects.create(
             date=TODAY,
-            department="dept",
             reference="ref",
             requested_by=cls.employee
         )
 
         cls.con_requsition = ConsumablesRequisition.objects.create(
             date=TODAY,
-            department="dept",
             reference="ref",
             requested_by=cls.employee
         )
@@ -347,7 +345,6 @@ class RequisitionViewTests(TestCase):
                 }])),
                 'date': TODAY,
                 'warehouse': 1,
-                'department': 'dept',
                 'reference': 'ref',
                 'requested_by': 1,
                 "work_order": self.wo.pk
@@ -396,7 +393,6 @@ class RequisitionViewTests(TestCase):
                 }])),
                 'date': TODAY,
                 'warehouse': 1,
-                'department': 'dept',
                 'reference': 'ref',
                 'requested_by': 1,
                 'work_order': self.wo.pk
@@ -669,6 +665,8 @@ class WorkOrderViewTests(TestCase):
         resp = self.client.get("/services/work-order/1/expense-create")
         self.assertEqual(resp.status_code, 200)
 
+
+    #TODO fix
     def test_post_work_order_expense_view(self):
         resp = self.client.post("/services/work-order/1/expense-create", data={
             'description': 'description',

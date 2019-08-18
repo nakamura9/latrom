@@ -8,7 +8,8 @@ from .models import (create_test_employees_models,
     PayGradeModelTests, 
     PaySlipModelTests, 
     TaxBracketModelTests, 
-    LeaveModelTests)
+    LeaveModelTests,
+    PayrollDateModelTests)
 from .views import (GenericPageTests, 
     PayGradePageTests, 
     PaySlipPageTests, 

@@ -1,0 +1,56 @@
+
+<table class="table table-sm" style="width:100%">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:100%">
+                {% include "inventory/reports/vendor_transactions/header.html"%}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table table-sm  table-striped ">
+                    <thead>
+                        <tr class='bg-primary text-white'>
+                            <th>Transaction ID</th>
+                            <th>Type</th>
+                            <th>Memo</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vendor in vendors %}
+                            {% if vendor.transactions|length > 0 %}
+                            
+                                <tr class='bg-primary text-white'>
+                                    <th colspan="5">{{vendor.name}}</th>
+                                </tr>
+                                {% for t in vendor.transactions %}
+                                    <tr>
+                                        <td>{{t.entry.pk | stringformat:"06d"}}</td>
+                                        <td>
+                                            {% if 'payment' in t.entry.memo %}
+                                                Payment
+                                            {% elif 'Order' in t.entry.memo %}
+                                                Bill
+                                            {% endif %}
+                                        </td>
+                                        <td>{{t.entry.memo}}</td>
+                                        <td>{{t.entry.date}}</td>
+                                        <td>{{t.amount}}</td>
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="4">Total</th>
+                                    <th>{{vendor.total}}</th>
+                                </tr>
+
+                            
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -53,7 +53,7 @@ table {
 
 .footer-cell {
     border: 1px solid black;
-    min-height: 100px;
+    min-height: 150px;
 }
 
 .footer-cell-heading{
@@ -65,5 +65,4 @@ table {
 .footer-cell-contents{
     padding: 2px 5px;
 }
-
 

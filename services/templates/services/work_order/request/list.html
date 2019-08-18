@@ -1,11 +1,14 @@
-{% extends "common_data/unfiltered_list_template.html" %}
+{% extends "common_data/list_template.html" %}
 
 {% block list_headings %}
 
     <tr class="bg-primary text-white">
-        <td>Invoice Number</td>
+        <td>Description</td>
+        <td>Created By</td>
+        <td>Invoice</td>
         <td>Status</td>
-        <td>WorkOrders</td>
+
+        <td># of WorkOrders</td>
         <td>Actions</td>
     </tr>
 
@@ -15,7 +18,9 @@
 
     {% for wr in object_list %}
     <tr>
-        <td>{{wr.invoice.pk}}</td>
+        <td>{{wr.description | truncatechars:50}}</td>
+        <td>{{wr.created_by}}</td>
+        <td> {% if wr.invoice %} {{wr.invoice.pk}} {% else %} None {% endif %} </td>
         <td>{{wr.status}}</td>
         <td>{{wr.work_orders.count}}</td>
         <td>
@@ -26,7 +31,9 @@
                         </button>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
                     <a class="dropdown-item" href="{% url 'services:work-order-request-detail' pk=wr.pk %}"> <i class="fas fa-file"></i> Detail</a>
-                    <a class="dropdown-item" href="{% if wr.invoice_type == 0 %}{% url 'invoicing:service-invoice-detail' pk=wr.invoice.pk %}{% else %}{% url 'invoicing:invoice-detail' pk=wr.invoice.pk %}{% endif %}"><i class="fas fa-eye    "></i> View Invoice</a>
+                    {% if wr.invoice %}
+                    <a class="dropdown-item" href="{% url 'invoicing:invoice-detail' pk=wr.invoice.pk %}"><i class="fas fa-eye    "></i> View Invoice</a>
+                    {% endif %}
                     <a class="dropdown-item" href="{% url 'services:work-order-create' pk=wr.pk %}"><i class="fas fa-plus    "></i> Add Work Order</a>
                 </div>
             </div>

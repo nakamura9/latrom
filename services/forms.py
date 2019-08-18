@@ -105,6 +105,9 @@ class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = ['date', 'time', 'expected_duration', 'team', 'status', 'description', 'works_request' ]
         model = models.ServiceWorkOrder
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4})
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -116,7 +119,6 @@ class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
                         Column('date', css_class="form group col-6"),
                         Column('time', css_class="form group col-6"),
                     ),
-                    'internal',
                     'works_request',
                     'description',
                     'completed',
@@ -129,9 +131,7 @@ class ServiceWorkOrderForm(forms.ModelForm, BootstrapMixin):
                 Tab('Service People',
                     HTML(
                         """
-                        <div id="work-order-persons">
-
-            </div>      
+                        <div id="work-order-persons"></div>      
                         """
                     ),
                 ),
@@ -184,7 +184,9 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
                  css_class="form-row"),
             Row(
                 Column('reference', css_class="col-sm-6"), 
-                Column('requested_by', css_class="col-sm-6"), css_class="form-row")
+                Column('requested_by', css_class="col-sm-6"), css_class="form-row"),
+            HTML("""<div id='equipment-requisition-table'></div> """)
+            
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         
@@ -193,6 +195,8 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
 class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
     work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 
         widget=forms.HiddenInput)
+    equipment = forms.CharField(widget=forms.HiddenInput)
+    
     class Meta:
         exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
         model = models.EquipmentRequisition
@@ -203,7 +207,7 @@ class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('work_order', css_class="col-sm-12"), css_class="form-row"),
+                Column('work_order', 'equipment', css_class="col-sm-12"), css_class="form-row"),
             Row(
                 Column('date', css_class="col-sm-6"), 
                 Column('requested_by', css_class="col-sm-6"), css_class="form-row"),
@@ -213,8 +217,12 @@ class WorkOrderEquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
                  css_class="form-row"),
             Row(
                 Column('reference', css_class="col-sm-12"),
-                css_class="form-row")
+                css_class="form-row"),
+            HTML("""<div id='equipment-requisition-table'></div> """)
+            
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
     
 
 class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
@@ -238,7 +246,9 @@ class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
                  css_class="form-row"),
             Row(
                 Column('reference', css_class="col-sm-6"), 
-                Column('requested_by', css_class="col-sm-6"), css_class="form-row")
+                Column('requested_by', css_class="col-sm-6"), css_class="form-row"),
+            HTML("""<div id='consumable-requisition-table'></div> """)
+            
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 
@@ -246,6 +256,8 @@ class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
 class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
     work_order = forms.ModelChoiceField(models.ServiceWorkOrder.objects.all(), 
         widget=forms.HiddenInput)
+    consumables = forms.CharField(widget=forms.HiddenInput)
+    
     class Meta:
         exclude = "authorized_by", "released_by",
         model = models.ConsumablesRequisition
@@ -256,7 +268,7 @@ class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('work_order', css_class="col-sm-12"), css_class="form-row"),
+                Column('work_order', 'consumables',css_class="col-sm-12"), css_class="form-row"),
             Row(
                 Column('date', css_class="col-sm-6"), 
                 Column('requested_by', css_class="col-sm-6"), css_class="form-row"),
@@ -267,7 +279,10 @@ class WorkOrderConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
             Row(
                 Column('reference', css_class="col-sm-12"),
                 css_class="form-row"),
+            HTML("""<div id='consumable-requisition-table'></div> """)
         )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 class ServiceProcedureForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "required_equipment", "required_consumables"
@@ -325,3 +340,13 @@ class EquipmentReturnForm(BootstrapMixin, forms.Form):
         requisition.returned_date = cleaned_data['return_date']
         requisition.save()
         return cleaned_data
+
+class WorkOrderRequestForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        fields = 'created', 'created_by','description', 'service', 'status'
+        model = models.WorkOrderRequest
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4})
+        }
+
+        

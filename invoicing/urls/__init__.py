@@ -40,6 +40,7 @@ sales_rep_urls = [
 
 urlpatterns = [
     re_path(r'^$', views.Home.as_view(), name="home"),
+    re_path(r'^async-dashboard/?$', views.AsyncDashboard.as_view(), name="async-dashboard"),
     re_path(r'^config/(?P<pk>[\d]+)/?$', views.ConfigView.as_view(), name="config"),
     re_path(r'^api/config/(?P<pk>[\d]+)/?$', views.ConfigAPIView.as_view(), name='api-config')
 ] + report_urls + customer_urls + sales_rep_urls + invoice_urls

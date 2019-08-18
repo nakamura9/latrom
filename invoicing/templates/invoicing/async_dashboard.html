@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block window %}
+
+<div class="container">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <ul class="nav nav-pills flex-column">
+                                    <li class="nav-item"><a data-toggle="pill" href="#Main" class="nav-link active">Data
+                                            Grid</a></li>
+                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="tab-content panel-body">
+                                    <div id="Main" class="tab-pane active">
+                                        <div id="dashboard" class="tab-pane">
+                                            <div class="dash-container">
+                                                <div class="bg-success text-white dashbox">
+                                                    <h4>Sales This Month:</h4>
+                                                    <h3>${{sales_to_date | floatformat:2}}</h3>
+                                                </div>
+                                                <div class="bg-primary text-white dashbox">
+                                                    <h4>Active Customers: </h4>
+                                                    <h3>{{customers}}</h3>
+                                                </div>
+                                                <div class="bg-warning text-white dashbox">
+                                                    <h4>Outstanding Invoices: </h4>
+                                                    <h3>{{outstanding_invoices}}</h3>
+                                                </div>
+                                            </div>
+                                            <hr class="my-4">
+                                            <div class="dash-container">
+                                                <div class="bg-warning text-white dashbox">
+                                                    <h4>Money Owed: </h4>
+                                                    <h3>${{money_owed | floatformat:2 }}</h3>
+                                                </div>
+                                                <div class="bg-danger text-white dashbox">
+                                                    <h4>Overdue Invoices: </h4>
+                                                    <h3>{{overdue}}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="Graph" class="tab-pane fade in active">
+                                        <h4>Sales for the last 30 days</h4>
+                                        {% autoescape off %}
+                                        {{graph}}
+                                        {% endautoescape %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+{% endblock window %}
