@@ -5,7 +5,8 @@
     }
 </style>
 <div class="jumbotron jumbo-gradient">
-    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128px;"></i> Inventory Dashboard</h1>
+    <h1 class="display-3"><i class=" fas fa-warehouse" style="color:#07f; font-size:128px;"></i> Inventory Dashboard
+    </h1>
     <p class="lead">Manage inventory items and warehouses</p>
     <hr class="my-2">
 
@@ -23,10 +24,10 @@
                         {% if use_warehousing_model %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                    <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouses</h4>
-                                </div>
+                                <h4 class="card-title"><i class="fas fa-warehouse"></i> Warehouses</h4>
+                            </div>
                             <div class="card-body">
-                                
+
                                 <ul class="list-group">
                                     <li class="list-group-item hvr-grow">
                                         <a href="{% url 'inventory:warehouse-create' %}">Add Warehouse</a>
@@ -147,11 +148,11 @@
                         {% endif %}
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                    <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
-                                </div>
-                            
+                                <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
+                            </div>
+
                             <div class="card-body">
-                                
+
                                 <ul class="list-group">
 
                                     <li class="list-group-item hvr-grow">
@@ -162,17 +163,27 @@
                                         <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
                                             Report</a>
                                     </li>
-                                    <li class="list-group-item hvr-grow">
+                                    <li class="list-group-item ">
                                         <div class="dropdown">
                                             <span data-toggle="dropdown" class=" card-link"
                                                 style="color:blue;">More...</span>
                                             <div class="dropdown-menu">
-                                                <a class='dropdown-item' href="{% url 'inventory:payments-due-report' %}">
-                                            Payments Due Report
-                                        </a>
-                                        <a class='dropdown-item' href="{% url 'inventory:vendor-balance-report' %}">
-                                            Vendor Balance Report
-                                        </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:payments-due-report' %}">
+                                                    Payments Due Report
+                                                </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-balance-report' %}">
+                                                    Vendor Balance Report
+                                                </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-average-days-to-deliver-report' %}">
+                                                    Vendor Average Days To Deliver Report
+                                                </a>
+                                                <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-transactions-form' %}">
+                                                    Vendor Transactions Report
+                                                </a>
                                             </div>
                                         </div>
                                     </li>

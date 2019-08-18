@@ -17,4 +17,14 @@ report_urls = [
         name='payments-due-report'),
     path('vendor-balance-report', views.VendorBalanceReportView.as_view(), 
         name='vendor-balance-report'),
+    path('vendor-average-days-to-deliver-report', 
+        views.VendorAverageDaysToDeliverReportView.as_view(), 
+        name='vendor-average-days-to-deliver-report'),
+    path('vendor-transactions-report/', 
+        views.TransactionByVendorReportView.as_view(), 
+        name='vendor-transactions-report'),
+    path('vendor-transactions-form/', 
+        views.TransactionByVendorReportFormView.as_view(), 
+        name='vendor-transactions-form'),
 ]
+

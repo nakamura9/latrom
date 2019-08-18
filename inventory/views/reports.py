@@ -1,14 +1,18 @@
 import datetime
 import os
 
-from django.views.generic import TemplateView
-
+from django.views.generic import TemplateView, FormView
+from common_data.forms import PeriodReportForm
 from . import models
 from common_data.utilities import (ConfigMixin, 
                                    MultiPageDocument,
-                                   ContextMixin)
+                                   ContextMixin,
+                                   extract_period)
+                                
 from inventory.views.common import CREATE_TEMPLATE
 from wkhtmltopdf.views import PDFTemplateView
+from accounting.models import JournalEntry, Credit, Debit
+from django.db.models import Q
 
 class InventoryReport( ConfigMixin, MultiPageDocument,TemplateView):
     template_name = os.path.join('inventory', 'reports', 'inventory',
@@ -109,6 +113,53 @@ class VendorBalanceReportView(ContextMixin,
     def get_multipage_queryset(self):
         return models.Supplier.objects.all()
 
-    
 
+class VendorAverageDaysToDeliverReportView(ConfigMixin,
+                                         ContextMixin,
+                                         TemplateView):
+
+    template_name = os.path.join('inventory', 'reports', 'days_to_deliver', 
+        'report.html')
+    extra_context = {
+        'date': datetime.date.today(),
+        'vendors': models.Supplier.objects.all(),
+        'pdf_link': True
+    } 
+
+class TransactionByVendorReportFormView(ContextMixin, FormView):
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
+    form_class = PeriodReportForm
+    extra_context = {
+        'action': '/inventory/vendor-transactions-report/'
+    }
+
+class TransactionByVendorReportView(ConfigMixin, TemplateView):
+    template_name = os.path.join('inventory', 'reports', 'vendor_transactions', 'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start, end = extract_period(self.request.GET)
+        vendors = models.Supplier.objects.all()
+        context.update({
+            'start': start,
+            'end': end,
+            'pdf_link': True
+        })
+        context["vendors"] = [{
+            'name': v.name,
+            'transactions': sorted(list(Credit.objects.filter(
+                account=v.account, 
+                entry__date__gte=start,
+                entry__date__lte=end
+                )
+            ) + list(Debit.objects.filter(account=v.account, 
+                entry__date__gte=start,
+                entry__date__lte=end
+                    )
+                ),
+            key=lambda x: x.entry.date),
+            'total': v.account.balance_over_period(start, end)
+        } for v in vendors]
+        return context
     
