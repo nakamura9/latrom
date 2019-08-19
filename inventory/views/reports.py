@@ -142,18 +142,18 @@ class TransactionByVendorReportView(ConfigMixin, TemplateView):
         start, end = extract_period(self.request.GET)
         vendors = models.Supplier.objects.all()
         context.update({
-            'start': start,
-            'end': end,
+            'start': start.strftime("%d %B '%y"),
+            'end': end.strftime("%d %B '%y"),
             'pdf_link': True
         })
         context["vendors"] = [{
             'name': v.name,
-            'transactions': sorted(list(Credit.objects.filter(
+            'transactions': sorted(list(Debit.objects.filter(
                 account=v.account, 
                 entry__date__gte=start,
                 entry__date__lte=end
                 )
-            ) + list(Debit.objects.filter(account=v.account, 
+            ) + list(Credit.objects.filter(account=v.account, 
                 entry__date__gte=start,
                 entry__date__lte=end
                     )

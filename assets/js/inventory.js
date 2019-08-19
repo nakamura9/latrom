@@ -12,7 +12,8 @@ const transferReceipt =  document.getElementById('transfer-receipt-table');
 const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
 const debitNoteTable = document.getElementById("debit-note-table");
-const receiveTable = document.getElementById('receive-table');
+const debitNoteDispatch = document.getElementById('debit-note-dispatch');
+const salesDispatch = document.getElementById('sales-dispatch');
 
 const URL = window.location.href;
 const  decomposed = URL.split('/');
@@ -191,7 +192,6 @@ if(inventoryCheck){
             dataURL={"/inventory/api/transfer-order/" + tail}
             headings={["Item", "Ordered Quantity", "Quantity Received", "Quantity to move", "Receiving Location"]}
             resProcessor={(res) =>{
-                console.log(res.data)
                 let lines = res.data.transferorderline_set.filter((item) =>{
                     return item.quantity > item.moved_quantity
                 })
@@ -271,7 +271,8 @@ if(inventoryCheck){
             headings={["Item", "Ordered Quantity", "Quantity To Return", "Quantity", "Receiving Location"]}
             resProcessor={(res) =>{
                 let lines = res.data.creditnoteline_set.filter(item =>{
-                    return item.line.product !== null// removes services and expenses
+                    // removes services and expenses
+                    return item.line.product !== null && item.quantity > item.line.product.returned_quantity 
                 })
                 return lines.map((item)=>({
                     'item': item.name,
@@ -307,4 +308,50 @@ if(inventoryCheck){
                 } 
                 
             ]}/>, returnsReceipt)
+}else if(debitNoteDispatch){
+    ReactDOM.render(<MutableTable
+            formHiddenFieldName="sent-items" 
+            dataURL={"/inventory/api/debit-note/" + tail}
+            headings={["Item", "Ordered Quantity", "Quantity To Return", "Quantity"]}
+            resProcessor={(res) =>{
+
+                let lines = res.data.debitnoteline_set
+                return lines.map((item)=>({
+                    'item': item.id + '-' + item.item.item.name,
+                    'ordered_quantity': item.item.quantity, 
+                    'return_quantity': item.quantity,
+                    'quantity': 0,
+                    'id': item.id
+                }))
+            }}
+            fields={[
+                {'name': 'item', 'mutable': false},
+                {'name': 'ordered_quantity', 'mutable': false},
+                {'name': 'return_quantity', 'mutable': false},
+                {'name': 'quantity', 'mutable': true},
+                
+            ]}/>, debitNoteDispatch)
+}else if(salesDispatch){
+    ReactDOM.render(<MutableTable
+            formHiddenFieldName="sent-items" 
+            dataURL={"/invoicing/api/invoice/" + tail}
+            headings={["Item", "Invoiced Quantity",  "Quantity Dispatched"]}
+            resProcessor={(res) =>{
+
+                let lines = res.data.invoiceline_set.filter((line) =>{
+                    return line.product !== null;
+                })
+                return lines.map((item)=>({
+                    'item': item.id + '-' + item.product.product.name,
+                    'invoiced_quantity': item.product.quantity, 
+                    'quantity': 0,
+                    'id': item.id
+                }))
+            }}
+            fields={[
+                {'name': 'item', 'mutable': false},
+                {'name': 'invoiced_quantity', 'mutable': false},
+                {'name': 'quantity', 'mutable': true},
+                
+            ]}/>, salesDispatch)
 }

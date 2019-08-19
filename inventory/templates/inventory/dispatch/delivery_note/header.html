@@ -1,0 +1,46 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Delivery Note
+{% endblock title %}
+
+{% block left_content %}
+<div style="display:block;">
+    <table class="table table-sm">
+        <tbody>
+            <tr>
+                <th>Date</th>
+                <td>{{object.dispatch_date}}</td>
+            </tr>
+            <tr>
+                <th>Dispatched By</th>
+                <td>{{object.dispatched_by}}</td>
+            </tr>
+            {% if object.request.invoice %}
+                <tr>
+                    <th>Invoice #</th>
+                    <td>{{object.request.invoice.pk | stringformat:"06d"}}</td>
+                </tr>
+            {% elif object.request.transfer_order %}
+                <tr>
+                    <th>Transfer ID</th>
+                    <td>{{object.request.transfer_order.pk | stringformat:"06d"}}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <th>Debit Note #</th>
+                    <td>{{object.request.debit_note.pk | stringformat:"06d"}}</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock left_content %}
+
+{% block right_content %}
+    {% include 'common_data/common/business.html' %}
+{% endblock right_content %}
+
+{% block lower_left %}
+
+{% endblock lower_left %}

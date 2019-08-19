@@ -6,6 +6,9 @@ from inventory import views
 stock_adjustment_router = routers.DefaultRouter()
 stock_adjustment_router.register(r'^api/stock-adjustment', views.StockAdjustmentAPIView)
 
+debit_note_router = routers.DefaultRouter()
+debit_note_router.register(r'^api/debit-note', views.DebitNoteAPIView)
+
 
 inventory_management_urls = [
     re_path(r'^config-wizard', views.ConfigWizard.as_view(), 
@@ -38,4 +41,4 @@ inventory_management_urls = [
     re_path(r'^scrapping-report/(?P<pk>[\w]+)/?$', 
         views.ScrappingReportDetailView.as_view(), 
             name='scrapping-report'),
-] + stock_adjustment_router.urls
+] + stock_adjustment_router.urls + debit_note_router.urls

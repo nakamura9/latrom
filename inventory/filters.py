@@ -3,7 +3,7 @@ import django_filters
 from django.db import models
 
 from .models import *
-from invoicing.models import CreditNote
+from invoicing.models import CreditNote, Invoice
 
 
 class OrderFilter(django_filters.FilterSet):
@@ -80,7 +80,6 @@ class InventoryItemFilter(django_filters.FilterSet):
             }
 
 
-<<<<<<< HEAD
 class PurchaseReturnsFilter(django_filters.FilterSet):
     class Meta:
         model = DebitNote
@@ -88,6 +87,14 @@ class PurchaseReturnsFilter(django_filters.FilterSet):
             'date': ['exact']
             }
         
+class InvoiceDispatchFilter(django_filters.FilterSet):
+    class Meta:
+        model = Invoice
+        fields = {
+            'date': ['exact']
+            }
+        
+
 class IncomingCreditNoteFilters(django_filters.FilterSet):
     class Meta:
         model = CreditNote
@@ -96,11 +103,9 @@ class IncomingCreditNoteFilters(django_filters.FilterSet):
             'invoice__customer': ['exact'],
             'invoice__salesperson': ['exact']
         }
-=======
 class InventorySearchField(django_filters.FilterSet):
     
     class Meta:
         model = InventoryItem
         fields = {'name':['icontains']}
 
->>>>>>> master

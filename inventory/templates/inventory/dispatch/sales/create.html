@@ -1,0 +1,35 @@
+{% extends "window.html" %} 
+{% load static %} 
+{% load render_bundle from webpack_loader %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}"> 
+{% endblock %} 
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Sales Dispatch</h1>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow">
+                <div class="card-body">
+                        {{form.errors}}
+                        {% crispy form %}
+                        <div id="sales-dispatch" class="col-sm-12"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% render_bundle 'inventory' %}
+
+{% endblock %}

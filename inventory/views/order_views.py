@@ -137,7 +137,6 @@ class OrderCreateView( ContextMixin,
             return {
                 'supplier': self.kwargs['supplier']
             }
-    
 
 
 class OrderUpdateView( ContextMixin, 
@@ -334,6 +333,7 @@ class DebitNoteCreateView(CreateView):
                 item._return_to_vendor(float(line['returned_quantity']))
                 
         self.object.create_entry()
+        self.object.create_dispatch_request()
         return resp
 
 class DebitNoteListView(DetailView):

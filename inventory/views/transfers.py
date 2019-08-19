@@ -84,10 +84,19 @@ class OutgoingTransferOrderListView(ContextMixin, PaginationMixin, FilterView):
             Q(source_warehouse=warehouse)).order_by('date').reverse()
 
 
-class TransferOrderDetailView(DetailView):
+class TransferOrderDetailView(ContextMixin, 
+                              ConfigMixin,
+                              MultiPageDocument, 
+                              DetailView):
     model = models.TransferOrder
-    template_name = os.path.join('inventory', 'transfer', 'detail.html')
+    template_name = os.path.join('inventory', 'transfer', 'document.html')
+    extra_context = {
+        'pdf_link': True
+    }
+    paginate_by =20
 
+    def get_multipage_queryset(self):
+        return self.object.transferorderline_set.all()
 
 class TransferOrderAPIView(RetrieveAPIView):
     serializer_class = serializers.TransferOrderSerializer 

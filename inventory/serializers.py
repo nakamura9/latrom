@@ -100,3 +100,16 @@ class TransferOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransferOrder
         fields ="__all__"
+
+class DebitNoteLineSerializer(serializers.ModelSerializer):
+    item = OrderItemSerializer(many=False)
+    class Meta:
+        model = DebitNoteLine
+        fields = ['item', 'quantity', 'id']
+
+class DebitNoteSerializer(serializers.ModelSerializer):
+    debitnoteline_set = DebitNoteLineSerializer(many=True)
+
+    class Meta:
+        model = DebitNote
+        fields = "__all__"

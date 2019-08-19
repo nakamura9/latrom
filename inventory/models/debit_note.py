@@ -5,6 +5,7 @@ from decimal import Decimal as D
 
 from accounting.models import Account, Journal, JournalEntry
 from django.shortcuts import reverse
+from inventory.models.stock_dispatch import DispatchRequest, StockDispatch
 
 
 class DebitNote(models.Model):
@@ -51,6 +52,14 @@ class DebitNote(models.Model):
     def returned_subtotal(self):
         return sum([i.returned_value for i in self.returned_items ])
 
+    @property
+    def delivery_note(self):
+        qs = StockDispatch.objects.filter(request__debit_note=self)
+        if qs.exists():
+            return qs.first()
+
+        return None
+
     def create_entry(self):
         
         j = JournalEntry.objects.create(
@@ -69,6 +78,11 @@ class DebitNote(models.Model):
         
         self.entry = j
         self.save()
+
+    def create_dispatch_request(self):
+        DispatchRequest.objects.create(type=2,
+                                       debit_note=self,
+                                       status=0)
         
 class DebitNoteLine(models.Model):
     item = models.ForeignKey('inventory.OrderItem', null=True, 

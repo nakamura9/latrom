@@ -142,7 +142,7 @@ class BranchNode extends Component{
                         'backgroundColor': this.state.highlight ? '#08f' : '#eee',
                         'color': this.state.highlight ? 'white' : 'black',
                         'minWidth': '20px'}}>
-                    <i className="fas fa-ellipsis-v"></i>
+                    <i className="fas fa-ellipsis-h"></i>
                 </button>
                 <div style={{
                     "display": this.state.showDropdown ? "block" : "none",
@@ -171,8 +171,8 @@ class BranchNode extends Component{
                     float:'right',
                     margin: "3px"}}>
                         <i className={this.state.showChildren
-                            ? "fas fa-arrow-left"
-                            : "fas fa-arrow-down"}></i>
+                            ? "fas fa-caret-left"
+                            : "fas fa-caret-down"}></i>
                 </span>
                 </div>
                 <ul style={{
@@ -243,7 +243,7 @@ class  LeafNode extends Component{
                             'backgroundColor': this.state.highlight ? '#08f' : '#eee',
                             'color': this.state.highlight ? 'white' : 'black',
                             'minWidth': '20px'}}>
-                        <i className="fas fa-ellipsis-v"></i>
+                        <i className="fas fa-ellipsis-h"></i>
                     </button>
                     <div style={{
                         "display": this.state.showDropdown ? "block" : "none",

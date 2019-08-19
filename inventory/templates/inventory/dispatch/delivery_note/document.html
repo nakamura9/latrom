@@ -1,0 +1,41 @@
+{% extends "common_data/page/pdf_page.html" %}
+
+{% block page_contents %}
+
+<div style="width:100%">
+    {% include "inventory/dispatch/delivery_note/header.html" %}
+</div>
+
+<div style="width:100%">
+    <table class="{{style}}-content table table-sm"  style="height:500px;width:100%;">
+        <thead  >
+            <tr >
+                <td style="width:70%">Description</td>
+                <td> Qty</td>
+            </tr>
+        </thead>
+        <tbody class="item-table" style="border:1px solid black;">
+            {% for item in object.dispatchline_set.all %}
+                <tr>
+                    <td>{{item.line}}</td>
+                    <td>{{item.quantity}}</td>
+                </tr>
+            {% endfor %}
+            <tr style="height:100%">
+                    <td></td>
+                    <td></td>
+            </tr>
+        </tbody>
+    </table>
+<div class="footer-cell">
+    <div class="footer-cell-heading">
+        <h5>Note</h5>    
+    </div>
+    <div class="footer-cell-contents">
+        <p>{{object.note}}</p>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}

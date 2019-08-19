@@ -168,8 +168,15 @@ class Invoice(SoftDeletionModel):
                 discount=discount
             )
 
+    def create_dispatch_request(self):
+        inventory.models.stock_dispatch.DispatchRequest.objects.create(
+            type=0,
+            invoice=self,
+            status=0
+        )
+
     def update_inventory(self):
-        '''Removes inventory from the warehouse'''
+        '''Removes inventory from the warehouse deprecated'''
         #called in views.py
         for line in self.invoiceline_set.filter(product__isnull=False):
             #check if ship_from has the product in sufficient quantity
@@ -380,6 +387,16 @@ class Invoice(SoftDeletionModel):
         return all([True if line.product != None else False \
             for line in self.invoiceline_set.all() ])
             
+
+    @property
+    def delivery_note(self):
+        qs = inventory.models.stock_dispatch.StockDispatch.objects.filter(
+            request__invoice=self
+        )
+        if qs.exists():
+            return qs.first()
+        return None
+        
     def save(self, *args, **kwargs):
         '''Makes sure that every invoice and quotation is numbered.
         Also makes sure that each service has a valid work order request'''
@@ -506,6 +523,8 @@ class InvoiceLine(models.Model):
             return D(0)
         
         return self.subtotal * D(self.tax.rate / 100.0)
+
+    
 
     
     def __getattribute__(self, name):

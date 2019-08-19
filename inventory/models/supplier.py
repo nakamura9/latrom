@@ -10,7 +10,7 @@ from django.db.models import Q
 from accounting.models import Account
 from common_data.models import  SoftDeletionModel
 from inventory.models.item import InventoryItem
-from inventory.models.item_management import StockReceipt
+from inventory.models.stock_receipt import StockReceipt
 from inventory.models.order import Order
 
 

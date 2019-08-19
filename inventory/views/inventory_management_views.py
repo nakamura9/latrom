@@ -97,3 +97,7 @@ class StockAdjustmentAPIView(ModelViewSet):
     queryset = models.StockAdjustment.objects.all()
     serializer_class = serializers.StockAdjustmentSerializer
 
+
+class DebitNoteAPIView(ModelViewSet):
+    queryset = models.DebitNote.objects.all()
+    serializer_class = serializers.DebitNoteSerializer

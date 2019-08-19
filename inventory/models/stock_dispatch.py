@@ -1,4 +1,7 @@
 from django.db import models
+from django.shortcuts import reverse
+from inventory.models.warehouse_models import WareHouseItem
+from invoicing.models import InvoiceLine
 
 class DispatchRequest(models.Model):
     type = models.PositiveSmallIntegerField(choices=[
@@ -6,11 +9,11 @@ class DispatchRequest(models.Model):
         (1, 'Transfer'),
         (2, 'Debit Note'),
     ])
-    invoice = models.ForeignKey('invoicing.Invoice', 
+    invoice = models.OneToOneField('invoicing.Invoice', 
         null=True, on_delete=models.SET_NULL)
-    transfer_order = models.ForeignKey('inventory.TransferOrder', 
+    transfer_order = models.OneToOneField('inventory.TransferOrder', 
         null=True, on_delete=models.SET_NULL)
-    debit_note = models.ForeignKey('inventory.DebitNote', null=True,
+    debit_note = models.OneToOneField('inventory.DebitNote', null=True,
         on_delete=models.SET_NULL)
     status = models.PositiveSmallIntegerField(choices=[
         (0, 'Request'),
@@ -21,6 +24,7 @@ class DispatchRequest(models.Model):
 class StockDispatch(models.Model):
     '''
     Part of the inventory workflow.
+    a.k.a DeliveryNote
     When an invoice is generated this object is created to record
     the movement of inventory out of the warehouse to fulfill the invoice
     of items and comment on the condition of the 
@@ -44,9 +48,18 @@ class StockDispatch(models.Model):
     note =models.TextField(blank=True, default="")
     dispatch_complete = models.BooleanField(default=False)
 
-    def __str__(self):
-        return str(self.pk) + ' - ' + str(self.receive_date)
 
+    def get_absolute_url(self):
+        return reverse("inventory:delivery-note", kwargs={"pk": self.pk})
+    
+    @property
+    def warehouse(self):
+        if self.request.type == 0:
+            return self.request.invoice.ship_from
+        elif self.request.type == 1:
+            return self.request.transfer_order.source_warehouse
+        else:
+            return self.request.debit_note.order.ship_to
 
 class DispatchLine(models.Model):
     dispatch = models.ForeignKey('inventory.StockDispatch'
@@ -59,3 +72,24 @@ class DispatchLine(models.Model):
         null=True, on_delete=models.SET_NULL)
     quantity = models.FloatField(default=0.0)
 
+
+    @property
+    def line(self):
+        if self.debit_line:
+            return self.debit_line.item.item
+        elif self.transfer_line:
+            return self.transfer_line.item
+        else:
+            return self.invoice_line.product.product
+
+
+
+    def update_inventory(self):
+        self.dispatch.warehouse.decrement_item(self.line, self.quantity)
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.update_inventory()
+        super().save(*args, **kwargs)
+        

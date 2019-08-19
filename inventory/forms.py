@@ -15,12 +15,9 @@ from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 from common_data.models import Individual, Organization
-<<<<<<< HEAD
 from invoicing.models import CreditNote
 
-=======
 import datetime
->>>>>>> master
 from . import models
 
 #models ommitted UnitOfMeasure OrderItem Category
@@ -846,3 +843,27 @@ class DebitNoteForm(forms.ModelForm, BootstrapMixin):
 
     order = forms.ModelChoiceField(models.Order.objects.all(),
         widget=forms.HiddenInput)
+
+
+class StockDispatchForm(forms.ModelForm, BootstrapMixin):
+    request = forms.ModelChoiceField(models.DispatchRequest.objects.all(),     
+        widget=forms.HiddenInput)
+    
+    class Meta:
+        exclude = 'dispatch_complete',
+        model = models.StockDispatch
+        widgets = {
+            'note': forms.Textarea(attrs={'rows': 4})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('dispatched_by', 'dispatch_date', css_class='col-6'),
+                Column('note','request', css_class='col-6'))
+        )
+
+        self.helper.add_input(Submit('submit', 'Submit'))
+

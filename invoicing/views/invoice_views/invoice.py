@@ -105,6 +105,7 @@ class InvoiceCreateView(ContextMixin, InvoiceCreateMixin, ConfigMixin, CreateVie
         inv = self.object
         items = request.POST.get("item_list", None)
         process_data(items, inv)
+        self.object.create_dispatch_request()
             
         return resp
 

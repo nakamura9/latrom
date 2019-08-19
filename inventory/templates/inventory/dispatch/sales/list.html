@@ -1,0 +1,41 @@
+{% extends 'common_data/list_template.html' %}
+
+{% block list_headings %}
+<tr>
+    <th>Date</th>
+    <th>Invoice</th>
+    <th>Status</th>
+    <th>Actions</th>
+</tr>
+{% endblock list_headings %}
+
+{% block list_content %}
+
+{% for obj in object_list %}
+
+<tr>
+    <td>{{obj.date}}</td>
+    <td>{{obj.pk | stringformat:"06d"}}</td>
+    <td>{{obj.order.pk}}</td>
+    <td>{{obj.status}}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'invoicing:invoice-details' pk=obj.pk %}">View Invoice</a>
+                <a class="dropdown-item" href=" {% url 'inventory:dispatch-invoice' invoice=obj.pk %} ">Dispatch Invoice</a>
+                {% if obj.delivery_note %}
+                    <a class="dropdown-item" href="{% url 'inventory:delivery-note' pk=obj.delivery_note.pk %} ">View Delivery Note</a>
+                {% endif %}
+                
+            </div>
+        </div>
+    </td>
+</tr>
+
+{% endfor %}
+
+{% endblock list_content %}

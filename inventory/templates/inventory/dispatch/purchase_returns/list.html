@@ -27,8 +27,11 @@
                     </button>
             <div class="dropdown-menu" aria-labelledby="triggerId">
                 <a class="dropdown-item" href="{% url 'inventory:debit-note-detail' pk=obj.pk %}">View Debit Note</a>
-                <a class="dropdown-item" href="#">Dispatch Returns</a>
-                <a class="dropdown-item" href="#">View Dispatch Note</a>
+                <a class="dropdown-item" href=" {% url 'inventory:dispatch-purchase-returns' debit_note=obj.pk %} ">Dispatch Returns</a>
+                {% if obj.delivery_note %}
+                    <a class="dropdown-item" href="{% url 'inventory:delivery-note' pk=obj.delivery_note.pk %} ">View Delivery Note</a>
+                {% endif %}
+                
             </div>
         </div>
     </td>

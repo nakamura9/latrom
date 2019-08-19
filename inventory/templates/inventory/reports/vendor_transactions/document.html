@@ -1,4 +1,6 @@
 
+{% load accounting %}
+
 <table class="table table-sm" style="width:100%">
     <tbody>
         <tr>
@@ -33,6 +35,8 @@
                                                 Payment
                                             {% elif 'Order' in t.entry.memo %}
                                                 Bill
+                                            {% elif 'debit' in t.entry.memo %}
+                                                Debit Note
                                             {% endif %}
                                         </td>
                                         <td>{{t.entry.memo}}</td>
@@ -42,7 +46,7 @@
                                 {% endfor %}
                                 <tr>
                                     <th colspan="4">Total</th>
-                                    <th>{{vendor.total}}</th>
+                                    <th>{{vendor.total | accounting }}</th>
                                 </tr>
 
                             

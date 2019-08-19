@@ -1,0 +1,52 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Inventory Transfer Order
+{% endblock title %}
+
+{% block left_content %}
+<div style="display:block;">
+    <table class="table table-sm">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{object.id | stringformat:"06d"}}</td>
+            </tr>
+            <tr>
+                <th>Issued By</th>
+                <td>{{object.issuing_inventory_controller}}</td>
+            </tr>
+            <tr>
+                <th>Date Issued</th>
+                <td>{{object.date}}</td>
+            </tr>
+            <tr>
+                <th>Issuing Warehouse</th>
+                <td>{{object.source_warehouse}}</td>
+            </tr>
+            
+        </tbody>
+    </table>
+</div>
+{% endblock left_content %}
+
+{% block right_content %}
+    {% include 'common_data/common/business.html' %}
+    <table class="table table-sm">
+        <tbody>
+            <tr>
+                <th>Received By</th>
+                <td>{{object.receiving_inventory_controller}}</td>
+            </tr>
+            <tr>
+                <th>Receiving Warehouse</th>
+                <td>{{object.receiving_warehouse}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock right_content %}
+
+{% block lower_left %}
+
+
+{% endblock lower_left %}

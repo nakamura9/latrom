@@ -23,7 +23,7 @@
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <div class="card-header">
-                                    <h4 class="card-title">Incoming</h4>
+                                    <h4 class="card-title"><i class="fa fa-arrow-right" aria-hidden="true"></i> <i class="fas fa-warehouse    "></i> Incoming</h4>
                                 </div>
                                 <ul class="list-group">
                                     <li class="list-group-item">
@@ -41,7 +41,7 @@
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <div class="card-header">
-                                    <h4 class="card-title">Outgoing</h4>
+                                    <h4 class="card-title"><i class="fa fa-arrow-left" aria-hidden="true"></i> <i class="fas fa-warehouse    "></i> Outgoing</h4>
                                 </div>
                                 <ul class="list-group">
                                     <li class="list-group-item">
@@ -51,7 +51,7 @@
                                         <a href="{% url 'inventory:outgoing-transfer-order-list' pk=object.pk %}">Outgoing Transfers</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="">Sales Dispatch</a>
+                                        <a href="{% url 'inventory:dispatch-invoice-list' warehouse=object.pk %}">Sales Dispatch</a>
                                     </li>
                                 </ul>
                             </div>
@@ -59,7 +59,7 @@
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <div class="card-header">
-                                    <h4 class="card-title">Management</h4>
+                                    <h4 class="card-title"> <i class="fas fa-clipboard-check    "></i> Management</h4>
                                 </div>
                                 <ul class="list-group">
                                     <li class="list-group-item">
@@ -80,143 +80,12 @@
 
                     <hr class="my-4" />
 
-                    <div class="card-deck">
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-shopping-basket"></i> Inventory</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-                                    {% if use_product_inventory %}
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'inventory:product-list' %}">Manage Products</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if use_equipment_inventory %}
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'inventory:equipment-list' %}">Manage Equipment</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if use_consumables_inventory %}
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'inventory:consumable-list' %}">Manage Consumables</a>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        </div>
-
-                        {% if use_equipment_inventory or use_consumables_inventory %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                <h4 class="card-title"><i class="fas fa-file-signature"></i> Requisitions</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'services:equipment-requisition-list' %}">Manage Equipment
-                                            Requisitions</a>
-                                    </li>
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'services:consumable-requisition-list' %}">Manage Consumables
-                                            Requisitions</a>
-                                    </li>
-                                    <li class="list-group-item hvr-grow">...</li>
-
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
-                        <div class="card bg-primary text-white">
-                            <div class="card-header">
-                                    <h4 class="card-title"><i class="fas fa-chart-bar"></i> Reports</h4>
-                                </div>
-                            
-                            <div class="card-body">
-                                
-                                <ul class="list-group">
-
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'inventory:inventory-report' %}">Item Stock Level Report</a>
-                                    </li>
-
-                                    <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'inventory:outstanding-orders-report' %}">Outstanding Orders
-                                            Report</a>
-                                    </li>
-                                    <li class="list-group-item hvr-grow">...</li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div id="dashboard" class="tab-pane">
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-2">
-                                <ul class="nav nav-pills flex-column">
-                                    <li class="nav-item" ><a data-toggle="pill" href="#Main"
-                                            class="nav-link active">Data Grid</a></li>
-                                    <li class="nav-item"><a data-toggle="pill" href="#Graph" class="nav-link">Graph</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-10">
-                                <div class="tab-content panel-body">
-
-                                    <div id="Main" class="tab-pane active">
-                                        <div class="dash-container">
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Orders Yet to Be Delivered: <br>{{undelivered_orders}}</h3>
-                                            </div>
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
-                                            </div>
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3>Money Owed to Vendors: <br>${{money_owed}}</h3>
-                                            </div>
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="dash-container">
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Active Vendors: <br>{{vendors}}</h3>
-                                            </div>
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Warehouses: <br>{{warehouses}}</h3>
-                                            </div>
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Open Requisitions: <br>{{open_requisitions}}</h3>
-                                            </div>
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="dash-container">
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Pending Inventory Transfers: <br>{{pending_transfers}}</h3>
-                                            </div>
-                                            <div class="dashbox white-on-blue">
-                                                <h3># Equipment Items: <br>{{equipment}}</h3>
-                                            </div>
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Unique Consumable Items: <br>{{consumables}}</h3>
-                                            </div>
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="dash-container">
-                                            <div class="bg-primary text-white dashbox">
-                                                <h3># Unique Products: <br>{{products}}</h3>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div id="Graph" class="tab-pane fade in">
-                                        <h4>Inventory Movement in the last 7 days</h4>
-                                        {% autoescape off %}
-                                        {{graph}}
-                                        {% endautoescape %}
-                                    </div>
-                                </div>
-
+                            <div class="col-sm-12">
+                                <iframe src="/inventory/warehouse-detail/{{object.pk}}/" frameborder="0" style="width:100%;height:800px;"></iframe>
                             </div>
                         </div>
                     </div>

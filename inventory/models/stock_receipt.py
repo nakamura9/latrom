@@ -39,6 +39,15 @@ class StockReceipt(models.Model):
         return reverse("inventory:goods-received", kwargs={"pk": self.pk})
     
 
+    @property
+    def warehouse(self):
+        if self.order:
+            return self.order.ship_to
+        elif self.transfer:
+            return self.transfer.receiving_warehouse
+        else:
+            return self.credit_note.invoice.ship_from
+
 
 
 class StockReceiptLine(models.Model):
@@ -76,3 +85,12 @@ class StockReceiptLine(models.Model):
             return self.transfer_line.quantity
         else:
             return self.credit_note_line.quantity
+
+    def update_inventory(self):
+        self.receipt.warehouse.add_item(self.line, self.quantity, self.location)
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.update_inventory()
+        super().save(*args, **kwargs)
