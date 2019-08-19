@@ -33,9 +33,13 @@
         <ul style="list-style-type:none;">
         <li><a style="color:white;" href="/base/about/"><i class="fas fa-info-circle"></i> About</a></li>
         <li><a style="color:white;" href="#"> <i class="fas fa-file-contract    "></i> Software License</a></li>
-
+        <li><i class="fas fa-database"></i> Current Database: <span id='current-db'></span></li>
     </ul>
     </div>
     </div>
     
 </footer>
+
+<script>
+    $.get('/base/api/current-db/', function(data){ $('#current-db').text(data.db)})
+</script>
