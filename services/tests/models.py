@@ -6,7 +6,7 @@ from decimal import Decimal as D
 from employees.tests.models import create_test_employees_models
 from employees.models import Employee
 from inventory.models import InventoryItem, UnitOfMeasure
-from inventory.tests.models import create_test_inventory_models
+import inventory
 from accounting.models import Expense, Account
 from invoicing.models import (Invoice, 
                                 InvoiceLine, 
@@ -24,7 +24,7 @@ class ServiceModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        create_test_inventory_models(cls)
+        inventory.tests.models.create_test_inventory_models(cls)
 
         cls.category = ServiceCategory.objects.create(
             name="category",
@@ -206,7 +206,8 @@ class WorkOrderModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        create_test_inventory_models(cls)
+        inventory.tests.models.create_test_inventory_models(cls)
+
 
         cls.category = ServiceCategory.objects.create(
             name="category",

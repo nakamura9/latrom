@@ -20,6 +20,8 @@
     
     
     <link rel="stylesheet" type='text/css' href="{% static 'common_data/css/suave.css' %}">
+    
+
     <script type="text/javascript" src="{% static 'common_data/js/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/popper.js' %}"></script>
     
@@ -27,6 +29,7 @@
     <script type="text/javascript" src="{% static 'common_data/css/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/jquery.form.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/pygal-tooltips.min.js' %}"></script>
+    
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -102,6 +105,7 @@
 
        $(".ui-date-picker").datepicker({
         changeYear: true,
+        changeMonth: true,
         dateFormat: 'yy-mm-dd' 
         });
     

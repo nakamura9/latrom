@@ -22,8 +22,10 @@
                    $('#popup-frame').attr('src', link);
                    var modal = document.getElementById('id-my-modal');
                     modal.style.display = 'block';
-                   
                 }   
+                $('document').ready(function(){
+                    $('#id_customer').select2();
+                })
             </script>
             <input type="hidden" id="box-array" value="{{box_array}}">
                 <div class="jumbotron">

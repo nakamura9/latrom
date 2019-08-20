@@ -1,4 +1,8 @@
-from accounting.models import *
+from accounting.models import (
+    Account,
+    Expense,
+    Tax
+)
 import datetime
 
 class AccountingModelCreator():

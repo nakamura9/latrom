@@ -1,5 +1,5 @@
 from common_data.tests.model_util import CommonModelCreator
-import accounting
+from common_data.tests.accounts import create_accounts
 from employees.tests.model_util import EmployeeModelCreator
 from inventory import models 
 import datetime
@@ -26,8 +26,7 @@ class InventoryModelCreator():
             CommonModelCreator(self.cls).create_organization()
         
         if not hasattr(self.cls, 'account_c'):
-            accounting.tests.model_util.AccountingModelCreator(
-                self.cls).create_accounts()
+            create_accounts(self.cls)
 
         self.cls.supplier = models.Supplier.objects.create(
             organization=self.cls.organization,

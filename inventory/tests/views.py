@@ -490,6 +490,7 @@ class OrderViewTests(TestCase):
         cls.ORDER_DATA = {
             'expected_receipt_date' : TODAY,
             'date' : TODAY,
+            'due' : TODAY,
             'deferred_date' : TODAY,
             'supplier' : cls.supplier.pk,
             'bill_to' : 'Test Bill to',
@@ -550,7 +551,7 @@ class OrderViewTests(TestCase):
         data = copy.deepcopy(self.ORDER_DATA)
         data['payment'] = True
         resp = self.client.post(reverse('inventory:order-create'), 
-        data=data)
+            data=data)
 
         self.assertEqual(resp.status_code,  302)
 

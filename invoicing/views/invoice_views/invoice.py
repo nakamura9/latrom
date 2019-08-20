@@ -27,6 +27,7 @@ from common_data.forms import AuthenticateForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 
+
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.parse.unquote(items))

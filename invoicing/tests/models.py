@@ -80,7 +80,7 @@ class CustomerModelTests(TestCase):
     def test_age_list(self):
         self.invoice.due = TODAY - datetime.timedelta(days=8)
         self.invoice.save()
-        self.assertEqual(self.customer_org.age_list, [0, D(210.0), 0, 0, 0, 0])
+        self.assertEqual(self.customer_org.age_list, [0, 0,D(200.0), 0, 0, 0])
 
 
 class PaymentModelTests(TestCase):
@@ -296,9 +296,10 @@ class InvoiceModelTests(TestCase):
             'selected': '1-name',
             'quantity': 1,            
             'tax': '1- tax',
-            'discount': '0'
+            'discount': '0',
+            'unitPrice': 50.00
         })
-        self.assertEqual(self.invoice.total, pre_total + 10)
+        self.assertEqual(self.invoice.total, pre_total + 50)
 
     def test_add_service_line(self):
         pre_total = self.invoice.subtotal
@@ -307,9 +308,11 @@ class InvoiceModelTests(TestCase):
             'selected': '1-name',
             'hours': 0,
             'tax': '1- tax',
-            'discount': '0'
+            'fee': '200',
+            'discount': '0',
+            'rate': 50
         })
-        self.assertEqual(self.invoice.total, pre_total + 100)
+        self.assertEqual(self.invoice.total, pre_total + 200)
 
     def test_add_expense_line(self):
         pre_total = self.invoice.subtotal

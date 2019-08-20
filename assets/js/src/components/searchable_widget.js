@@ -216,7 +216,7 @@ class TextBoxWidget extends Component{
                 border: this.props.bordered ? "1px" : "0px",
                 width:"85%",
                 backgroundColor: this.props.validChoice === "" ?
-                    "#fff" : "#aaf"
+                    "#fff" : "#b0e0e6"
         }}/>
         <button type="button" style={{
             width: "15%",

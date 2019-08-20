@@ -1,0 +1,28 @@
+{% extends 'common_data/page/pdf_page.html' %}
+
+{% block page_contents %}
+
+{% include 'services/procedure/printable/header.html' %}
+
+<h5>I. Description.</h5>
+<p>{{object.description}}</p>
+<h5>II. Required Equipment.</h5>
+<ul>
+    {% for i in object.required_equipment.all %}
+        <li>{{i}}</li>
+    {% endfor %}
+</ul>
+<h5>III. Required Consumables.</h5>
+<ul>
+    {% for i in object.required_consumables.all %}
+        <li>{{i}}</li>
+    {% endfor %}
+</ul>
+<h5>IV. Procedure Stages</h5>
+<ol>
+    {% for step in object.steps %}
+        <li>{{step}}</li>
+    {% endfor %}
+</ol>
+
+{% endblock page_contents %}

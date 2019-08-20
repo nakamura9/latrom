@@ -1,0 +1,23 @@
+{% extends 'common_data/common/document_header.html' %}
+
+{% block title %}
+Procedure
+{% endblock title %}
+
+{% block left_content %}
+
+<h6>Title</h6>
+<p>{{object.name}}</p>
+
+<h6>Authored By</h6>
+<p>{{object.author}}</p>
+
+<h6>Ref.</h6>
+<p>{{object.reference}}</p>
+{% endblock left_content %}
+
+{% block right_content %}
+
+{% include 'common_data/common/business.html' %}
+
+{% endblock right_content %}

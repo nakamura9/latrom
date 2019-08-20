@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
-from common_data.utilities import ContextMixin
+from common_data.utilities import ContextMixin, ConfigMixin
 from common_data.views import PaginationMixin
 from services import filters, forms, models
 from services.serializers import ProcedureSerializer
@@ -88,3 +88,12 @@ class ProcedureListView( ContextMixin, PaginationMixin, FilterView):
 class ProcedureAPIView(ModelViewSet):
     serializer_class = ProcedureSerializer
     queryset = models.ServiceProcedure.objects.all()
+
+
+class ProcedureDocumentView(ContextMixin, ConfigMixin, DetailView):
+    template_name = os.path.join('services', 'procedure', 'printable', 
+        'document.html')
+    model = models.ServiceProcedure
+    extra_context = {
+        'pdf_link': True
+    }
