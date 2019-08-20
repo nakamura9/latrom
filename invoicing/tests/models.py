@@ -11,35 +11,12 @@ from common_data.tests import create_test_common_entities
 from employees.models import Employee, PayGrade
 from employees.tests import create_test_employees_models
 from inventory.models import WareHouseItem
-from inventory.tests import create_test_inventory_models
 from invoicing.models import *
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 from inventory.tests.model_util import InventoryModelCreator
 import accounting
 TODAY = datetime.date.today()
-
-def create_test_invoicing_models(cls):
-    '''creates common models for testing invoices.
-    
-    1. customers:
-        a. customer_org
-        b. customer_ind
-    '''
-    create_test_common_entities(cls)
-    org = Organization.objects.create(
-        legal_name="business"
-        )
-    ind = Individual.objects.create(
-        first_name="test",
-        last_name="last_name"
-        )
-    cls.customer_ind = Customer.objects.create(
-        individual= ind
-    )
-    cls.customer_org = Customer.objects.create(
-        organization= org
-    )
 
 
 class CommonModelTests(TestCase):

@@ -99,6 +99,7 @@ class SearchableTextInputWidget extends Component{
                 onClick={this.addItemToSelectedItems}><i className="fas fa-plus"></i></button>
             </div>
             <OptionsWidget 
+                closeDropdown={() =>this.setState({optionsHidden: true})}
                 choices={this.state.filteredChoices}
                 onSelectValue={this.onSelectValue}
                 hidden={this.state.optionsHidden}/>

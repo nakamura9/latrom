@@ -20,7 +20,7 @@ from django.contrib.auth.models import User
 TODAY = datetime.date.today()
 
 class CommonViewTests(TestCase):
-    fixtures = ['common.json', 'accounts.json', 'employees.json', 'journals.json']
+    fixtures = ['common.json', 'accounts.json', 'employees.json', 'journals.json', 'settings.json']
     
     @classmethod
     def setUpClass(cls):
@@ -117,7 +117,8 @@ class CommonViewTests(TestCase):
             data={
                 'start_of_financial_year': TODAY,
                 'currency_exchange_table': self.currency_table.pk,
-                'default_accounting_period': 0
+                'default_accounting_period': 0,
+                'active_currency': 1
             })
         self.assertEqual(resp.status_code, 302)
         
@@ -641,6 +642,7 @@ class AccountingWizardTests(TestCase):
             '0-start_of_financial_year': datetime.date.today(),
             '0-default_accounting_period': 0,
             '0-currency_exchange_table': 1,
+            '0-active_currency': 1,
             'config_wizard-current_step': 0,
         }
 

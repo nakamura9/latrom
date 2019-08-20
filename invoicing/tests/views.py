@@ -10,9 +10,7 @@ from accounting.models import Account, Expense, Currency
 from common_data.tests import create_account_models, create_test_user
 from employees.models import Employee
 from invoicing.models import *
-from invoicing.tests.models import create_test_invoicing_models
 from latrom import settings
-from inventory.tests import create_test_inventory_models
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 import accounting

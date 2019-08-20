@@ -3,7 +3,6 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from accounting.views.reports.balance_sheet import BalanceSheet
 from accounting.views.reports.trial_balance import TrialBalance
-from inventory.tests.models import create_test_inventory_models
 from employees.tests import create_test_employees_models
 from employees.models import EmployeesSettings
 from invoicing.models import (Invoice,

@@ -15,7 +15,6 @@ from accounting.models import *
 from employees import models as employee_models
 from common_data.tests import create_account_models, create_test_user
 from employees.tests.models import create_test_employees_models
-from inventory.tests.models import create_test_inventory_models
 from latrom import settings
 from django.contrib.auth.models import User
 

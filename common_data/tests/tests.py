@@ -13,6 +13,7 @@ from common_data.utilities import (
     time_choices)
 
 import services
+from services.tests.model_util import ServiceModelCreator
 
 class ModelTests(TestCase):
     @classmethod 
@@ -273,7 +274,7 @@ class ViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_create_note(self):
-        services.tests.model_util.ServiceModelCreator(
+        ServiceModelCreator(
             self).create_service_work_order()
 
         resp = self.client.post(reverse('base:create-note'), data={

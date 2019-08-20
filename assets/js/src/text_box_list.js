@@ -68,10 +68,10 @@ class TextBoxListWidget extends Component{
     render(){
         const containerStyle= {
             display: "block",
-            'color': 'white',
+            'color': "black",
             clear: 'both',
             width: "100%",
-            backgroundColor: "#007bff",
+            backgroundColor: "white",
             borderRadius: "5px",
             padding: "15px",
             margin: "5px"
@@ -125,14 +125,14 @@ const ListTextBox = (props) => {
 
 
     const buttonStyle ={
-        color: "white",
+        color: "#007bff",
         border: "0px",
         backgroundColor: "rgba(0,0,0,0)"
     }
     return(
         <div style={containerStyle}>
             <div >
-                <div>
+                <div >
                     <span style={{float: "left"}}>{props.index + 1}.</span>
                     <span style={{float: "right"}}>
                         <button 

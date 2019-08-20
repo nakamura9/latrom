@@ -16,5 +16,7 @@ def accounting(number):
 
 @register.filter
 def active_currency(number):
-    currency = AccountingSettings.objects.first().active_currency.symbol
+    currency = AccountingSettings.objects.first().active_currency
+    if not currency:
+        return number
     return '{0} {1:0.2f}'.format(currency, number)
