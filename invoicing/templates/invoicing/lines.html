@@ -1,0 +1,42 @@
+{% load accounting %}
+<tbody class="item-table">
+    {% for item in page %}
+    {% if item.line_type == 1 %}
+    <tr>
+        <td>{{item.name}}</td>
+        <td>{{item.component.quantity |floatformat:2 }}</td>
+        <td>{{item.component.product.unit}}</td>
+        <td>{{item.discount_total |floatformat:2 }}</td>
+        <td>{{item.tax_ |floatformat:2 }}</td>
+        <td>{{item.total |floatformat:2 }}</td>
+    </tr>
+    {% elif item.line_type == 2 %}
+    <tr>
+        <td>[SERVICE] {{item.name}} {% if item.component.hours > 0 %} @ {{item.component.hourly_rate |floatformat:2 }}/Hr + {% else %}, {% endif %}
+            Flat Rate: {{item.component.flat_fee |active_currency }}</td>
+        <td>{{item.component.hours |floatformat:2 }}</td>
+        <td>Hrs</td>
+        <td>{{item.discount_total |floatformat:2 }}</td>
+        <td>{{item.tax_ |floatformat:2 }}</td>
+        <td>{{item.total |floatformat:2 }}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td>[BILLABLE EXPENSE] {{item.name}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{{item.tax_ |floatformat:2 }}</td>
+        <td>{{item.total |floatformat:2 }}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+    <tr style="height:100%">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</tbody>

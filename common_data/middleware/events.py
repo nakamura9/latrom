@@ -22,7 +22,8 @@ class EventReminderMiddleware(object):
         #there is a threshold for the reminder
         # if it has passed and no notification exists create the notification
         for event in events:
-            event_start = datetime.datetime.combine(event.date, event.start_time)
+            event_start = datetime.datetime.combine(event.date, 
+                event.start_time)
             event_reminder_time = event_start - event.reminder
             now = datetime.datetime.now()
             if now >= event_reminder_time:
@@ -33,5 +34,13 @@ class EventReminderMiddleware(object):
                 )
                 event.reminder_notification = note
                 event.save()
+
+                for i in event.participants:
+                    if i.employee and i.employee.user:
+                         Notification.objects.create(
+                            user=i.employee.user,
+                            title='Event reminder',
+                            message=f"{event.label}: {event.description}"
+                        )
 
         return self.get_response(request)

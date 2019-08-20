@@ -1,4 +1,5 @@
 {% extends "common_data/page/pdf_page.html" %}
+{% load accounting %}
 
 {% block pre_page %}
 <div class="jumbotron">
@@ -50,9 +51,9 @@
                         {% for c in page %}
                         <tr>
                             <td>{{c}}</td>
-                            <td>${{c.total_accounts_receivable |floatformat:2}}</td>
+                            <td>{{c.total_accounts_receivable |active_currency}}</td>
                             {% for amount in c.age_list %}
-                            <td>${{amount |floatformat:2}}</td>
+                            <td>{{amount |active_currency}}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}

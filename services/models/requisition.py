@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Q
 from common_data.utilities import time_choices
 from django.shortcuts import reverse
+from decimal import Decimal as D
 
 
 class BaseRequisition(models.Model):
@@ -78,4 +79,9 @@ class ConsumablesRequisitionLine(models.Model):
 
     def __str__(self):
         return str(self.consumable)
+
+    @property
+    def line_value(self):
+        return D(self.quantity - self.returned) * \
+            self.consumable.consumable_unit_value
 

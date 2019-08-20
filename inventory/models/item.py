@@ -86,7 +86,67 @@ class InventoryItem(SoftDeletionModel):
         else:
             return reverse("inventory:consumable-detail", kwargs={"pk": self.pk})
             
+    @property
+    def consumable_value(self):
+        if self.type != 2:
+            return D(0)
 
+        current_quantity = self.quantity
+        if current_quantity == 0:
+            return D(0)
+
+        cummulative_quantity = 0
+        orders_with_items_in_stock = []
+        partial_orders = False
+
+        #getting the latest orderitems in order of date ordered
+        order_items = inventory.models.OrderItem.objects.filter(
+            Q(item=self) & 
+            Q(
+                Q(order__status="order") | 
+                Q(order__status="received-partially") |
+                Q(order__status="received")
+            )).order_by("order__date").reverse()
+
+        #iterate over items
+        for item in order_items:
+            # orders for which cumulative ordered quantities are less than
+            # inventory in hand are considered
+            if (item.quantity + cummulative_quantity) < current_quantity:
+                orders_with_items_in_stock.append(item)
+                cummulative_quantity += item.quantity
+                
+
+            else:
+                if cummulative_quantity < current_quantity:
+                    partial_orders = True
+                    orders_with_items_in_stock.append(item)
+
+                else:
+                    break
+
+
+        cumulative_value = D(0)
+        if not partial_orders:
+            for item in orders_with_items_in_stock:
+                cumulative_value += D(item.quantity) * item.order_price
+
+        else:
+            for item in orders_with_items_in_stock[:-1]:#remove last elemnt
+                cumulative_value += D(item.quantity) * item.order_price
+
+            remainder = current_quantity - cummulative_quantity
+            cumulative_value += D(remainder) * \
+                orders_with_items_in_stock[-1].order_price
+        
+        return cumulative_value
+
+    @property
+    def consumable_unit_value(self):
+        if self.consumable_value > 0:
+            return self.consumable_value / D(self.quantity)
+
+        return D(0)
 
     def __str__(self):
         return str(self.id) + " - " + self.name
@@ -186,7 +246,6 @@ class ProductComponent(models.Model):
 
         ordered_quantity = sum([i.received - i.returned_quantity \
                 for i in total_orders])
-        print('Ordered: ', ordered_quantity)
 
         # will eventually replace with dispatch data
         total_sales = invoicing.models.InvoiceLine.objects.filter(
@@ -205,7 +264,6 @@ class ProductComponent(models.Model):
             [(i.product.quantity - D(i.product.returned_quantity)) \
                 for i in total_sales])
 
-        print('Sold: ', sold_quantity)
 
         return D(current_quantity) + sold_quantity - D(ordered_quantity)
     
@@ -253,7 +311,6 @@ class ProductComponent(models.Model):
                 Q(order__status="received")
             )).order_by("order__date").reverse()
 
-        print(order_items)
         #iterate over items
         for item in order_items:
             # orders for which cumulative ordered quantities are less than

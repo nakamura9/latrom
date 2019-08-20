@@ -92,7 +92,8 @@ class InvoiceCreateView(ContextMixin, InvoiceCreateMixin, ConfigMixin, CreateVie
         initial.update({
             "status": "invoice",
             'terms': config.default_terms,
-            'comments': config.default_invoice_comments
+            'comments': config.default_invoice_comments,
+            'invoice_number': config.next_invoice_number
         })
         return initial
 

@@ -76,6 +76,10 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     def increment_leave_days(self, days):
         self.leave_days += days
         self.last_leave_day_increment = datetime.date.today()
+        if self.pay_grade and \
+                self.leave_days > self.pay_grade.maximum_leave_days:
+            self.leave_days = self.pay_grade.maximum_leave_days
+        
         self.save()
 
     def deduct_leave_days(self, days):

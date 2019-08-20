@@ -9,6 +9,7 @@ from functools import reduce
 from decimal import Decimal as D
 from django.shortcuts import reverse 
 import invoicing
+from services.models.requisition import ConsumablesRequisitionLine
 
 class WorkOrderRequest(models.Model):
     created = models.DateField(blank=True, null=True)
@@ -169,6 +170,12 @@ class ServiceWorkOrder(models.Model):
     @property
     def status_string(self):
         return dict(self.STATUS_CHOICES)[self.status]
+
+    @property
+    def consumables_used(self):
+        return ConsumablesRequisitionLine.objects.filter(
+            requisition__work_order=self
+        )
 
 class TimeLog(models.Model):
     work_order = models.ForeignKey('services.serviceworkorder', null=True, 

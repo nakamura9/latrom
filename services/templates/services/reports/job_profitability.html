@@ -68,7 +68,7 @@
     <tbody>
         {% for job in jobs %}
             <tr>
-                <td>{{job.invoice.pk |stringformat:"06d"}}</td>
+                <td>{{job.invoice.invoice_number |stringformat:"06d"}}</td>
                 <td>{{job.service.service.description |truncatechars:40}}</td>
                 <td>{{job.subtotal | floatformat:2 }}</td>
                 <td>{{job.service.cost_of_sale  | floatformat:2  }}</td>

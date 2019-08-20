@@ -1,13 +1,13 @@
-<div style="width:100%; border: 1">
+<div style="width:100%;">
 {% if logo.name != "False" %}
-                <div style="margin:auto;width:{{logo_width}}px;height:100px;">
-                    <img width="{{logo_width}}" height="100" src="/media/{{logo}}" alt="Logo" >
-                </div>
-                
-                {% else %}
-                <div style="width:{{logo_width}}px;height:100px;padding:40px;color:white;background-color:black;margin:auto;">
-                    <p style="margin:auto;text-align:center;">No Logo</p>
-                </div>
-                {% endif %}
+    <div style="width:{{logo_width}}px;height:100px;">
+        <img width="{{logo_width}}" height="100" src="/media/{{logo}}" alt="Logo" >
+    </div>
 
+    {% else %}
+    <div style="width:{{logo_width}}px;height:100px;padding:40px;color:white;background-color:black;">
+        <p style="text-align:center;">No Logo</p>
+    </div>
+{% endif %}
 </div>
+<br>

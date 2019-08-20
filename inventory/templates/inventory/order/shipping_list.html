@@ -1,5 +1,5 @@
 {% extends "window.html" %}
-
+{% load accounting %}
 {% block content %}
 
 <div class="jumbotron">
@@ -20,8 +20,8 @@
                     <div class="card-body">
                         <h4 class="card-title">Meta Data</h4>
                         <p class="card-text">Order: {{object.pk}}</p>
-                        <p class="card-text">Order Value: ${{object.total}}</p>
-                        <p class="card-text">Total shipping costs: ${{object.total_shipping_costs}}</p>
+                        <p class="card-text">Order Value: {{object.total | active_currency }}</p>
+                        <p class="card-text">Total shipping costs: {{object.total_shipping_costs |active_currency}}</p>
                         <p class="card-text">Percentage shipping cost: {{object.percentage_shipping_cost | floatformat:2 }}%</p>
                     </div>
                 </div>

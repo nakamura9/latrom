@@ -10,8 +10,8 @@
 {% block list_content %} 
 {% for note in object_list %}
 <tr>
-    <td>{{note.pk}}</td>
-    <td>{{note.invoice.pk}}</td>
+    <td>{{note.pk|stringformat:"06d"}}</td>
+    <td>{{note.invoice.invoice_number |stringformat:"06d"}}</td>
     <td>{{note.date}}</td>
     <td>
         <a href="{% url 'invoicing:credit-note-detail' pk=note.pk %}" class="btn btn-success">View</a>

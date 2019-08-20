@@ -34,16 +34,32 @@
             </tr>
             <tr>
                 <td valign="top">
-                    <p>Customer</p>
-                    <p>{{form.customer}}</p>
-                    <p>Quoted By.</p>
-                    <p>{{form.salesperson}}</p>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Customer</th>
+                                <td>{{form.customer}}</td>
+                            </tr>
+                            <tr>
+                                <th>Quoted By</th>
+                                <td>{{form.salesperson}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </td>
                 <td>
-                    <p>Quotation Date</p>
-                    <p>{{form.quotation_date}}</p>
-                    <p>Quotation Valid Until</p>
-                    <p>{{form.quotation_valid}}</p>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Quotation Date</th>
+                                <td>{{form.quotation_date}}</td>
+                            </tr>
+                            <tr>
+                                <th>Quotation Valid Until</th>
+                                <td>{{form.quotation_valid}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     
                     <input  type="hidden" name="status" value="quotation">
                 </td>

@@ -1,4 +1,5 @@
 {% extends "common_data/page/pdf_page.html" %}
+{% load accounting %}
 
 {% block pre_page %}
 
@@ -98,7 +99,7 @@
     </tbody>
 </table>
 
-<p>Inventory at {{date}} was valued at ${{inventory_value  | accounting}}</p>
+<p>Inventory at {{date}} was valued at {{inventory_value  | active_currency}}</p>
 
 
 

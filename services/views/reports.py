@@ -127,10 +127,13 @@ class WorkOrderCostingView(DetailView):
         labour = sum([i.total_cost for i in self.object.time_logs])
         expenses = sum([i.expense.amount \
             for i in self.object.workorderexpense_set.all()])
-    
+        consumables = sum([i.line_value for i in \
+                 self.object.consumables_used])
+        
+        context['total_consumables_costs'] = consumables
         context['total_labour_cost'] = labour 
         context['total_expense_costs'] = expenses
-        context['total_costs'] = labour + expenses
+        context['total_costs'] = labour + expenses + consumables
         context['graph'] = plot_expense_breakdown(self.object)
         return context
 

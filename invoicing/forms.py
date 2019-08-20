@@ -208,13 +208,13 @@ class InvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
-        fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson', 'terms', 'comments']
+        fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson', 'terms', 'comments', 'invoice_number']
         model = models.Invoice
 
 class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson',  'terms', 'comments']
+        fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson',  'terms', 'comments', 'invoice_number']
         model = models.Invoice
 
 class QuotationForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):

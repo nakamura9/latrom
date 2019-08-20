@@ -58,7 +58,7 @@
                         <div class="card-body">
                             <p class="card-text">Date: {{object.date}}</p>
                             <p class="card-text">Time: {{object.time}}</p>
-                            <p class="card-text">Invoice: {{object.works_request.invoice.pk | stringformat:"06d"}}</p>
+                            <p class="card-text">Invoice: {{object.works_request.invoice.invoice_number | stringformat:"06d"}}</p>
                             <p class="card-text">Status: {{object.status}}</p>
                             <p class="card-text">Description: {{object.description}}</p>
                             <h4>Resolvers</h4>

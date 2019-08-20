@@ -20,7 +20,7 @@
     <tr>
         <td>{{wr.description | truncatechars:50}}</td>
         <td>{{wr.created_by}}</td>
-        <td> {% if wr.invoice %} {{wr.invoice.pk}} {% else %} None {% endif %} </td>
+        <td> {% if wr.invoice %} {{wr.invoice.invoice_number|stringformat:"06d"}} {% else %} None {% endif %} </td>
         <td>{{wr.status}}</td>
         <td>{{wr.work_orders.count}}</td>
         <td>

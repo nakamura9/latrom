@@ -125,7 +125,7 @@ class Invoice(SoftDeletionModel):
             component = ProductLineComponent.objects.create(
                 product=product,
                 quantity=data['quantity'],
-                unit_price= product.unit_sales_price
+                unit_price= data['unitPrice']
                 
             )
             line = self.invoiceline_set.create(
@@ -142,7 +142,7 @@ class Invoice(SoftDeletionModel):
             component = ServiceLineComponent.objects.create(
                 service=service,
                 hours=data['hours'],
-                flat_fee=service.flat_fee,
+                flat_fee=data['fee'],
                 hourly_rate=data['rate']
             )
             self.invoiceline_set.create(
@@ -450,7 +450,8 @@ class InvoiceLine(models.Model):
             return str(self.component.product).split('-')[1]
         elif self.line_type == 2:
             return self.component.service.name
-        return ''
+        else:
+            return self.component.expense.description
 
 
     def __str__(self):
@@ -670,15 +671,15 @@ class ServiceLineComponent(models.Model):
 
         total_expenses = 0
         total_wages = 0
+        total_consumables = 0
         for order in orders:
             total_expenses += sum([i.expense.amount \
                     for i in order.expenses])
             total_wages += sum([i.total_cost for i in order.time_logs])
-            print(order.pk)
-            print(order.time_logs)
+            total_consumables += sum([i.line_value for i in \
+                order.consumables_used])
 
-
-        return total_expenses + total_wages
+        return total_expenses + total_wages + total_consumables
 
     @property
     def gross_income(self):

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block window %}
-
+{% load accounting %}
 <div class="container">
                         <div class="row">
                             <div class="col-sm-2">
@@ -22,7 +22,7 @@
                                                 <h3># Outstanding Orders: <br>{{outstanding_orders}}</h3>
                                             </div>
                                             <div class="bg-primary text-white dashbox">
-                                                <h3>Money Owed to Vendors: <br>${{money_owed}}</h3>
+                                                <h3>Money Owed to Vendors: <br>{{money_owed | active_currency}}</h3>
                                             </div>
                                         </div>
                                         <hr class="my-4">

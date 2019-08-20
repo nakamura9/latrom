@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block window %}
-
+{% load accounting %}
 <div class="container">
     <div class="row">
         <div class="col-sm-2">
@@ -16,13 +16,13 @@
                     <div id="dashboard" class="tab-pane">
                         <div class="dash-container">
                             <div class="bg-success text-white dashbox">
-                                <h3>Assets: <br>${{assets}}</h3>
+                                <h3>Assets: <br>{{assets|active_currency}}</h3>
                             </div>
                             <div class="bg-danger text-white dashbox">
-                                <h3>Liabilities: <br>${{liabilities}}</h3>
+                                <h3>Liabilities: <br>{{liabilities|active_currency}}</h3>
                             </div>
                             <div class="bg-warning text-white dashbox">
-                                <h3>Equity: <br>${{equity}}</h3>
+                                <h3>Equity: <br>{{equity|active_currency}}</h3>
                             </div>
                         </div>
                     </div>

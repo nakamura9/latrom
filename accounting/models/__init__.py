@@ -29,6 +29,8 @@ class AccountingSettings(SingletonModel):
         blank=True, on_delete=models.SET_NULL)
     is_configured = models.BooleanField(default=False)
     service_hash = models.CharField(max_length=255, default="", blank=True)
+    active_currency = models.ForeignKey('accounting.currency', 
+        on_delete=models.SET_NULL, null=True)
 
     
 

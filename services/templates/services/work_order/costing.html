@@ -1,6 +1,7 @@
 {% extends "window.html" %}
 
 {% block content %}
+{% load accounting %}
 
 <style>
     .roomy {
@@ -30,7 +31,7 @@
                         <table class="table table-sm">
                             <tr>
                                 <th>Invoice #</th>
-                                <td>{{object.works_request.invoice.pk |stringformat:"06d"}}</td>
+                                <td>{{object.works_request.invoice.invoice_number |stringformat:"06d"}}</td>
                             </tr>
                             <tr>
                                 <th>Date Invoiced</th>
@@ -49,13 +50,13 @@
 
                     <div>
                         {% autoescape off %}
-                            {{graph}}
+                        {{graph}}
                         {% endautoescape %}
                     </div>
                     <p style="page-break-before:always;"></p>
 
                     <h4 class="text-white roomy bg-primary">Revenue: <span
-                            style="float:right;">${{object.works_request.invoice_line.subtotal | floatformat:2}}</span>
+                            style="float:right;">{{object.works_request.invoice_line.subtotal | active_currency}}</span>
                     </h4>
                     <div style="margin-left:2rem;">
                         <h5 class="text-white roomy bg-primary">Direct Labour expenses*</h5>
@@ -70,7 +71,7 @@
                                     <th>Employee</th>
                                     <th>Normal Time</th>
                                     <th>Overtime</th>
-                                    <th>Labour($)</th>
+                                    <th>Labour</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,10 +122,42 @@
                             </tfoot>
                         </table>
                     </div>
+                    <div style="margin-left:2rem;">
+                        <h5 class="bg-primary text-white roomy">Consumables Costs</h5>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Requisition ID</th>
+                                    <th>Date</th>
+                                    <th>Consumable</th>
+                                    <th>Quantity</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for con in object.consumables_used %}
+                                <tr>
+                                    <td>{{con.requisition.id | stringformat:"06d"}}</td>
+                                    <td>{{con.requisition.date}}</td>
+                                    <td>{{con.consumable.name}}</td>
+                                    <td>{{con.quantity}}</td>
+                                    <td>{{con.line_value}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4">Total</th>
+                                    <td>{{total_consumables_costs}}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                     <h4 class="text-white roomy bg-primary">Total Expenses: <span
-                            style="float:right;">${{total_costs}}</span></h4>
+                            style="float:right;">{{total_costs|active_currency}}</span></h4>
+
                     <h4 class="text-white roomy bg-primary">Gross Profit: <span
-                            style="float:right;">${{object.works_request.invoice_line.service.gross_income | floatformat:2}}</span>
+                            style="float:right;">{{object.works_request.invoice_line.service.gross_income | active_currency}}</span>
                     </h4>
                 </div>
             </div>

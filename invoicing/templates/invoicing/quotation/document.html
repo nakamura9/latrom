@@ -9,42 +9,34 @@
             <td colspan="2">
                 {% for page in pages %}
                 <table class="{{style}}-content" height="500" width="100%">
-                    <thead>
-                        <tr>
-                            <td style="width:85%;">Description</td>
+                    <thead >
+                        <tr >
+                            <td style="width:50%;">Description</td>
+                            <td style="width:8%;">Qty</td>
+                            <td style="width:8%;">Unit</td>
+                            <td style="width:9%;">Discount</td>
+                            <td style="width:10%;">Tax</td>
                             <td style="width:15%;">Line Total</td>
                         </tr>
                     </thead>
-                    <tbody class="item-table">
-                        {% for item in page %}
-                        <tr>
-                            <td>{{item}}</td>
-                            <td>{{item.subtotal | floatformat:2 }}</td>
-
-                        </tr>
-                        {% endfor %}
-                        <tr style="height:100%">
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
+                    {% include 'invoicing/lines.html' %}
                     {% if not page.has_next %}
                     <tfoot>
                         <tr>
-                            <td>
+                            <td colspan="5">
                                 <b>SubTotal:</b>
                             </td>
                             <td>{{object.subtotal | floatformat:2 }}</td>
                         </tr>
                         <tr>
-                            <td>
+                            <td colspan="5">
                                 <b>Tax Due @{{object.tax.rate}}%:</b>
                             </td>
                             <td>{{object.tax_amount | floatformat:2 }}</td>
                         </tr>
 
                         <tr>
-                            <td>
+                            <td colspan="5">
                                 <b>Total:</b>
                             </td>
                             <td>{{object.total | floatformat:2 }}</td>

@@ -8,6 +8,14 @@
         }
     },
     {
+        "model": "accounting.Currency",
+        "pk": "2",
+        "fields": {
+            "name": "Zimbabwe Dollar",
+            "symbol": "ZWL"
+        }
+    },
+    {
         "model": "accounting.CurrencyConversionTable",
         "pk": "1",
         "fields": {
@@ -19,7 +27,8 @@
         "model": "accounting.AccountingSettings",
         "pk": "1",
         "fields": {
-            "start_of_financial_year": "2019-01-01"
+            "start_of_financial_year": "2019-01-01",
+            "active_currency": 1
         }
     },
     {

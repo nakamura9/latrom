@@ -1,5 +1,5 @@
 from django import template
-
+from accounting.models import AccountingSettings
 register = template.Library()
 
 @register.filter
@@ -13,3 +13,8 @@ def accounting(number):
     else:
         return "({0:0.2f})".format(abs(number))
 
+
+@register.filter
+def active_currency(number):
+    currency = AccountingSettings.objects.first().active_currency.symbol
+    return '{0} {1:0.2f}'.format(currency, number)

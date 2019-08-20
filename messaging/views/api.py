@@ -155,7 +155,8 @@ def reply_email(request, pk=None):
 
 def notification_service(request):
         try:        
-            unread = models.Notification.objects.filter(read=False, user=request.user)    
+            unread = models.Notification.objects.filter(read=False, 
+                user=request.user)    
         except:        
             return JsonResponse({'latest': {}, 'unread': 0})    
             

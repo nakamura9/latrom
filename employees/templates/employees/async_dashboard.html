@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block window %}
+{% load accounting %}
 
 <div class="container">
     <div class="row">
@@ -33,10 +34,10 @@
                                 <h3>Pending Payslips: <br>{{slips}}</h3>
                             </div>
                             <div class="bg-primary text-white dashbox">
-                                <h3>Unpaid Wages: <br>${{unpaid_wages}}</h3>
+                                <h3>Unpaid Wages: <br>{{unpaid_wages | active_currency}}</h3>
                             </div>
                             <div class="dashbox white-on-blue">
-                                <h3>Outstanding Payroll Taxes: <br>${{tax}}</h3>
+                                <h3>Outstanding Payroll Taxes: <br>{{tax | active_currency}}</h3>
                             </div>
                         </div>
                     </div>

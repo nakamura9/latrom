@@ -26,7 +26,7 @@
                         <p class="card-text">Description: {{object.description}}</p>
                         {% if object.invoice %}
                         <h5>Invoice Details</h5>
-                        <p class="card-text">Invoice Number: {{object.invoice.pk}}</p>
+                        <p class="card-text">Invoice Number: {{object.invoice.invoice_number |stringformat:"06d"}}</p>
                         <p class="card-text">Invoice Due Date: {{object.invoice.due}}</p>
                         <p class="card-text">Customer: {{object.invoice.customer}}</p>
                         <p class="card-text">Sales Representative: {{object.invoice.salesperson}}</p>

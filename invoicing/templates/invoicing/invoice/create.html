@@ -36,20 +36,64 @@
             </tr>
             <tr>
                 <td valign="top">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Customer</th>
+                                <td>{{form.customer}}</td>
+                            </tr>
+                            <tr>
+                                <th>Customer PO Number</th>
+                                <td>{{form.purchase_order_number}}</td>
+                            </tr>
+                            <tr>
+                                <th>Source Warehouse:</th>
+                                <td>{{form.ship_from}}</td>
+                            </tr>
+                            <tr>
+                                <th>Invoice Number</th>
+                                <td>{{form.invoice_number}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--
                     <p>Customer</p>
                     <p>{{form.customer}}</p>
                     <p>Customer PO Number:</p>
                     <p>{{form.purchase_order_number}}</p>
                     <p>Source Warehouse:</p>
                     <p>{{form.ship_from}}</p>
+                    <p>Invoice Number</p>
+                    <p>{{form.invoice_number}}</p>
+                    -->
                 </td>
                 <td>
-                    <p>Date</p>
-                    <p>{{form.date}}</p>
-                    <p>Due</p>
-                    <p>{{form.due}}</p>
-                    <p>Sales Representative</p>
-                    <p>{{form.salesperson}}</p>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Date</th>
+                                <td>{{form.date}}</td>
+                            </tr>
+                            <tr>
+                                <th>Due</th>
+                                <td>{{form.due}}</td>
+                            </tr>
+                            <tr>
+                                <th>Sales Representative</th>
+                                <td>{{form.salesperson}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--
+                        <p>Date</p>
+                        <p>{{form.date}}</p>
+                        <p>Due</p>
+                        <p>{{form.due}}</p>
+                        <p>Sales Representative</p>
+                        <p>{{form.salesperson}}</p>
+                    -->
+                    
+                    
                     {{form.status}}
                 </td>
             </tr>
