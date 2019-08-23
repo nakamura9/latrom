@@ -232,7 +232,12 @@ class Invoice(SoftDeletionModel):
     @property
     def total_due(self):
         '''The remaining balance left to be paid on an invoice'''
-        return self.total - self.total_paid
+        return self.total - self.total_paid - self.total_credited
+
+    @property
+    def total_credited(self):
+        """Returns the total value of all credit notes on invoice"""
+        return sum([i.total for i in self.creditnote_set.all()])
 
     @property
     def tax_amount(self):

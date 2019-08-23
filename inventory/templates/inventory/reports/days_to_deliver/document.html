@@ -9,24 +9,27 @@
         
         <tr>
             <td colspan="2">
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Vendor</th>
-                            <th>Last Delivery Date</th>
-                            <th>Average Days To Deliver</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for vendor in vendors %}
-                        <tr>
-                            <td>{{vendor}}</td>
-                            <td>{{vendor.last_delivery.receive_date}}</td>
-                            <td>{{vendor.average_days_to_deliver}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {% for page in pages %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Last Delivery Date</th>
+                                <th>Average Days To Deliver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vendor in page %}
+                            <tr>
+                                <td>{{vendor}}</td>
+                                <td>{{vendor.last_delivery.receive_date}}</td>
+                                <td>{{vendor.average_days_to_deliver |floatformat:1}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {{page}}
+                {% endfor %}
             </td>
         </tr>
     </tbody>

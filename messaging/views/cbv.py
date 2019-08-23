@@ -322,6 +322,8 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
             pk = person.split('-')[0]
             self.object.participants.add(User.objects.get(pk=pk))
 
+        self.object.participants.add(self.request.user)
+
         self.object.save()
 
         return resp
@@ -336,10 +338,19 @@ class GroupListView(LoginRequiredMixin, ListView):
     template_name = os.path.join('messaging', 'chat', 'group_list.html')
 
     def get_queryset(self, *args, **kwargs):
-        return models.Group.objects.filter(Q(
-            Q(admin=self.request.user) | 
-            Q(participants__username=self.request.user.username)) & 
-            Q(active=True))
+        print(
+            models.Group.objects.filter(Q(active=True) &
+            Q(
+                Q(admin=self.request.user) | 
+                Q(participants__username=self.request.user.username)
+            )
+        )
+        )
+        return models.Group.objects.filter(Q(active=True) &
+            Q(
+                Q(participants__username=self.request.user.username)
+            )
+        )
 
 
 def create_chat(request, user=None):

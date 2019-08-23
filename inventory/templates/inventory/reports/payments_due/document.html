@@ -9,6 +9,7 @@
         
         <tr>
             <td colspan="2">
+            {% for page in pages %}
                 <table class="table table-sm">
                     <thead>
                         <tr>
@@ -23,7 +24,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for order in orders %}
+                        {% for order in page %}
                         <tr>
                             <td>{{order.supplier}}</td>
                             <td>{{order.pk | stringformat:"06d"}}</td>
@@ -32,12 +33,13 @@
                             <td>{{order.total}}</td>
                             <td>{{order.total_due}}</td>
                             <td>{{order.amount_paid}}</td>
-                            <td>{{order.amount_paid}}</td>
+                            <td>{{order.days_overdue}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-               
+                {{page}}
+            {% endfor %}
             </td>
         </tr>
     </tbody>

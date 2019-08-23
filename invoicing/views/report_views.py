@@ -176,17 +176,24 @@ class InvoiceAgingPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
         return InvoiceAgingReport.common_context(context)
 
 class SalesReportFormView(ContextMixin, FormView):
-    template_name = os.path.join('invoicing', 'reports', 'sales_report_form.html')
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
     form_class = forms.SalesReportForm
     extra_context = {
         "action": reverse_lazy("invoicing:sales-report")
     }
 
-class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
+class SalesReportView(ContextMixin, 
+                      ConfigMixin, 
+                      PeriodReportMixin, 
+                      TemplateView):
+    extra_context = {
+        'pdf_link': True
+    }
     template_name = os.path.join("invoicing", "reports", "sales_report.html")
 
     @staticmethod
-    def common_context(context, start, end, kwargs):
+    def common_context(context, start, end):
         # if filtering reps and customers - use the entire invoice 
 
         context["bar_graph"] = plot_sales(start, end)
@@ -211,7 +218,19 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
                 Q(invoice__status='paid-partially')
             ) )
         lines = models.InvoiceLine.objects.filter(filters)
-        context['products_and_services'] = lines
+        sbps = {}
+        for l in lines:
+            sbps.setdefault(l.name, {
+                'name': l.name,
+                'type': l.type_string,
+                'quantity': 0,
+                'total': 0
+            }) 
+            sbps[l.name]['quantity'] +=  l.product.quantity if l.product else 0
+            sbps[l.name]['total'] += l.subtotal
+        
+        context['products_and_services'] = sbps
+        print(context['products_and_services'])
         
         total_sales = sum([i.subtotal for i in \
                      lines])
@@ -223,7 +242,7 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
         context["average_sales"] = average_sales
         context.update({
             'start': start.strftime("%d %B %Y"), 
-            'end': end.strftime("%d %B %Y")
+            'end': end.strftime("%d %B %Y"),
             })
         return context
 
@@ -232,7 +251,7 @@ class SalesReportView(ConfigMixin, PeriodReportMixin, TemplateView):
         kwargs = self.request.GET
         context['pdf_link'] = True
         start, end = extract_period(kwargs)
-        return SalesReportView.common_context(context, start, end, kwargs)
+        return SalesReportView.common_context(context, start, end)
 
 class SalesReportPDFView(ConfigMixin, PDFTemplateView):
     template_name = SalesReportView.template_name
@@ -246,12 +265,17 @@ class SalesReportPDFView(ConfigMixin, PDFTemplateView):
         return SalesReportView.common_context(context, start, end)
         
 
-class AccountsReceivableDetailReportView(ConfigMixin, TemplateView):
+class AccountsReceivableDetailReportView(ContextMixin, 
+                                         ConfigMixin, 
+                                         TemplateView):
+    extra_context = {
+        'pdf_link': True
+    }
     template_name = os.path.join('invoicing', 'reports', 'accounts_receivable', 
         'report.html')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    @staticmethod
+    def common_context(context):
         invs = Invoice.objects.filter(status__in=['invoice', 'paid-partially'], 
             draft=False)
         context["current"] = list(filter(lambda x: x.overdue_days == 0, invs))
@@ -269,11 +293,24 @@ class AccountsReceivableDetailReportView(ConfigMixin, TemplateView):
         context['ar_by_customer'] = plot_ar_by_customer()
         context['ar_by_aging'] = plot_ar_by_aging()
         context['date'] = datetime.date.today()
-        context['pdf_link'] = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        AccountsReceivableDetailReportView.common_context(context)
 
 
         return context
+
+class AccountsReceivableReportPDFView(ConfigMixin, PDFTemplateView):
+    template_name = AccountsReceivableDetailReportView.template_name
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        AccountsReceivableDetailReportView.common_context(context)
+        return context
+    
+
+
 class SalesByCustomerReportFormView(ContextMixin, FormView):
     template_name = os.path.join('common_data', 'reports', 'report_template.html')
     form_class = forms.SalesReportForm

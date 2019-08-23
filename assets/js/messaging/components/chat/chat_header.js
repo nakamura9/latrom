@@ -67,6 +67,12 @@ class chatHeader extends Component {
                                     onClick={this.props.toggleContext}>{this.props.selecting ? 
                                         'Clear' : 
                                         'Select'} Messages</li>
+                                {this.props.isGroup ?
+                                    <li className={styles.chatDropdownLi}
+                                        onClick={() => {
+                                            this.setState({showDropdown: false})
+                                            this.props.toggleParticipants()}
+                                        }>View Participants</li> : null}
                                 {rendered}
                             </ul>
                         </div>

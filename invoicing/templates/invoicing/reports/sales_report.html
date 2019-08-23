@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+`{% extends "common_data/page/pdf_page.html" %}
 
-{% block window %}
+{% block page_contents %}
 {% load accounting %}
 
 <style>
@@ -13,7 +13,8 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="jumbotron">
+            {% if pdf_link %}
+                <div class="jumbotron">
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
@@ -26,6 +27,8 @@
                 
             </div>
             
+            {% endif %}
+            
         </div>
     </div>
     <div class="row">
@@ -37,13 +40,11 @@
             <p>Average daily sales: {{average_sales | active_currency}}</p>
             {% autoescape off %}
             {{bar_graph}}
-            <p style="page-break-before:always;"></p>
 
             {{pie_chart}}
-            <p style="page-break-before:always;"></p>
 
             {% endautoescape %}
-            <p style="page-break-before:always;"></p>
+            <p class="eop"></p>
 
             <h4>Sales By Customer Table</h4>
             <table class="table table-sm">
@@ -75,6 +76,7 @@
 
             {% autoescape off %}
             {{pie_chart_2}}
+            <p class="eop"></p>
 
             {% endautoescape %}
 
@@ -89,16 +91,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in products_and_services %}
-                        <tr>
-                            <td>{{item.type_string}}</td>
+                    {% for key, item in products_and_services.items %}
+                         <tr>
+                            <td>{{item.type}}</td>
                             <td>{{item.name}}</td>
-                            <td>{% if item.product %}
-                                {{item.product.quantity}}
+                            <td>{% if item.type != 'service' %}
+                                {{item.quantity}}
                                 {% else %}
                                 N/A
                             {% endif %}</td>
-                            <td>{{item.subtotal | floatformat:2}}</td>
+                            <td>{{item.total | floatformat:2}}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -109,4 +111,4 @@
 </div>
 
 
-{% endblock window %}
+{% endblock %}

@@ -135,6 +135,10 @@ class ParticipantEntry extends Component{
     }
 
     insertHandler = () =>{
+        if(!this.state.selected.name){
+            alert('No valid participant has been selected.');
+            return;
+        }
         this.props.addHandler(this.state.selected);
     }
     render(){

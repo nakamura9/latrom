@@ -157,24 +157,10 @@ LOGIN_REDIRECT_URL = '/base/workflow'
 
 
 
-#change for each installation
-#WKHTMLTOPDF_CMD = os.path.join(BASE_DIR, 'wkhtmltopdf', 'bin')
 
-'''WKHTMLTOPDF_CMD_OPTIONS = {
-    'quiet': True,
-}'''
-
-#EMAIL
-try:
-    config_file = open(os.path.join(BASE_DIR, 'global_config.json'), 'r')
-    email_config = json.load(config_file)
-except json.JSONDecodeError:
-    email_config = {
-        'email_host': '',
-        'email_port': '',
-        'email_user': '',
-        'email_password': ''
-    }
+WKHTMLTOPDF_CMD_OPTIONS = {
+    'quiet': False,
+}
 
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'

@@ -1,7 +1,7 @@
 {% extends "common_data/page/pdf_page.html" %}
 
 {% block pre_page %}
-
+{% load accounting %}
 <div class="jumbotron">
     <div class="dropdown">
         <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
@@ -90,9 +90,30 @@
                     </table>
                     <p>{{page}}</p>
                     {% if page.has_next %}
-                        <p style="page-break-before:always;"></p>
+                        <p class="eop"></p>
                     {% endif %}
                     {% endfor %}
+                    <table class="table table-sm">
+                    <thead>
+                        <tr>
+                             <th>Total A/R</th>
+                            <th>Current</th>
+                            <th>0-7 Days</th>
+                            <th>8-14 Days</th>
+                            <th>15-30 Days</th>
+                            <th>31- 60 Days</th>
+                            <th>61+ Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{customer.account.balance}}</td>
+                            {% for age in customer.age_list %}
+                                <td>{{age |floatformat:2}}</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
                 </div>
             </td>
         </tr>

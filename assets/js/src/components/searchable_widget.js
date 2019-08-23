@@ -232,7 +232,6 @@ class TextBoxWidget extends Component{
 }
 
 
-
 SearchableWidget.propTypes = {
     dataURL: PropTypes.string.isRequired,
     displayField: PropTypes.string.isRequired,

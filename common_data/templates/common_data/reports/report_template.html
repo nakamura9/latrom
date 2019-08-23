@@ -3,12 +3,6 @@
 
 {% block content %}
 
-<style>
-    #frame-container {
-        width: 800px;
-        height: 1280px;
-    }
-</style>
 <div class="container">
 
     <div class="row">
@@ -23,11 +17,22 @@
                 </form>
             </div>
         </div>
-        <div class="col-sm-9">
-            <div id="frame-container">
-                <iframe width="800" height="900" src="/base/blank-report" name="report_frame" frameborder="0"></iframe>
-            </div>
+        <div class="col-sm-9" id='frame-container'>
+                <iframe width="800" src="/base/blank-report" name="report_frame" id='id-report-frame' frameborder="0"></iframe>
+                <script>
+                var navHeight = document.getElementById('navbar').offsetHeight;
+                var height = document.documentElement.clientHeight - navHeight -2;
+                $('#id-report-frame').attr({
+                    'width': $('#frame-container').css('width'),
+                    'height': height
+                })
+
+                $(document).ready(function(){
+                    $('footer').hide();
+                })
+                </script>
         </div>
+
     </div>
 </div>
 

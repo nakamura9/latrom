@@ -50,7 +50,8 @@ class EmailRetrieveSerializer(EmailSerializer):
     
 class GroupSerializer(serializers.ModelSerializer):
     messages = serializers.SerializerMethodField('paginated_messages')
-
+    participants = UserSerializer(many=True)
+    
     class Meta:
         model = Group
         fields = "__all__"

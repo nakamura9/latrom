@@ -103,8 +103,10 @@ def plot_sales_by_products_and_services(start, end):
 
     chart = pygal.Pie()
     chart.title = 'Sales By Products and Services'
-    for key in sbps.keys():
-        chart.add(key, sbps[key])
+    ordered = sorted([(key, sbps[key]) for key in sbps.keys()], 
+        key=lambda x: x[1], reverse=True)
+    for item in ordered[:10]:
+        chart.add(item[0], item[1])
 
     return chart.render(is_unicode=True)
 

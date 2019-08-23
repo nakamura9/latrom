@@ -28,7 +28,7 @@ class Customer(SoftDeletionModel):
 
     @property
     def invoices(self):
-        return Invoice.objects.filter(Q(customer=self))
+        return Invoice.objects.filter(customer=self, draft=False, status__in=['invoice', 'paid', 'paid-partially'])
     
     @property
     def name(self):

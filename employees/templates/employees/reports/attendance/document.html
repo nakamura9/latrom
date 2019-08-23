@@ -28,7 +28,7 @@
 <table >
     <thead>
         <tr>
-            <th class="day-content" >Employee</th>
+            <th class="day-content" >Employee #</th>
             {% for date in days %}
             <th class="day-heading">{{date}}</th>
             {% endfor %}
@@ -40,10 +40,10 @@
             <td class="day-content">
                 {% if employee.latest_timesheet %}
                 <a style="text-decoration:none;" href="{% url 'employees:timesheet-detail' pk=employee.latest_timesheet %}">
-                    {{employee.short_name | truncatechars:9}}
+                    {{employee.pk | stringformat:"04d"}}
                 </a>
                 {% else %}
-                    {{employee.short_name | truncatechars:9}}
+                    {{employee.pk | stringformat:"04d"}}
                 {% endif %}
             </td>
             {% for date in employee.attendance %}
@@ -56,7 +56,7 @@
 
 {{page}}
 {% if page.has_next %}
-    <p style="page-break-before:always;"></p>
+    <p class="eop"></p>
 {% endif %}
 
 {% endfor %}

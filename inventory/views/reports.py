@@ -77,24 +77,24 @@ class OutstandingOrderReportPDFView( ConfigMixin, PDFTemplateView):
         return context
 
 
-class PaymentsDueReportView(ConfigMixin, TemplateView):
+class PaymentsDueReportView(ContextMixin,
+                            ConfigMixin, 
+                            MultiPageDocument, 
+                            TemplateView):
     template_name = os.path.join('inventory', 'reports', 'payments_due',
         'report.html')
+    page_length = 20
+    extra_context ={
+        'date': datetime.date.today(),
+        'pdf_link': True
+    }
     
 
     def get_multipage_queryset(self):
-        return models.Order.objects.all()
+        return models.Order.objects.filter(
+                due__lte=datetime.date.today(),
+                status__in=['order', 'received', 'received_partially']) 
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        today = datetime.date.today()
-        context["orders"] = [o for o in  models.Order.objects.filter(
-                due__lte=today,
-                status__in=['order', 'received', 'received_partially']) \
-                    if o.total_due > 0]
-        context['date'] = today
-        context['pdf_link'] = True
-        return context
     
 class VendorBalanceReportView(ContextMixin, 
                           ConfigMixin, 
@@ -116,13 +116,17 @@ class VendorBalanceReportView(ContextMixin,
 
 class VendorAverageDaysToDeliverReportView(ConfigMixin,
                                          ContextMixin,
+                                         MultiPageDocument,
                                          TemplateView):
 
     template_name = os.path.join('inventory', 'reports', 'days_to_deliver', 
         'report.html')
+    page_length = 20
+
+    def get_multipage_queryset(self):
+        return models.Supplier.objects.all()
     extra_context = {
         'date': datetime.date.today(),
-        'vendors': models.Supplier.objects.all(),
         'pdf_link': True
     } 
 

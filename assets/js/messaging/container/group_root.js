@@ -4,7 +4,7 @@ import GroupChatWidget from '../components/chat/group';
 import {Aux} from '../../src/common';
 import ChatHeader from '../components/chat/chat_header';
 import ReactModal from 'react-modal'
-
+import AddParticipantsWidget from '../components/chat/add_participants';
 export default class GroupChatRoot extends Component{
     constructor(props){
         super(props)
@@ -19,7 +19,9 @@ export default class GroupChatRoot extends Component{
             currentPage: 1,
             users: [],
             title: "",
-            modalIsOpen: false
+            modalIsOpen: false,
+            participantsModalOpen: false,
+            participants: []
         }    
     }
 
@@ -124,6 +126,7 @@ export default class GroupChatRoot extends Component{
             this.setState({
                 messages: res.data.messages,
                 name: res.data.name,
+                participants: res.data.participants,
                 title: this.state.selecting 
                         ? "(" + this.state.selected.length + ") selected" 
                         : res.data.name 
@@ -211,7 +214,27 @@ export default class GroupChatRoot extends Component{
         })
     }
 
+    toggleParticipantsModal = () =>{
+        this.setState({participantsModalOpen: true})
+    }
 
+    addParticipant = (id) =>{
+        console.log(id)
+        axios({
+            'method': 'GET',
+            'url': '/messaging/api/add-group-participant/' + this.state.groupPk
+                + '/' + id,
+            
+        }).then(res =>{
+            this.setState({
+                participants: res.data,
+                participantsModalOpen: false
+            })
+        }).error(err =>{
+            alert('An error occurred');
+            this.setState({participantsModalOpen: false})
+        })
+    }
 
     render(){
         return(
@@ -219,6 +242,7 @@ export default class GroupChatRoot extends Component{
                 <div className="row">
                     <div className="col-sm-12">
                         <ChatHeader
+                            toggleParticipants={this.toggleParticipantsModal}
                             deleteHandler={this.messageDeleteHandler}
                             toggleUsersModal={this.toggleUsersModal}
                             toggleContext={this.toggleContext}
@@ -260,6 +284,13 @@ export default class GroupChatRoot extends Component{
                         className="btn btn-danger"
                         onClick={() => this.setState({modalIsOpen: false})}> <i className="fas fa-times"></i> Cancel</button>
                     </ReactModal>
+                    <AddParticipantsWidget 
+                        closeModal={() =>this.setState({
+                            participantsModalOpen: false
+                        })}
+                        addParticipant={this.addParticipant}
+                        participants={this.state.participants}
+                        open={this.state.participantsModalOpen} />
                 </Aux>
                 </div>
             </Aux>    

@@ -43,4 +43,7 @@ report_urls = [
     path("average-days-to-pay-report/", 
         views.AverageDaysToPayReportView.as_view(), 
         name="average-days-to-pay-report"),
+    path("accounts-receivable-report-pdf/", 
+        views.AccountsReceivableReportPDFView.as_view(), 
+        name="accounts-receivable-report-pdf"),
 ]

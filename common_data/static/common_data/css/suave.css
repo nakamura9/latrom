@@ -164,3 +164,16 @@ background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100
 .card-title {
     font-weight: 250;
 }
+
+.eop {
+    page-break-before: always;
+}
+
+table {
+    page-break-inside: auto;
+}
+
+table tr{
+    page-break-inside: avoid;
+    page-break-after: auto;
+}

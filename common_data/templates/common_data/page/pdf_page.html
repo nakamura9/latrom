@@ -36,7 +36,10 @@
             padding: 0.5in;
             width: 21cm;
             height: 29.7cm;
+            
             {% if pdf_link %}
+            max-height: 29.7cm;
+            overflow-y:auto;
             border: 1px solid grey;
             box-shadow: 15px 30px 20px #ccc;
             {% endif %}

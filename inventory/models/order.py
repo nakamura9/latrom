@@ -103,6 +103,8 @@ class Order(SoftDeletionModel):
 
     @property
     def days_overdue(self):
+        if self.total_due <= 0:
+            return 0
         return (datetime.date.today() - self.due).days
 
     @property

@@ -20,6 +20,8 @@ import urllib
 from messaging.email_api.email import EmailSMTP
 from draftjs_exporter.html import HTML as exporterHTML
 from rest_framework.pagination import PageNumberPagination
+from common_data.serializers import UserSerializer
+
 
 class MessagingPaginator(PageNumberPagination):
     page_size = 10
@@ -322,3 +324,13 @@ def forward_email_messages(request, pk=None):
             email.body)
     
     return JsonResponse({'status': 'ok'})
+
+def add_participant(request, grp=None, id=None):
+    group = models.Group.objects.get(pk=grp)
+    usr = User.objects.get(pk=id)
+    group.participants.add(usr)
+    group.save()
+
+    print(UserSerializer(group.participants, many=True).data)
+    return JsonResponse(UserSerializer(group.participants, many=True).data,
+        safe=False)

@@ -8,8 +8,6 @@ class groupChatWidget extends Component{
         inputText: ""
     }
 
-   
-
     inputHandler = (evt) =>{
         this.setState({inputText: evt.target.value});
     }
@@ -17,7 +15,7 @@ class groupChatWidget extends Component{
     sendMessage = () =>{
        
        axios.defaults.xsrfCookieName = 'csrftoken'
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     
         const data = {
             'message_text': this.state.inputText,
