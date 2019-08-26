@@ -9,13 +9,14 @@ import urllib
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase
-
+from django.test.client import RequestFactory
 from accounting.models import *
 from common_data.tests import create_account_models, create_test_user, create_test_common_entities
 from inventory.tests import create_test_inventory_models
 from latrom import settings
 from employees.models import Employee 
 from django.contrib.auth.models import User
+from accounting import views 
 
 TODAY = datetime.date.today()
 
@@ -401,6 +402,11 @@ class TestReportViews(TestCase):
 
     def test_get_balance_sheet_page(self):
         resp = self.client.get(reverse('accounting:balance-sheet'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_balance_sheet_pdf_page(self):
+        req = RequestFactory().get(reverse('accounting:balance-sheet-pdf'))
+        resp = views.BalanceSheetPDFView.as_view()(req)
         self.assertEqual(resp.status_code, 200)
 
     def test_get_income_statement_page(self):

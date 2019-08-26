@@ -8,11 +8,15 @@ from django.views.generic.edit import CreateView, UpdateView
 from django_filters.views import FilterView
 from rest_framework.viewsets import ModelViewSet
 
-from common_data.utilities import ContextMixin, ConfigMixin
+from common_data.utilities import (ContextMixin, 
+                                    ConfigMixin,
+                                    )
 from common_data.views import PaginationMixin
 from services import filters, forms, models
 from services.serializers import ProcedureSerializer
 from inventory.models import InventoryItem
+from wkhtmltopdf.views import PDFTemplateView
+
 
 class ProcedureCRUDMixin(object):
     def post(self, request, *args, **kwargs):
@@ -97,3 +101,12 @@ class ProcedureDocumentView(ContextMixin, ConfigMixin, DetailView):
     extra_context = {
         'pdf_link': True
     }
+
+class ProcedureDocumentPDFView(ConfigMixin, PDFTemplateView):
+    template_name = ProcedureDocumentView.template_name
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['object'] = models.ServiceProcedure.objects.get(
+            pk=self.kwargs['pk'])
+        return context

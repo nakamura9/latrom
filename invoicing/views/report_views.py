@@ -15,7 +15,9 @@ from wkhtmltopdf.views import PDFTemplateView
 import urllib
 from accounting.models import Credit, Debit
 from common_data.utilities import (ContextMixin, 
-                                    extract_period,  
+                                    extract_period,
+                                    encode_period,
+                                    extract_encoded_period,  
                                     MultiPageDocument,
                                     PeriodReportMixin,
                                     ConfigMixin, 
@@ -109,6 +111,7 @@ class CustomerStatementPDFView(ConfigMixin, MultiPageDocument,PDFTemplateView):
     page_length=20
 
     def get_multipage_queryset(self):
+        print('#error', self.kwargs)
         start = datetime.datetime.strptime(urllib.parse.unquote(
             self.kwargs['start']), "%d %B %Y")
         end = datetime.datetime.strptime(urllib.parse.unquote(
@@ -183,6 +186,7 @@ class SalesReportFormView(ContextMixin, FormView):
         "action": reverse_lazy("invoicing:sales-report")
     }
 
+#Pagniated by Table
 class SalesReportView(ContextMixin, 
                       ConfigMixin, 
                       PeriodReportMixin, 
@@ -264,7 +268,7 @@ class SalesReportPDFView(ConfigMixin, PDFTemplateView):
             urllib.parse.unquote(self.kwargs['end']), "%d %B %Y")
         return SalesReportView.common_context(context, start, end)
         
-
+#Do not paginate!
 class AccountsReceivableDetailReportView(ContextMixin, 
                                          ConfigMixin, 
                                          TemplateView):
@@ -290,6 +294,7 @@ class AccountsReceivableDetailReportView(ContextMixin,
         context['more'] = list(filter(
             lambda x: x.overdue_days > 60, invs))
 
+        print(plot_ar_by_customer())
         context['ar_by_customer'] = plot_ar_by_customer()
         context['ar_by_aging'] = plot_ar_by_aging()
         context['date'] = datetime.date.today()
@@ -304,8 +309,8 @@ class AccountsReceivableDetailReportView(ContextMixin,
 class AccountsReceivableReportPDFView(ConfigMixin, PDFTemplateView):
     template_name = AccountsReceivableDetailReportView.template_name
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         AccountsReceivableDetailReportView.common_context(context)
         return context
     
@@ -318,25 +323,42 @@ class SalesByCustomerReportFormView(ContextMixin, FormView):
         "action": reverse_lazy("invoicing:sales-by-customer-report")
     }
 
-class SalesByCustomerReportView(ConfigMixin, TemplateView):
+#Do not paginate(For Now!)
+class SalesByCustomerReportView(ContextMixin, ConfigMixin, TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'sales_by_customer', 
         'report.html')
+    extra_context = {
+        'pdf_link': True
+    }
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        start, end = extract_period(self.request.GET)
+    @staticmethod
+    def common_context(context, start, end):
         context["customers"] = [{
             'name': str(c),
             'sales': sum([i.subtotal for i in c.sales_over_period(start, end)])
             } for c in models.Customer.objects.all()]
         context["sales"] = models.Invoice.objects.filter(date__gte=start,
             date__lte=end)
-        context['pdf_link'] =True
         
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start, end = extract_period(self.request.GET)
         context.update({
-            'start': start.strftime("%d %B '%y"),
-            'end': end.strftime("%d %B '%y")
+            'start': start.strftime("%d %B %Y"),
+            'end': end.strftime("%d %B %Y")
         })
+        SalesByCustomerReportView.common_context(context, start, end)
+        return context
+
+class SalesByCustomerReportPDFView(ConfigMixin, PDFTemplateView):
+    template_name = SalesByCustomerReportView.template_name
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        start, end = extract_encoded_period(self.kwargs)
+        SalesByCustomerReportView.common_context(context, start, end)
         return context
     
 class CustomerPaymentsReportFormView(ContextMixin, FormView):
@@ -348,31 +370,72 @@ class CustomerPaymentsReportFormView(ContextMixin, FormView):
     }
 
 
-
-class CustomerPaymentsReportView(ConfigMixin, TemplateView):
+class CustomerPaymentsReportView(ContextMixin,
+                                 ConfigMixin, 
+                                 MultiPageDocument,
+                                 TemplateView):
     template_name = os.path.join('invoicing', 'reports', 'customer_payments', 
         'report.html')
+    page_length = 20
+    extra_context = {
+        'pdf_link': True
+    }
+
+    def get_multipage_queryset(self):
+        start, end = extract_period(self.request.GET)
+        return models.Payment.objects.filter(date__gte=start, 
+            date__lte=end)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        start, end = extract_period(self.request.GET)
-        context["payments"] = models.Payment.objects.filter(date__gte=start, 
-            date__lte=end)
-        context['pdf_link'] =True
-        
+        start, end = encode_period(*extract_period(self.request.GET))
+
         context.update({
-            'start': start.strftime("%d %B '%y"),
-            'end': end.strftime("%d %B '%y")
+            'start': start,
+            'end': end
         })
         return context
 
-class AverageDaysToPayReportView(ConfigMixin, TemplateView):
-    template_name = os.path.join('invoicing', 'reports', 'average_days_to_pay', 
-        'report.html')
+
+class CustomerPaymentsPDFView(ConfigMixin, 
+                              MultiPageDocument, 
+                              PDFTemplateView):
+    template_name = CustomerPaymentsReportView.template_name
+    page_length=20
+
+    def get_multipage_queryset(self):
+        start, end = extract_encoded_period(self.kwargs)
+        return models.Payment.objects.filter(date__gte=start, 
+            date__lte=end)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["customers"] = models.Customer.objects.all()
+        start, end = extract_encoded_period(self.kwargs)
+        context.update({
+            'start': start,
+            'end': end
+        })
+        return context
+
+class AverageDaysToPayReportView(ContextMixin,
+                                 ConfigMixin, 
+                                 MultiPageDocument,
+                                 TemplateView):
+    template_name = os.path.join('invoicing', 'reports', 'average_days_to_pay', 
+        'report.html')
+    page_length = 20
+    extra_context = {
+        'pdf_link': True,
+        'date': datetime.date.today()
+    }
+
+    def get_multipage_queryset(self):
+        return models.Customer.objects.all()
+
+    @staticmethod
+    def common_context(context):
         chart = pygal.Bar()
         chart.title = 'Average Days to Pay'
         customer_names = [str(i) for i in models.Customer.objects.all()]
@@ -381,7 +444,24 @@ class AverageDaysToPayReportView(ConfigMixin, TemplateView):
         chart.x_labels = customer_names
         chart.add('Days To Pay', customer_averages)
 
-        context['pdf_link'] =True
         context['graph'] = chart.render(is_unicode=True)
+        return context 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.__class__.common_context(context)
         
+        return context
+
+class AverageDaysToPayPDFView(ConfigMixin, MultiPageDocument, PDFTemplateView):
+    template_name = AverageDaysToPayReportView.template_name
+    page_length= AverageDaysToPayReportView.page_length
+
+    def get_multipage_queryset(self):
+        return AverageDaysToPayReportView.get_multipage_queryset(self)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['date'] = datetime.date.today()
+        AverageDaysToPayReportView.common_context(context)
         return context

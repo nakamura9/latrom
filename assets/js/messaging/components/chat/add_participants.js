@@ -2,6 +2,37 @@ import React, {Component} from 'react';
 import ReactModal from 'react-modal';
 import axios from 'axios';
 
+const UserCard = (props) =>{
+    
+    
+    if(props.selecting){
+        return(
+            <li onClick={() => props.handler(props.data.id)}
+                className="list-group-item">
+                {props.data.username}
+            </li>
+        )
+    }else{
+        
+        
+
+        return(
+            <li className="list-group-item">
+                    <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>{
+                            if(confirm(`Are you sure you want to remove ${props.data.username} from the group?`)){
+                                props.delHandler(props.data.id)                
+                            }}}>
+                            <i className="fas fa-trash"></i>
+                        </button>
+                    {props.data.username}
+            </li>
+        )
+    }
+    
+}
+
 class ParticipantsWidget extends Component{
     state = {
         data: [],
@@ -22,7 +53,16 @@ class ParticipantsWidget extends Component{
         }
     }
 
+    
+
     addParticipantButtonHandler =() =>{
+        if(this.state.selecting){
+            this.setState({
+                selecting: false,
+                data: this.props.participants
+            });
+            return;
+        }
         axios({
             'method': 'GET',
             'url': '/base/api/users/'
@@ -32,10 +72,10 @@ class ParticipantsWidget extends Component{
                     return this.props.participants.map(p =>p.id).indexOf(usr.id) == -1
                 }),
                 selecting: true
-
             })
         })
     }
+
 
     render(){
         const color = this.state.selecting ? "btn-danger" : "btn-success" 
@@ -57,9 +97,11 @@ class ParticipantsWidget extends Component{
 
                     <ul className="list-group">
                         {this.state.data.map((i) =>(
-                            <li 
-                                className="list-group-item"
-                                onClick={() => this.addParticipantsHandler(i.id)}>{i.username}</li>
+                            <UserCard 
+                                selecting={this.state.selecting}
+                                data={i}
+                                handler={this.addParticipantsHandler}
+                                delHandler={this.props.removeParticipant} />
                         ))}
                     </ul>
                     <center>
@@ -74,5 +116,9 @@ class ParticipantsWidget extends Component{
         )    
     }
 }
+
+
+
+
 
 export default ParticipantsWidget;

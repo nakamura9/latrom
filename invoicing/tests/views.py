@@ -3,6 +3,7 @@ import json
 import urllib
 
 from django.test import Client, TestCase
+from django.test.client import RequestFactory
 from django.urls import reverse
 
 from django.contrib.auth.models import User
@@ -14,11 +15,15 @@ from latrom import settings
 from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 import accounting
+from invoicing.views import (CustomerStatementPDFView, 
+                             SalesReportPDFView,
+                             InvoiceAgingPDFView)
 from common_data.tests import create_test_common_entities
 import copy
 from messaging.models import UserProfile
 
 TODAY = datetime.datetime.today()
+
 
 class CommonViewsTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 
@@ -112,36 +117,44 @@ class ReportViewsTests(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
 
-    # def test_get_customer_statement_pdf_page(self):
-    #     resp = self.client.get(reverse('invoicing:customer-statement-pdf', kwargs={
-    #         'customer': 1,
-    #         'start': (TODAY - datetime.timedelta(days=30)).strftime(
-    #                 '%d %B %Y'),
-    #         'end': TODAY.strftime('%d %B %Y')
-    #     }))
-    #     self.assertEqual(resp.status_code, 200)
+    def test_customer_statement_pdf(self):
+        req = RequestFactory().get(reverse('invoicing:customer-statement-pdf',
+            kwargs={
+                'start': (datetime.date.today() \
+                            - datetime.timedelta(365)).strftime('%d %B %Y'),
+                'end': datetime.date.today().strftime('%d %B %Y'),
+                'customer': 1
+            }))
+        resp = CustomerStatementPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
 
     def test_get_invoice_aging_report_page(self):
         resp = self.client.get(reverse('invoicing:invoice-aging'))
         self.assertEqual(resp.status_code, 200)
 
-    # def test_get_invoice_aging_report_pdf_page(self):
-    #     resp = self.client.get(reverse('invoicing:invoice-aging-pdf'))
-    #     self.assertEqual(resp.status_code, 200)
+    def test_get_invoice_aging_report_pdf_page(self):
+        req = RequestFactory().get(reverse('invoicing:invoice-aging-pdf'))
+        resp = InvoiceAgingPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
 
     def test_get_sales_report_form_page(self):
         resp = self.client.get(reverse('invoicing:sales-report-form'))
         self.assertEqual(resp.status_code, 200)
 
     def test_get_sales_report_page(self):
-        encoded = urllib.parse.quote(json.dumps([]))
         resp = self.client.get(reverse('invoicing:sales-report'), data={
             'default_periods': 4,
-            'products': encoded,
-            'reps': encoded,
-            'customers': encoded,
-            'services': encoded,
         })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_sales_report_pdf(self):
+        req = RequestFactory().get(reverse('invoicing:sales-report-pdf',
+            kwargs={
+                'start': (datetime.date.today() \
+                            - datetime.timedelta(365)).strftime('%d %B %Y'),
+                'end': datetime.date.today().strftime('%d %B %Y'),
+            }))
+        resp = SalesReportPDFView.as_view()(req)
         self.assertEqual(resp.status_code, 200)
 
 

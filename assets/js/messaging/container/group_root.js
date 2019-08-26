@@ -219,10 +219,26 @@ export default class GroupChatRoot extends Component{
     }
 
     addParticipant = (id) =>{
-        console.log(id)
         axios({
             'method': 'GET',
             'url': '/messaging/api/add-group-participant/' + this.state.groupPk
+                + '/' + id,
+            
+        }).then(res =>{
+            this.setState({
+                participants: res.data,
+                participantsModalOpen: false
+            })
+        }).error(err =>{
+            alert('An error occurred');
+            this.setState({participantsModalOpen: false})
+        })
+    }
+
+    removeParticipant = (id) =>{
+        axios({
+            'method': 'GET',
+            'url': '/messaging/api/remove-group-participant/' + this.state.groupPk
                 + '/' + id,
             
         }).then(res =>{
@@ -289,6 +305,7 @@ export default class GroupChatRoot extends Component{
                             participantsModalOpen: false
                         })}
                         addParticipant={this.addParticipant}
+                        removeParticipant={this.removeParticipant}
                         participants={this.state.participants}
                         open={this.state.participantsModalOpen} />
                 </Aux>

@@ -3,10 +3,17 @@
 {% block pre_page %}
 <div class="jumbotron">
 {% if pdf_link %}
-    <h4>Actions:</h4>
     <div class="btn-group">
-        <a href="/accounting/csv/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-success">Generate CSV</a>
-        <a href="/accounting/pdf/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="btn btn-danger"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="/accounting/csv/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="dropdown-item">Generate CSV</a>
+                 <a href="/accounting/pdf/journal-report/{{journal.pk}}/{{start|urlencode}}/{{end|urlencode}}/" class="dropdown-item"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
+          </div>
+        </div>
     </div>
 {% endif %}
 

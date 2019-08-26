@@ -12,4 +12,5 @@ procedure_urls = [
     re_path(r'^procedure-update/(?P<pk>[\d]+)/?$', views.ProcedureUpdateView.as_view(), name='procedure-update'),
     re_path(r'^procedure-detail/(?P<pk>[\d]+)/?$', views.ProcedureDetailView.as_view(), name='procedure-details'),
     re_path(r'^procedure-document/(?P<pk>[\d]+)/?$', views.ProcedureDocumentView.as_view(), name='procedure-document'),
+    re_path(r'^procedure-document-pdf/(?P<pk>[\d]+)/?$', views.ProcedureDocumentPDFView.as_view(), name='procedure-pdf'),
 ] + procedure_router.urls

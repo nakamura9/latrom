@@ -331,6 +331,14 @@ def add_participant(request, grp=None, id=None):
     group.participants.add(usr)
     group.save()
 
-    print(UserSerializer(group.participants, many=True).data)
+    return JsonResponse(UserSerializer(group.participants, many=True).data,
+        safe=False)
+
+def remove_participant(request, grp=None, id=None):
+    group = models.Group.objects.get(pk=grp)
+    usr = User.objects.get(pk=id)
+    group.participants.remove(usr)
+    group.save()
+
     return JsonResponse(UserSerializer(group.participants, many=True).data,
         safe=False)

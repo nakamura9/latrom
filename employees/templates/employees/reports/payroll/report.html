@@ -7,7 +7,7 @@
                 Actions
             </button>
     <div class="dropdown-menu" aria-labelledby="triggerId">
-        <a class="dropdown-item" href=""><i class="fas fa-file-pdf"></i> Generate PDF</a>
+        <a class="dropdown-item" href="{% url 'employees:payroll-report-pdf' start=start end=end %}"><i class="fas fa-file-pdf"></i> Generate PDF</a>
         
     </div>
 </div>

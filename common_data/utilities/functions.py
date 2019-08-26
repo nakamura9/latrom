@@ -1,4 +1,5 @@
 import datetime
+import urllib
 
 def apply_style(context):
     styles = {
@@ -13,6 +14,19 @@ def apply_style(context):
 
 class PeriodSelectionException(Exception):
     pass
+
+def encode_period(start, end):
+    start = start.strftime("%d %B %Y")
+    end = end.strftime("%d %B %Y")
+    return start, end
+
+def extract_encoded_period(kwargs):
+    start = datetime.datetime.strptime(urllib.parse.unquote(
+        kwargs['start']), "%d %B %Y")
+    end = datetime.datetime.strptime(urllib.parse.unquote(
+        kwargs['end']), "%d %B %Y")
+
+    return start, end
 
 def extract_period(kwargs):
     n = kwargs.get('default_periods', None)

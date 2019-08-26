@@ -9,6 +9,7 @@ from common_data.utilities import (ConfigMixin,
                                     MultiPageDocument,
                                     ContextMixin,
                                     PeriodReportMixin,
+                                    extract_encoded_period,
                                     extract_period)
 from wkhtmltopdf.views import PDFTemplateView
 from common_data.forms import PeriodReportForm
@@ -121,8 +122,8 @@ class PayrollReport(ConfigMixin,
     page_length=20
 
     
-    def get_multipage_queryset(self):
-        start, end = extract_period(self.request.GET)
+    @staticmethod
+    def common_multipage_queryset(start, end):
         slips = Payslip.objects.filter(Q(
             Q(status='verified') | Q(status='paid')
             ) & Q(created__date__gte=start)
@@ -143,6 +144,10 @@ class PayrollReport(ConfigMixin,
             })
 
         return data
+
+    def get_multipage_queryset(self):
+        start, end = extract_period(self.request.GET)
+        return self.__class__.common_multipage_queryset(start, end)
 
     @staticmethod
     def common_context(context, start, end):
@@ -165,4 +170,14 @@ class PayrollReport(ConfigMixin,
         return PayrollReport.common_context(context, start, end)
 
 class PayrollPDFReport(ConfigMixin, MultiPageDocument, PDFTemplateView):
-    pass
+    template_name = PayrollReport.template_name
+    page_length = PayrollReport.page_length
+
+    def get_multipage_queryset(self):
+        start, end = extract_encoded_period(self.kwargs)
+        return PayrollReport.common_multipage_queryset(start, end)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        start, end = extract_encoded_period(self.kwargs)
+        return context

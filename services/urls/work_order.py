@@ -31,5 +31,7 @@ worder_urls = [
         views.WorkOrderRequestDetailView.as_view(), name='work-order-request-detail'),
     re_path(r'^work-order/costing/(?P<pk>[\d]+)/?$', 
         views.WorkOrderCostingView.as_view(), name='work-order-costing'),
+    re_path(r'^work-order/costing-pdf/(?P<pk>[\d]+)/?$', 
+        views.WorkOrderCostingPDFView.as_view(), name='work-order-costing-pdf'),
 
 ] + worder_router.urls

@@ -57,17 +57,17 @@ class PaginationMixin(object):
 
         p = Paginator(object_list, self.paginate_by)
 
-        page = self.request.GET.get('page')
+        page_str = self.request.GET.get('page')
         try:
-            qs_ = p.page(page)
+            page = p.page(page_str)
         except PageNotAnInteger:
             #gets first page
-            qs_ = p.page(1)
+            page = p.page(1)
         except EmptyPage:
             #gets last page 
-            qs_ = p.page(p.num_pages)
+            page = p.page(p.num_pages)
 
-        context['object_list'] = qs_
+        context['object_list'] = page
         context['paginator'] = p
         context['is_paginated'] = True
         context['page_obj'] = page

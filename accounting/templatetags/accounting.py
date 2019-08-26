@@ -20,4 +20,8 @@ def active_currency(number):
     currency = qs.active_currency if qs else None
     if not currency:
         return number
+    try:
+        number = float(number)
+    except:
+        return number
     return '{0} {1:0.2f}'.format(currency.symbol, number)

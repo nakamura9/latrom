@@ -7,7 +7,6 @@ from django.urls import reverse
 
 from accounting.models import Account, Expense, Tax, JournalEntry
 from common_data.models import Individual, Organization
-from common_data.tests import create_test_common_entities
 from employees.models import Employee, PayGrade
 from employees.tests import create_test_employees_models
 from inventory.models import WareHouseItem
@@ -68,7 +67,7 @@ class CustomerModelTests(TestCase):
 
     def test_invoices_property(self):
         '''Invoice created in model creator'''
-        self.assertEqual(len([i for i in self.customer_org.invoices]), 2)
+        self.assertEqual(len([i for i in self.customer_org.invoices]), 1)
 
     def test_credit_invoices(self):        
         self.assertEqual(len(self.customer_org.credit_invoices), 1)
@@ -80,7 +79,7 @@ class CustomerModelTests(TestCase):
     def test_age_list(self):
         self.invoice.due = TODAY - datetime.timedelta(days=8)
         self.invoice.save()
-        self.assertEqual(self.customer_org.age_list, [0, 0,D(200.0), 0, 0, 0])
+        self.assertEqual(self.customer_org.age_list, [0, 0,D(190.0), 0, 0, 0])
 
 
 class PaymentModelTests(TestCase):
@@ -218,7 +217,7 @@ class ProductInvoiceTests(TestCase):
         
     def test_total_due(self):
         '''the difference between the invoice total $210 and the payment $10'''
-        self.assertEqual(self.invoice.total_due, 200)
+        self.assertEqual(self.invoice.total_due, 190)
 
     def test_tax_amount(self):
         '''15% tax on $10'''

@@ -7,6 +7,7 @@
         </tr>
         <tr>
             <td colspan="2">
+            {% for page in pages %}
                 <table class="table table-sm">
                     <thead>
                         <tr>
@@ -17,7 +18,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for cus in customers %}
+                        {% for cus in page %}
                         <tr>
                             <td>{{cus}}</td>
                             <td>{{cus.account.pk}}</td>
@@ -27,20 +28,19 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <p style='page-break-after:always;'></p>
-
-                {% autoescape off %}
-
-                    {{graph}}
-                {% endautoescape %}
-
-
-
+                {{page}}
+                {% endfor %}
             </td>
         </tr>
-                
+        
     </tbody>
 </table>
+
+<div style="width:100%;height:fit-content;">
+    {% autoescape off %}
+        {{graph}}
+    {% endautoescape %}
+</div>
 <script>
 $(document).ready(function(){
     $('footer').hide();

@@ -11,15 +11,15 @@
                 <table class="table-sm table">
                     <thead>
                         <tr class='bg-primary text-white'>
-                            <th>Customer</th>
-                            <th>Total Sales</th>
+                            <th style="width:75%;">Customer</th>
+                            <th style="text-align:right;">Total Sales</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for cus in customers %}
                             <tr>
                                 <td>{{cus.name}}</td>
-                                <td>{{cus.sales |floatformat:2}}</td>
+                                <td style="text-align:right;">{{cus.sales |floatformat:2}}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

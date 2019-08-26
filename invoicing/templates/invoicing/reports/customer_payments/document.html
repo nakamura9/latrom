@@ -8,6 +8,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                {% for page in pages %}
                 <table class="table-sm table">
                     <thead>
                         <tr class='bg-primary text-white'>
@@ -21,7 +22,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pmt in payments %}
+                        {% for pmt in page %}
                             <tr>
                                 <td>{{pmt.date}}</td>
                                 <td>{{pmt.invoice.customer}}</td>
@@ -34,6 +35,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {{page}}
+                {% endfor %}
             </td>
         </tr>
     </tbody>

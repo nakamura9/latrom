@@ -6,10 +6,18 @@
 
         {% if pdf_link %}
 
-        <a href="/accounting/csv/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/"
-            class="btn btn-primary">Generate CSV</a>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="/accounting/csv/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/"
+            class="dropdown-item">Generate CSV</a>
         <a href="/accounting/pdf/account-report/{{account.pk}}/{{start|urlencode}}/{{end|urlencode}}/"
-            class="btn btn-primary"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
+            class="dropdown-item"> <i class="fas fa-file-pdf"></i> Generate PDF</a>
+            </div>
+        </div>
 
         {% endif %}
     </div>

@@ -7,6 +7,8 @@ from . import models
 from common_data.utilities import (ConfigMixin, 
                                    MultiPageDocument,
                                    ContextMixin,
+                                   encode_period,
+                                   extract_encoded_period,
                                    extract_period)
                                 
 from inventory.views.common import CREATE_TEMPLATE
@@ -51,7 +53,7 @@ class OutstandingOrderReport( ConfigMixin, MultiPageDocument, TemplateView):
 
 
 class InventoryReportPDFView( ConfigMixin, MultiPageDocument,  PDFTemplateView):
-    template_name = os.path.join('inventory', 'reports', 'inventory_report.html')
+    template_name = InventoryReport.template_name
     page_length = 20
 
     def get_multipage_queryset(self):
@@ -66,7 +68,7 @@ class InventoryReportPDFView( ConfigMixin, MultiPageDocument,  PDFTemplateView):
 
 
 class OutstandingOrderReportPDFView( ConfigMixin, PDFTemplateView):
-    template_name = os.path.join('inventory', 'reports', 'outstanding_orders.html')
+    template_name = OutstandingOrderReport.template_name
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -95,7 +97,19 @@ class PaymentsDueReportView(ContextMixin,
                 due__lte=datetime.date.today(),
                 status__in=['order', 'received', 'received_partially']) 
 
-    
+class PaymentsDuePDFView(ContextMixin, 
+                         ConfigMixin, 
+                         MultiPageDocument, 
+                         PDFTemplateView):
+    template_name = PaymentsDueReportView.template_name
+    page_length = PaymentsDueReportView.page_length
+    extra_context = {
+        'date': datetime.date.today()
+    }
+
+    def get_multipage_queryset(self):
+        return PaymentsDueReportView.get_multipage_queryset(self)
+
 class VendorBalanceReportView(ContextMixin, 
                           ConfigMixin, 
                           MultiPageDocument, 
@@ -114,6 +128,21 @@ class VendorBalanceReportView(ContextMixin,
         return models.Supplier.objects.all()
 
 
+class VendorBalancePDFView(ContextMixin,
+                          ConfigMixin, 
+                          MultiPageDocument,
+                          PDFTemplateView):
+    template_name = VendorBalanceReportView.template_name
+    page_length = VendorBalanceReportView.page_length
+    extra_context = {
+        'date': datetime.date.today(),
+        'total': lambda: sum([i.account.balance \
+                             for i in models.Supplier.objects.all()])
+    }
+
+    def get_multipage_queryset(self):
+        return VendorBalanceReportView.get_multipage_queryset(self)
+
 class VendorAverageDaysToDeliverReportView(ConfigMixin,
                                          ContextMixin,
                                          MultiPageDocument,
@@ -122,13 +151,26 @@ class VendorAverageDaysToDeliverReportView(ConfigMixin,
     template_name = os.path.join('inventory', 'reports', 'days_to_deliver', 
         'report.html')
     page_length = 20
-
-    def get_multipage_queryset(self):
-        return models.Supplier.objects.all()
     extra_context = {
         'date': datetime.date.today(),
         'pdf_link': True
     } 
+
+    def get_multipage_queryset(self):
+        return models.Supplier.objects.all()
+
+class VendorAverageDaysToDeliverPDFView(ContextMixin, 
+                                        ConfigMixin, 
+                                        MultiPageDocument, 
+                                        PDFTemplateView):
+    template_name = VendorAverageDaysToDeliverReportView.template_name
+    page_length = VendorAverageDaysToDeliverReportView.page_length
+    extra_context = {
+        'date': datetime.date.today()
+    }
+
+    def get_multipage_queryset(self):
+        return VendorAverageDaysToDeliverReportView.get_multipage_queryset(self)
 
 class TransactionByVendorReportFormView(ContextMixin, FormView):
     template_name = os.path.join('common_data', 'reports', 
@@ -138,18 +180,17 @@ class TransactionByVendorReportFormView(ContextMixin, FormView):
         'action': '/inventory/vendor-transactions-report/'
     }
 
-class TransactionByVendorReportView(ConfigMixin, TemplateView):
+#DO NOT PAGINATE, table will handle it
+class TransactionByVendorReportView(ContextMixin, ConfigMixin, TemplateView):
     template_name = os.path.join('inventory', 'reports', 'vendor_transactions', 'report.html')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        start, end = extract_period(self.request.GET)
+    extra_context = {
+        'pdf_link': True
+    }
+
+    def common_context(context, start, end):
         vendors = models.Supplier.objects.all()
-        context.update({
-            'start': start,
-            'end': end,
-            'pdf_link': True
-        })
+        
         context["vendors"] = [{
             'name': v.name,
             'transactions': sorted(list(Credit.objects.filter(
@@ -165,5 +206,27 @@ class TransactionByVendorReportView(ConfigMixin, TemplateView):
             key=lambda x: x.entry.date),
             'total': v.account.balance_over_period(start, end)
         } for v in vendors]
+        start, end = encode_period(start, end)
+        context.update({
+            'start': start,
+            'end': end,
+        })
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start, end = extract_period(self.request.GET)
+        self.__class__.common_context(context, start, end)
+
         return context
     
+
+class TransactionByVendorPDFView(ConfigMixin, PDFTemplateView):
+    template_name = TransactionByVendorReportView.template_name
+
+    def get_context_data(self, *args, **kwargs):
+        context =  super().get_context_data(*args, **kwargs)
+        start, end = extract_encoded_period(self.kwargs)
+        TransactionByVendorReportView.common_context(context, start, end)
+        
+        return context

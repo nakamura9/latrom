@@ -52,7 +52,10 @@ email_urls = [
     path("api/sent/", views.SentAPIView.as_view(), name="sent-api"),
     path("api/send-draft/<int:pk>/", views.send_draft, name='send-draft'),
     path("api/reply-email/<int:pk>/", views.reply_email, name='reply-email'),
-    path("api/add-group-participant/<int:grp>/<int:id>", views.add_participant, name='add-group-participant'),
+    path("api/add-group-participant/<int:grp>/<int:id>", views.add_participant, 
+        name='add-group-participant'),
+    path("api/remove-group-participant/<int:grp>/<int:id>",     
+        views.remove_participant, name='remove-group-participant'),
     path("api/forward-email/<int:pk>", views.forward_email_messages, 
         name='forward-email'),
 ]

@@ -11,7 +11,7 @@
             Actions
         </button>
         <div class="dropdown-menu" aria-labelledby="triggerId">
-                <a href="" class="dropdown-item"><i class="fas fa-file-pdf"></i>Generate PDF</a>
+                <a href="{% url 'services:reports-job-profitability-pdf' start=start end=end %}" class="dropdown-item"><i class="fas fa-file-pdf"></i>Generate PDF</a>
         </div>
     </div>
 </div>
@@ -20,8 +20,8 @@
 
 {% block page_contents %}
 
-<h1>Job Profitability Report</h1>
-<h3>Period spanning: {{start}} to {{end}}</h3>
+<h4>Job Profitability Report</h4>
+<h6>Period spanning: {{start}} to {{end}}</h6>
 <style>
     td {
         padding: 5px;
@@ -36,7 +36,7 @@
         </tr>
         <tr>
             <th>Number of Jobs Summarized</th>
-            <td>{{jobs.count}}</td>
+            <td>{{jobs_count}}</td>
         </tr>
         <tr>
             <th>Service Revenue</th>
@@ -55,6 +55,7 @@
 
 <h4>Job Summary</h4>
 
+{% for page in pages %}
 <table class="table-striped table-sm">
     <thead>
         <tr>
@@ -66,7 +67,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for job in jobs %}
+        {% for job in page %}
             <tr>
                 <td>{{job.invoice.invoice_number |stringformat:"06d"}}</td>
                 <td>{{job.service.service.description |truncatechars:40}}</td>
@@ -77,5 +78,8 @@
         {% endfor %}
     </tbody>
 </table>
+{{page}}
+
+{% endfor %}
 
 {% endblock %}

@@ -104,21 +104,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <p style='page-break-after:always;'></p>
                 {% autoescape off %}
-                    <div>
                         {{ar_by_customer}}
-                    </div>
-
-                    {% endautoescape %}
-
-                <p style='page-break-after:always;'></p>
-                    
-                    {% autoescape off %}
-
-                    <div>
+                {% endautoescape %}
+                {% autoescape off %}
                         {{ar_by_aging}}
-                    </div>
                 {% endautoescape %}
                 
             </td>

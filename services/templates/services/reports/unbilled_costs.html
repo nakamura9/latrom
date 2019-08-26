@@ -1,10 +1,32 @@
 {% extends 'common_data/page/pdf_page.html' %}
 
+{% block pre_page %}
+
+<div class="jumbotron">
+
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+                Actions
+            </button>
+    <div class="dropdown-menu" aria-labelledby="triggerId">
+        <a class="dropdown-item" href="{% url 'services:reports-unbilled-costs-by-job-pdf' start=start end=end %}">  <i class="fas fa-file-pdf"></i> Generate PDF</a>
+        
+    </div>
+</div>
+
+</div>
+
+
+{% endblock pre_page %}
+
 {% block page_contents %}
 
 <h4>Unbilled Costs By Job report</h4>
 <p>Created: {{date}}</p>
 <p>For period spanning {{start}} to {{end}}</p>
+
+{% for page in pages %}
 
 <table class="table table-sm">
     <thead>
@@ -17,7 +39,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for job in jobs %}
+        {% for job in page %}
             {% if job.unbilled_expenses.count > 0 %}
             
                 <tr class="bg-primary text-white">
@@ -37,6 +59,8 @@
             
         {% endfor %}
     </tbody>
-    
 </table>
+{{page}}
+{% endfor %}
+
 {% endblock  %}
