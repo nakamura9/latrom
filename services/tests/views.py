@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client 
+from django.test.client import RequestFactory
 import inventory
 from employees.tests.models import create_test_employees_models
 from employees.models import Employee
@@ -7,75 +8,78 @@ from services.models import *
 import urllib
 import json
 import datetime
-from common_data.tests import create_test_common_entities
+from common_data.tests import create_test_common_entities, create_test_user
 from django.shortcuts import reverse
+from services.views import (JobProfitabilityPDFView,
+                            ServicePersonUtilizationReportPDFView,
+                            UnbilledCostsByJobPDFView)
 
 
 TODAY = datetime.date.today()
 
-# class BasicServiceViewTests(TestCase):
-#     fixtures = ['common.json','inventory.json']
+class BasicServiceViewTests(TestCase):
+    fixtures = ['common.json','inventory.json']
 
-#     @classmethod 
-#     def setUpClass(cls):
-#         super().setUpClass()
-#         cls.client = Client()
+    @classmethod 
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
 
-#     @classmethod
-#     def setUpTestData(cls):
-#         create_test_employees_models(cls)
-#         #inventory.tests.models.create_test_inventory_models(cls)
-#         cls.category = ServiceCategory.objects.create(
-#             **{'name': 'name', 'description': 'description'}   
-#         )
-#         create_test_common_entities(cls)
-#         ServicesSettings.objects.create(
-#             is_configured =True
-#         )
-#         return super().setUpTestData()
+    @classmethod
+    def setUpTestData(cls):
+        create_test_employees_models(cls)
+        create_test_user(cls)
+        #inventory.tests.models.create_test_inventory_models(cls)
+        cls.category = ServiceCategory.objects.create(
+            **{'name': 'name', 'description': 'description'}   
+        )
+        create_test_common_entities(cls)
+        cls.settings_ = ServicesSettings.objects.create(
+            is_configured =True
+        )
 
-#     def setUp(self):
-#         self.client.login(username="Testuser", password="123")
+    def setUp(self):
+        self.client.login(username="Testuser", password="123")
 
-#     def test_get_dashboard_page(self):
+    def test_get_dashboard_page(self):
         
-#         resp = self.client.get('/services/')
-#         self.assertEqual(resp.status_code, 200)
-#         settings.is_configured = False
-#         settings.save()
+        resp = self.client.get('/services/')
+        self.assertEqual(resp.status_code, 200)
+        self.settings_.is_configured = False
+        self.settings_.save()
 
-#         resp = self.client.get('/services/')
-#         self.assertEqual(resp.status_code, 302)
-#         settings.is_configured = True
-#         settings.save()
+        resp = self.client.get('/services/')
+        self.assertEqual(resp.status_code, 302)
+        self.settings_.is_configured = True
+        self.settings_.save()
 
 
 
-#     def test_get_create_category_page(self):
-#         resp = self.client.get('/services/create-category/')
-#         self.assertEqual(resp.status_code, 200)
+    def test_get_create_category_page(self):
+        resp = self.client.get('/services/create-category/')
+        self.assertEqual(resp.status_code, 200)
 
-#     def test_post_create_category_page(self):
-#         resp = self.client.post('/services/create-category/',
-#             data={'name': 'name', 'description': 'description'})
-#         self.assertEqual(resp.status_code, 302)
+    def test_post_create_category_page(self):
+        resp = self.client.post('/services/create-category/',
+            data={'name': 'name', 'description': 'description'})
+        self.assertEqual(resp.status_code, 302)
 
-#     def test_get_category_update_page(self):
-#         resp = self.client.get('/services/update-category/1')
-#         self.assertEqual(resp.status_code, 200)
+    def test_get_category_update_page(self):
+        resp = self.client.get('/services/update-category/1')
+        self.assertEqual(resp.status_code, 200)
 
-#     def test_post_category_update_page(self):
-#         resp = self.client.post('/services/update-category/1',
-#             data={'name': 'name', 'description': 'other description'})
-#         self.assertEqual(resp.status_code, 302)
+    def test_post_category_update_page(self):
+        resp = self.client.post('/services/update-category/1',
+            data={'name': 'name', 'description': 'other description'})
+        self.assertEqual(resp.status_code, 302)
 
-#     def test_get_category_detail_page(self):
-#         resp = self.client.get('/services/category-detail/1')
-#         self.assertEqual(resp.status_code, 200)
+    def test_get_category_detail_page(self):
+        resp = self.client.get('/services/category-detail/1')
+        self.assertEqual(resp.status_code, 200)
 
-#     def test_get_category_list_page(self):
-#         resp = self.client.get('/services/category-list')
-#         self.assertEqual(resp.status_code, 200)
+    def test_get_category_list_page(self):
+        resp = self.client.get('/services/category-list')
+        self.assertEqual(resp.status_code, 200)
 
 
 class ServicePersonnelViewTests(TestCase):
@@ -745,3 +749,94 @@ class ConfigWizardTests(TestCase):
                             print(resp.context['form'].errors)
             except ValueError:
                 pass
+
+
+class ServiceReportsTests(TestCase):
+    fixtures = ['common.json', 'inventory.json', 'invoicing.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+        
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_superuser(username="Testuser", email="admin@test.com", password="123")
+        cls.settings = ServicesSettings.objects.create()
+
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_service_person_utilization_form(self):
+        resp = self.client.get(reverse(
+            'services:reports-service-person-utilization-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_service_person_utilization_report(self):
+        resp = self.client.get(reverse(
+            'services:reports-service-person-utilization'), data={
+                'start_period': datetime.date.today() - datetime.timedelta(days=365),
+                'end_period': datetime.date.today()
+            })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_service_person_utilization_pdf(self):
+        kwargs = {
+                'start': (datetime.date.today() \
+                    - datetime.timedelta(days=365)).strftime("%d %B %Y"),
+                'end': datetime.date.today().strftime("%d %B %Y")
+            }
+        req = RequestFactory().get(reverse(
+            'services:reports-service-person-utilization-pdf', kwargs=kwargs)) 
+        resp = ServicePersonUtilizationReportPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_job_profitability_form(self):
+        resp = self.client.get(reverse(
+            'services:reports-job-profitability-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_job_profitability_report(self):
+        resp = self.client.get(reverse(
+            'services:reports-job-profitability'), data={
+                'start_period': datetime.date.today() - datetime.timedelta(days=365),
+                'end_period': datetime.date.today()
+            })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_job_profitability_pdf(self):
+        kwargs = {
+                'start': (datetime.date.today() \
+                    - datetime.timedelta(days=365)).strftime("%d %B %Y"),
+                'end': datetime.date.today().strftime("%d %B %Y")
+            }
+        req = RequestFactory().get(reverse(
+            'services:reports-job-profitability-pdf', kwargs=kwargs)) 
+        resp = JobProfitabilityPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_unbilled_costs_form(self):
+        resp = self.client.get(reverse(
+            'services:reports-unbilled-costs-by-job-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_unbilled_costs_report(self):
+        resp = self.client.get(reverse(
+            'services:reports-unbilled-costs-by-job'), data={
+                'start_period': datetime.date.today() - datetime.timedelta(days=365),
+                'end_period': datetime.date.today()
+            })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_unbilled_costs_pdf(self):
+        kwargs = {
+                'start': (datetime.date.today() \
+                    - datetime.timedelta(days=365)).strftime("%d %B %Y"),
+                'end': datetime.date.today().strftime("%d %B %Y")
+            }
+        req = RequestFactory().get(reverse(
+            'services:reports-unbilled-costs-by-job-pdf', kwargs=kwargs)) 
+        resp = UnbilledCostsByJobPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)

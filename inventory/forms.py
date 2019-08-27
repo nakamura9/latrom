@@ -238,9 +238,9 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                         Column('image', css_class="form group col-6"),
                     ),
                     ),
-                )
+                ),
+            Div(Submit('submit', 'Submit'), css_class="floating-submit")
             )
-        self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
         exclude = 'quantity', 'product_component', 'equipment_component'

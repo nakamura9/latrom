@@ -25,7 +25,6 @@ from common_data.utilities import (ContextMixin,
 from invoicing import forms, models
 from invoicing.models.invoice import Invoice
 from .report_utils.plotters import (plot_sales, 
-                                    plot_lines,
                                     plot_sales_by_customer,
                                     plot_sales_by_products_and_services,
                                     plot_ar_by_customer,
@@ -111,7 +110,6 @@ class CustomerStatementPDFView(ConfigMixin, MultiPageDocument,PDFTemplateView):
     page_length=20
 
     def get_multipage_queryset(self):
-        print('#error', self.kwargs)
         start = datetime.datetime.strptime(urllib.parse.unquote(
             self.kwargs['start']), "%d %B %Y")
         end = datetime.datetime.strptime(urllib.parse.unquote(
@@ -234,7 +232,6 @@ class SalesReportView(ContextMixin,
             sbps[l.name]['total'] += l.subtotal
         
         context['products_and_services'] = sbps
-        print(context['products_and_services'])
         
         total_sales = sum([i.subtotal for i in \
                      lines])
@@ -294,7 +291,6 @@ class AccountsReceivableDetailReportView(ContextMixin,
         context['more'] = list(filter(
             lambda x: x.overdue_days > 60, invs))
 
-        print(plot_ar_by_customer())
         context['ar_by_customer'] = plot_ar_by_customer()
         context['ar_by_aging'] = plot_ar_by_aging()
         context['date'] = datetime.date.today()

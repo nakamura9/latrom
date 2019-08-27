@@ -38,36 +38,6 @@ def plot_sales(start, end, filters=Q()):
 
     return chart.render(is_unicode=True)
 
-def plot_lines(start, end, filters=Q()):
-    #set deltas
-    y = None
-    delta = None
-
-    date_range = (end - start).days
-    if abs(date_range) > 70:
-        delta = 30
-        
-
-    elif abs(date_range) > 20:
-        delta = 7
-    
-    else:
-
-        delta = 1
-
-    y_query = get_line_queryset_list(InvoiceLine, start, end, delta, filters=filters)
-    
-
-    y = [get_line_totals(q) for q in y_query]
-
-
-    chart = pygal.Bar(x_title="Periods", x_label_rotation=15)
-    chart.title = 'Sales Report'
-    chart.x_labels = pygal_date_formatter(start, end)
-    chart.add('Sales($)', y)
-    
-
-    return chart.render(is_unicode=True)
 
 def plot_sales_by_customer(start, end):
     invs = Invoice.objects.filter(

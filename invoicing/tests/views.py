@@ -17,6 +17,10 @@ from .model_util import InvoicingModelCreator
 import accounting
 from invoicing.views import (CustomerStatementPDFView, 
                              SalesReportPDFView,
+                             CustomerPaymentsPDFView,
+                             SalesByCustomerReportPDFView,
+                             AverageDaysToPayPDFView,
+                             AccountsReceivableReportPDFView,
                              InvoiceAgingPDFView)
 from common_data.tests import create_test_common_entities
 import copy
@@ -118,14 +122,15 @@ class ReportViewsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_customer_statement_pdf(self):
+        kwargs={
+                 'start': (datetime.date.today() \
+                             - datetime.timedelta(365)).strftime('%d %B %Y'),
+                 'end': datetime.date.today().strftime('%d %B %Y'),
+                 'customer': 1
+             }
         req = RequestFactory().get(reverse('invoicing:customer-statement-pdf',
-            kwargs={
-                'start': (datetime.date.today() \
-                            - datetime.timedelta(365)).strftime('%d %B %Y'),
-                'end': datetime.date.today().strftime('%d %B %Y'),
-                'customer': 1
-            }))
-        resp = CustomerStatementPDFView.as_view()(req)
+             kwargs=kwargs))
+        resp = CustomerStatementPDFView.as_view()(req, **kwargs)
         self.assertEqual(resp.status_code, 200)
 
     def test_get_invoice_aging_report_page(self):
@@ -135,6 +140,26 @@ class ReportViewsTests(TestCase):
     def test_get_invoice_aging_report_pdf_page(self):
         req = RequestFactory().get(reverse('invoicing:invoice-aging-pdf'))
         resp = InvoiceAgingPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_accounts_receivable_page(self):
+        resp = self.client.get(reverse('invoicing:accounts-receivable-report'))
+        self.assertEqual(resp.status_code, 200)
+    
+    def test_get_accounts_receivable_report_pdf_page(self):
+        req = RequestFactory().get(reverse(
+            'invoicing:accounts-receivable-report-pdf'))
+        resp = AccountsReceivableReportPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_average_days_to_pay(self):
+        resp = self.client.get(reverse('invoicing:average-days-to-pay-report'))
+        self.assertEqual(resp.status_code, 200)
+    
+    def test_get_average_days_to_pay_pdf_page(self):
+        req = RequestFactory().get(reverse(
+            'invoicing:average-days-to-pay-pdf'))
+        resp = AverageDaysToPayPDFView.as_view()(req)
         self.assertEqual(resp.status_code, 200)
 
     def test_get_sales_report_form_page(self):
@@ -148,13 +173,63 @@ class ReportViewsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_sales_report_pdf(self):
+        kwargs = {
+                 'start': (datetime.date.today() \
+                             - datetime.timedelta(365)).strftime('%d %B %Y'),
+                 'end': datetime.date.today().strftime('%d %B %Y'),
+             }
         req = RequestFactory().get(reverse('invoicing:sales-report-pdf',
-            kwargs={
+             kwargs=kwargs))
+        resp = SalesReportPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)
+    
+    def test_sales_by_customer_form(self):
+        resp = self.client.get(reverse('invoicing:sales-by-customer-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_sales_by_customer_report(self):
+        resp = self.client.get(reverse(
+            'invoicing:sales-by-customer-report'), data={
+                'start_period': datetime.date.today() - datetime.timedelta(days=365),
+                'end_period': datetime.date.today()
+            })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_sales_by_customer_pdf(self):
+        kwargs = {
                 'start': (datetime.date.today() \
-                            - datetime.timedelta(365)).strftime('%d %B %Y'),
-                'end': datetime.date.today().strftime('%d %B %Y'),
-            }))
-        resp = SalesReportPDFView.as_view()(req)
+                    - datetime.timedelta(days=365)).strftime('%d %B %Y'),
+                'end': datetime.date.today().strftime('%d %B %Y')
+            }
+        req = RequestFactory().get(reverse(
+            'invoicing:sales-by-customer-pdf', kwargs=kwargs))
+        resp = SalesByCustomerReportPDFView.as_view()(req, **kwargs)
+        
+        self.assertEqual(resp.status_code, 200)
+
+    def test_customer_payments_form(self):
+        resp = self.client.get(reverse('invoicing:customer-payments-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_customer_payments_report(self):
+        resp = self.client.get(reverse(
+            'invoicing:customer-payments-report'), data={
+                'start_period': (datetime.date.today() \
+                    - datetime.timedelta(days=365)),
+                'end_period': datetime.date.today()
+            })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_customer_payments_pdf(self):
+        kwargs = {
+                'start': (datetime.date.today() \
+                    - datetime.timedelta(days=365)).strftime('%d %B %Y'),
+                'end': datetime.date.today().strftime('%d %B %Y')
+            }
+        req = RequestFactory().get(reverse(
+            'invoicing:customer-payments-pdf', kwargs=kwargs))
+        resp = CustomerPaymentsPDFView.as_view()(req, **kwargs)
+        
         self.assertEqual(resp.status_code, 200)
 
 

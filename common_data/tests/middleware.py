@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from django.test.client import RequestFactory
 from django.http.request import HttpRequest
 from common_data.middleware.license import LicenseMiddleware
 from django.contrib.auth.models import User
@@ -6,12 +7,13 @@ import shutil
 import latrom
 from common_data.models import GlobalConfig
 import os
+import datetime
 from accounting.models import Bookkeeper
 from employees.models import PayrollOfficer
 from inventory.models import InventoryController
 from invoicing.models import SalesRepresentative
 from services.models import ServicePerson
-
+from employees.models import Employee
 
 class LicenseMiddlewareTest(TestCase):
     fixtures = ['common.json']
@@ -30,10 +32,10 @@ class LicenseMiddlewareTest(TestCase):
         self.config = GlobalConfig.objects.first()
 
     def test_license_check_with_no_license(self):
-        shutil.move('license.json', 'assets')
+        shutil.move('../license.json', '.')
         resp = self.client.get('/base/workflow')
         self.assertRedirects(resp, '/base/license-error-page')
-        shutil.move(os.path.join('assets','license.json'), '.')
+        shutil.move('license.json', '..')
 
     def test_no_debug_license_middleware(self):
         latrom.settings.DEBUG=False
@@ -54,7 +56,7 @@ class LicenseMiddlewareTest(TestCase):
         latrom.settings.DEBUG = True
 
 
-class LicenseMiddlewareTest(TestCase):
+class UserMiddlewareTest(TestCase):
     fixtures = ['common.json']
 
     @classmethod
@@ -66,14 +68,24 @@ class LicenseMiddlewareTest(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_superuser('Testuser', 'admin@mail.com', '123')
         
-    
+        cls.employee = Employee.objectst.create(
+            first_name = 'second',
+            last_name = 'Last',
+            address = 'Model test address',
+            email = 'test@mail.com',
+            phone = '1234535234',
+            hire_date=datetime.date.today(),
+            title='test role',
+            user=cls.user
+        )
 
     def setUp(self):
         self.client.login(username='Testuser', password='123')
         self.config = GlobalConfig.objects.first()
 
     def test_exempted_urls(self):
-        pass
+        resp = self.client.get('/invoicing/')
+        
 
     def test_calendar_urls(self):
         pass

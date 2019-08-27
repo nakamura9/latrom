@@ -12,12 +12,14 @@ logger =logging.getLogger(__name__)
 
 
 @background(schedule=60)
-def remote_license_verification(license):
+def remote_license_verification(license, 
+    url='http://nakamura9.pythonanywhere.com/validate'):
+    # ^ for testing purposes
     print(f'License checked at: {datetime.datetime.now().time().strftime("%H:%M")}')
     config = GlobalConfig.objects.first()
     try:
         #nakamura9.pythonanywhere.com
-        resp = requests.get('http://nakamura9.pythonanywhere.com/validate', 
+        resp = requests.get(url, 
             params={
             'info': urllib.parse.quote(json.dumps({
                 'customer_id': license['license']['customer_id'],

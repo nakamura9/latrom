@@ -75,7 +75,7 @@ def get_month_data(array):
         for i in flat:
             if e['date'] == i:
                 res[count]['events'].append(e)
-                break
+                continue
             else:
                 count += 1 
     data = reshape(res, (shape))

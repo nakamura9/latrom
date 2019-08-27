@@ -253,6 +253,35 @@ class JournalEntryViewTests(TestCase):
             'pk': self.entry.pk
         }))
         self.assertEqual(resp.status_code, 302)
+
+    def test_get_journal_report_form(self):
+        resp = self.client.get(reverse('accounting:journal-form', kwargs={
+            'pk': 1
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_journal_report_view(self):        
+        resp = self.client.get(reverse('accounting:journal-report'), data={
+            'default_periods': 3,
+            'start_period': "",
+            'end_period': "",
+            'journal': 1
+        })
+
+        self.assertEqual(resp.status_code, 200)
+
+    def test_journal_report_pdf(self):
+        kwargs = {
+            'start': (datetime.date.today() - datetime.timedelta(days=365)).strftime("%d %B %Y"),
+            'end': datetime.date.today().strftime("%d %B %Y"),
+            'journal': 1
+        }
+        req = RequestFactory().get(reverse(
+            'accounting:journal-report-pdf', kwargs=kwargs))
+        resp = views.JournalReportPDFView.as_view()(req, **kwargs)
+
+        self.assertEqual(resp.status_code, 200)
+
         
 
 class AccountViewTests(TestCase):
@@ -356,18 +385,19 @@ class AccountViewTests(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-    '''def test_account_pdf_view(self):
+    def test_account_pdf_view(self):
         start = urllib.parse.quote(self.start.strftime("%d %B %Y"))
         end = urllib.parse.quote(self.end.strftime("%d %B %Y"))
-        account = Account.objects.get(pk=1000)
         
-        resp = self.client.get(reverse('accounting:account-report-pdf', kwargs={
+        kwargs={
             'start': start,
             'end': end,
             'account': 1000
-        }))
-
-        self.assertEqual(resp.status_code, 200)'''
+        }
+        req = RequestFactory().get(reverse('accounting:account-report-pdf', 
+            kwargs=kwargs))
+        resp = views.AccountReportPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)
 
 
 class TestReportViews(TestCase):
@@ -453,6 +483,23 @@ class TestReportViews(TestCase):
 
     def test_get_trial_balance_page(self):
         resp = self.client.get(reverse('accounting:trial-balance'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_trial_balance_pdf(self):
+        req = RequestFactory().get(reverse('accounting:trial-balance-pdf'))
+        resp = views.TrialBalancePDFView.as_view()(req)
+        
+        self.assertEqual(resp.status_code, 200)
+
+    def test_profit_and_loss_pdf(self):
+        kwargs = {
+            'start': (datetime.date.today() \
+                - datetime.timedelta(days=365)).strftime('%d %B %Y'),
+            'end': datetime.date.today().strftime('%d %B %Y')
+        }
+        req = RequestFactory().get(reverse('accounting:profit-and-loss-pdf', kwargs=kwargs))
+        resp = views.ProfitAndLossReportPDFView.as_view()(req, **kwargs)
+        
         self.assertEqual(resp.status_code, 200)
 
 

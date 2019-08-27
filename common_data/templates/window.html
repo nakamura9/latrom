@@ -25,13 +25,21 @@ function isScrollable(){
     return pageHeight / windowHeight  > 1.5;
 }
 
+function inIframe () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+
 setInterval(function(){
     if(scrolling){
         scrolling = false;
         if($(document).scrollTop() > 0  && isScrollable()){
 		  $(".jumbotron").addClass("shrink");
 		}
-        if($(document).scrollTop() === 0){
+        if($(document).scrollTop() === 0 && !inIframe()){
 		  $(".jumbotron").removeClass("shrink");
 		}
     }

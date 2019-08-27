@@ -177,3 +177,20 @@ table tr{
     page-break-inside: avoid;
     page-break-after: auto;
 }
+
+.floating-submit {
+    position:fixed;
+    width:100%;
+    padding: 10px 50px;
+    left: 0px;
+    bottom: 0px;
+    background-color: white;
+}
+
+.floating-submit button {
+    float: right;
+}
+
+.floating-submit input {
+    float: right;
+}

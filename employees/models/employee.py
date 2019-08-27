@@ -181,7 +181,7 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
                     date = datetime.date(TODAY.year, TODAY.month, i)
                 except:
                     attendance.append(2)
-                    break
+                    continue
                 else:
                     if AttendanceLine.objects.filter(
                                 date=date, timesheet=sheet).exists():

@@ -4,6 +4,7 @@ import json
 import urllib
 
 from django.test import Client, TestCase
+from django.test.client import RequestFactory
 from django.urls import reverse
 from django.utils import timezone
 
@@ -22,6 +23,13 @@ import copy
 from messaging.models import UserProfile
 
 TODAY = datetime.date.today()
+from inventory.views import (InventoryReportPDFView,
+                             TransactionByVendorPDFView,
+                             OutstandingOrderReportPDFView,
+                             PaymentsDuePDFView,
+                             VendorAverageDaysToDeliverPDFView,
+                             VendorBalancePDFView,
+                             )
         
 
 class CommonViewTests(TestCase):
@@ -930,10 +938,74 @@ class ReportViewTests(TestCase):
         resp = self.client.get(reverse('inventory:inventory-report'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_inventory_report_pdf_view(self):
+        req = RequestFactory().get(reverse('inventory:inventory-report'))
+        resp = InventoryReportPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
     def test_outstanding_orders_report(self):
         resp = self.client.get(reverse('inventory:outstanding-orders-report'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_outstanding_orders_pdf_view(self):
+        req = RequestFactory().get(reverse(
+            'inventory:outstanding-orders-report'))
+        resp = OutstandingOrderReportPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_payments_due_report_page(self):
+        resp = self.client.get(reverse('inventory:payments-due-report'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_payments_due_pdf(self):
+        req = RequestFactory().get(reverse('inventory:payments-due-pdf'))
+        resp = PaymentsDuePDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_vendor_average_days_to_deliver(self):
+        resp = self.client.get(reverse(
+            'inventory:vendor-average-days-to-deliver-report'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_vendor_average_days_to_deliver_pdf(self):
+        req = RequestFactory().get(reverse(
+            'inventory:vendor-average-days-to-deliver-pdf'))
+        resp = VendorAverageDaysToDeliverPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_vendor_balance_report(self):
+        resp =self.client.get(reverse('inventory:vendor-balance-report'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_vendor_balance_report(self):
+        req =RequestFactory().get(reverse('inventory:vendor-balance-report'))
+        resp =VendorBalancePDFView.as_view()(req)
+
+        self.assertEqual(resp.status_code, 200)
+
+    def test_transaction_by_vendor_form(self):
+        resp = self.client.get(reverse('inventory:vendor-transactions-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_vendor_transactions_report(self):
+        resp = self.client.get(reverse('inventory:vendor-transactions-report'), 
+            data={
+                'start_period': datetime.date.today() - datetime.timedelta(days=365),
+                'end_period': datetime.date.today()
+            })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_vendor_transactions_pdf_report(self):
+        kwargs = {
+                'start': (datetime.date.today() \
+                    - datetime.timedelta(days=365)).strftime('%d %B %Y'),
+                'end': datetime.date.today().strftime('%d %B %Y')
+            }
+        req = RequestFactory().get(reverse(
+            'inventory:vendor-transactions-pdf', kwargs=kwargs))
+        resp = TransactionByVendorPDFView.as_view()(req, **kwargs)
+        
+        self.assertEqual(resp.status_code, 200)
 
 class TransferViewTests(TestCase):
     fixtures = ['accounts.json','employees.json','common.json', 

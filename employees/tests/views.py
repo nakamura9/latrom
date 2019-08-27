@@ -6,6 +6,7 @@ import urllib
 
 from django.shortcuts import reverse
 from django.test import Client, TestCase
+from django.test.client import RequestFactory
 from django.contrib.auth.models import User
 
 from employees.models import *
@@ -13,6 +14,11 @@ from accounting.models import Account, JournalEntry
 from .models import create_test_employees_models
 import common_data
 from calendar import monthrange
+from employees.views import (
+    EmployeeAttendanceReportPDFView,
+    PayslipPDFView,
+    PayrollPDFReport,
+    LeaveReportPDFView)
 
 TODAY = datetime.date.today()
 
@@ -177,6 +183,7 @@ class PaySlipPageTests(TestCase):
             'pk': 1
         }))
         self.assertEqual(resp.status_code, 200)
+        
 
     def test_delete_payslip_page_get(self):
         resp = self.client.get('/employees/pay-slip-delete/1')
@@ -1097,12 +1104,56 @@ class EmployeesReportViewTests(TestCase):
     fixtures = ['common.json', 'accounts.json', 'journals.json', 
         'employees.json']
 
-    @property
+    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client()
 
-    @property
+    @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
-        
+        User.objects.create_superuser('Testuser', 'admin@mail.com', '123')
+
+
+    def setUp(self):
+        self.client.login(username='Testuser', password='123')
+
+    def test_employee_attendance_report(self):
+        resp = self.client.get(reverse('employees:employee-attendance'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_employee_attendance_pdf(self):
+        req = RequestFactory().get(reverse('employees:employee-attendance-pdf'))
+        resp = EmployeeAttendanceReportPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_leave_report(self):
+        resp = self.client.get(reverse('employees:leave-report'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_leave_report_pdf(self):
+        req = RequestFactory().get(reverse('employees:leave-report-pdf'))
+        resp = LeaveReportPDFView.as_view()(req)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_payroll_report_form(self):
+        resp = self.client.get(reverse('employees:payroll-report-form'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_payroll_report(self):
+        resp = self.client.get(reverse('employees:payroll-report'), data={
+            'default_periods': 4
+        })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_payroll_report_pdf(self):
+        kwargs = {
+            'start': (datetime.date.today() \
+                - datetime.timedelta(days=365)).strftime("%d %B %Y"),
+            'end': datetime.date.today().strftime('%d %B %Y')
+        }
+        req = RequestFactory().get(reverse('employees:payroll-report-pdf', 
+            kwargs=kwargs))
+
+        resp = PayrollPDFReport.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)

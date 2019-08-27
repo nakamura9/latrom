@@ -9,6 +9,7 @@ class InventoryService(AutomatedServiceMixin):
     service_name = 'inventory'
     
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.today = datetime.date.today(*args, **kwargs)
         self.settings = inventory.models.InventorySettings.objects.first()
     
@@ -18,7 +19,7 @@ class InventoryService(AutomatedServiceMixin):
         # iterate over warehouses
         for warehouse in inventory.models.WareHouse.objects.all():
             if not warehouse.inventory_controller:
-                break
+                continue
             next_check_date = None
             if not warehouse.last_inventory_check_date:
                 check_month = self.today.month \

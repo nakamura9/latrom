@@ -20,6 +20,10 @@ from employees.models import Employee
 from django.contrib.auth.models import User
 from inventory.tests.model_util import InventoryModelCreator
 TODAY = datetime.date.today()
+from planner.models import Event
+from inventory.util import InventoryService
+
+
 
 
 def create_test_inventory_models(cls):
@@ -179,7 +183,6 @@ def create_test_inventory_models(cls):
             order=cls.order,
             comments= "comment"
         )
-
 
 class CommonModelTests(TestCase):
     fixtures = ['common.json', 'employees.json','inventory.json','accounts.json', 'journals.json']
@@ -755,3 +758,27 @@ class WarehouseModelTests(TestCase):
 
     def test_storage_media_children(self):
         self.assertEqual(self.medium.children.count(), 0)
+
+
+class InventoryServiceTests(TestCase):
+    fixtures = ['inventory.json', 'common.json']
+    
+    @classmethod
+    def setUpTestData(cls):
+        InventoryModelCreator(cls).create_all()
+        cls.usr = User.objects.create_user(username ='Testuser', password='123')
+        cls.employee = Employee.objects.create(
+            hire_date=datetime.date.today(),
+            title='employee',
+            first_name='name',
+            last_name='name',
+            user=cls.usr
+        )
+        cls.controller = models.InventoryController.objects.create(
+            employee=cls.employee
+        )
+    def test_inventory_service(self):
+        self.warehouse.inventory_controller = self.controller
+        self.warehouse.save()
+        InventoryService().run()
+        self.assertEqual(Event.objects.all().count(), 1)

@@ -1,1 +1,1 @@
-{"inventory": false, "employees": true, "accounting": false, "common": false, "messaging": false}
+{"inventory": true, "employees": false, "accounting": false, "common": false, "messaging": false}

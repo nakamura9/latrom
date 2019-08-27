@@ -112,6 +112,7 @@ class ProductCreateView( ContextMixin,
 
     def get_initial(self):
         return {
+            'tax': 1,
             'type': 0 #for product
         }
 

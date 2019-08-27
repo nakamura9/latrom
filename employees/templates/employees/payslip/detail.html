@@ -3,11 +3,19 @@
 {% block pre_page %}
 
 <div class="jumbotron">
-<p>Actions:</p>
 {% if pdf_link %}
-        <a class="btn btn-danger" href="{% url 'employees:pay-slip-pdf' pk=object.pk %}">
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'employees:pay-slip-pdf' pk=object.pk %}">
             <i class="fas fa-file-pdf"></i> Generate PDF
         </a>
+            </div>
+        </div>
+        
     {% endif %}
 </div>
 
