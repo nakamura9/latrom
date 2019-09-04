@@ -6,6 +6,7 @@ from crispy_forms.layout import (HTML,
                                 Layout,
                                 Row,
                                 Column, 
+                                Div,
                                 Submit)
 
 from django import forms
@@ -105,9 +106,9 @@ class CustomerForm(BootstrapMixin, forms.Form):
                     'other_details',
                     'organization'
                 ),
-            )
+            ),
+            Div(Submit('submit', 'Submit'), css_class="floating-submit")
         )
-        self.helper.add_input(Submit('submit', 'Submit'))
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)

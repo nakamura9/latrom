@@ -249,6 +249,7 @@ def verify_payslip(request, pk=None):
     slip = get_object_or_404(models.Payslip, pk=pk)
     slip.status = 'verified'
     slip.save()
+    slip.create_entry()
 
     return HttpResponseRedirect('/employees/list-pay-slips')
 

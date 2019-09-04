@@ -15,7 +15,9 @@ from services.models import Service, ServiceCategory
 from .model_util import InvoicingModelCreator
 from inventory.tests.model_util import InventoryModelCreator
 import accounting
+from services.models import WorkOrderRequest, ServiceWorkOrder, WorkOrderExpense
 TODAY = datetime.date.today()
+
 
 
 class CommonModelTests(TestCase):
@@ -272,12 +274,30 @@ class ProductInvoiceTests(TestCase):
 
 
     def test_invoice_verify_inventory(self):
-        # TODO expand test
         shortages = self.invoice.verify_inventory()
         self.assertEqual(len(shortages), 0)
 
+    def test_verify_inventory_with_shortages(self):
+        component = ProductLineComponent.objects.create(
+            quantity=1000,
+            product=self.product
+        )
+        line = InvoiceLine.objects.create(
+            invoice=self.invoice,
+            product=component,
+            line_type=1   
+        )
+        shortages = self.invoice.verify_inventory()
+        self.assertEqual(len(shortages), 1)
+
+        #teardown
+        line.delete()
+        component.delete()
+
+
     def test_quotation_is_valid(self):
         self.assertTrue(self.quotation.quotation_is_valid)
+
 
 
 class InvoiceModelTests(TestCase):
@@ -287,6 +307,25 @@ class InvoiceModelTests(TestCase):
     def setUpTestData(cls):
         cls.imc = InvoicingModelCreator(cls)
         cls.imc.create_all()
+        #create request
+        request = WorkOrderRequest.objects.create(
+            status="request",
+            service=cls.service,
+            invoice=cls.invoice
+        )
+        #create order
+        order = ServiceWorkOrder.objects.create(
+            date = datetime.date.today(),
+            time=datetime.datetime.now().time(),
+            status='progress',
+            works_request=request
+        )
+
+        #create expense
+        WorkOrderExpense.objects.create(
+            work_order=order,
+            expense=cls.expense
+        )
 
     def test_add_product_line(self):
         pre_total = self.invoice.subtotal
@@ -330,3 +369,29 @@ class InvoiceModelTests(TestCase):
         self.assertEqual(self.product_line.subtotal, 10)
         self.assertEqual(self.service_line.subtotal, 100)
         self.assertEqual(self.expense_line.subtotal, 100)
+
+
+    def test_invoice_str(self):
+        self.assertIsInstance(str(self.product_line), str)
+        self.assertIsInstance(str(self.service_line), str)
+        self.assertIsInstance(str(self.expense_line), str)
+
+    def test_service_line_line_property(self):
+        self.assertIsInstance(self.service_line.line, InvoiceLine)
+
+    def test_expense_line_line_property(self):
+        self.assertIsInstance(self.expense_line.line, InvoiceLine)
+        
+
+    def test_service_cost_of_sale(self):
+        print("#errorlist")
+        c = InvoiceLine.objects.create(
+            service=self.service_line_component,
+            invoice=self.invoice,
+            line_type=2)
+        self.assertEqual(self.service_line_component.cost_of_sale, 
+            self.expense.amount)
+        c.delete()
+
+    def test_service_gross_income(self):
+        pass

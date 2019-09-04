@@ -1,4 +1,5 @@
 {% extends 'window.html' %} {% block content %}
+{% load accounting %}
 <div class="jumbotron">
     <h1 class="display-3">Product Detail</h1>
     <p class="lead">Information concerning stock items. </p>
@@ -65,12 +66,12 @@
                                     <h4 class="card-title">Pricing Information</h4>
                                 </div>
                                 <div class="card-body">
-                                    <p class="card-text">Purchase Price: {{object.unit_purchase_price}}</p>
-                                    <p class="card-text">Unit Value: {{object.unit_value | floatformat:2 }}</p>
-                                    <p class="card-text">Sale Price: {{object.unit_sales_price}}</p>
-                                    <p class="card-text">Stock Value: {{object.stock_value}}</p>
+                                    <p class="card-text">Purchase Price: {{object.unit_purchase_price | active_currency}}</p>
+                                    <p class="card-text">Unit Value: {{object.unit_value | active_currency}}</p>
+                                    <p class="card-text">Sale Price: {{object.unit_sales_price | active_currency}}</p>
+                                    <p class="card-text">Stock Value: {{object.stock_value | active_currency}}</p>
                                     <p class="card-text">Tax: {{object.tax}}</p>
-                                    <p class="card-text">Total Sales to date: {{object.sales_to_date}}</p>
+                                    <p class="card-text">Total Sales to date: {{object.sales_to_date | active_currency}}</p>
                                 </div>
                             </div>
 

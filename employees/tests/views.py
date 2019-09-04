@@ -208,6 +208,13 @@ class PaySlipPageTests(TestCase):
         resp = self.client.get('/employees/pay-slip-verify/1')
         self.assertEqual(resp.status_code, 200)
 
+    def test_payslip_pdf_view(self):
+        kwargs = {'pk': 1}
+        req = RequestFactory().get(reverse('employees:pay-slip-pdf', 
+            kwargs=kwargs))
+        resp = PayslipPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)
+
     def test_payslip_verify_status(self):
         resp = self.client.get('/employees/pay-slip-verify-status/1')
         self.assertEqual(resp.status_code, 302)
@@ -224,6 +231,8 @@ class PaySlipPageTests(TestCase):
         resp = self.client.get('/employees/execute-payroll')
         self.assertEqual(resp.status_code, 302)
         self.assertTrue(prev_entry_count != JournalEntry.objects.all().count())
+
+    
 
 
 class EmployeePageTests(TestCase):

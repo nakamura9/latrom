@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from messaging.models import *
 from common_data.tests import create_test_common_entities
 from django_webtest import WebTest
+from smtpd import SMTPServer
+import threading
+import asyncore
 
 class ChatViewTests(TestCase):
     fixtures = ['common.json']
@@ -85,6 +88,13 @@ class ChatViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     
+class TestEmailServer(SMTPServer):
+    def process_message(self, peer, mailfrom, rcpttos, data):
+        filename = 'mail.eml'
+        f = open(filename, 'w')
+        f.write(data)
+        print('emailsent')
+        f.close()
 class EmailViewTests(TestCase):
     fixtures = ['common.json']
 
@@ -92,12 +102,21 @@ class EmailViewTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = Client()
+        server = TestEmailServer(('localhost', 25), None)
+        cls.server = threading.Thread(target=asyncore.loop)
+        cls.server.daemon = True
+        cls.server.start()
 
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(username='test', password='123')
         cls.person = User.objects.create_user(username='person', password='456')
-        cls.profile = UserProfile.objects.create(user=cls.user, email_address='test@gmail.com', email_password='123')
+        cls.profile = UserProfile.objects.create(
+            user=cls.user, 
+            email_address='test@gmail.com', 
+            email_password='123',
+            smtp_server='localhost',
+            smtp_port=25)
         cls.email_address = EmailAddress.objects.create(address='test@gmail.com')
         cls.email = Email.objects.create(
                 created_timestamp=datetime.datetime.now(),
@@ -116,6 +135,17 @@ class EmailViewTests(TestCase):
 
     def test_post_create_message(self):
         self.assertTrue(True)
+        # resp = self.client.post('/messaging/create-message', data={
+        #     'body': 'things',
+        #     'folder': 'sent',
+        #     'owner': self.user.pk,
+        #     'subject': 'fw',
+        # })
+
+        # self.assertEqual(resp.status_code, 302)
+        # self.assertTrue(os.path.exists('email.eml'))
+        #os.remove('email.eml')
+        
 
     def test_inbox(self):
         resp = self.client.get('/messaging/inbox/')
@@ -159,28 +189,3 @@ class EmailViewTests(TestCase):
         #TODO copy entity map into body
         # resp = self.client.get('/messaging/api/reply-email/1/')
         # self.assertEqual(resp.status_code, 200)
-
-    
-    
-
-# class MyTestCase(WebTest):
-
-#    fixtures = ['common.json']
-
-#    @classmethod
-#     def setUpClass(cls):
-#        super().setUpClass()
-#         cls.client = Client()
-
-#     @classmethod
-#     def setUpTestData(cls):
-#        cls.user = User.objects.create_user(username='test', password='123')
-#        cls.person = User.objects.create_user(username='person', password='456')
-#        cls.chat = Chat.objects.create(sender=cls.user, receiver=cls.person)
-
-#     def setUp(self):
-#        self.client.login(username='test', password='123')
-
-#     def test_test(self):
-#        resp = self.app.get('/messaging/chat-list')
-#        self.assertIsNotNone(resp.select('#inbox'))

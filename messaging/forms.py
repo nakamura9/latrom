@@ -48,8 +48,10 @@ class PrePopulatedEmailForm(EmailForm):
     attachment_path = forms.CharField(widget=forms.HiddenInput)
     attachment = forms.FileField(widget=forms.HiddenInput, required=False)
     class Meta:
-        fields = ['copy', 'to', 'folder', 'attachment_path',
-                  'subject', 'body', 'owner', 'attachment']
+        fields = ['attachment_path',
+                    'save_as_draft', 
+                'folder', 'subject', 'body', 'owner', 'attachment'
+                  ]
         model = Email
 class GroupForm(forms.ModelForm):
     admin = forms.ModelChoiceField(

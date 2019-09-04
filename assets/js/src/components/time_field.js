@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import styles from './time.css'
 
 /**
  * props
@@ -114,14 +115,22 @@ class Picker extends Component {
         
         
         return(
-            <div style={{color: 'black', backgroundColor: 'white', zIndex: 1000, position: 'absolute', 'left': '0px', 'top': '40px', padding: '25px 10px'}}>
+            <div style={{color: 'black', 
+                        backgroundColor: 'white', 
+                        zIndex: 1000, 
+                        position: 'absolute', 
+                        'left': '0px', 
+                        'top': '40px', 
+                        padding: '15px 7px',
+                        width: 'fit-content'
+                    }}>
                 <div>
                     <h5 style={{textAlign:'center'}}>{this.state.hour}:{this.state.minute}</h5>
                 </div>
                 <div>
                     <div style={dataLists}>
                         <h6>Hour</h6>
-                        <ul className="list-group">
+                        <ul className={styles.time_list}>
                             {this.hours.map((i) =>(
                                 <li style={{
                                     color: this.state.hour === i ? 
@@ -129,14 +138,14 @@ class Picker extends Component {
                                     backgroundColor: this.state.hour === i ? 
                                     '#007bff' : 'white'
                                 }}
-                                    className="list-group-item"
+                                    className={styles.time_list_item}
                                     onClick={() => this.selectHour(i)}>{i}</li>
                             ))}
                         </ul>
                     </div>
                     <div style={dataLists}>
-                        <h6>Minute</h6>
-                        <ul className="list-group">
+                        <h6>Min</h6>
+                        <ul className={styles.time_list}>
                         {this.minutes.map((i) =>(
                             <li style={{
                                 color: this.state.minute === i ? 
@@ -144,7 +153,7 @@ class Picker extends Component {
                                 backgroundColor: this.state.minute === i ? 
                                 '#007bff' : 'white'
                             }}
-                                className="list-group-item"
+                                className={styles.time_list_item}
                                 onClick={() => this.selectMinute(i)}>{i}</li>
                         ))}
                         </ul>
@@ -152,8 +161,8 @@ class Picker extends Component {
                     </div>
                 </div>
                 <div className="btn-group">
-                <button type='button' onClick={this.setTime} className="btn btn-primary"> <i className="fas fa-clock"></i> Set</button>
-                <button type='button' onClick={this.clearTime} className="btn btn-secondary"> <i className="fas fa-times"></i> Clear</button>
+                <button type='button' onClick={this.setTime} className="btn btn-primary btn-sm"> <i className="fas fa-clock"></i> Set</button>
+                <button type='button' onClick={this.clearTime} className="btn btn-secondary btn-sm"> <i className="fas fa-times"></i> Clear</button>
                 </div>
             </div>
         )

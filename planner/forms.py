@@ -5,7 +5,7 @@ from common_data.forms import BootstrapMixin
 
 from . import models
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, HTML
+from crispy_forms.layout import Layout, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import TabHolder, Tab
 
 class ConfigForm(forms.ModelForm, BootstrapMixin):
@@ -34,18 +34,22 @@ class EventForm(forms.ModelForm, BootstrapMixin):
         self.helper.layout = Layout(
                     Row(
                         Column('date', css_class='form-group col-6'),
-                        Column('reminder', css_class='form-group col-6'),
-                    ),
-                    Row(
+                        Column(
+                            Row(
                         Column('start_time', css_class='form-group col-6'),
                         Column('end_time', css_class='form-group col-6'),
+                    ), css_class='form-group col-6'),
                     ),
                     Row(
-                        Column('label', css_class='form-group col-6'),
-                        Column('icon', css_class='form-group col-6'),
+                        Column(
+                            Row(
+                        Column('label', 'reminder', css_class='form-group col-6'),
+                        Column('icon', 'priority', css_class='form-group col-6'),
+                    ),css_class='col-6'),
+                    Column('description' ,css_class='col-6')
                     ),
                     Row(
-                        Column('description', 'priority', 'repeat',
+                        Column( 'repeat','repeat_active',
                             css_class='form-group col-6'),
                         Column(
                             HTML(
@@ -56,8 +60,9 @@ class EventForm(forms.ModelForm, BootstrapMixin):
                                 """
                             ), css_class="form-group col-6")
                     ),
-                    'repeat_active',
+                    
+                    
                     'owner',
                     'json_participants',
+                    Div(Submit('submit', 'Submit'), css_class='floating-submit')
                 )
-        self.helper.add_input(Submit('submit', 'Submit'))

@@ -179,35 +179,6 @@ class InventoryItem(SoftDeletionModel):
     def total_inventory_value():
         return sum([p.product_component.stock_value for p in InventoryItem.objects.filter(product_component__isnull=False)])
 
-    @staticmethod
-    def total_inventory_quantity_on_date(date):
-        # TODO test
-        '''Takes a date and returns the inventory quantity on that date
-        takes todays inventory 
-        starting = todays + sold - ordered'''
-        current_total_product_quantity = sum([i.quantity \
-                for i in InventoryItem.objects.filter(type=0)])
-
-        total_product_orders = inventory.models.order.OrderItem.objects.filter(
-            Q(order__date__gte=date) &
-            Q(order__date__lte=datetime.date.today()) &
-            Q(item__type=0)
-        )
-
-        ordered_quantity = sum([i.received for i in total_product_orders])
-
-        total_product_sales = invoicing.models.InvoiceLine.objects.filter(
-            Q(product__isnull=False) &
-            Q(invoice__date__gte=date) &
-            Q(invoice__date__lte=datetime.date.today())
-        )
-
-        sold_quantity = sum(
-            [(i.product.quantity - D(i.product.returned_quantity)) \
-                for i in total_product_sales])
-
-        return current_total_product_quantity + float(sold_quantity) - ordered_quantity
-
 
 class ProductComponent(models.Model):
     PRICING_CHOICES = [
@@ -276,9 +247,9 @@ class ProductComponent(models.Model):
         if self.pricing_method == 0:
             return self.direct_price
         elif self.pricing_method == 1:
-            return D(self.parent.unit_purchase_price / (1 - self.margin))
+            return D(self.parent.unit_purchase_price / D(1 - self.margin))
         else:
-            return D(self.parent.unit_purchase_price * (1 + self.markup))
+            return D(self.parent.unit_purchase_price * D(1 + self.markup))
 
 
     @property 

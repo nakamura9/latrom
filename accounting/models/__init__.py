@@ -30,6 +30,8 @@ class AccountingSettings(SingletonModel):
         null=True)
     default_bookkeeper = models.ForeignKey('accounting.Bookkeeper', null=True,  
         blank=True, on_delete=models.SET_NULL)
+    equipment_capitalization_limit = models.DecimalField(max_digits=12, 
+        decimal_places=2,default=0.0)
     is_configured = models.BooleanField(default=False)
     service_hash = models.CharField(max_length=255, default="", blank=True)
     active_currency = models.ForeignKey('accounting.currency', 

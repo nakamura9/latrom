@@ -24,7 +24,7 @@ from common_data.views import PaginationMixin
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
 from services.models import EquipmentRequisition, ConsumablesRequisition
-from inventory.views.dash_plotters import stock_movement_plot, composition_plot
+from inventory.views.dash_plotters import composition_plot
 from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage

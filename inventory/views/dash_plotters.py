@@ -2,19 +2,6 @@ from inventory.models import InventoryItem, WareHouseItem
 import datetime
 import pygal
 
-def stock_movement_plot():
-    today = datetime.date.today()
-    dates = [today- datetime.timedelta(i) for i in range(7)]
-    
-    dates.reverse()
-    
-    stock = [InventoryItem.total_inventory_quantity_on_date(i) for i in dates]
-    chart = pygal.Line(fill=True)
-    chart.add('Product quantity', stock)
-    chart.x_labels = [i.strftime('%d/%m/%Y') for i in dates]
-
-    return chart
-
 def composition_plot():
     
     stock =  InventoryItem.objects.filter(type=0)

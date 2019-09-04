@@ -425,6 +425,10 @@ class RequisitionViewTests(TestCase):
         self.assertEqual(ConsumablesRequisition.objects.first().released_by, 
             self.employee)
 
+    def test_get_consumable_requisition_get_auth(self):
+        resp = self.client.get('/services/consumable-requisition-auth-view/1')
+        self.assertEqual(resp.status_code, 200)
+
     def test_consumable_requisition_authorize(self):
         resp = self.client.post('/services/consumable-requisition-authorize/1',
             data={

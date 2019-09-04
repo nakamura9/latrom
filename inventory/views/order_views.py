@@ -82,7 +82,6 @@ class OrderPOSTMixin(object):
         #create transaction after loading all the items
         #vary based on order status
         
-        #order.create_entry()
         if not update_flag:
             if self.request.POST.get('make_payment', None):
                 pmt = models.OrderPayment.objects.create(

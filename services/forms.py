@@ -8,6 +8,7 @@ from crispy_forms.layout import (Row,
                                 Column, 
                                 Fieldset,
                                 Submit, 
+                                Div,
                                 Layout,
                                 HTML)
 from . import models
@@ -42,8 +43,8 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
                         Column('frequency', css_class='form-group col-4'),
                     ),
                     'is_listed',
+                    Div(Submit('submit', 'Submit'), css_class="floating-submit")
     )
-        self.helper.add_input(Submit('submit', 'Submit'))
 class ServiceCategoryForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"

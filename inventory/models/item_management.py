@@ -58,8 +58,7 @@ class StockReceipt(models.Model):
 
     methods
     ---------
-    create_entry - method only called for instances where inventory 
-    is paid for on receipt as per order terms.
+    
     '''
     order = models.ForeignKey('inventory.Order', on_delete=models.SET_NULL, 
         null=True)

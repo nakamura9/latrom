@@ -1,0 +1,15 @@
+.time_list {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.time_list_item {
+    position: relative;
+    display: block;
+    padding: 3px 5px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+}

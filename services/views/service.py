@@ -58,6 +58,12 @@ class ServiceCreateView( ContextMixin, CreateView):
             ]))
     }
 
+    def get_initial(self):
+        return {
+            'frequency': 'once',
+            'hourly_rate': 0.0,
+            'flat_fee': 0.0
+        }
 
 class ServiceUpdateView( ContextMixin, UpdateView):
     form_class = forms.ServiceForm

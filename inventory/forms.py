@@ -109,9 +109,9 @@ class SupplierForm(BootstrapMixin, forms.Form):
                     'organization',
                     'other_details',
                 ),
-            )
+            ),
+            Div(Submit('submit', 'Submit'), css_class="floating-submit")
         )
-        self.helper.add_input(Submit('submit', 'Submit'))
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
@@ -332,9 +332,10 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                         Column('depreciation_period', css_class="col-6"),
                     ),
                 )
-            )
+            ),
+            Div(Submit('submit', 'Submit'), css_class="floating-submit")
+
         )
-        self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
         exclude = "maximum_stock_level", "minimum_order_level", "product_component", "equipment_component", 
@@ -440,7 +441,9 @@ class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
                     ),
                     'type', 
                 )
-            )
+            ),
+            Div(Submit('submit', 'Submit'), css_class="floating-submit")
+            
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 

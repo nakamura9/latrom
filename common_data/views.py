@@ -335,7 +335,7 @@ class EmailPlusPDFView(UserEmailConfiguredMixin,
             raise PDFException()
         
         return {
-            'sender': self.request.user.pk,
+            'owner': self.request.user.pk,
             'folder': 'sent',
             'attachment_path': out_file
         }
@@ -355,7 +355,7 @@ class EmailPlusPDFView(UserEmailConfiguredMixin,
         self.object.attachment.name = form.cleaned_data['attachment_path']
         self.object.save()
 
-        g.send_email_with_attachment(
+        e.send_email_with_attachment(
             form.cleaned_data['subject'],
             form.cleaned_data['to'].address,
             form.cleaned_data['body'],
@@ -366,7 +366,6 @@ class EmailPlusPDFView(UserEmailConfiguredMixin,
         if not self.pdf_template_name:
             raise ValueError('Improperly configured. Needs pdf_template_name attribute.')
 
-        out_file = os.path.join(os.getcwd(), 'media', 'temp','out.pdf')
         if os.path.exists(form.cleaned_data['attachment_path']):
             os.remove(form.cleaned_data['attachment_path'])
 

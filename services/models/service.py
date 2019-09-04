@@ -16,7 +16,7 @@ class ServicesSettings(SingletonModel):
 class Service(models.Model):
     # client and sales facing model
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
     hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
     category = models.ForeignKey('services.ServiceCategory', 

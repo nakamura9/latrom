@@ -608,7 +608,7 @@ class ProductLineComponent(models.Model):
             else:
                 return {
                     'product': self.product,
-                    'quantity': self.quantity - wh_item.quantity
+                    'quantity': self.quantity - D(wh_item.quantity)
                 }
         else:
             return {
@@ -665,13 +665,14 @@ class ServiceLineComponent(models.Model):
         based on expenses recorded and wages earned
         returns total of wages and expenses
         '''
+        print('invoicelin #error ',self.line )
         if not WorkOrderRequest.objects.filter(
-                invoice=self.invoiceline.invoice,
+                invoice=self.line.invoice,
                 service=self.service).exists():
             return 0
 
         orders = WorkOrderRequest.objects.filter(
-                    invoice=self.invoiceline.invoice,
+                    invoice=self.line.invoice,
                     service=self.service).first().work_orders
 
         total_expenses = 0

@@ -11,8 +11,10 @@ from common_data.utilities import (
     ContextMixin, 
     extract_period, 
     time_choices)
-
+import responses
+import requests
 import services
+from common_data.tasks import license_verification_func
 from services.tests.model_util import ServiceModelCreator
 
 class ModelTests(TestCase):
@@ -287,6 +289,9 @@ class ViewTests(TestCase):
         data = json.loads(resp.content)
         self.assertEqual(data['status'], 'ok')
 
+    def test_current_db(self):
+        resp = self.client.get('/base/api/current-db/')
+        self.assertEqual(resp.status_code, 200)
 
 class UtilityTests(TestCase):
     fixtures = ['common.json','accounts.json', 'employees.json', 'invoicing.json']
@@ -360,3 +365,26 @@ class CommonDataWizardTests(TestCase):
 
         resp = self.client.post(reverse('base:config-wizard'), data=config_data)
         self.assertEqual(resp.status_code, 302)
+
+class LicenseTaskTests(TestCase):
+    fixtures = ['common.json']
+    
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+
+    def test_verification(self):
+        @responses.activate
+        def responses_action():
+            responses.add(responses.GET, 
+                'http://nakamura9.pythonanywhere.com/validate',
+                body=json.dumps({'status': 'valid'}))
+            
+            license = json.load(open('../license.json', 'r'))
+            license_verification_func(license, 
+                'http://nakamura9.pythonanywhere.com/validate')
+
+        responses_action()
+        settings = GlobalConfig.objects.first()
+        self.assertEqual(settings.last_license_check, datetime.date.today())

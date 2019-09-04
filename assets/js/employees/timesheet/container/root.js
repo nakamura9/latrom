@@ -133,7 +133,7 @@ export default class TimeSheet extends Component{
                     <DataEntryLine
                         insertLine={this.lineHandler}/>
             </tbody>
-        }
+        
             </table>
         );
     }

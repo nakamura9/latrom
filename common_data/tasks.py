@@ -11,10 +11,7 @@ from tkinter import filedialog
 logger =logging.getLogger(__name__)
 
 
-@background(schedule=60)
-def remote_license_verification(license, 
-    url='http://nakamura9.pythonanywhere.com/validate'):
-    # ^ for testing purposes
+def license_verification_func(license, url):
     print(f'License checked at: {datetime.datetime.now().time().strftime("%H:%M")}')
     config = GlobalConfig.objects.first()
     try:
@@ -44,4 +41,13 @@ def remote_license_verification(license,
         
     else:
         logger.critical(f'license check failed from licensing server. status code:{resp.status_code}.')
-        
+
+
+@background(schedule=60)
+def remote_license_verification(license, 
+        url='http://nakamura9.pythonanywhere.com/validate'):
+    # ^ for testing purposes
+    
+    license_verification_func(license, url)
+
+
