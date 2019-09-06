@@ -561,6 +561,10 @@ class CurrencyAPIView(viewsets.ModelViewSet):
     queryset = models.Currency.objects.all()
     serializer_class = serializers.CurrencySerializer
 
+class AccountingSettingsAPIView(viewsets.ModelViewSet):
+    queryset = models.AccountingSettings.objects.all()
+    serializer_class = serializers.AccountingSettingsSerializer
+
 class CurrencyConversionLineAPIView(viewsets.ModelViewSet):
     queryset = models.CurrencyConversionLine.objects.all()
     serializer_class = serializers.CurrencyConversionLineSerializer

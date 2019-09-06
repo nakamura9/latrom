@@ -73,27 +73,30 @@ export default class CurrencyList extends Component{
                     </tbody>
                 </table>
             </div>
-            <div style={{
+            <div className='form-group form-row' style={{
                 display: this.state.currencyCreateMode ? "block" : "none"
             }}>
-               <input
+               <div className="col-6">
+                <input
                     type="text"
                     className="form-control"
                     value={this.state.newCurrencyName}
                     name="name"
                     onChange={this.inputHandler}
                     placeholder="Enter Currency Name" />
-                <input
-                    type="text"
-                    className="form-control"
-                    value={this.state.newCurrencySymbol}
-                    name="symbol"
-                    onChange={this.inputHandler}
-                    placeholder="Enter Currency Symbol" />
-                    
+               </div>
+               <div className="col-6">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={this.state.newCurrencySymbol}
+                        name="symbol"
+                        onChange={this.inputHandler}
+                        placeholder="Enter Currency Symbol" />
+               </div>
             </div>
             <button 
-                className="btn btn-info"
+                className="btn btn-secondary btn-sm"
 
                 onClick={this.toggleCurrencyCreateMode}>
                 {this.state.currencyCreateMode 

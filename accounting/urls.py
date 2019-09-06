@@ -6,6 +6,9 @@ from accounting import views
 tax_router = routers.DefaultRouter()
 tax_router.register(r'^api/tax', views.TaxViewset)
 
+settings_router = routers.DefaultRouter()
+settings_router.register(r'^api/settings', views.AccountingSettingsAPIView)
+
 account_router = routers.DefaultRouter()
 account_router.register(r'^api/account', views.AccountViewSet)
 
@@ -215,4 +218,4 @@ urlpatterns =[
     entry_urls  + account_router.urls  + expense_urls + report_urls + \
     expense_router.urls + recurring_expense_urls + asset_urls + \
     bookkeeper_urls + currency_urls + currency_router.urls + \
-    currency_conversion_line_router.urls + currency_conversion_table_router.urls 
+    currency_conversion_line_router.urls + currency_conversion_table_router.urls + settings_router.urls

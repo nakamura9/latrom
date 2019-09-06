@@ -11,7 +11,6 @@ from crispy_forms.layout import (HTML,
                                 Layout, 
                                 Submit)
 
-
 from . import models
 
 
@@ -24,7 +23,7 @@ class BootstrapMixin(forms.Form):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             field = self.fields.get(field)
-            field.widget.attrs['class'] ="form-control input-sm"
+            field.widget.attrs['class'] ="form-control form-control-sm"
 
             if isinstance(field.widget, forms.widgets.DateInput):
                 field.widget.attrs['class'] += " ui-date-picker"

@@ -141,9 +141,6 @@ export default class ExchangeTable extends Component{
         const invalidID = <h3>Select a valid currency table</h3>;
         const validID = (
             <div >
-                <h3>Exchange Table </h3>
-                <h6>{this.state.name}</h6>
-                <hr />
                 <p><b>Reference Currency: </b> {
                     this.state.editing
                     ? <select 
@@ -163,7 +160,7 @@ export default class ExchangeTable extends Component{
                     : this.state.reference_currency.name
                 }
                     <button
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-sm"
                         onClick={() =>this.toggleReferenceEditing()}>
                         <i 
                             className={`fas fa-${this.state.editing ? 'check' : 'edit'}`}></i>
@@ -172,8 +169,9 @@ export default class ExchangeTable extends Component{
                 <table className="table table-striped">
                     <thead>
                         <tr>
-                            <th>Currency</th>
-                            <th width={80}>Rate</th>
+                            <th style={{width:"60%"}}>Currency</th>
+                            <th>Rate</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -195,9 +193,11 @@ export default class ExchangeTable extends Component{
                                             (evt) => this.updateRate(evt, i)}/>
                                         : rate.exchange_rate
                                     }
+                                </td>
+                                <td>
                                     <button 
                                         onClick={() => this.toggleRateEditing(i)}
-                                        className="btn btn-success">
+                                        className="btn btn-success btn-sm">
                                         <i className={`fas fa-${rate.editing ? 'check' : 'edit' }`}></i>    
                                     </button>
                                 </td>
@@ -224,7 +224,7 @@ export default class ExchangeTable extends Component{
                                         ))}
                                     </select>
                                 </td>
-                                <td>
+                                <td colSpan={2}>
                                     <input 
                                         name="rate"
                                         type="number"
@@ -237,7 +237,7 @@ export default class ExchangeTable extends Component{
                 </table>
 
                 <button 
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-sm"
                     onClick={this.toggleCreateRateMode}
                     >
                     {this.state.createRateMode

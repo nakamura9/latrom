@@ -1,0 +1,82 @@
+<style>
+    
+
+    
+    .notification-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(220,220,220,0.3);
+    }
+
+
+    .notification {
+        border: 3px solid #007bff;
+        border-radius: 20px;
+        background-color: #ccc;
+        margin: 100px auto;
+        padding: 20px;
+        width: 40%;
+        height: 50%;
+    }
+
+    .notification h4 {
+        font-weight: 250;
+    }
+
+</style>
+
+
+
+<div>
+<!-- The notification overlay -->
+    <div class="notification-overlay">
+        <div class="notification">
+            <h4 id="notification-title">Notification Message</h4>
+            <p  id="notification-timestamp">00:00</p>
+            <hr class="my2">
+            <p id="notification-message">Message</p>
+            <div class="btn-group" role="group" style="float:right;">
+                <button type="button" id="notification-dismiss" class="btn btn-primary">Dismiss</button>
+            </div>
+        </div>    
+    </div>
+</div>
+
+
+<script>
+
+function updateNotifications(){
+        $.ajax({
+            'method': 'GET',
+            'url': '/messaging/api/notifications'
+        }).then(function (data){
+            if(data.unread > 0){
+                $('#notification-title').text(data.latest.title);
+                $('#notification-timestamp').text(data.latest.stamp);
+                $('#notification-message').text(data.latest.message);
+                $('#notification-dismiss').attr({
+                    'onclick': "$.get('/messaging/api/notifications/mark-read/" + data.latest.id + "')"
+                });
+
+                 $('.notification-overlay').show(500);
+
+            }
+        })
+    }
+
+$(document).ready(function(){
+    updateNotifications();
+    setInterval(updateNotifications, 60000)
+     
+     
+     $('.notification-overlay').click(function(){
+         $('.notification-overlay').hide()
+     })
+})
+
+</script>

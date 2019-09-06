@@ -19,7 +19,7 @@ from accounting.models import Account
 from django.db.models import Q
 from django.forms import ValidationError
 from . import models
-
+from django_select2.forms import Select2MultipleWidget
 
 
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
@@ -441,7 +441,7 @@ class PayrollForm(BootstrapMixin, forms.Form):
         models.Employee.objects.filter(payrollofficer__isnull=False))
     employees = forms.ModelMultipleChoiceField(
         models.Employee.objects.all(),
-        widget= forms.CheckboxSelectMultiple)
+        widget= Select2MultipleWidget)
 
 
 class LeaveRequestForm(forms.ModelForm, BootstrapMixin):

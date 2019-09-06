@@ -8,6 +8,11 @@ class TaxSerializer(serializers.ModelSerializer):
         model = models.Tax
         fields = '__all__'
 
+class AccountingSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AccountingSettings
+        fields = '__all__'
+
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:

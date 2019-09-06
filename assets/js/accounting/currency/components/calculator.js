@@ -17,13 +17,16 @@ class Calculator extends Component{
         }));
     }
 
-    tableHandler = (val) =>{
-        axios({
-            method: 'GET',
-            url: '/accounting/api/currency-conversion-table/' + val
-        }).then(res =>{
-            this.setState({options: res.data.currencyconversionline_set})
-        })
+    componentDidUpdate(prevProps, PrevState){
+        if(this.props.table && this.props.table != prevProps.table){
+            axios({
+                method: 'GET',
+                url: '/accounting/api/currency-conversion-table/' + this.props.table
+            }).then(res =>{
+                this.setState({options: res.data.currencyconversionline_set})
+            })
+        }
+        
     }
 
     inputHandler = (evt) =>{
@@ -50,18 +53,8 @@ class Calculator extends Component{
         return(
             <div>
                 <h4>Calculator</h4>
-                <table className="table">
+                <table className="table table-sm">
                     <tbody>
-                        <tr>
-                            <th>ExchangeTable</th>
-                            <td>
-                                <AsyncSelect 
-                                    dataURL="/accounting/api/currency-conversion-table/"
-                                    resProcessor={this.tableDataProcessor}
-                                    handler={this.tableHandler}
-                                    />
-                            </td>
-                        </tr>
                         <tr>
                             <th>Currency</th>
                             <td>

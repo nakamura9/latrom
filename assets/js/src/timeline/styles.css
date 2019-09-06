@@ -47,7 +47,7 @@
 
 .timelineLine {
     width: 1px;
-    background-color:black;
+    background-color:#007bff;
     height: 100px;
     padding:0px;
     margin: 0px auto;
@@ -89,12 +89,14 @@
 }
 
 .timelinePoint {
-    width: 15px;
-    height: 15px;
-    border-radius: 15px;
-    border: 1px solid black;
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    border: 2px solid #007bff;
+    box-shadow: 3px 5px 20px powderblue;
+
     background-color: white;
-    margin: 42.5px auto ;
+    margin: 37.5px 52.5px ;
 }
 
 .cardOptions  {

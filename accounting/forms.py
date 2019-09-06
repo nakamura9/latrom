@@ -8,6 +8,8 @@ from crispy_forms.layout import (Fieldset,
                                 Column)
 from django import forms
 from django.contrib.auth.models import User
+from django_select2.forms import Select2Widget
+from invoicing.models import Customer
 
 from common_data.forms import BootstrapMixin, PeriodReportForm
 from inventory.models import Supplier, WareHouse
@@ -29,6 +31,9 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = "__all__"
         model = models.Asset
+        widgets = {
+            'credit_account': Select2Widget(attrs={'data-width': '20rem'})
+        }
 
     init_date =forms.DateField(label="Date purchased")
     depreciation_period = forms.CharField(widget=forms.NumberInput, label="Depreciation Period(years)")
@@ -64,6 +69,8 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
         self.helper.add_input(Submit('submit', 'Submit'))
 
 class ExpenseForm(forms.ModelForm, BootstrapMixin):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), 
+        widget=Select2Widget(attrs={'data-width': '20rem'}))
     class Meta:
         exclude = "entry", 'debit_account',
         model = models.Expense
@@ -134,8 +141,10 @@ class RecurringExpenseForm(forms.ModelForm, BootstrapMixin):
 
 class DirectPaymentForm(BootstrapMixin, forms.Form):
     date = forms.DateField()
-    paid_to = forms.ModelChoiceField(Supplier.objects.all())
-    account_paid_from = forms.ModelChoiceField(models.Account.objects.all())
+    paid_to = forms.ModelChoiceField(Supplier.objects.all(),
+        widget=Select2Widget)
+    account_paid_from = forms.ModelChoiceField(models.Account.objects.all(),
+        widget=Select2Widget)
     method = forms.ChoiceField(choices=[
         ('cash', 'Cash'),
         ('transfer', 'Transfer'),
@@ -184,8 +193,10 @@ class TaxUpdateForm(forms.ModelForm, BootstrapMixin):
 
 class SimpleJournalEntryForm(forms.ModelForm, BootstrapMixin):
     amount = forms.DecimalField()
-    credit = forms.ModelChoiceField(models.Account.objects.all())
-    debit = forms.ModelChoiceField(models.Account.objects.all())
+    credit = forms.ModelChoiceField(models.Account.objects.all(), 
+        widget=Select2Widget)
+    debit = forms.ModelChoiceField(models.Account.objects.all(),
+        widget=Select2Widget)
     class Meta:
         exclude = "draft", "posted_to_ledger", "adjusted"
         model = models.JournalEntry
@@ -251,7 +262,9 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
         exclude="active",
         model = models.Account
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4})
+            'description': forms.Textarea(attrs={'rows': 4}),
+            'parent_account': Select2Widget(attrs={'data-width': '14rem'})
+
         }
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)

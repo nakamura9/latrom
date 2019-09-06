@@ -80,7 +80,7 @@ class PricingWidget extends Component{
                                     <input type="number"
                                         style={this.state.selected === "0" ? null: readOnlyStyle} 
                                         name="direct_price"
-                                        className="form-control input-sm"
+                                        className="form-control form-control-sm"
 
                                         value={this.state.directValue}
                                         onChange={this.textInputHandler}
@@ -104,7 +104,7 @@ class PricingWidget extends Component{
                                 <td>
                                     <input type="number" 
                                         name="margin"
-                                        className="form-control input-sm"
+                                        className="form-control form-control-sm"
 
                                         onChange={this.textInputHandler}
                                         value={this.state.marginValue}
@@ -127,7 +127,7 @@ class PricingWidget extends Component{
                                 <td>
                                     <input type="number" 
                                         name="markup"
-                                        className="form-control input-sm"
+                                        className="form-control form-control-sm"
                                         style={this.state.selected === "2" ? null: readOnlyStyle}
                                         value={this.state.markupValue}
                                         onChange={this.textInputHandler}

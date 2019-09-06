@@ -13,7 +13,7 @@ from crispy_forms.layout import (Row,
                                 HTML)
 from . import models
 from employees.models import Employee
-
+from django_select2.forms import Select2Widget
 
 class ServiceForm(forms.ModelForm,BootstrapMixin):
     category = forms.ModelChoiceField(models.ServiceCategory.objects.all(), required=False)
@@ -23,7 +23,8 @@ class ServiceForm(forms.ModelForm,BootstrapMixin):
         model = models.Service
 
         widgets = {
-                'description':forms.Textarea(attrs={'rows':4, 'cols':15}), 
+                'description':forms.Textarea(attrs={'rows':4, 'cols':15}),
+                'procedure': Select2Widget(attrs={'data-width': '20rem'})
             }   
     
 
@@ -146,7 +147,7 @@ class ServiceWorkOrderCompleteForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = ["progress"]
         model = models.ServiceWorkOrder
-
+        
 
 class ServiceWorkOrderAuthorizationForm(BootstrapMixin, forms.Form):
     '''Authorization handled in the functional view work_order_authorize'''
@@ -170,6 +171,10 @@ class EquipmentRequisitionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "authorized_by", "released_by", 'received_by', 'returned_date'
         model = models.EquipmentRequisition
+        widgets = {
+            'work_order': Select2Widget(attrs={'data-width': '20rem'})
+        }
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -232,6 +237,10 @@ class ConsumablesRequisitionForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "authorized_by", "released_by",
         model = models.ConsumablesRequisition
+        widgets = {
+            'work_order': Select2Widget(attrs={'data-width': '20rem'})
+        }
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

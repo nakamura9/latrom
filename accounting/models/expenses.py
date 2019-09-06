@@ -37,6 +37,8 @@ class AbstractExpense(models.Model):
     whether or not the expense can be billed to customers is also 
     recorded. Creates a journal entry when intialized.'''
     description = models.TextField()
+    '''vendor = models.ForeignKey('inventory.Supplier', null=True, 
+        on_delete=models.SET_NULL)'''
     category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     debit_account = models.ForeignKey('accounting.Account', 
@@ -80,14 +82,33 @@ class AbstractExpense(models.Model):
             pk=mapping[self.category])
 
 
+'''class Payment(models.Model):
+    date = models.DateField()
+    amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0)
+    expense = models.ForeignKey('accounting.expense', null=True, 
+        on_delete=models.SET_NULL)
+    entry = models.ForeignKey('accounting.JournalEntry', null=True, 
+        models.SET_NULL)
+    memo = models.TextField(blank=True)
+    account = models.ForeignKey('accounting.Account', 
+        on_delete=models.SET_DEFAULT, 
+        limit_choices_to=Q(type='asset')
+        default=1000)
+'''
 class Expense(AbstractExpense):
     date = models.DateField()
+    #due = models.DateField(blank=True, null=True)
     billable = models.BooleanField(default=False)
-    customer = models.ForeignKey('invoicing.Customer', on_delete=models.SET_NULL, null=True,
+    customer = models.ForeignKey('invoicing.Customer', 
+        on_delete=models.SET_NULL, null=True,
         blank=True)
     
     def __str__(self):
         return f"{self.date}: {self.reference}"
+
+    '''@property
+    def payments(self):
+        return self.payment_set.all()'''
 
     def create_entry(self):
         if self.entry:

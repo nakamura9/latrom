@@ -145,6 +145,11 @@ background: linear-gradient(90deg, rgba(0,123,255,1) 0%, rgba(176,224,230,1) 100
 
 }
 
+.shrink .shrink-invisible {
+    display: none;
+    transition: display 0.4s;
+
+}
 
 
 .shrink hr {
@@ -193,4 +198,20 @@ table tr{
 
 .floating-submit input {
     float: right;
+}
+
+.django-select2 {
+    width: 100%;
+    min-width: 14rem;;
+}
+
+.notification-button{
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    background-color: #007bff;
+    border-radius: 15px;
+    width:45px;
+    float:right;
+    display: none;
 }

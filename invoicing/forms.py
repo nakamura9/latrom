@@ -17,6 +17,7 @@ from common_data.forms import BootstrapMixin, PeriodReportForm
 from common_data.models import Organization, Individual
 from . import models
 from django.forms import ValidationError
+from django_select2.forms import Select2Widget
 
 class SalesConfigForm(forms.ModelForm, BootstrapMixin):
     class Meta:
@@ -198,7 +199,7 @@ class CreditNoteForm( forms.ModelForm, BootstrapMixin):
 # sales by item 
 
 class CustomerStatementReportForm(PeriodReportForm):
-    customer = forms.ModelChoiceField(models.Customer.objects.all())
+    customer = forms.ModelChoiceField(models.Customer.objects.all(), widget=Select2Widget)
 
 class SalesReportForm(PeriodReportForm):
     '''method = forms.ChoiceField(widget=forms.RadioSelect, choices=[("invoice", "Invoice Count"), ("amount", "Sales Value")])'''
@@ -211,12 +212,18 @@ class InvoiceForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson', 'terms', 'comments', 'invoice_number']
         model = models.Invoice
+        widgets = {
+            'customer': Select2Widget
+        }
 
 class InvoiceUpdateForm(forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         fields = ["status", 'customer', 'purchase_order_number', 'ship_from', 'date', 'due', 'salesperson',  'terms', 'comments', 'invoice_number']
         model = models.Invoice
+        widgets = {
+            'customer': Select2Widget
+        }
 
 class QuotationForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     status = forms.CharField(widget=forms.HiddenInput)
@@ -226,6 +233,9 @@ class QuotationForm(InvoiceCreateMixin, forms.ModelForm, BootstrapMixin):
     class Meta:
         fields = ["status", 'customer', 'quotation_date', 'quotation_valid', 'salesperson', 'terms', 'comments']
         model = models.Invoice
+        widgets = {
+            'customer': Select2Widget
+        }
 
 class InvoicePaymentForm(forms.ModelForm, BootstrapMixin):
     invoice = forms.ModelChoiceField(

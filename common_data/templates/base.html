@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" 
         href="{% static 'common_data/css/animate.css' %}" />
     
+    {{form.media.css}}
     
     <link rel="stylesheet" type='text/css' href="{% static 'common_data/css/suave.css' %}">
     
@@ -29,7 +30,6 @@
     <script type="text/javascript" src="{% static 'common_data/css/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/jquery.form.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'common_data/js/pygal-tooltips.min.js' %}"></script>
-    
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -48,57 +48,12 @@
     </div>
     {% block window %}{% endblock %}
     <script type="text/javascript" src="{% static 'common_data/js/async_select.js' %}"></script>
-<style>
-    
 
-    
-    .notification-overlay {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(220,220,220,0.3);
-    }
-
-
-    .notification {
-        border: 3px solid #007bff;
-        border-radius: 20px;
-        background-color: #ccc;
-        margin: 100px auto;
-        padding: 20px;
-        width: 40%;
-        height: 50%;
-    }
-
-    .notification h4 {
-        font-weight: 250;
-    }
-
-</style>
+{% include 'notifications.html' %}
 
 {% include 'iframe_window.html' %}
 
 
-<div>
-<!-- The notification overlay -->
-    <div class="notification-overlay">
-        <div class="notification">
-            <h4 id="notification-title">Notification Message</h4>
-            <p  id="notification-timestamp">00:00</p>
-            <hr class="my2">
-            <p id="notification-message">Message</p>
-            <div class="btn-group" role="group" style="float:right;">
-                <button type="button" id="notification-dismiss" class="btn btn-primary">Dismiss</button>
-            </div>
-        </div>    
-    </div>
-    
-        
-</div>
 <script>
     //iframe redirect detection
     
@@ -109,26 +64,7 @@
         dateFormat: 'yy-mm-dd' 
         });
     
-
     
-    function updateNotifications(){
-        $.ajax({
-            'method': 'GET',
-            'url': '/messaging/api/notifications'
-        }).then(function (data){
-            if(data.unread > 0){
-                $('#notification-title').text(data.latest.title);
-                $('#notification-timestamp').text(data.latest.stamp);
-                $('#notification-message').text(data.latest.message);
-                $('#notification-dismiss').attr({
-                    'onclick': "$.get('/messaging/api/notifications/mark-read/" + data.latest.id + "')"
-                });
-
-                 $('.notification-overlay').show(500);
-
-            }
-        })
-    }
     function setNavbarActive(){
         var url = window.location.href;
         if(url.search('invoicing') !== -1){
@@ -149,19 +85,15 @@
     }
 
     $(document).ready(function(){
-        setNavbarActive()
-        updateNotifications();
-        setInterval(updateNotifications, 60000)
-     
-     
-     $('.notification-overlay').click(function(){
-         $('.notification-overlay').hide()
-     })
+        setNavbarActive();
+        
      
     })
 
 
 </script>
+    {{form.media.js}}
+
 </body>
 </html>
 

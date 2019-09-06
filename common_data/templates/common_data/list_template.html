@@ -10,9 +10,19 @@
     <div class="container">
         <h1 class="display-3"><i class="fas fa-list"></i> {{title}}</h1>
         <p class="lead">{{description}}</p>
-        <p>Actions</p>
             {% if new_link %}
-            <a class="btn btn-primary btn-lg" href="{{new_link}}">Create New <i class="fas fa-pen"></i></a>
+            <div class="dropdown shrink-invisible">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="page-actions" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="page-actions">
+                    <a class="dropdown-item" href="{{new_link}}">Create New <i class="fas fa-pen"></i></a>
+                    
+                </div>
+            </div>
+
+            
             {% endif %}    
         <p class="lead">
         </p>

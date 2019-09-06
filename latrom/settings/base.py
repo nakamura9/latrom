@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'reversion',
     'background_task',
     'dbbackup',
-    'formtools'
+    'formtools',
+    'django_select2'
     
 ] + USER_APPS
 

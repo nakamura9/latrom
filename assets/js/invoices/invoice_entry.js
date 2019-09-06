@@ -18,7 +18,7 @@ class EntryWidget extends Component{
         //initial value
         this.setBillables(customer.value);
         //event handler
-        customer.addEventListener('change', (evt) =>{
+        $("#id_customer").on('change', (evt) =>{
             this.setBillables(evt.target.value)
         })
     }

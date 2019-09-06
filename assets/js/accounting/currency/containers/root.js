@@ -38,6 +38,7 @@ class CurrencyConverter extends Component{
 
     setExchangeTable = (evt) =>{
         this.setState({exchangeTable: evt.target.value});
+
     }
 
 
@@ -55,6 +56,13 @@ class CurrencyConverter extends Component{
         }).then(res =>{
             this.setState({tableOptions: res.data});
         });
+
+        axios({
+            method: 'GET',
+            url: '/accounting/api/settings/1'
+        }).then(res =>{
+            this.setState({exchangeTable: res.data.currency_exchange_table});
+        });
     }
 
     componentWillMount(){
@@ -69,39 +77,45 @@ class CurrencyConverter extends Component{
 
     render(){
         return(
-            <div>
-                <div  style={{
-                    width: "40%",
-                    display: "inline-block",
-                    padding: "30px"
-                }} 
-                className="bg-primary text-white">
-                    <Calculator 
-                        currencies={this.state.currencies}/>
+            <div className='row'>
+                <div  
+                className="col-6 card shadow">
+                    <div className='card-body'>
+                        <Calculator 
+                        currencies={this.state.currencies}
+                        table={this.state.exchangeTable}/>
                     <CurrencyList 
                         currencies={this.state.currencies}
                         currencyRefresher={this.updateCurrencyList}/>
+                    </div>
                 </div>
-                <div style={{
-                    width: "50%",
-                    display: "inline-block",
-                    paddingLeft: "10px"
-                }}>
-                    <h5>Select Exchange Table
+                <div className='col-6'>
+                    <div className='form-group row' style={{paddingLeft: "10px"}}><label htmlFor="exchange-table">Exchange Table</label>
                         <select
+                            name='exchange-table'
                             className="form-control"
                             style={{
                                     display: 'inline-block',
                                     width: '250px'
                                 }}
-                            onChange={this.setExchangeTable}>
+                            onChange={this.setExchangeTable}
+                            value={this.state.exchangeTable}>
                             <option value={0}>-------</option>
                             {this.state.tableOptions.map((opt, i) =>(
                                 <option 
                                     key={i}
                                     value={opt.id}>{opt.name}</option>
                             ))}
-                        </select></h5>
+                        </select> <button 
+                        style={{
+                            display: this.state.createExchangeTableMode 
+                                ? 'none'
+                                : 'block'
+                        }}
+                        className="btn btn-primary"
+                        onClick={this.toggleCreateExchangeTableMode}>
+                            <i className="fas fa-plus"></i>        
+                    </button></div>
                     <br />
                     <div style = {{
                         display: this.state.createExchangeTableMode
@@ -138,16 +152,7 @@ class CurrencyConverter extends Component{
                         </form>
                     </div>
                     
-                    <button 
-                        style={{
-                            display: this.state.createExchangeTableMode 
-                                ? 'none'
-                                : 'block'
-                        }}
-                        className="btn btn-primary"
-                        onClick={this.toggleCreateExchangeTableMode}>
-                            Create New Exchange table        
-                    </button>
+                    
                     <hr />
                    <ExchangeTable 
                         tableID={this.state.exchangeTable}

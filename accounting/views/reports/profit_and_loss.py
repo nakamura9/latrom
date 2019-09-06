@@ -53,7 +53,10 @@ class ProfitAndLossReport(ConfigMixin, PeriodReportMixin, TemplateView):
         
         closing_inventory = inventory_models.InventoryItem.total_inventory_value()
         cogs = opening_inventory +  purchases - closing_inventory
-    
+        #cost of revenue
+        # calculate direct labour for services
+        # include commissions in cost of goods sold
+
         other_income = models.Account.objects.filter(type="income").exclude(
             Q(balance=0.0)).exclude(Q(pk__in=[4000]))
 

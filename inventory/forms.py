@@ -10,6 +10,7 @@ from crispy_forms.layout import (Fieldset,
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django_select2.forms import Select2Widget
 
 from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
 from common_data.forms import BootstrapMixin
@@ -245,6 +246,9 @@ class ProductForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = 'quantity', 'product_component', 'equipment_component'
         model = models.InventoryItem
+        widgets = {
+            'supplier': Select2Widget(attrs={'data-width': '24rem'})
+        }
 
 
     def save(self, *args, **kwargs):
@@ -340,6 +344,9 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = "maximum_stock_level", "minimum_order_level", "product_component", "equipment_component", 
         model = models.InventoryItem
+        widgets = {
+            'supplier': Select2Widget(attrs={'data-width': '24rem'})
+        }
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
@@ -450,6 +457,9 @@ class ConsumableForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = 'quantity', 'product_component', 'equipment_component',
         model = models.InventoryItem
+        widgets = {
+            'supplier': Select2Widget(attrs={'data-width': '24rem'})
+        }
 
 
 
@@ -520,6 +530,9 @@ class OrderForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = ['validated_by', "entry", 'entries', "received_to_date", "shipping_cost_entries"]
         model = models.Order
+        widgets = {
+            'supplier': Select2Widget
+        }
         
 
 class OrderUpdateForm(forms.ModelForm, BootstrapMixin):
