@@ -104,10 +104,10 @@ class UserProfileForm(forms.ModelForm):
                     )
                 ),
                 Tab('Advanced',
-                    'smtp_server',
-                    'smtp_port',
-                    'pop_imap_host',
-                    'pop_port'
+                    'outgoing_server',
+                    'outgoing_port',
+                    'incoming_host',
+                    'incoming_port'
                 )
             )
         )

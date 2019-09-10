@@ -42,10 +42,13 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     '''
 
     GENDER_CHOICES = [('male','Male'),('female','Female')]
-
+    
 
     employee_number = models.AutoField(primary_key=True)
-    hire_date = models.DateField()
+    contract = models.ForeignKey('employees.Contract', null=True, blank=True, 
+        on_delete=models.SET_NULL)
+    termination = models.ForeignKey('employees.Termination', null=True,
+        blank=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=32)
     pay_grade = models.ForeignKey('employees.PayGrade', 
         on_delete=models.CASCADE, blank=True, null=True)
@@ -58,6 +61,9 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     date_of_birth = models.DateField(null=True)
     id_number = models.CharField(max_length=64, blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+    social_security_number = models.CharField(max_length=255, blank=True, 
+        default="")
+   
     
     @property
     def latest_timesheet(self):
@@ -212,3 +218,29 @@ class Department(models.Model):
     @property
     def children(self):
         return Department.objects.filter(parent_department=self)
+
+class Termination(models.Model):
+    TERMINATION_REASONS = [
+        ('R', 'Retirement'),
+        ('C', 'Casual Employee'),
+        ('D', 'Death'),
+        ('O', 'Other')
+    ]
+    date = models.DateField()
+    reason_for_termination = models.CharField(max_length=1, default='R', 
+        choices=TERMINATION_REASONS)
+
+class Contract(models.Model):
+    NATURE_OF_EMPLOYMENT = [
+        ('A', 'Arduous'),
+        ('N', 'Normal')
+    ]
+    start_date = models.DateField()
+    department = models.ForeignKey('employees.Department', null=True, 
+        blank=True,on_delete=models.SET_NULL)
+    job_position = models.CharField(max_length=255, blank=True)
+    end_of_probation = models.DateField()
+    termination_date = models.DateField()
+    nature_of_employment = models.CharField(max_length=1, default='N', 
+        choices=NATURE_OF_EMPLOYMENT)
+    

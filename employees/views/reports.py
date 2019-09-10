@@ -140,7 +140,11 @@ class PayrollReport(ConfigMixin,
                 'employee_number': employee.employee_number,
                 'id': employee.id_number,
                 'grade': employee.pay_grade,
+                'taxable_income': sum([i.taxable_gross_pay \
+                    for i in employees[key]]),
                 'paye': sum([i.total_payroll_taxes for i in employees[key]]),
+                'aids': sum([i.aids_levy for i in employees[key]]),
+                'total': sum([i.aids_levy_and_taxes for i in employees[key]]),
             })
 
         return data

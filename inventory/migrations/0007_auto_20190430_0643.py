@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='inventoryitem',
             name='image',
-            field=models.FileField(blank=True, null=True, upload_to='C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\media'),
+            field=models.FileField(blank=True, null=True),
         ),
     ]

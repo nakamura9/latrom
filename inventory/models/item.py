@@ -31,8 +31,7 @@ class InventoryItem(SoftDeletionModel):
     length = models.FloatField(default=0.0)
     width = models.FloatField(default=0.0)
     height = models.FloatField(default=0.0)
-    image = models.FileField(blank=True, null=True, 
-        upload_to=settings.MEDIA_ROOT)
+    image = models.FileField(blank=True, null=True)
     description = models.TextField(blank=True, default="")
     unit = models.ForeignKey('inventory.UnitOfMeasure', 
         on_delete=models.SET_NULL, 

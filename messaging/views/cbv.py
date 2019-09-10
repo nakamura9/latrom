@@ -41,8 +41,13 @@ class InboxView(LoginRequiredMixin, UserEmailConfiguredMixin, TemplateView):
     # a list of threads not messages
     # includes a panel for notifications
     template_name = os.path.join('messaging', 'email', 'inbox.html')
-
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['profile'] = models.UserProfile.objects.get(
+            user=self.request.user).id
+        
+        return context
 class NotificationDetailView(LoginRequiredMixin, DetailView):
     template_name = os.path.join('messaging', 'notification_detail.html')
     model = models.Notification
@@ -126,7 +131,7 @@ class ComposeEmailView(LoginRequiredMixin,
                 [i.address for i in bcc],
                 data['body'])
         
-        self.object.folder='sent'
+        
         self.object.save()
 
         return resp
@@ -271,15 +276,13 @@ class UserProfileView(ContextMixin, LoginRequiredMixin, UpdateView):
         #TODO try validate credentials before allowing a user to submit settings
         
         try:
-            print(self.object.get_plaintext_password)
-            mailbox = imaplib.IMAP4_SSL(form.cleaned_data['pop_imap_host'], 
-                form.cleaned_data['pop_port'])
+            mailbox = imaplib.IMAP4_SSL(form.cleaned_data['incoming_host'], 
+                form.cleaned_data['incoming_port'])
             mailbox.login(form.cleaned_data['email_address'], self.object.get_plaintext_password)
         except smtplib.SMTPAuthenticationError:
             messages.info(self.request, f'The email settings for {form.cleaned_data["email_address"]} could not be verified. Please check again to ensure these settings are correct.')
         except Exception as e:
             messages.info(self.request, 'An error prevented the settings from being verified')
-            print(e)
 
         else:
             messages.info(self.request, 'Settings verified successfully')
@@ -338,14 +341,6 @@ class GroupListView(LoginRequiredMixin, ListView):
     template_name = os.path.join('messaging', 'chat', 'group_list.html')
 
     def get_queryset(self, *args, **kwargs):
-        print(
-            models.Group.objects.filter(Q(active=True) &
-            Q(
-                Q(admin=self.request.user) | 
-                Q(participants__username=self.request.user.username)
-            )
-        )
-        )
         return models.Group.objects.filter(Q(active=True) &
             Q(
                 Q(participants__username=self.request.user.username)

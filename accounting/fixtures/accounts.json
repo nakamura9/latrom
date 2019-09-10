@@ -536,7 +536,7 @@
         "fields": {
             "name": "Payroll Taxes",
             "balance": 0,
-            "description": "Tracks taxes associated with employee payroll e.g. NSSA, PAYE",
+            "description": "Tracks taxes associated with employee payroll e.g.  PAYE",
             "type": "expense",
             "balance_sheet_category": "not-included"
         }

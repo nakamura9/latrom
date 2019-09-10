@@ -183,6 +183,19 @@ class PaySlipPageTests(TestCase):
             'pk': 1
         }))
         self.assertEqual(resp.status_code, 200)
+
+    def test_get_pay_slip_basic_page(self):
+        resp = self.client.get(reverse('employees:pay-slip-basic', kwargs={
+            'pk': 1
+        }))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_payslip_basic_pdf_view(self):
+        kwargs = {'pk': 1}
+        req = RequestFactory().get(reverse('employees:pay-slip-basic-pdf', 
+            kwargs=kwargs))
+        resp = PayslipPDFView.as_view()(req, **kwargs)
+        self.assertEqual(resp.status_code, 200)
         
 
     def test_delete_payslip_page_get(self):

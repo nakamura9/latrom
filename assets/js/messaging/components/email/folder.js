@@ -2,16 +2,44 @@ import React from 'react';
 import axios from 'axios';
 import ListItem from './message_list_item';
 
-
-class DraftList extends React.Component{
+class FolderList extends React.Component{
     state = {
-        messages: [],
+        messages: [
+            
+        ],
+        status: 'loading',
         currentPage: 1
-
     }
-    componentDidMount(){
-        axios.get('/messaging/api/drafts/').then(res =>{
-            this.setState({messages: res.data})
+    componentDidUpdate(prevProps, PrevState){
+        if(!this.props.folderID){
+            return;
+        }else if(this.props.folderID != prevProps.folderID){
+            console.log('folder selected')
+            axios.get('/messaging/api/folder/' +this.props.folderID).then(res =>{
+                this.setState({
+                    messages: res.data,
+                    status: 'loaded'
+                })
+            })
+        }
+        
+    }
+
+    loadMoreMessages = () =>{
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        
+        axios.get('/messaging/api/folder/' + this.props.folderID, {
+            params: {
+                page: this.state.currentPage + 1
+            }
+    }).then( res =>{
+            this.setState(prevState => ({
+                currentPage: prevState.currentPage + 1,
+                messages: prevState.messages.concat(res.data) 
+            }))
+        }).catch(error =>{
+            alert('No more email messages')
         })
     }
 
@@ -21,36 +49,20 @@ class DraftList extends React.Component{
         newMsg.read = true;
         newMessages[index] = newMsg;
         this.setState({messages: newMessages})
-        this.props.setCurrent(id, true);
+        this.props.setCurrent(id);
     }
 
-    loadMoreMessages = () =>{
-        axios.defaults.xsrfCookieName = "csrftoken";
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-        
-        axios.get('/messaging/api/drafts/', {
-            params: {
-                page: this.state.currentPage + 1
-            }
-    }).then( res =>{
-            this.setState(prevState => ({
-                currentPage: prevState.currentPage + 1,
-                messages: res.data.concat(prevState.messages) 
-            }))
-        }).catch(error =>{
-            alert('No more email messages')
-        })
-    }
-    
     render(){
         return(
             <ul className="list-group">
                 {this.state.messages.length === 0 ?
                     <li className='list-group-item'>
-                        No Messages in This folder.
+                        {this.state.status === 'loaded' ? 'No Messages in this folder'
+                            : <img src="/static/common_data/images/spinner.gif" width={50} height={50} />}
                     </li> 
                     : null
                 }
+
                 {this.state.messages.map((msg, i) =>(
                     <ListItem 
                         msg={msg} 
@@ -58,7 +70,6 @@ class DraftList extends React.Component{
                         setCurrent={this.setCurrent}
                         listIndex={i} />
                 ))}
-
                 <li className="list-group-item">
                     <button 
                         className="btn btn-primary"
@@ -66,9 +77,10 @@ class DraftList extends React.Component{
                         Load More Emails
                     </button>
                 </li>
+
             </ul>
         )
     }
 }
 
-export default DraftList;
+export default FolderList;

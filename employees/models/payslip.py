@@ -184,6 +184,16 @@ class Payslip(models.Model):
         
         return total
 
+    
+    @property
+    def aids_levy(self):
+        d = Deduction.objects.get(pk=3)
+        return d.deduct(self)
+
+    @property
+    def aids_levy_and_taxes(self):
+        return self.aids_levy + self.total_payroll_taxes
+
     @property
     def allowances(self):
        return [

@@ -18,6 +18,13 @@ email_router.register(r'^api/email', views.EmailAPIViewset)
 email_address_router = DefaultRouter()
 email_router.register(r'^api/email-address', views.EmailAddressAPIViewset)
 
+email_folder_router = DefaultRouter()
+email_router.register(r'^api/email-folder', views.EmailFolderAPIViewset)
+
+profile_router = DefaultRouter()
+profile_router.register(r'^api/email-profile', views.UserProfileAPIViewset)
+
+
 chat_urls = [
     path('chat-list', views.ChatListView.as_view(), name='chat-list'),
     path('chat/<int:pk>', views.ChatView.as_view(), name='chat'),
@@ -34,6 +41,7 @@ chat_urls = [
         name='group-api-get-latest'),
     path('api/delete-messages/', views.delete_messages, name='api/delete-messages'),
     path('api/forward-messages/<int:user>', views.forward_messages, name='api/forward-messages'),
+    path('api/sync-folders/<int:profile_id>/', views.sync_folders)
 
 ] + chat_router.urls + bubble_router.urls  + group_router.urls + \
         email_router.urls + email_address_router.urls
@@ -47,9 +55,7 @@ email_urls = [
         name='email-update-draft'),
     path('inbox/', views.InboxView.as_view(), name='inbox'),
     path('config/', views.UserProfileView.as_view(), name='config'),
-    path("api/inbox/", views.InboxAPIView.as_view(), name="inbox-api"),
-    path("api/drafts/", views.DraftsAPIView.as_view(), name="drafts-api"),
-    path("api/sent/", views.SentAPIView.as_view(), name="sent-api"),
+    path("api/folder/<int:folder>", views.FolderAPIView.as_view(), name="inbox-api"),
     path("api/send-draft/<int:pk>/", views.send_draft, name='send-draft'),
     path("api/reply-email/<int:pk>/", views.reply_email, name='reply-email'),
     path("api/add-group-participant/<int:grp>/<int:id>", views.add_participant, 
@@ -68,4 +74,5 @@ urlpatterns = [
         name='api-notifications'),
     path('api/notifications/mark-read/<int:pk>', views.mark_notification_read,
         name='api-notifications-mark-read'),
-] + chat_urls + email_urls 
+] + chat_urls + email_urls +email_folder_router.urls + \
+    profile_router.urls

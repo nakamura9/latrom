@@ -1,0 +1,123 @@
+{% extends "common_data/page/pdf_page.html" %}
+
+{% block pre_page %}
+
+<div class="jumbotron">
+{% if pdf_link %}
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                        Actions
+                    </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a class="dropdown-item" href="{% url 'employees:basic-pay-slip-pdf' pk=object.pk %}">
+            <i class="fas fa-file-pdf"></i> Generate PDF
+        </a>
+            </div>
+        </div>
+        
+    {% endif %}
+</div>
+
+{% endblock pre_page %}
+
+{% block page_contents %}
+    <table style="width:100%;">
+        <tbody>
+            <tr>
+                <th>
+                    <h5>Payslip</h5>
+                </th>
+                <td></td>
+                <td>Period From</td>
+                <td>{{object.start_period}}</td>
+            </tr>
+            <tr>
+                <th>
+                    {{business_name}}
+                </th>
+                <td></td>
+                <td>To</td>
+                <td>{{object.end_period}}</td>
+            </tr>
+            <tr style="padding-top:20px;">
+                <th>Full Name</th>
+                <th>Employee Number</th>
+                <th>Grade</th>
+                <th>Leave Days</th>
+            </tr>
+            <tr>
+                <td>{{object.employee}}</td>
+                <td>{{object.employee.employee_number |stringformat:"06d"}}</td>
+                <td>{{object.pay_grade}}</td>
+                <td>{{object.employee.leave_days}}</td>
+            </tr>
+            <tr>
+                <th colspan="2">Earnings</th>
+                <th colspan="2">Deductions</th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <table style="width:100%;">
+                        <tbody>
+                            <tr>
+                                <td>Basic Salary</td>
+                                <td>{{object.paygrade_.salary | floatformat:2}}</td>
+                            </tr>
+                            <tr>
+                                <td>Normal Time Income: </td>
+                                <td>{{object.normal_pay | floatformat:2}}</td>
+                            </tr>
+                            <tr>
+                                <td>Overtime Income: </td>
+                                <td>{{object.overtime_pay | floatformat:2}}</td>
+                            </tr>
+                            {% for a in object.allowances%}
+                            <tr>
+                                <td>{{a.name}}</td>
+                                <td>{{a.amount | floatformat:2}}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>Commission</td>
+                                <td>{{object.commission_pay | floatformat:2}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td colspan="2">
+                    <table style="width:100%;">
+                        <tbody>
+                            {% for d in object.calculated_deductions %}
+                            <tr>
+                                <td>{{d.name}}</td>
+                                <td>{{d.amount | floatformat:2}}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                            <th colspan="2">Payroll Taxes</th>
+                        </tr>
+                        {% for tax in object.calculated_payroll_taxes %}
+                        <tr>
+                            <td>{{tax.name}}</td>
+                            <td>{{tax.amount | floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Gross Pay </td>
+                <td> {{object.gross_pay | floatformat:2}}</td>
+                <td>Total Deductions </td>
+                <td> {{object.total_deductions | floatformat:2}}</td>
+            </tr>
+            <tr>
+                <td colspan="3" >Net Income</td>
+                <td>{{object.net_pay | floatformat:2}}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+{% endblock page_contents %}

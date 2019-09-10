@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('created_timestamp', models.DateTimeField(auto_now=True)),
                 ('opened_timestamp', models.DateTimeField(blank=True, null=True)),
                 ('message_text', models.TextField()),
-                ('attachment', models.FileField(blank=True, null=True, upload_to='C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\media\\messaging')),
+                ('attachment', models.FileField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(

@@ -8,8 +8,10 @@
             <th>Employee #</th>
             <th>Full Name</th>
             <th>ID Number</th>
-            <th>Pay Grade</th>
+            <th>Taxable Income</th>
             <th>PAYE</th>
+            <th>AIDS Levy</th>
+            <th>Total Tax</th>
         </tr>
     </thead>
     <tbody>
@@ -18,8 +20,10 @@
             <td>{{emp.employee_number}}</td>
             <td>{{emp.name}}</td>
             <td>{{emp.id}}</td>
-            <td>{{emp.grade}}</td>
-            <td>{{emp.paye | accounting}}</td>
+            <td>{{emp.taxable_income}}</td>
+            <td>{{emp.paye}}</td>
+            <td>{{emp.aids}}</td>
+            <td>{{emp.total}}</td>
         </tr>
         {% endfor %}
     </tbody>

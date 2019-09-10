@@ -40,6 +40,7 @@
                 {% if deduction_method == 1 %}
                 <p class="card-text">Since the deduction is a fixed amount, the income sources deducted from are not considered</p>
                 {% endif %}
+                {% if object.basic_income or object.hourly_income or object.overtime_income %}
                 <h5>Income</h5>
                 <ul>
                     {% if object.basic_income %}
@@ -54,25 +55,31 @@
                     
 
                 </ul>
+                {% endif %}
+                {% if object.benefits.all.count > 0 %}
                 <h5>Benefits</h5>
                 <ul>
                     {% for benefit in object.benefits.all %}
                         <li>{{benefit}}</li>
                     {% endfor%}
                 </ul>
+                {% endif %}
+                {% if object.commission.all.count > 0 %}
                 <h5>Commission Rules</h5>
                 <ul>
                     {% for c in object.commission.all %}
                         <li>{{c}}</li>
                     {% endfor %}
                 </ul>
+                {% endif %}
+                {% if object.payroll_taxes.all.count > 0 %}
                 <h5>Payroll Taxes</h5>
                 <ul>
                     {% for tax in object.payroll_taxes.all %}
                     <li>{{tax}}</li>
                     {% endfor %}
-
                 </ul>
+                {% endif %}
             </div>
         </div>
         

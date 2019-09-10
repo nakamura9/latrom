@@ -201,6 +201,18 @@ class PayslipView(ContextMixin, ConfigMixin, DetailView):
     extra_context = {
         'pdf_link': True
     }
+
+class BasicPayslipView(ContextMixin, ConfigMixin, DetailView):
+    template_name = os.path.join('employees', 'payslip', 'basic.html')
+    model= models.Payslip
+    extra_context = {
+        'pdf_link': True
+    }
+
+class BasicPayslipPDFView(ConfigMixin, PDFDetailView):
+    template_name = os.path.join('employees', 'payslip', 'basic.html')
+    file_name="payslip.pdf"
+    model = models.Payslip
     
 class PayslipListView( 
         ContextMixin, 

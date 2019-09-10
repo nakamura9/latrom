@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True)),
                 ('phone_two', models.CharField(blank=True, default='', max_length=16)),
                 ('other_details', models.TextField(blank=True, default='')),
-                ('photo', models.ImageField(blank=True, null=True, upload_to='')),
+                ('photo', models.ImageField(blank=True, null=True)),
             ],
             options={
                 'abstract': False,
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                 ('bp_number', models.CharField(blank=True, max_length=64)),
                 ('email', models.CharField(blank=True, max_length=128)),
                 ('phone', models.CharField(blank=True, max_length=32)),
-                ('logo', models.ImageField(blank=True, null=True, upload_to='')),
+                ('logo', models.ImageField(blank=True, null=True )),
             ],
         ),
         migrations.AddField(

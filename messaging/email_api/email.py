@@ -112,10 +112,7 @@ class EmailBaseClass():
 
     def fetch_mailbox(self):
         '''Used to retrieve an instance of the mailbox'''
-        self.configured = True
-        mailbox = imaplib.IMAP4_SSL(self.IMAP_HOST, self.IMAP_PORT)
-        mailbox.login(self.profile.email_address, self.profile.get_plaintext_password)
-        return mailbox
+        return self.profile.login_incoming()
 
     def process_email(self, mail, id):
         '''Used to retrieve a complete email from the server, and decode it in UTF-8. Logs any errors. 
@@ -145,9 +142,7 @@ class EmailBaseClass():
     def save_email_to_local_database(self, 
                                     msg, 
                                     id,
-                                    draft=False, 
-                                    sent=False, 
-                                    incoming=False):
+                                    folder):
         '''Iterates over the message parts and combines the text sections together while decoding them as well.'''
 
         msg_string = ""
@@ -194,25 +189,19 @@ class EmailBaseClass():
         to = EmailAddress.get_address(better_headers.to[0][1])
         from_ = EmailAddress.get_address(better_headers.from_[0][1])
         
-        if draft:
-            folder='draft'
-        elif sent:
-            folder='sent'
-        else:
-            folder='inbox'
-            
 
         email_msg = Email.objects.create(
             created_timestamp=better_headers.date,
             subject=better_headers.subject,
             owner=self.profile.user,
-            body= html_string.strip() + msg_string,
             to=to,
             sent_from=from_,
             server_id=id,
             folder=folder,
-            sent= sent if not incoming else True,
         )
+            
+        email_msg.write_body(html_string.strip() + msg_string)
+
         if file:
             try:
                 email_msg.attachment.save(file_name, django_file)
@@ -260,9 +249,7 @@ class EmailBaseClass():
                         mail,
                         mail_ids,
                         latest, 
-                        incoming=False, 
-                        sent=False,
-                        draft=False):
+                        folder):
         skipped = 0
         errors = 0
         queryset = self.profile.emails
@@ -272,13 +259,6 @@ class EmailBaseClass():
             if isinstance(id, bytes):
                 id = id.decode('utf-8')
             
-            folder = None
-            if incoming:
-                folder = 'inbox'
-            elif sent:
-                folder='sent'
-            else:
-                folder='drafts'
                 
             if queryset.filter(server_id=id, folder=folder).exists():
                 print(f'Email skipped: {id}')
@@ -293,9 +273,7 @@ class EmailBaseClass():
                 self.save_email_to_local_database(
                     email_message, 
                     id, 
-                    incoming=incoming,
-                    sent=sent,
-                    draft=draft)
+                    folder)
 
             except UnicodeDecodeError:
                 errors += 1
@@ -307,60 +285,29 @@ class EmailBaseClass():
         logger.warn(f'{skipped} emails skipped')
         logger.warn(f'{errors} errors handled')
 
-    def fetch_inbox(self):
+    def fetch_all_folders(self):
         mail = self.fetch_mailbox()
-
-        mail.select(self.config['inbox'])
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = self.profile.latest_inbox
-        self.fetch_messages(mail, mail_ids, latest, incoming=True)
+        for folder in self.profile.folders:
+            mail.select(folder.label)
+            try:
+                type, data = mail.search(None, 'ALL')
+            except imaplib.IMAP4.error:
+                continue
+            mail_ids = data[0].split()
+            latest = folder.latest
+            self.fetch_messages(mail, mail_ids, latest, folder)
         
 
-    def fetch_sent(self):
-        mail = self.fetch_mailbox()
-
-        mail.select(self.config['sent'])
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = self.profile.latest_sent
-        self.fetch_messages(mail, mail_ids, latest, sent=True)
-        
-
-    def fetch_drafts(self):
-        mail = self.fetch_mailbox()
-
-        mail.select(self.config['drafts'])
-        type, data = mail.search(None, 'ALL')
-        mail_ids = data[0].split()
-        latest = self.profile.latest_drafts
-        self.fetch_messages(mail, mail_ids, latest,draft=True)
 
 class EmailSMTP(EmailBaseClass):
-    EMAIL_CONFIG = {
-        'gmail': {
-            'inbox': 'Inbox',
-            'sent': '"[Gmail]/Sent Mail"',
-            'drafts': '"[Gmail]/Drafts"'
-        }
-    }
 
     def __init__(self, profile):
         self.profile = profile
-        self.SMTP_PORT = self.profile.smtp_port
-        self.SMTP_SERVER = self.profile.smtp_server
-        self.IMAP_HOST = self.profile.pop_imap_host
-        self.IMAP_PORT = self.profile.pop_port
-
-        if 'gmail' in self.SMTP_SERVER:
-            self.config = self.EMAIL_CONFIG['gmail']
-
-        self.configured =False
+        self.SMTP_PORT = self.profile.outgoing_port
+        self.SMTP_SERVER = self.profile.outgoing_server
 
 
 if __name__ == "__main__":
     profile = UserProfile.objects.first()
     client = EmailSMTP(profile)
-    client.fetch_inbox()
-    client.fetch_drafts()
-    client.fetch_sent()
+    client.fetch_all_folders()

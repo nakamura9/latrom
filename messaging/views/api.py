@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 import datetime
@@ -37,6 +37,11 @@ class BubbleAPIViewset(ModelViewSet):
             return serializers.BubbleReadSerializer
 
         return serializers.BubbleSerializer
+
+
+class UserProfileAPIViewset(ModelViewSet):
+    queryset = models.UserProfile.objects.all()
+    serializer_class = serializers.UserProfileSerializer
 
 
 class GroupAPIViewset(ModelViewSet):
@@ -79,38 +84,21 @@ def close_group(request, pk=None):
 
     return HttpResponseRedirect(reverse('messaging:group-list'))
 
-class InboxAPIView(APIView):
-    def get(self, request):
+class EmailFolderAPIViewset(ModelViewSet):
+    queryset = models.EmailFolder.objects.all()
+    serializer_class = serializers.EmailFolderSerializer
+
+class FolderAPIView(APIView):
+    def get(self, request,folder=None):
         #maybe try to sync latest emails here?
-        emails = models.UserProfile.objects.get(
-            user=self.request.user).inbox
+        folder = models.EmailFolder.objects.get(pk=folder)
+        emails = folder.emails
         paginator = MessagingPaginator()
         qs = paginator.paginate_queryset(emails, request)
         data = serializers.EmailRetrieveSerializer(qs, many=True, context={
             'request': request
         }).data
         
-        return Response(data)
-
-class DraftsAPIView(APIView):
-    def get(self, request):
-        emails = models.UserProfile.objects.get(user=self.request.user).drafts
-        paginator = MessagingPaginator()
-        qs = paginator.paginate_queryset(emails, request)
-        data = serializers.EmailRetrieveSerializer(qs, many=True, context={
-            'request': request
-        }).data
-        return Response(data)
-
-
-class SentAPIView(APIView):
-    def get(self, request):
-        emails = models.UserProfile.objects.get(user=self.request.user).sent
-        paginator = MessagingPaginator()
-        qs = paginator.paginate_queryset(emails, request)
-        data = serializers.EmailRetrieveSerializer(qs, many=True, context={
-            'request': request
-        }).data
         return Response(data)
 
 
@@ -139,7 +127,7 @@ def reply_email(request, pk=None):
             g.send_html_email(email.subject, email.to.address, body)
 
 
-        models.Email.objects.create(
+        msg =models.Email.objects.create(
         to=email.sent_from,
         sent_from = email.to,
         subject =email.subject,
@@ -147,8 +135,9 @@ def reply_email(request, pk=None):
         attachment=form.cleaned_data['attachment'],
         sent=True,
         folder='sent',
-        body=body
     )
+        msg.write_body(body)
+        
         return JsonResponse({'status': 'ok'})
 
     else:
@@ -342,3 +331,13 @@ def remove_participant(request, grp=None, id=None):
 
     return JsonResponse(UserSerializer(group.participants, many=True).data,
         safe=False)
+
+def sync_folders(request, profile_id=None):
+    profile = models.UserProfile.objects.get(pk=profile_id)
+    client = EmailSMTP(profile)
+    messages = client.fetch_all_folders()
+
+    return JsonResponse({
+        'status': 'ok',
+        'emails': 0
+    })

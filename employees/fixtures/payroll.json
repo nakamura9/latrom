@@ -1,0 +1,147 @@
+[
+    {
+        "model": "employees.PayrollTax",
+        "pk": 1,
+        "fields": {
+            "name": "P.A.Y.E 2019",
+            "paid_by": 0
+        }
+    },
+    {
+        "model": "employees.TaxBracket",
+        "pk": 1,
+        "fields": {
+            "payroll_tax": 1,
+            "lower_boundary": 700.1,
+            "upper_boundary": 3000,
+            "rate": 20,
+            "deduction": 140
+        }
+    },
+    {
+        "model": "employees.TaxBracket",
+        "pk": 2,
+        "fields": {
+            "payroll_tax": 1,
+            "lower_boundary": 3000.1,
+            "upper_boundary": 10000,
+            "rate": 25,
+            "deduction": 290
+        }
+    },
+    {
+        "model": "employees.TaxBracket",
+        "pk": 3,
+        "fields": {
+            "payroll_tax": 1,
+            "lower_boundary": 10000.1,
+            "upper_boundary": 20000,
+            "rate": 30,
+            "deduction": 790
+        }
+    },
+    {
+        "model": "employees.TaxBracket",
+        "pk": 4,
+        "fields": {
+            "payroll_tax": 1,
+            "lower_boundary": 20000.1,
+            "upper_boundary": 30000,
+            "rate": 35,
+            "deduction": 1790
+        }
+    },
+    {
+        "model": "employees.TaxBracket",
+        "pk": 5,
+        "fields": {
+            "payroll_tax": 1,
+            "lower_boundary": 30000.1,
+            "upper_boundary": 1000000,
+            "rate": 45,
+            "deduction": 4790
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2007, 
+        "fields": {
+            "name": "NSSA",
+            "balance": 0,
+            "description": "Account representing money paid for social security",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2008, 
+        "fields": {
+            "name": "NEC",
+            "balance": 0,
+            "description": "Account representing money paid to the National Employment Council",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2009, 
+        "fields": {
+            "name": "AIDS Levy",
+            "balance": 0,
+            "description": "Account representing money paid for AIDS Levy",
+            "type": "liability",
+            "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "employees.Deduction",
+        "pk": 1,
+        "fields": {
+            "name": "NSSA",
+            "deduction_method": 0,
+            "tax_deductable": true,
+            "basic_income": true,
+            "hourly_income": true,
+            "overtime_income": true,
+            "rate": 3.5,
+            "fixed_amount": 0.0,
+            "employer_contribution": 100.0,
+            "account_paid_into": 2007
+        }
+    },
+    {
+        "model": "employees.Deduction",
+        "pk": 2,
+        "fields": {
+            "name": "NEC",
+            "deduction_method": 0,
+            "tax_deductable": true,
+            "basic_income": true,
+            "hourly_income": true,
+            "overtime_income": true,
+            "rate": 2.0,
+            "fixed_amount": 0.0,
+            "employer_contribution": 100.0,
+            "account_paid_into": 2008
+        }
+    },
+    {
+        "model": "employees.Deduction",
+        "pk": 3,
+        "fields": {
+            "name": "AIDS Levy",
+            "deduction_method": 0,
+            "tax_deductable": false,
+            "basic_income": false,
+            "hourly_income": false,
+            "overtime_income": false,
+            "rate": 3.0,
+            "fixed_amount": 0.0,
+            "employer_contribution": 0.0,
+            "account_paid_into": 2009,
+            "payroll_taxes": [1]
+        }
+    }
+]

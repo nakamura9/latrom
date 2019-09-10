@@ -8,6 +8,8 @@ from django.contrib.auth.hashers import make_password
 import common_data
 from messaging.email_api.secrets import get_secret_key
 from cryptography.fernet import Fernet
+from django.core.files import File
+import imaplib
 
 
 class EmailAddress(models.Model):
@@ -24,19 +26,38 @@ class EmailAddress(models.Model):
         else:
             return EmailAddress.objects.create(address=address)
 
+class EmailFolder(models.Model):
+    name = models.CharField(max_length=32)
+    owner = models.ForeignKey('messaging.UserProfile', null=True, 
+        on_delete=models.SET_NULL)
+    label = models.CharField(max_length=255)
+
+    @property
+    def latest(self):
+        qs = Email.objects.filter(folder=self)
+        if qs.exists():
+            return qs.order_by('server_id').reverse()[0]
+    
+    def __str__(self):
+        return self.name
+
+    @property
+    def emails(self):
+        return Email.objects.filter(folder=self)
+
 class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
     email_fields =['email_address']
 
     user = models.OneToOneField('auth.user', on_delete=models.CASCADE)
     avatar = models.ImageField(
-        upload_to=os.path.join(MEDIA_ROOT, 'chat'), blank=True, null=True)
+        upload_to='chat/', blank=True, null=True)
     email_address = models.CharField(max_length=255)
     email_password = models.CharField(max_length=255)
-    smtp_server = models.CharField(max_length=255, default='smtp.gmail.com')
-    smtp_port = models.IntegerField(default=465)
-    pop_imap_host = models.CharField(max_length=255, default='imap.gmail.com')
-    pop_port = models.IntegerField(default=993)
-
+    outgoing_server = models.CharField(max_length=255, default='smtp.gmail.com')
+    outgoing_port = models.IntegerField(default=465)
+    incoming_host = models.CharField(max_length=255, default='imap.gmail.com')
+    incoming_port = models.IntegerField(default=993)
+    
     @property
     def get_plaintext_password(self):
         if self.email_password == "":
@@ -51,43 +72,50 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
     def emails(self):
         return Email.objects.filter(owner=self.user).order_by('-server_id')
 
-    @property
-    def inbox(self):
-        if self.emails:
-            return self.emails.filter(folder='inbox')
-    
-    @property
-    def sent(self):
-        if self.emails:
-            return self.emails.filter(folder='sent')
+    def login_incoming(self):
+        mailbox = imaplib.IMAP4_SSL(self.incoming_host, self.incoming_port)
+        mailbox.login(self.email_address, self.get_plaintext_password)
+        return mailbox
 
     @property
-    def drafts(self):
-        if self.emails:
-            return self.emails.filter(folder='drafts')
+    def folders(self):
+        qs = EmailFolder.objects.filter(owner=self)
+        if qs.exists():
+            return qs
+
+        self.get_folders()
+        return EmailFolder.objects.filter(owner=self)
+
+    def get_folder(self, name):
+        qs = EmailFolder.objects.filter(owner=self, label__icontains=name)
+        if qs.exists():
+            return qs.first()
+        return None
+
 
     @property
-    def latest_inbox(self):
-        if self.inbox and self.inbox.exists():
-            return self.inbox.latest('server_id').server_id
-
-        return '-1'
+    def sent_folder(self):
+        self.get_folder('sent')
 
     @property
-    def latest_sent(self):
-        if self.sent and self.sent.exists():
-            return self.sent.latest('server_id').server_id
-
-        return '-1'
+    def draft_folder(self):
+        self.get_folder('draft')
 
     @property
-    def latest_drafts(self):
-        if self.drafts and self.drafts.exists():
-            return self.drafts.latest('server_id').server_id
+    def inbox_folder(self):
+        self.get_folder('inbox')
 
-        return '-1'
-
-    
+    def get_folders(self):
+        mailbox = self.login_incoming()
+        for i in mailbox.list()[1]:
+            folder_string = i.decode() if isinstance(i, bytes) else i
+            folder_name = folder_string.split(' "/" ')[-1]
+            if not EmailFolder.objects.filter(
+                    owner=self, name=folder_name).exists():
+                EmailFolder.objects.create(owner=self, 
+                                            #in case
+                                           name=folder_name.split('/')[-1],
+                                           label=folder_name)
 
     def __str__(self):
         return self.email_address
@@ -116,17 +144,14 @@ class Email(models.Model):
         related_name='email_author')
     read = models.BooleanField(default=False)
     subject = models.CharField(max_length=255, blank=True)
-    body = models.TextField(blank=True, default="")
+    body = models.FileField(upload_to='messaging/', 
+        blank=True, null=True)
     text = models.TextField(blank=True, default="")
-    folder=models.CharField(max_length=16, default='inbox', choices=[
-        ('inbox', 'Inbox'),
-        ('sent', 'Sent'),
-        ('drafts', 'Drafts'),
-    ])
+    folder=models.ForeignKey('messaging.EmailFolder', null=True, 
+        on_delete=models.SET_NULL)
     sent = models.BooleanField(default=False)
-    attachment=models.FileField(null=True, blank=True, upload_to=os.path.join(
-        MEDIA_ROOT, 'messaging'
-    ))
+    attachment=models.FileField(null=True, blank=True, upload_to='messaging/'
+    )
     created_timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -138,6 +163,24 @@ class Email(models.Model):
             return f"From {self.to.address}"
 
         else: return 'Unknown details'
+
+    def write_body(self, body_string):
+        filename = f'{self.owner.id}-{self.server_id}-' + \
+        f'{datetime.datetime.now().strftime("%d%m%y%H%M%S")}.txt'
+        with open(filename, 'w') as f:
+            f.write(body_string)
+
+        with open(filename, 'r') as sf:
+            self.body.save(filename, File(sf)) 
+
+        os.remove(filename)
+
+    def read_body(self):
+        if self.body:
+            try:
+                return self.body.read().decode(errors="ignore")
+            except:
+                return self.body
 
 
 class Notification(models.Model):
@@ -161,8 +204,8 @@ class Bubble(models.Model):
     created_timestamp = models.DateTimeField(null=True, blank=True)
     opened_timestamp = models.DateTimeField(blank=True, null=True)
     message_text = models.TextField()
-    attachment = models.FileField(upload_to=os.path.join(MEDIA_ROOT, 
-        'messaging'), blank=True, null=True)
+    attachment = models.FileField(upload_to=
+        'messaging/', blank=True, null=True)
     chat = models.ForeignKey('messaging.Chat', 
         on_delete=models.CASCADE, null=True)
     group = models.ForeignKey('messaging.Group', 
@@ -207,7 +250,7 @@ class Group(models.Model):
         related_name='group_participants')
     created = models.DateTimeField(auto_now=True)
     name = models.CharField(blank=True, default="", max_length=255)
-    icon = models.ImageField(upload_to=os.path.join(MEDIA_ROOT, 'chat'), 
+    icon = models.ImageField(upload_to='chat/', 
         null=True)
     active = models.BooleanField(default=True)
 

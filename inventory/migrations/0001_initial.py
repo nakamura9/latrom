@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                 ('length', models.FloatField(default=0.0)),
                 ('width', models.FloatField(default=0.0)),
                 ('height', models.FloatField(default=0.0)),
-                ('image', models.FileField(blank=True, null=True, upload_to='C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\media')),
+                ('image', models.FileField(blank=True, null=True)),
                 ('description', models.TextField(blank=True, default='')),
                 ('unit_purchase_price', models.DecimalField(decimal_places=2, default=0.0, max_digits=9)),
                 ('minimum_order_level', models.IntegerField(default=0)),

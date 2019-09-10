@@ -35,6 +35,8 @@ class EmployeesSettings(SingletonModel):
         on_delete=models.SET_DEFAULT,
         default=1000)
     payroll_counter = models.IntegerField(default=0)
+    business_social_security_number = models.CharField(max_length=255, 
+        blank=True, default="")
     is_configured = models.BooleanField(default=False)
     service_hash = models.CharField(max_length=255, default="", blank=True)
 

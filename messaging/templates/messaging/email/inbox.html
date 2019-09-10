@@ -16,9 +16,7 @@
     <h1 class="display-3"><i class="fas fa-envelope" style="color: #07f; font-size:128px;"></i> Email Client</h1>
     <p class="lead">Welcome {{request.user.username}}!</p>
     <p class="lead">Suave Business tools provides a focused inbox that integrates with other aspects of the application.</p>
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{% url 'messaging:create-message' %}" role="button">Compose <i class="fas fa-pen"></i></a>
-    </p>
+    
 </div>
 
 <style>
@@ -46,6 +44,7 @@
 
 <div class="container">
     <div class="row">
+        <input type="hidden" name="profile" id='id_profile' value="{{profile}}">
         <div class="col-sm-12 shadow" id="inbox-widget">
             
     </div>

@@ -5,7 +5,6 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from messaging.models import *
 from common_data.tests import create_test_common_entities
-from django_webtest import WebTest
 from smtpd import SMTPServer
 import threading
 import asyncore
@@ -115,8 +114,8 @@ class EmailViewTests(TestCase):
             user=cls.user, 
             email_address='test@gmail.com', 
             email_password='123',
-            smtp_server='localhost',
-            smtp_port=25)
+            outgoing_server='localhost',
+            outgoing_port=25)
         cls.email_address = EmailAddress.objects.create(address='test@gmail.com')
         cls.email = Email.objects.create(
                 created_timestamp=datetime.datetime.now(),

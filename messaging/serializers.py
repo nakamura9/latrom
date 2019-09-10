@@ -46,8 +46,12 @@ class EmailRetrieveSerializer(EmailSerializer):
     to = serializers.StringRelatedField(many=False)
     copy = serializers.StringRelatedField(many=True)
     blind_copy = serializers.StringRelatedField(many=True)
+    body = serializers.SerializerMethodField('get_body')
 
-    
+    def get_body(self, obj):
+        body = obj.read_body()
+        return body
+        
 class GroupSerializer(serializers.ModelSerializer):
     messages = serializers.SerializerMethodField('paginated_messages')
     participants = UserSerializer(many=True)
@@ -69,3 +73,30 @@ class EmailAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailAddress
         fields = "__all__"
+
+class EmailFolderRetrieveSerializer(serializers.ModelSerializer):
+    #emails = serializers.SerializerMethodField('get_emails')
+    
+    class Meta:
+        model = EmailFolder
+        fields = "__all__"
+
+class EmailFolderSerializer(serializers.ModelSerializer):
+    emails = serializers.SerializerMethodField('get_emails')
+    
+    class Meta:
+        model = EmailFolder
+        fields = "__all__"
+
+    def get_emails(self, obj):
+        return EmailRetrieveSerializer(obj.emails, many=True).data
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    folders = serializers.SerializerMethodField('get_folders')
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
+
+    def get_folders(self, obj):
+        return EmailFolderRetrieveSerializer(obj.folders, many=True).data

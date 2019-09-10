@@ -39,9 +39,4 @@ class Migration(migrations.Migration):
             name='smtp_server',
             field=models.CharField(default='smtp.gmail.com', max_length=255),
         ),
-        migrations.AlterField(
-            model_name='email',
-            name='attachment',
-            field=models.FileField(blank=True, null=True, upload_to='C:\\Users\\nakamura9a\\Documents\\code\\git\\latrom\\media\\messaging'),
-        ),
     ]

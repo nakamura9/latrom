@@ -17,9 +17,8 @@ class MessagingSyncService(AutomatedServiceMixin):
                 try:
                     profile = UserProfile.objects.get(user=user)
                     client = EmailSMTP(profile)
-                    client.fetch_inbox()
-                    client.fetch_drafts()
-                    client.fetch_sent()
+                    client.fetch_messages()
+                    
                 except: 
                     logger.error(
                         'The email service failed to connect to the remote server')

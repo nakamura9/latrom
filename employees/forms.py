@@ -63,16 +63,20 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
             type="expense"))) 
     benefits = forms.ModelMultipleChoiceField(
         models.Allowance.objects.all(),
-        widget=forms.CheckboxSelectMultiple, required=False)
+        widget=Select2MultipleWidget, required=False)
     commission = forms.ModelMultipleChoiceField(
         models.CommissionRule.objects.all(),
-        widget=forms.CheckboxSelectMultiple, required=False)
+        widget=Select2MultipleWidget, required=False)
     payroll_taxes = forms.ModelMultipleChoiceField(
         models.PayrollTax.objects.all(),
-        widget=forms.CheckboxSelectMultiple, required=False)
+        widget=Select2MultipleWidget, required=False)
+    
     class Meta:
         exclude="active",
         model = models.Deduction
+        widgets = {
+            'deduction_method': forms.RadioSelect
+        }
         
 
     def __init__(self, *args, **kwargs):
@@ -80,6 +84,7 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'name',
+            
             'deduction_method',
             HTML("""<h5>Custom Income Deductions:</h5>"""),
             'basic_income',
