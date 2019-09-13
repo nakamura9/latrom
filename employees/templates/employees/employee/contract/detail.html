@@ -1,0 +1,56 @@
+{% extends 'window.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-3">Employee Contract Details</h1>
+    <p class="lead">Information regarding employee terms of employment as well as termination details if available</p>
+    <hr class="my-2">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                    Actions
+                </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a class="dropdown-item" href="{% url 'employees:create-contract' %}"> <i class="fas fa-file"></i> Create new Contract</a>
+            <a class="dropdown-item" href="{% url 'employees:update-contract' pk=object.pk  %}"> <i class="fas fa-edit"></i> Update Contract</a>
+            <a class="dropdown-item" href="{% url 'employees:terminate-contract' pk=object.pk %}"> <i class="fas fa-calendar"></i> Terminate Contract</a>
+        </div>
+    </div>
+</div>
+
+<div class='container'>
+    <div class='row'>
+        <div class='col-6'>
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title">Contract Information</h4>
+                    <p class="card-text">Employee: {{object.employee}}</p>
+                    <h6>Time Frames</h6>
+                    <p class="card-text">Start Date: {{object.start_date}}</p>
+                    <p class="card-text">Probation End Date: {{object.end_of_probation}}</p>
+                    <p class="card-text">Termination Date: {{object.termination_date}}</p>
+                    <h6>Nature of Employment</h6>
+                    <p class="card-text">Employee Category: {{object.employee_category}}</p>
+                    <p class="card-text">Nature of Employment: {{object.nature_of_employment_string}}</p>
+                </div>
+            </div>
+        </div>
+        <div class='col-6'>
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title">Termination Details</h4>
+                    {% if object.termination %}
+                        <p class="card-text">Termination Date: {{object.termination.date}}</p>
+                        <p class="card-text">Termination Reason: {{object.termination.reason_string}}</p>
+                    {% else %}
+                    <p>Contract is still valid</p>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

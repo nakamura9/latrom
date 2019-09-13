@@ -36,7 +36,13 @@ class EmployeeCreateView( ContextMixin, CreateView):
     form_class = forms.EmployeeForm
     extra_context = {
         'title': 'Create Employee',
-        'description': 'Use this form to record employee data. Employee objects can be added to payroll, and have their vacation time managed. They can also be linked to users.'
+        'description': 'Use this form to record employee data. Employee objects can be added to payroll, and have their vacation time managed. They can also be linked to users.',
+        'related_links': [
+            {
+                'name': 'Create Contract',
+                'url': '/employees/create-contract/'
+            }
+        ]
     }
 
     def get(self, request, *args, **kwargs):
@@ -72,7 +78,7 @@ class EmployeePortalUpdateView( ContextMixin, UpdateView):
         return f'/employees/portal/dashboard/{self.object.pk}'
 
 class EmployeeListView( ContextMixin, PaginationMixin, FilterView):
-    template_name = os.path.join('employees', 'employee_list.html')
+    template_name = os.path.join('employees', 'employee', 'list.html')
     filterset_class = filters.EmployeeFilter
     paginate_by = 20
     extra_context = {
@@ -82,7 +88,7 @@ class EmployeeListView( ContextMixin, PaginationMixin, FilterView):
     queryset = models.Employee.objects.filter(active=True).order_by('first_name')
 
 class EmployeeDetailView( DetailView):
-    template_name = os.path.join('employees', 'employee_detail.html')
+    template_name = os.path.join('employees', 'employee', 'detail.html')
     model = models.Employee
 
 class EmployeeDeleteView( DeleteView):
@@ -230,3 +236,47 @@ class ConfigWizard(ConfigWizardBase):
             initial.update({'schedule': 1})
 
         return initial
+
+
+class ContractCreateView(ContextMixin,CreateView):
+    form_class = forms.ContractForm
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    model = models.Contract
+    extra_context = {
+        'title': 'Create Employee Contract'
+    }
+
+class ContractUpdateView(ContextMixin, UpdateView):
+    form_class = forms.ContractForm
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    model = models.Contract
+    extra_context = {
+        'title': 'Update Contract Details'
+    }
+
+class ContractListView(ContextMixin, PaginationMixin, FilterView):
+    template_name = os.path.join('employees', 'employee', 'contract', 
+        'list.html')
+    paginate_by=20
+    queryset = models.Contract.objects.all()
+    filterset_class = filters.ContractFilter
+    extra_context = {
+        'title': 'List of Employee Contracts',
+        'new_link': reverse_lazy('employees:create-contract')
+    }
+
+class ContractDetailView(DetailView):
+    template_name = os.path.join('employees', 'employee', 'contract', 
+        'detail.html')
+    model = models.Contract
+
+
+class TerminationCreateView(ContextMixin ,CreateView):
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    model = models.Termination
+    form_class = forms.TerminationForm
+
+    def get_initial(self):
+        return {
+            'contract': self.kwargs['pk']
+            }

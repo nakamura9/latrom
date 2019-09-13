@@ -6,6 +6,18 @@ from employees import views
 employee_router = routers.DefaultRouter()
 employee_router.register(r'^api/employee', views.EmployeeViewSet)
 
+contract_urls = [
+    path('create-contract', views.ContractCreateView.as_view(), 
+        name='create-contract'),
+    path('update-contract/<int:pk>', views.ContractUpdateView.as_view(), 
+        name='update-contract'),
+    path('contract-details/<int:pk>', views.ContractDetailView.as_view(), 
+        name='contract-details'),
+    path('terminate-contract/<int:pk>', views.TerminationCreateView.as_view(), 
+        name='terminate-contract'),
+    path('contract-list', views.ContractListView.as_view(), 
+        name='contract-list'),
+]
 
 employee_urls = [
     re_path(r'^create-employee/?$', views.EmployeeCreateView.as_view(), 
@@ -30,4 +42,4 @@ employee_urls = [
                 name='employee-user-password-reset'),
     re_path(r'^employee/delete-user/(?P<pk>[\w]+)/?$', 
         views.remove_employee_user, name='employee-delete-user'),
-] + employee_router.urls 
+] + employee_router.urls + contract_urls

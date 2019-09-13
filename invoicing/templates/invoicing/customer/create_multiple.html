@@ -1,0 +1,59 @@
+{% extends "window.html" %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'common_data/css/forms.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Create Multiple Customers</h1>
+        <p class="lead">Use this form to add multiple customers in one form.</p>
+        {% if related_links %}
+        <p>Actions</p>
+            <script>
+            function linkClickHandler(link){
+      
+        $('#popup-frame').attr('src', link);
+        var modal = document.getElementById('id-my-modal');
+        modal.style.display = 'block';
+    }
+            </script>
+            <div class="btn btn-group">
+                    {% for item in related_links %}
+                        <a class="btn btn-primary text-white"  onclick="linkClickHandler('{{item.url}}')" target="popup">{{item.name}}</a>
+                    {% endfor %}
+            </div>
+        <p class="lead">
+        
+        {% endif %}
+    </div>
+</div>
+
+<input type="hidden" id="box-array" value="{{box_array}}">
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            {% block other %}{% endblock %}
+            {{form.errors}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="shadow card ">
+                <div class="card-body">
+                       {% crispy form %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div><script>
+            
+    </script>
+
+{% render_bundle "invoicing" %}
+{% endblock %}

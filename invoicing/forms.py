@@ -245,3 +245,69 @@ class InvoicePaymentForm(forms.ModelForm, BootstrapMixin):
     class Meta:
         exclude = [ 'active', 'entry']
         model = models.Payment
+
+class CreateMultipleCustomersForm(forms.Form):
+    data = forms.CharField(widget=forms.HiddenInput)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'data',
+            HTML("""<div id='multiple-customers-list'></div>""")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+
+class ImportCustomersForm(forms.Form):
+    file = forms.FileField()
+    sheet_name = forms.CharField()
+    name = forms.IntegerField()
+    type = forms.IntegerField()
+    address = forms.IntegerField()
+    email = forms.IntegerField()
+    phone = forms.IntegerField()
+    account_balance = forms.IntegerField()
+    start_row = forms.IntegerField()
+    end_row = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h4>File</h4>'),
+            Row(
+                Column('file', css_class='col-6'),
+                Column('sheet_name', css_class='col-6'),
+            ),
+            HTML("""
+            <h4>Columns</h4>
+            <p>State the columns that correspond to the required data tp describe a supplier .Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <ul>
+                <li>Name - Legal name of the supplier</li>
+                <li>Address - Suppliers Physical address that appears on bills</li>
+                <li>Type - One of Individual or Organization</li>
+                <li>Email</li>
+                <li>Phone</li>
+                <li>Account Balance - current balance with supplier</li>
+                
+            </ul>"""),
+            Row(
+                Column('name', css_class='col-2'),
+                Column('address', css_class='col-2'),
+                Column('type', css_class='col-2'),
+                Column('email', css_class='col-2'),
+                Column('phone', css_class='col-2'),
+                Column('account_balance', css_class='col-2'),
+            ),
+            HTML("""
+            <h4>Rows:</h4>
+            <p>State the rows the list starts and ends in, both are inclusive.</p>"""),
+            Row(
+                Column('start_row', css_class='col-6'),
+                Column('end_row', css_class='col-6'),
+            ),
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))

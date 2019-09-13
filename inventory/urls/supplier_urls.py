@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from rest_framework import routers
 
 from inventory import views
@@ -6,6 +6,11 @@ from inventory import views
 supplier_urls = [
     re_path(r'^supplier/create/?$', 
         views.SupplierCreateView.as_view(),name="supplier-create"),
+    path('supplier/import-from-excel/', 
+        views.ImportSuppliersView.as_view(),name="import-suppliers-from-excel"),
+    path('supplier/create-multiple/', 
+        views.CreateMultipleSuppliersView.as_view(),
+        name="create-multiple-suppliers"),
     re_path(r'^supplier/list/?$', views.SupplierListView.as_view(),
         name="supplier-list"),
     re_path(r'^api/supplier/?$', 

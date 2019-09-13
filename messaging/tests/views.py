@@ -92,7 +92,6 @@ class TestEmailServer(SMTPServer):
         filename = 'mail.eml'
         f = open(filename, 'w')
         f.write(data)
-        print('emailsent')
         f.close()
 class EmailViewTests(TestCase):
     fixtures = ['common.json']

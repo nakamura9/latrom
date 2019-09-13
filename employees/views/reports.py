@@ -1,4 +1,5 @@
 import datetime
+import calendar
 import os 
 from django.shortcuts import reverse
 from django.db.models import Q
@@ -13,6 +14,8 @@ from common_data.utilities import (ConfigMixin,
                                     extract_period)
 from wkhtmltopdf.views import PDFTemplateView
 from common_data.forms import PeriodReportForm
+from common_data.models import GlobalConfig
+from employees import forms
 
 
 
@@ -185,3 +188,78 @@ class PayrollPDFReport(ConfigMixin, MultiPageDocument, PDFTemplateView):
         context = super().get_context_data(*args, **kwargs)
         start, end = extract_encoded_period(self.kwargs)
         return context
+
+class NSSAP4Report(TemplateView):
+    template_name = os.path.join('employees', 'reports', 'p4',
+        'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['employees'] = Employee.objects.filter(active=True)
+        return context 
+
+
+class ZIMRAP2ReportFormView(ContextMixin, FormView):
+    form_class = forms.ZimraReportForm
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
+    extra_context = {
+        'action': '/employees/zimra-p2-report/'
+    }
+    def get_initial(self):
+        today = datetime.date.today()
+        return {
+            'tax_period': today.strftime('%B %Y')
+        }
+
+class ZIMRAP2Report(ContextMixin, TemplateView):
+    template_name = os.path.join('employees', 'reports', 'p2',
+        'report.html')
+    extra_context = {
+        'pdf_link': True
+    }
+
+    @staticmethod 
+    def common_context(period, address, due):
+        period_start = datetime.datetime.strptime(period, 
+            '%B %Y').date()
+        period_end_date = calendar.monthrange(period_start.year, 
+            period_start.month)[1]
+        period_end = datetime.date(period_start.year, 
+            period_start.month, period_end_date)
+        
+        slips = Payslip.objects.filter(status__in=['verified', 'paid'],
+            created__gte=period_start, created__lte=period_end )
+        
+        context = {
+            'config': GlobalConfig.objects.first(),
+            'date_string': datetime.date.today().strftime('%d%m%Y'),
+            'employees': Employee.objects.filter(active=True).count(),
+            'paye': sum([i.total_payroll_taxes for i in slips]),
+            'aids_levy': sum([i.aids_levy for i in slips]),
+            'total_remuneration': sum([i.gross_pay for i in slips]),
+            'total_tax_due': sum([i.aids_levy_and_taxes for i in slips]),
+            'tax_period':period,
+            'postal': address,
+            'due_date': due,
+            
+        }
+        
+        return context
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(ZIMRAP2Report.common_context( 
+            self.request.GET['tax_period'],
+            self.request.GET['postal_address'],
+            self.request.GET['due_date']))
+        return context
+
+class ZIMRAP2ReportPDF(PDFTemplateView):
+    template_name = os.path.join('employees', 'reports', 'p2',
+        'report.html')
+
+    def get_context_data(self):
+        return ZIMRAP2Report.common_context( self.request.GET['tax_period'],
+            self.request.GET['postal_address'],
+            self.request.GET['due_date'])

@@ -19,7 +19,7 @@ from accounting.models import Account
 from django.db.models import Q
 from django.forms import ValidationError
 from . import models
-from django_select2.forms import Select2MultipleWidget
+from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 
 class EmployeesSettingsForm(forms.ModelForm, BootstrapMixin):
@@ -260,21 +260,25 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                         Column('last_name', css_class='form-group col-6'),
                     ), 
                     Row(
-                        Column('hire_date', 'title', css_class='form-group col-6'),
+                        Column('email','phone', css_class='form-group col-6'),
                         Column('address', css_class='form-group col-6'),
                     ),
-                    'email',
-                    'phone'
+                    'title',
                     ),
-                    Tab('Other',
+                    Tab('Personal',
                         'date_of_birth',
                         'id_number',
                         'gender',
+                    ),
+                    Tab('Conditions of service',
+                        'contract',
+                        'termination',
                         'pay_grade',
                         'leave_days',
                         'pin',
                         'uses_timesheet'
-                    )))
+                    )
+                    ))
         self.helper.add_input(Submit('submit', 'Submit'))
 
     def save(self, *args, **kwargs):
@@ -584,3 +588,67 @@ class EmployeeAuthenticateForm(BootstrapMixin, forms.Form):
             raise ValidationError('The Pin supplied is incorrect')
 
         return cleaned_data
+
+def get_tax_period_choices():
+    today = datetime.date.today()
+    year = today.year
+    def get_strings(y):
+        return [datetime.date(y, i, 1).strftime("%B %Y") \
+            for i in range(1,13)]
+    months_current = get_strings(year)
+    months_previous = get_strings(year - 1)
+    
+    choices = [(i,i) for i in months_current + months_previous]
+
+    return choices 
+class ZimraReportForm(BootstrapMixin, forms.Form):
+    tax_period = forms.ChoiceField(choices=get_tax_period_choices)
+    postal_address = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+    due_date = forms.DateField()
+
+class ContractForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        model = models.Contract
+        fields = "__all__"
+        widgets = {
+            'employee': Select2Widget
+        }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('start_date', css_class='col-4'),
+                Column('end_of_probation', css_class='col-4'),
+                Column('termination_date', css_class='col-4'),
+            ),
+            Row(
+                Column('employee', css_class='col-6'),
+                Column('job_position', css_class='col-6'),
+            ),
+            Row(
+                Column('employee_category', css_class='col-6'),
+                Column('nature_of_employment', css_class='col-6'),
+            )
+        )
+        self.helper.add_input(Submit('Submit', 'submit'))
+
+
+class TerminationForm(forms.ModelForm, BootstrapMixin):
+    class Meta:
+        fields = '__all__'
+        model = models.Termination
+        widgets = {
+            'contract': forms.HiddenInput
+        }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'contract',
+            'date',
+            'reason_for_termination'
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))

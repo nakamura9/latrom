@@ -20,10 +20,10 @@
             <td>{{emp.employee_number}}</td>
             <td>{{emp.name}}</td>
             <td>{{emp.id}}</td>
-            <td>{{emp.taxable_income}}</td>
-            <td>{{emp.paye}}</td>
-            <td>{{emp.aids}}</td>
-            <td>{{emp.total}}</td>
+            <td>{{emp.taxable_income |accounting }}</td>
+            <td>{{emp.paye  |accounting }}</td>
+            <td>{{emp.aids |accounting }}</td>
+            <td>{{emp.total |accounting }}</td>
         </tr>
         {% endfor %}
     </tbody>

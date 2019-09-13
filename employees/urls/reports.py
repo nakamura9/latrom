@@ -17,8 +17,12 @@ report_urls = [
         name='payroll-report-pdf'),
     path('payroll-report-form', PayrollReportFormView.as_view(), 
         name='payroll-report-form'),
-    
+    path('nssa-p4-report', NSSAP4Report.as_view(), 
+        name='nssa-p4-report'),
+    path('zimra-p2-report/', ZIMRAP2Report.as_view(), 
+        name='zimra-p2-report'),
+    path('zimra-p2-pdf-report/', ZIMRAP2ReportPDF.as_view(), 
+        name='zimra-p2-pdf-report'),
+    path('zimra-p2-report-form', ZIMRAP2ReportFormView.as_view(), 
+        name='zimra-p2-report-form')
 ]
-
-'''path('payroll-report-pdf', LeaveReport.as_view(), 
-        name='payroll-report-pdf'),'''

@@ -110,7 +110,12 @@ report_urls = [
 account_urls = [
     re_path(r'^create-account/?$', views.AccountCreateView.as_view(), 
         name='create-account'),
-    
+    re_path(r'^bulk-create-accounts/?$', 
+        views.BulkAccountCreateView.as_view(), 
+        name='bulk-create-accounts'),
+    re_path(r'^import-accounts-from-excel/?$', 
+        views.ImportAccountsView.as_view(), 
+        name='import-accounts-from-excel'),
     re_path(r'^account-detail/(?P<pk>[\w]+)/?$', 
         views.AccountDetailView.as_view(), 
         name='account-detail'),

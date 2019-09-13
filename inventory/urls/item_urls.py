@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from rest_framework import routers
 
 from inventory import views
@@ -56,4 +56,9 @@ equipment_urls = [
         views.EquipmentDetailView.as_view(), name="equipment-detail"),
 ] + equipment_router.urls
 
-item_urls = product_urls + equipment_urls + consumable_urls + raw_material_urls
+item_urls = [
+    path('import-items-from-excel/', views.ImportItemsView.as_view(), 
+        name='import-items-from-excel'),
+    path('create-multiple-items/', views.BulkCreateItemsView.as_view(), 
+        name='create-multiple-items'),
+] +product_urls + equipment_urls + consumable_urls + raw_material_urls

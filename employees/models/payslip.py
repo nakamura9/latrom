@@ -68,8 +68,10 @@ class Payslip(models.Model):
 
         all_versions = list(reversion.models.Version.objects.get_for_object(
             self.pay_grade))
-        
-        return all_versions[-self.pay_grade_version].field_dict
+        try:
+            return all_versions[-self.pay_grade_version].field_dict
+        except IndexError:
+            return None 
         
     def __str__(self):
         return f'Payslip #{self.pk} for {self.employee}' 
@@ -163,7 +165,8 @@ class Payslip(models.Model):
         income from tax free benefits like some bonuses minus 
         deductions that are removed from income before the calculation of PAYE
         '''
-        return self.gross_pay - self.tax_free_benefits - self.tax_deductable_deductions
+        return self.gross_pay - self.tax_free_benefits - \
+             self.tax_deductable_deductions
 
 
     @property
@@ -192,7 +195,7 @@ class Payslip(models.Model):
 
     @property
     def aids_levy_and_taxes(self):
-        return self.aids_levy + self.total_payroll_taxes
+        return D(self.aids_levy) + self.total_payroll_taxes
 
     @property
     def allowances(self):

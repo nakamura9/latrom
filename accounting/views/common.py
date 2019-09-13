@@ -31,7 +31,8 @@ from employees.forms import EmployeeForm
 from employees.models import Employee
 import pygal
 #constants
-
+import openpyxl
+import csv
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 class Dashboard( TemplateView):
@@ -198,7 +199,19 @@ class AccountListView( PaginationMixin, FilterView,
     queryset = models.Account.objects.all()
     extra_context = {
         "title": "Chart of Accounts",
-        'new_link': reverse_lazy('accounting:create-account')
+        'new_link': reverse_lazy('accounting:create-account'),
+        'action_list': [
+            {
+                'link': reverse_lazy('accounting:import-accounts-from-excel'),
+                'label': 'Import from Excel',
+                'icon': 'file-excel'
+            },
+            {
+                'link': reverse_lazy('accounting:bulk-create-accounts'),
+                'label': 'Create Multiple Accounts ',
+                'icon': 'file-alt'
+            }
+        ]
                 }
     #model=models.Account
 
@@ -636,3 +649,82 @@ class ConfigWizard(ConfigWizardBase):
 
     config_class = models.AccountingSettings
     success_url = reverse_lazy('accounting:dashboard')
+
+
+class ImportAccountsView(ContextMixin, FormView):
+    extra_context = {
+        'title': 'Import Accounts from Excel'
+    }
+    '''
+    Takes csv file or excel file.
+    Record the corresponding columns to the following fields:
+        name
+        description
+        balance
+        type
+        balance_sheet_category
+        code
+    state the starting row(inclusive)
+    state the ending row(inclusive)'''
+    form_class = forms.AccountImportForm
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    success_url = reverse_lazy('accounting:account-list')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        file = form.cleaned_data['file']
+        if file.name.endswith('.csv'):
+            #process csv 
+            pass
+        else:
+
+            cols = [
+                form.cleaned_data['name'],
+                form.cleaned_data['balance'],
+                form.cleaned_data['description'],
+                form.cleaned_data['code'],
+                form.cleaned_data['type'],
+                form.cleaned_data['balance_sheet_category'],
+            ]
+            wb = openpyxl.load_workbook(file.file)
+            try:
+                ws = wb[form.cleaned_data['sheet_name']]
+            except:
+                ws = wb.active
+            for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
+                    max_row = form.cleaned_data['end_row'], 
+                    max_col=max(cols)):
+                models.Account.objects.create(
+                    name=row[form.cleaned_data['name'] - 1].value,
+                    balance=row[form.cleaned_data['balance'] - 1].value,
+                    description=row[form.cleaned_data['description'] -1].value,
+                    id=row[form.cleaned_data['code'] -1].value,
+                    type=row[form.cleaned_data['type'] -1].value,
+                    balance_sheet_category=row[form.cleaned_data['balance_sheet_category']-1].value
+                )
+        return resp
+class BulkAccountCreateView(FormView):
+    template_name = os.path.join('accounting', 'account', 'bulk_create.html')
+    form_class = forms.BulkAccountsForm
+    success_url = reverse_lazy('accounting:account-list')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
+        for line in data:
+            models.Account.objects.create(
+                name=line['name'],
+                description=line['description'],
+                id=line['code'],
+                type=line['type'],
+                balance=line['balance'],
+                balance_sheet_category=line['balance_sheet_category']
+            )
+
+        return resp
+
+class ImportTransactionView(TemplateView):
+    pass
+
+class BulkEntryCreateView(TemplateView):
+    pass

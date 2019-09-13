@@ -75,11 +75,12 @@ class Deduction(SoftDeletionModel):
     def deduct(self, payslip):
         if self.deduction_method == 0:
             tax_total = 0
-            income = 0            
-            if self.payroll_taxes.all().count() > 0:
-                for pk in payslip.paygrade_['payroll_taxes']:
-                    tax = PayrollTax.objects.get(pk=pk)
-                    tax_total += tax.tax(payslip.taxable_gross_pay)
+            income = 0
+            #to avoid infinite recursion add all income that is taxable
+            taxable = 0
+            taxable += payslip.paygrade_['salary'] + payslip.overtime_pay \
+                + payslip.normal_pay
+            
 
             if self.basic_income:
                 income += payslip.paygrade_['salary']
@@ -87,14 +88,31 @@ class Deduction(SoftDeletionModel):
                 income += payslip.overtime_pay
             if self.hourly_income:
                 income += payslip.normal_pay
-            for benefit in self.benefits.all():
-                if benefit.pk in payslip.paygrade_['allowances']:
-                    income += benefit.amount
-                
             for commission in self.commission.all():
                 if commission.pk == payslip.paygrade_['commission_id']:
                     income += self.paygrade.commission_pay
+                    taxable += self.paygrade.commission_pay
 
+            #all the above are taxable
+            
+            for benefit in self.benefits.all():
+                if benefit.pk in payslip.paygrade_['allowances']:
+                    income += benefit.amount
+                    
+                
+            for pk in payslip.paygrade_['allowances']:
+                benefit = Allowance.objects.get(pk=pk)
+                if benefit.taxable:
+                    taxable += benefit.amount
+
+            if self.payroll_taxes.all().count() > 0:
+                for pk in payslip.paygrade_['payroll_taxes']:
+                    tax = PayrollTax.objects.get(pk=pk)
+                    
+                    tax_total += tax.tax(taxable)
+
+            
+            
             deduction = (income + float(tax_total)) * (self.rate / 100.0)
             
         else:

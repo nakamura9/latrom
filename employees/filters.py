@@ -73,3 +73,12 @@ class PayrollDateFilter(django_filters.FilterSet):
         fields = {
             'date': ['exact']
         }
+
+class ContractFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Contract
+        fields = {
+            'department': ['exact'],
+            'nature_of_employment': ['exact'],
+            'employee__last_name': ['icontains']
+        }

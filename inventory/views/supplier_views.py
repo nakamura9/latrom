@@ -23,6 +23,8 @@ from common_data.views import PaginationMixin
 from common_data.forms import IndividualForm
 from inventory import filters, forms, models, serializers
 from invoicing.models import SalesConfig
+import openpyxl
+import csv
 
 from .common import CREATE_TEMPLATE
 
@@ -214,7 +216,19 @@ class SupplierListView( ContextMixin,
     template_name = os.path.join("inventory", "supplier", "list.html")
     extra_context = {"title": "Vendor List",
                     "new_link": reverse_lazy(
-                        "inventory:supplier-create")}
+                        "inventory:supplier-create"),
+                     "action_list": [
+            {
+                'label': 'Import Suppliers from Excel',
+                'icon': 'file-excel',
+                'link': reverse_lazy('inventory:import-suppliers-from-excel')
+            },
+            {
+                'label': 'Create Multiple Suppliers',
+                'icon': 'file-alt',
+                'link': reverse_lazy('inventory:create-multiple-suppliers')
+            },
+        ]}
 
     def get_queryset(self):
         return models.Supplier.objects.all().order_by('pk')
@@ -251,3 +265,92 @@ class AddSupplierIndividualView(ContextMixin, CreateView):
             'organization': self.kwargs['pk']
         }
 
+class CreateMultipleSuppliersView(FormView):
+    template_name = os.path.join('inventory', 'supplier', 
+        'create_multiple.html')
+    form_class = forms.CreateMultipleSuppliersForm
+    success_url=reverse_lazy('inventory:supplier-list')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
+        
+        settings = SalesConfig.objects.first()
+        
+        for line in data:
+            org = Organization.objects.create(
+                    legal_name = line['name'],
+                    business_address = line['address'],
+                    email = line['email'],
+                    phone = line['phone'],
+                )
+            sup = models.Supplier.objects.create(
+                    organization=org
+                )
+            if line['account_balance']:
+                    sup.account.balance = line['account_balance']
+                    sup.account.save()
+
+        return resp
+
+
+class ImportSuppliersView(ContextMixin, FormView):
+    extra_context = {
+        'title': 'Import Vendors from Excel File'
+    }
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    form_class = forms.ImportSuppliersForm
+    success_url=reverse_lazy('inventory:supplier-list')
+
+    def form_valid(self, form):
+        #assumes all suppliers are organizations
+        resp = super().form_valid(form)
+        def null_buster(arg):
+            if not arg:
+                return ''
+            return arg
+
+
+        file = form.cleaned_data['file']
+        if file.name.endswith('.csv'):
+            #process csv 
+            pass
+        else:
+            cols = [
+                form.cleaned_data['name'],
+                form.cleaned_data['phone'],
+                form.cleaned_data['address'],
+                form.cleaned_data['email'],
+                form.cleaned_data['account_balance'],
+            ]
+            wb = openpyxl.load_workbook(file.file)
+            try:
+                ws = wb[form.cleaned_data['sheet_name']]
+            except:
+                ws = wb.active
+
+        
+            for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
+                    max_row = form.cleaned_data['end_row'], 
+                    max_col=max(cols)):
+                
+                org  = Organization.objects.create(
+                    legal_name = row[form.cleaned_data['name'] - 1].value,
+                    business_address = null_buster(row[
+                        form.cleaned_data['address'] - 1].value),
+                    email = null_buster(row[
+                        form.cleaned_data['email'] - 1].value),
+                    phone =null_buster(row[
+                        form.cleaned_data['phone'] - 1].value),
+                )
+
+                sup = models.Supplier.objects.create(
+                    organization=org
+                )
+                if row[form.cleaned_data['account_balance'] -1].value:
+                    sup.account.balance = row[
+                        form.cleaned_data['account_balance'] -1].value
+                
+                    sup.account.save()
+                
+        return resp

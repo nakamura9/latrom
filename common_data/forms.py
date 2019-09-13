@@ -190,7 +190,6 @@ class AuthenticateForm(BootstrapMixin, forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        print(cleaned_data)
         user = authenticate(username=cleaned_data['user'].username,
                             password=cleaned_data['password'])
         

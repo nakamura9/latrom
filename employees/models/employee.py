@@ -45,10 +45,6 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     
 
     employee_number = models.AutoField(primary_key=True)
-    contract = models.ForeignKey('employees.Contract', null=True, blank=True, 
-        on_delete=models.SET_NULL)
-    termination = models.ForeignKey('employees.Termination', null=True,
-        blank=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=32)
     pay_grade = models.ForeignKey('employees.PayGrade', 
         on_delete=models.CASCADE, blank=True, null=True)
@@ -78,6 +74,19 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     def get_absolute_url(self):
         return reverse("employees:employee-detail", kwargs={"pk": self.pk})
     
+    @property
+    def nps_insurable_earnings(self):
+        if self.pay_grade.salary < D(700.0):
+            return self.pay_grade.salary
+
+        return D(700.0)
+
+    @property
+    def total_nps(self):
+        if self.pay_grade.salary < D(700.0):
+            return self.pay_grade.salary * 0.07
+
+        return D(700.0) * D(0.07)
 
     def increment_leave_days(self, days):
         self.leave_days += days
@@ -229,18 +238,46 @@ class Termination(models.Model):
     date = models.DateField()
     reason_for_termination = models.CharField(max_length=1, default='R', 
         choices=TERMINATION_REASONS)
+    contract = models.OneToOneField('employees.Contract', null=True, 
+        blank=True,on_delete=models.SET_NULL)
 
+    def get_absolute_url(self):
+        return reverse("employees:contract-details", kwargs={
+            "pk": self.contract.pk
+        })
+    
+    @property
+    def reason_string(self):
+        return dict(self.TERMINATION_REASONS)[self.reason_for_termination]
 class Contract(models.Model):
     NATURE_OF_EMPLOYMENT = [
         ('A', 'Arduous'),
         ('N', 'Normal')
     ]
+
+    EMPLOYEE_CATEGORIES = [
+        ('Temporary', 'Temporary Employee'),
+        ('Subcontractor', 'Subcontractor'),
+        ('Permanent Employee', 'Permanent Employee')
+    ]
     start_date = models.DateField()
     department = models.ForeignKey('employees.Department', null=True, 
         blank=True,on_delete=models.SET_NULL)
+    employee = models.ForeignKey('employees.Employee', null=True, 
+        blank=True,on_delete=models.SET_NULL)
     job_position = models.CharField(max_length=255, blank=True)
     end_of_probation = models.DateField()
-    termination_date = models.DateField()
+    termination_date = models.DateField(blank=True, null=True)
+    employee_category = models.CharField(max_length=64, 
+        choices=EMPLOYEE_CATEGORIES)
     nature_of_employment = models.CharField(max_length=1, default='N', 
         choices=NATURE_OF_EMPLOYMENT)
+
+    def get_absolute_url(self):
+        return reverse("employees:contract-details", kwargs={"pk": self.pk})
+    
+    @property
+    def nature_of_employment_string(self):
+        return dict(self.NATURE_OF_EMPLOYMENT)[self.nature_of_employment]
+
     

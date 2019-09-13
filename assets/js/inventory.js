@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import GenericTable from './src/generic_list/containers/root';
 import MutableTable from './src/mutable_table/container/root';
 import SearchableWidget from './src/components/searchable_widget';
+import SelectWidget from './src/components/select';
+
 
 const order = document.getElementById('order-root');
 const inventoryCheck =  document.getElementById('inventory-checker');
@@ -11,6 +13,9 @@ const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
 const debitNoteTable = document.getElementById("debit-note-table");
 const receiveTable = document.getElementById('receive-table');
+const multipleItemsTable = document.getElementById('multiple-item-list');
+const multipleSuppliersTable = document.getElementById('multiple-suppliers-list');
+
 
 const URL = window.location.href;
 const  decomposed = URL.split('/');
@@ -257,4 +262,118 @@ if(inventoryCheck){
                 } 
                 
             ]}/>, receiveTable)
+}else if(multipleItemsTable){
+    ReactDOM.render(<GenericTable 
+        fieldOrder={['name', 'type', 'purchase_price', 'sales_price', 'quantity', 'unit']}
+        fieldDescriptions={['Name', 'Type', 'Purchase Price', 'Sales Price','Quantity', 
+            'Unit']}
+        formInputID='id_data'
+        fields={[
+            {
+                'name': 'name',
+                'type': 'text',
+                'width': '15',
+                'required': true
+            },
+            {
+                'name': 'type',
+                'type': 'widget',
+                'width': '15',
+                'required': true,
+                'widgetCreator': (comp) =>{
+                    const handler = (value) =>{
+                        let newData = {...comp.state.data}
+                        newData['type'] = value
+                        comp.setState({'data': newData})
+                    }
+                    return(
+                        <SelectWidget
+                            handler={handler}
+                            options={[
+                                {
+                                    'value': '',
+                                    'label': '------'
+                                },
+                                {
+                                    'label': 'Product',
+                                    'value': 0
+                                },
+                                {
+                                    'label': 'Equipment',
+                                    'value': 1                                },
+                                {
+                                    'label': 'Consumable',
+                                    'value': 2
+                                }
+                            ]} />
+                    )
+                }
+            },
+            {
+                'name': 'purchase_price',
+                'type': 'number',
+                'width': '10',
+                'required': true
+            },
+            {
+                'name': 'sales_price',
+                'type': 'number',
+                'width': '10',
+                'required': true
+            },
+            {
+                'name': 'quantity',
+                'type': 'number',
+                'width': '10',
+                'required': true
+            },
+            
+            {
+                'name': 'unit',
+                'type': 'text',
+                'width': '10',
+                'required': true,
+
+                }
+        ]}
+            />, multipleItemsTable)
+}else if(multipleSuppliersTable){
+    ReactDOM.render(<GenericTable 
+        fieldOrder={['name', 'address', 'email', 'phone', 'account_balance']}
+        fieldDescriptions={['Name', 'Address', 'Email', 'Phone',
+            'Account Balance']}
+        formInputID='id_data'
+        fields={[
+            {
+                'name': 'name',
+                'type': 'text',
+                'width': '15',
+                'required': true
+            },
+            {
+                'name': 'address',
+                'type': 'text',
+                'width': '30',
+                'required': true
+            },
+            {
+                'name': 'email',
+                'type': 'text',
+                'width': '15',
+                'required': true
+            },
+            {
+                'name': 'phone',
+                'type': 'text',
+                'width': '15',
+                'required': true
+            },
+            {
+                'name': 'account_balance',
+                'type': 'number',
+                'width': '15',
+                'required': true,
+            }
+        ]}
+            />, multipleSuppliersTable)
 }

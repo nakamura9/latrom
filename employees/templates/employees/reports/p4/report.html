@@ -1,0 +1,203 @@
+{% extends 'common_data/page/landscape_page.html' %}
+{% load static %}
+{% block page_contents %}
+
+{% load accounting %}
+
+<style>
+    * {
+        font-family: sans-serif;
+        font-size: 0.9rem;
+    }
+
+    tr,
+    td,
+    th {
+        border: 1px solid black;
+    }
+
+    .borderless tr,
+    .borderless td,
+    .borderless th {
+        border: 0px;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    p {
+        margin-top: 0rem;
+        margin-bottom: 0.4rem;
+    }
+</style>
+
+<table class='borderless' style='width:100%;'>
+    <tbody>
+        <tr>
+            <td style='width:30%;padding:0px;'>
+                <div>
+                    <b>Form P4</b>
+                    <b>Monthly Payment Schedule of Employees</b>
+                    <br>
+                    <br>
+                    <br>
+                    <p><b>Employer SSR No. ....................................</b></p>
+                    <p>
+                        <b>Employer's Name.....................................</b>
+                    </p>
+                    <p><b>Employer's Physical Address.....................................</b></p>
+                    <p><b>.................................................................</b></p>
+                </div>
+            </td>
+            <td style='width:40%;padding:0px;'>
+                <div style='margin:0px auto;'>
+                    <img src="{% static 'common_data/images/nssa-logo.jpg' %}" alt="">
+                </div>
+            </td>
+            <td style='width:30%;padding:0px;'>
+                <div id="right">
+                    <p><b>National Social Security Authority</b></p>
+                    <p><b>Selous Ave/Sam Nujoma</b></p>
+                    <p><b>P.O Box CY 1387</b></p>
+                    <p><b>Causeway</b></p>
+                    <p><b>Telephone 706523-5</b></p>
+                    <p><b>Fax 796520</b></p>
+
+                    <p><b>Payment Month & Year ......... Mar-16</b></p>
+                    <p><b>Sector...........................................</b></p>
+                    <p><b>Email Address ...................................</b></p>
+                    <p><b>Contact Telephone No. ...........................</b></p>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="text-align:center;">
+    <b>Reason for Cessation - Insert <u>C</u> if Casual Employee, <u>R</u> for Retirement, <u>D</u> for Death, <u>O</u>
+        for any other reason for cessation</b>
+    <b>Nature of Employment - Insert A if Arduous Employment and N for Normal Employment</b>
+    <p>
+        <sub>* Sector e.g. mining, agricultural, commercial, tourism, transport, manufacturing</sub>
+    </p>
+</div>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>SSR</th>
+                <th>Employee work number</th>
+                <th>Employee SSN Number</th>
+                <th>National ID No.</th>
+                <th>Period</th>
+                <th>Date of Birth</th>
+                <th>Surname</th>
+                <th>First Name(s)</th>
+                <th>Commencement Date</th>
+                <th>Cessation Date</th>
+                <th>Reason for Cessation</th>
+                <th>Nature of Employment</th>
+                <th>NPS Insurable Earnings</th>
+                <th>Total NPS(7%)</th>
+                <th>Basic Salary (WCIF) Ex. Allowances</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in employees %}
+            <tr>
+                <td></td>
+                <td>{{entry.employee_number}}</td>
+                <td>{{entry.social_security_number}}</td>
+                <td>{{entry.id_number}}</td>
+                <td>Jan 2019</td>
+                <td>{{entry.date_of_birth}}</td>
+                <td>{{entry.last_name}}</td>
+                <td>{{entry.first_name}}</td>
+                <td>{{entry.contract_set.first.start_date}}</td>
+                <td>{% if entry.contract_set.first.termination %}
+                {{entry.contract_set.first.termination.date}}
+                {% else %}
+                    -
+                {% endif %}</td>
+                <td>{% if entry.contract_set.first.termination %}
+                {{entry.contract_set.first.termination.reason_string}}
+                {% else %}
+                    -
+                {% endif %}</td>
+                <td>{{entry.contract_set.first.nature_of_employment}}</td>
+                <td>{{entry.nps_insurable_earnings |accounting }}</td>
+                <td>{{entry.total_nps |accounting }}</td>
+                <td>{{entry.pay_grade.salary |accounting }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>TOTALS</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<div>
+    <p style='margin-top:2rem;'><b>Please add more rows to capture other employees' details</b></p>
+    <table class="borderless">
+        <tbody>
+            <tr>
+                <td>
+                    <div>
+                        <p><b>Employer <br> Representative...............................................</b></p>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <b>Designation....................................Date.........................</b>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <table class="borderless">
+                            <tbody>
+                                <tr>
+                                    <td><b>Official Stamp</b></td>
+                                    <td>
+                                        <div style='width:3cm;height:2cm;border:0.5mm solid black;'></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+</div>
+<div>
+    <div><b>Note: </b></div>
+    <div>
+        <p><b style='font-weight:200'>Use the National I.D to identify employees pending the issue of Social Security
+            Numbers.</b></p>
+            <p><b style='font-weight:200'>The information given in this form may be used for the purposes of other Schemes
+                administered by NSSA.</b></p>
+    </div>
+</div>
+
+
+{% endblock page_contents %}

@@ -339,3 +339,65 @@ class JournalReportForm(PeriodReportForm):
 class AccountReportForm(PeriodReportForm):
     account = forms.ModelChoiceField(models.Account.objects.all(), 
         widget=forms.HiddenInput)
+
+
+class AccountImportForm(forms.Form):
+    file = forms.FileField()
+    sheet_name = forms.CharField()
+    name = forms.IntegerField()
+    description = forms.IntegerField()
+    balance = forms.IntegerField()
+    type = forms.IntegerField()
+    code = forms.IntegerField()
+    balance_sheet_category = forms.IntegerField()
+    start_row = forms.IntegerField()
+    end_row = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h4>File</h4>'),
+            Row(
+                Column('file', css_class='col-6'),
+                Column('sheet_name', css_class='col-6'),
+            ),
+            HTML("""
+            <h4>Columns</h4>
+            <p>State the columns that correspond to the required features to populate an account.Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <ul>
+                <li>Name - the label for the account</li>
+                <li>Description</li>
+                <li>Balance - current balance of the account</li>
+                <li>Type - each row must be populated with one of expense, asset, income, cost-of-sales, liability, equity</li>
+                <li>Balance sheet category - each cell must be populated with one of current_assets, long-term-assets, current-liabilities, long_term-liabilities, equity or not_included </li>
+            </ul>"""),
+            Row(
+                Column('name', css_class='col-2'),
+                Column('description', css_class='col-2'),
+                Column('balance', css_class='col-2'),
+                Column('code', css_class='col-2'),
+                Column('type', css_class='col-2'),
+                Column('balance_sheet_category', css_class='col-2'),
+            ),
+            HTML("""
+            <h4>Rows:</h4>
+            <p>State the rows the list starts and ends in, both are inclusive.</p>"""),
+            Row(
+                Column('start_row', css_class='col-6'),
+                Column('end_row', css_class='col-6'),
+            ),
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+class BulkAccountsForm(forms.Form):
+    data = forms.CharField(widget=forms.HiddenInput)
+
+    def __init__(self, *args,**kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'data',
+            HTML("""<div id='accounts-list'></div>""")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))

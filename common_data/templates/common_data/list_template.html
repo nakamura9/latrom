@@ -18,7 +18,9 @@
                         </button>
                 <div class="dropdown-menu" aria-labelledby="page-actions">
                     <a class="dropdown-item" href="{{new_link}}">Create New <i class="fas fa-pen"></i></a>
-                    
+                    {% for action in action_list %}
+                        <a class="dropdown-item" href="{{action.link}}">{{action.label}} <i class="fas fa-{{action.icon}}"></i></a>
+                    {% endfor %}
                 </div>
             </div>
 

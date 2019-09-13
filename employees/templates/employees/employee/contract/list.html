@@ -1,0 +1,36 @@
+{% extends 'common_data/list_template.html' %}
+
+{% block list_headings %}
+    <tr>
+        <th>Employee</th>
+        <th>Start Date</th>
+        <th>Termination Date</th>
+        <th>Nature of Employment</th>
+        <th>Actions</th>
+    </tr>
+{% endblock %}
+
+{% block list_content %}
+    {% for item in object_list %}
+        <tr>
+            <td>{{item.employee}}</td>
+            <td>{{item.start_date}}</td>
+            <td>{{item.termination_date}}</td>
+            <td>{{item.nature_of_employment}}</td>
+            <td>
+                <div class="dropdown">
+                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Actions
+                        </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item" href="{% url 'employees:contract-details' pk=item.pk %}">
+                        <i class="fas fa-file-alt"></i> View</a>
+                    <a class="dropdown-item" href="{% url 'employees:update-contract' pk=item.pk %}">
+                        <i class="fas fa-edit"></i> Update</a>
+                </div>
+            </div>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
