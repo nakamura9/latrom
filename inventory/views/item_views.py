@@ -397,16 +397,19 @@ class ImportItemsView(ContextMixin, FormView):
                 ws = wb.active
 
             settings = SalesConfig.objects.first()
-            qs = models.UnitOfMeasure.objects.filter(name=row[
-                form.cleaned_data['unit'] -1].value)
-            if qs.exists:
-                unit = qs.first()
-            else:
-                unit = models.UnitOfMeasure.objects.create(
-                    name=row[form.cleaned_data['unit'] -1].value)
             for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
                     max_row = form.cleaned_data['end_row'], 
                     max_col=max(cols)):
+
+
+                qs = models.UnitOfMeasure.objects.filter(name=row[
+                    form.cleaned_data['unit'] -1].value)
+                if qs.exists():
+                    unit = qs.first()
+                else:
+                    unit = models.UnitOfMeasure.objects.create(
+                        name=row[form.cleaned_data['unit'] -1].value)
+                
                 type_mapping = ['product', 'equipment', 'consumable']
                 item = models.InventoryItem.objects.create(
                     name=row[form.cleaned_data['name'] - 1].value,

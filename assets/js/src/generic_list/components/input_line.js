@@ -107,6 +107,15 @@ class inputLine extends Component{
                         value={this.state.data[field.name]}
                         />;    
                     break;
+            case 'date':
+                return <input 
+                        type="date"
+                        className="form-control"
+                        onChange={this.inputHandler}
+                        name={field.name}
+                        value={this.state.data[field.name]}
+                        />;    
+                    break;
             case 'number':
                 return <input 
                     type="number"

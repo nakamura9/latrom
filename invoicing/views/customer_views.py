@@ -18,6 +18,10 @@ from common_data.forms import IndividualForm
 from invoicing import filters, forms, serializers
 from invoicing.models import Customer, Invoice, CreditNote
 from common_data.models import Individual, Organization
+import openpyxl
+import csv
+import json
+import urllib
 
 
 #########################################
@@ -36,6 +40,7 @@ class CustomerCreateView( ContextMixin,
         "title": "New  Customer",
         'description': 'Add individuals and organizations that buy your' 
         ' products to your records',
+
         }
     template_name = os.path.join("invoicing", "customer", "create.html")
     form_class = forms.CustomerForm
@@ -218,7 +223,20 @@ class CustomerUpdateView( ContextMixin, FormView):
 class CustomerListView( ContextMixin, PaginationMixin, FilterView):
     extra_context = {"title": "List of Customers",
                     "new_link": reverse_lazy(
-                        "invoicing:create-customer")}
+                        "invoicing:create-customer"),
+                    "action_list": [
+                            {
+                                'label': 'Import Customers from Excel',
+                                'icon': 'file-excel',
+                                'link': reverse_lazy('invoicing:import-customers-from-excel')
+                            },
+                            {
+                                'label': 'Create Multiple Customers',
+                                'icon': 'file-alt',
+                                'link': reverse_lazy('invoicing:create-multiple-customers')
+                            },
+                        ]
+                    }
     template_name = os.path.join("invoicing", "customer", "list.html")
     filterset_class = filters.CustomerFilter
     paginate_by = 20
@@ -275,39 +293,58 @@ class CreateMultipleCustomersView(FormView):
     template_name = os.path.join('invoicing', 'customer', 
         'create_multiple.html')
     form_class = forms.CreateMultipleCustomersForm
-    success_url=reverse_lazy('invoicing:customer-list')
+    success_url=reverse_lazy('invoicing:customers-list')
 
     def form_valid(self, form):
         resp = super().form_valid(form)
         data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
-        
-        
+        def null_buster(arg):
+            if not arg:
+                return ''
+            return arg
+
         for line in data:
-            if line['type'] == 0:
-                
-            org = Organization.objects.create(
+            cus = None
+            if line['type'] == 'organization':
+                org = Organization.objects.create(
                     legal_name = line['name'],
-                    business_address = line['address'],
-                    email = line['email'],
-                    phone = line['phone'],
+                    business_address = null_buster(line['address']),
+                    email = null_buster(line['email']),
+                    phone = null_buster(line['phone']),
                 )
-            sup = models.Supplier.objects.create(
+                cus =Customer.objects.create(
                     organization=org
                 )
+            else:
+                names = line['name'].split(' ')
+                ind = Individual.objects.create(
+                    first_name=" ".join(names[:-1]),# for those with multiple first names
+                    last_name=names[-1],
+                    address=null_buster(line['address']),
+                    email=null_buster(line['email']),
+                    phone=null_buster(line['phone']),
+                )
+
+                cus = Customer.objects.create(
+                    individual=ind
+                )
+
+            
+            
             if line['account_balance']:
-                    sup.account.balance = line['account_balance']
-                    sup.account.save()
+                    cus.account.balance = line['account_balance']
+                    cus.account.save()
 
         return resp
 
 
 class ImportCustomersView(ContextMixin, FormView):
     extra_context = {
-        'title': 'Import Vendors from Excel File'
+        'title': 'Import Customers from Excel File'
     }
     template_name = os.path.join('common_data', 'crispy_create_template.html')
     form_class = forms.ImportCustomersForm
-    success_url=reverse_lazy('invoicing:customer-list')
+    success_url=reverse_lazy('invoicing:customers-list')
 
     def form_valid(self, form):
         #assumes all suppliers are organizations
@@ -327,6 +364,7 @@ class ImportCustomersView(ContextMixin, FormView):
                 form.cleaned_data['name'],
                 form.cleaned_data['phone'],
                 form.cleaned_data['address'],
+                form.cleaned_data['type'],
                 form.cleaned_data['email'],
                 form.cleaned_data['account_balance'],
             ]
@@ -340,24 +378,36 @@ class ImportCustomersView(ContextMixin, FormView):
             for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
                     max_row = form.cleaned_data['end_row'], 
                     max_col=max(cols)):
-                
-                org  = Organization.objects.create(
-                    legal_name = row[form.cleaned_data['name'] - 1].value,
-                    business_address = null_buster(row[
-                        form.cleaned_data['address'] - 1].value),
-                    email = null_buster(row[
-                        form.cleaned_data['email'] - 1].value),
-                    phone =null_buster(row[
-                        form.cleaned_data['phone'] - 1].value),
-                )
+                cus = None
+                if row[form.cleaned_data['type']-1].value == 0:
+                    org = Organization.objects.create(
+                        legal_name = row[form.cleaned_data['name']-1].value,
+                        business_address = null_buster(row[form.cleaned_data['address']-1].value),
+                        email = null_buster(row[form.cleaned_data['email']-1].value),
+                        phone = null_buster(row[form.cleaned_data['phone']-1].value),
+                    )
+                    cus = Customer.objects.create(
+                        organization=org
+                    )
+                else:
+                    names = row[form.cleaned_data['name']-1].value.split(' ')
+                    ind = Individual.objects.create(
+                        first_name=" ".join(names[:-1]),# for those with multiple first names
+                        last_name=names[-1],
+                        address=null_buster(row[form.cleaned_data['address']-1].value),
+                        email=null_buster(row[form.cleaned_data['email']-1].value),
+                        phone=null_buster(row[form.cleaned_data['phone']-1].value),
+                    )
 
-                sup = models.Supplier.objects.create(
-                    organization=org
-                )
-                if row[form.cleaned_data['account_balance'] -1].value:
-                    sup.account.balance = row[
-                        form.cleaned_data['account_balance'] -1].value
-                
-                    sup.account.save()
+                    cus = Customer.objects.create(
+                        individual=ind
+                    )
+                    
+                    
+                    if row[form.cleaned_data['account_balance'] -1].value:
+                        cus.account.balance = row[
+                            form.cleaned_data['account_balance'] -1].value
+                    
+                        cus.account.save()
                 
         return resp

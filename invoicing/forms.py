@@ -284,14 +284,14 @@ class ImportCustomersForm(forms.Form):
             ),
             HTML("""
             <h4>Columns</h4>
-            <p>State the columns that correspond to the required data tp describe a supplier .Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <p>State the columns that correspond to the required data tp describe a customer .Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
             <ul>
-                <li>Name - Legal name of the supplier</li>
-                <li>Address - Suppliers Physical address that appears on bills</li>
+                <li>Name - Legal name of the customer</li>
+                <li>Address - Customer's Physical address that appears on bills</li>
                 <li>Type - One of Individual or Organization</li>
                 <li>Email</li>
                 <li>Phone</li>
-                <li>Account Balance - current balance with supplier</li>
+                <li>Account Balance - current balance with customer</li>
                 
             </ul>"""),
             Row(
@@ -301,6 +301,81 @@ class ImportCustomersForm(forms.Form):
                 Column('email', css_class='col-2'),
                 Column('phone', css_class='col-2'),
                 Column('account_balance', css_class='col-2'),
+            ),
+            HTML("""
+            <h4>Rows:</h4>
+            <p>State the rows the list starts and ends in, both are inclusive.</p>"""),
+            Row(
+                Column('start_row', css_class='col-6'),
+                Column('end_row', css_class='col-6'),
+            ),
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class ImportInvoiceForm(BootstrapMixin,forms.Form):
+    file = forms.FileField()
+    sheet_name = forms.CharField()
+    date = forms.CharField(
+        widget=forms.DateInput(
+            attrs={'class':'ui-date-picker'}))
+    due = forms.CharField(
+        widget=forms.DateInput(
+            attrs={'class':'ui-date-picker'}))
+    customer = forms.ModelChoiceField(
+        models.Customer.objects.all(),
+        widget=Select2Widget
+        )
+    salesperson = forms.ModelChoiceField(
+        models.SalesRepresentative.objects.all(),
+        widget=Select2Widget
+        )
+    sales_tax = forms.ModelChoiceField(
+        Tax.objects.all()
+        )
+    invoice_number = forms.IntegerField()
+    
+    description = forms.IntegerField()
+    unit = forms.IntegerField()
+    quantity = forms.IntegerField()
+    unit_price = forms.IntegerField()
+    subtotal = forms.IntegerField()
+    
+    start_row = forms.IntegerField()
+    end_row = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h4>File</h4>'),
+            Row(
+                Column('file', css_class='col-6'),
+                Column('sheet_name', css_class='col-6'),
+            ),
+            HTML('<h4>Invoice</h4>'),
+            Row(
+                Column('date', 'due', 'invoice_number',css_class='col-6'),
+                Column('customer', 'salesperson', 'sales_tax',css_class='col-6'),
+            ),
+            
+            HTML("""
+            <h4>Columns</h4>
+            <p>State the columns that correspond to the required data tp describe a customer .Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <ul>
+                <li>Description - Name of product or service. Mark services with a '*' in the description cell. E.g. 'Bearing change' becomes '*Bearing change'.</li>
+                <li>Unit - Unit of measure as it appears on invoice</li>
+                <li>Quantity - One of Individual or Organization</li>
+                <li>Unit Price - Price per item</li>
+                <li>Subtotal - Total for the invoice line</li>
+                
+            </ul>"""),
+            Row(
+                Column('description', css_class='col-4'),
+                Column('unit', css_class='col-2'),
+                Column('quantity', css_class='col-2'),
+                Column('unit_price', css_class='col-2'),
+                Column('subtotal', css_class='col-2'),
             ),
             HTML("""
             <h4>Rows:</h4>

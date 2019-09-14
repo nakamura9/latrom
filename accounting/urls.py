@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from rest_framework import routers
 
 from accounting import views
@@ -29,7 +29,14 @@ currency_conversion_table_router.register(r'^api/currency-conversion-table',
      views.CurrencyConversionTableAPIView)
 
 expense_urls = [
-    re_path(r'^expense/create/?$', views.ExpenseCreateView.as_view(), name="expense-create"),
+    re_path(r'^expense/create/?$', views.ExpenseCreateView.as_view(), 
+        name="expense-create"),
+    path('expense/create-multiple/', 
+        views.CreateMultipleExpensesView.as_view(), 
+        name="create-multiple-expenses"),
+    path('expense/import/', 
+        views.ImportExpensesView.as_view(), 
+        name="import-expenses"),
     re_path(r'^expense/list/?$', views.ExpenseListView.as_view(), 
         name="expense-list"),
     re_path(r'^expense/detail/(?P<pk>[\d]+)/?$', 
@@ -192,6 +199,12 @@ misc_urls = [
 entry_urls = [
     re_path(r'^create-entry/?$', views.JournalEntryCreateView.as_view(), 
         name='create-entry'),
+    path('create-multiple-entries/', 
+        views.CreateMultipleEntriesView.as_view(), 
+        name='create-multiple-entries'),
+    path('import-entries-from-excel/', 
+        views.ImportTransactionView.as_view(), 
+        name='import-entries-from-excel'),
     re_path(r'^compound-entry/?$', views.ComplexEntryView.as_view(), 
         name='compound-entry'),
     re_path(r'^entry-detail/(?P<pk>[\w]+)/?$', 

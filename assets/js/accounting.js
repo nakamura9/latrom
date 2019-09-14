@@ -4,9 +4,12 @@ import TransactionTable from './accounting/compound_transaction';
 import CurrencyConverter from './accounting/currency/containers/root';
 import GenericTable from './src/generic_list/containers/root'
 import SelectWidget from './src/components/select';
+
 const transactionTable = document.getElementById('transaction-table');
 const currency = document.getElementById('currency-converter');
 const accounts = document.getElementById('accounts-list');
+const entries = document.getElementById('entries-list');
+const expenses = document.getElementById('expenses-list');
 
 if(transactionTable){
     ReactDOM.render(<TransactionTable />, transactionTable);
@@ -139,5 +142,95 @@ if(transactionTable){
                 },
             ]}
             />, accounts)
+}else if(entries){
+    ReactDOM.render(<GenericTable 
+            fieldOrder={['date', 'memo', 'account', 'credit', 'debit']}
+            fieldDescriptions={['Date', 'Memo', 'Account', 'Credit','Debit']}
+            formInputID='id_data'
+            fields={[
+                {
+                    'name': 'date',
+                    'type': 'date',
+                    'width': '15',
+                    'required': true
+                },
+                {
+                    'name': 'memo',
+                    'type': 'text',
+                    'width': '20',
+                    'required': true
+                },
+                {
+                    'name': 'account',
+                    'type': 'search',
+                    'width': '25',
+                    'required': true,
+                    'model': 'account',
+                    'app': 'accounting',
+                    'newLink': '/accounting/create-account',
+                    url: '/accounting/api/account/', 
+                    idField: 'id',
+                    displayField: 'name'
+                },
+                {
+                    'name': 'credit',
+                    'type': 'number',
+                    'width': '10',
+                    'required': true
+                },
+                {
+                    'name': 'debit',
+                    'type': 'number',
+                    'width': '10',
+                    'required': true,
+                },
+            ]}
+            />, entries)
+}else if(expenses){
+    ReactDOM.render(<GenericTable 
+            fieldOrder={['date', 'description', 'category', 'amount']}
+            fieldDescriptions={['Date', 'Description', 'Category', 'Amount']}
+            formInputID='id_data'
+            fields={[
+                {
+                    'name': 'date',
+                    'type': 'date',
+                    'width': '15',
+                    'required': true
+                },
+                {
+                    'name': 'description',
+                    'type': 'text',
+                    'width': '20',
+                    'required': true
+                },
+                {
+                    'name': 'category',
+                    'type': 'widget',
+                    'width': '15',
+                    'required': true,
+                    'widgetCreator': (comp) =>{
+                        const handler = (value) =>{
+                            let newData = {...comp.state.data};
+                            newData['category'] = value
+                            comp.setState({data: newData})
+                        }
+                        return(
+                            <SelectWidget
+                                handler={handler}
+                                options={[{'value': 'Advertising', 'label': 'Advertising'}, {'value': 'Bank Service Charges', 'label': 'Bank Service Charges'}, {'value': 'Dues and Subscriptions', 'label': 'Dues and Subscriptions'}, {'value': 'Equipment Rental', 'label': 'Equipment Rental'}, {'value': 'Telephone', 'label': 'Telephone'}, {'value': 'Vehicles', 'label': 'Vehicles'}, {'value': 'Travel and Expenses', 'label': 'Travel and Expenses'}, {'value': 'Supplies', 
+                                'label': 'Supplies'}, {'value': 'Salaries and Wages', 'label': 'Salaries and Wages'}, {'value': 'Rent', 'label': 'Rent'}, {'value': 'Payroll Taxes', 'label': 'Payroll Taxes'}, {'value': 'Legal and Accounting', 'label': 'Legal and Accounting'}, {'value': 'Insurance', 'label': 'Insurance'}, {'value': 'Office Expenses', 'label': 'Office Expenses'}, {'value': 'Carriage Outwards', 'label': 'Carriage Outwards'}, {'value': 'Other', 
+                                'label': 'Other'}]} />
+                        )
+                    }
+                },
+                {
+                    'name': 'amount',
+                    'type': 'number',
+                    'width': '10',
+                    'required': true
+                }
+            ]}
+            />, expenses)
 }
 

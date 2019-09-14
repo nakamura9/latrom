@@ -22,6 +22,10 @@ contract_urls = [
 employee_urls = [
     re_path(r'^create-employee/?$', views.EmployeeCreateView.as_view(), 
         name='create-employee'),
+    path('create-multiple-employees/', views.CreateMultipleEmployeesView.as_view(), 
+        name='create-multiple-employees'),
+    path('import-employees-from-excel/', views.ImportEmployeesView.as_view(), 
+        name='import-employees-from-excel'),
     re_path(r'^list-employees/?$', views.EmployeeListView.as_view(), 
         name='list-employees'),
     re_path(r'^employee-update/(?P<pk>[\w]+)/?$', 

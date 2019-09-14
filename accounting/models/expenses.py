@@ -202,3 +202,27 @@ class RecurringExpense(AbstractExpense):
     def get_absolute_url(self):
         return reverse("accounting:recurring-expense-detail", kwargs={"pk": self.pk})
     
+
+'''class Bill(models.Model):
+    vendor = models.ForeignKey('inventory.supplier', 
+        on_delete=models.SET_NULL, null=True)
+    date = models.DateField()
+    reference = models.CharField(max_length=255, blank=True)
+    due = models.DateField()
+    memo = models.TextField(blank=True)
+
+
+class BillLine(models.Model):
+    bill = models.ForeignKey('accounting.bill', on_delete=models.CASCADE)
+    expense = models.ForeignKey('accounting.expense', on_delete=models.CASCADE)
+
+class BillPayment(models.Model):
+    date = models.DateField()
+    account = models.ForeignKey('accounting.account', 
+        limit_choices_to=Q(type='asset'), 
+        on_delete=models.SET_NULL,
+        null=True)
+    bill = models.ForeignKey('accounting.bill', 
+        on_delete=models.SET_NULL, null=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    memo = models.TextField(blank=True)'''

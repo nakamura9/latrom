@@ -401,3 +401,130 @@ class BulkAccountsForm(forms.Form):
             HTML("""<div id='accounts-list'></div>""")
         )
         self.helper.add_input(Submit('submit', 'Submit'))
+
+class ImportJournalEntryForm(BootstrapMixin, forms.Form):
+    date = forms.IntegerField()
+    memo = forms.IntegerField()
+    file = forms.FileField()
+    sheet_name = forms.CharField(max_length = 256)
+    start_row = forms.IntegerField()
+    end_row = forms.IntegerField()
+    credit = forms.IntegerField()
+    debit = forms.IntegerField()
+    entry_id = forms.IntegerField()
+    account = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h4>File</h4>'),
+            Row(
+                Column('file', css_class='col-6'),
+                Column('sheet_name', css_class='col-6'),
+            ),
+            HTML("""
+            <h4>Columns</h4>
+            <p>State the columns that correspond to the required features to populate an account.Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <ul>
+                <li>Date - in the format DD/MM/YYYY</li>
+                <li>Entry ID - number represeting unique entry identifier</li>
+                <li>Memo - short description of transaction</li>
+                <li>Credit - amount credited account</li>
+                <li>Debit - amount debited the account</li>
+                <li>Account - the code of the account affected</li>
+            </ul>"""),
+             Row(
+                Column('date', css_class='col-2'),
+                Column('entry_id', css_class='col-2'),
+                Column('memo', css_class='col-2'),
+                Column('credit', css_class='col-2'),
+                Column('debit', css_class='col-2'),
+                Column('account', css_class='col-2'),
+            ),
+            HTML("""
+            <h4>Rows:</h4>
+            <p>State the rows the list starts and ends in, both are inclusive.</p>"""),
+            Row(
+                Column('start_row', css_class='col-6'),
+                Column('end_row', css_class='col-6'),
+            ),
+            )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class MultipleEntriesForm(forms.Form):
+    data = forms.CharField(widget=forms.HiddenInput)
+
+    def __init__(self, *args,**kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'data',
+            HTML("""<div id='entries-list'></div>""")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class ImportExpensesForm(BootstrapMixin, forms.Form):
+    file = forms.FileField()
+    sheet_name = forms.CharField(max_length = 256)
+    start_row = forms.IntegerField()
+    end_row = forms.IntegerField()
+    amount = forms.IntegerField()
+    description = forms.IntegerField()
+    category = forms.IntegerField()
+    date = forms.IntegerField()
+    account_paid_from  = forms.ModelChoiceField(
+        models.Account.objects.filter(type='asset'), widget=Select2Widget)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h4>File</h4>'),
+            Row(
+                Column('file', css_class='col-6'),
+                Column('sheet_name', css_class='col-6'),
+            ),
+            'account_paid_from',
+            HTML("""
+            <h4>Columns</h4>
+            <p>State the columns that correspond to the required features to record an expense.Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <ul>
+                <li>Date - in the format DD/MM/YYYY</li>
+                <li>Description - short description of the expense incurred</li>
+                <li>Category - The type of expense one of: Advertising, Bank And Service Charges, Dues and Subscriptions, Equipment Rental, Telephone, Vehicles, Travel and Expenses, Supplies, Salaries and Wages, Rent, Payroll Taxes, Legal and Accounting, Insurance, Office Expenses, Carriage Outwards. NB: Categories are case-sensitive and will default to other if not among those listed.</li>
+                <li>Amount - amount expensed</li>
+            </ul>"""),
+             Row(
+                Column('date', css_class='col-3'),
+                Column('description', css_class='col-3'),
+                Column('category', css_class='col-3'),
+                Column('amount', css_class='col-3'),
+            ),
+            HTML("""
+            <h4>Rows:</h4>
+            <p>State the rows the list starts and ends in, both are inclusive.</p>"""),
+            Row(
+                Column('start_row', css_class='col-6'),
+                Column('end_row', css_class='col-6'),
+            ),
+            )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class MultipleExpensesForm(forms.Form):
+    data = forms.CharField(widget=forms.HiddenInput)
+    account_paid_from  = forms.ModelChoiceField(
+        models.Account.objects.filter(type='asset'), widget=Select2Widget)
+
+    def __init__(self, *args,**kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'data',
+            'account_paid_from',
+            HTML("""<div id='expenses-list'></div>""")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))

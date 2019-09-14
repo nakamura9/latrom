@@ -44,6 +44,9 @@ quotation_urls = [
 urls = [
     re_path(r'^create-invoice/?$', views.InvoiceCreateView.as_view(), 
         name='create-invoice'),
+    path('import-invoice-from-excel/', 
+        views.ImportInvoiceFromExcelView.as_view(), 
+        name='import-invoice-from-excel'),
     re_path(r'^(?P<customer>[\d]+)/create-invoice/?$', 
             views.InvoiceCreateView.as_view(), name='create-invoice'),
     re_path(r'^invoice-detail/(?P<pk>[\d]+)/?$', 

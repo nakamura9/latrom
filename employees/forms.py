@@ -263,7 +263,6 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                         Column('email','phone', css_class='form-group col-6'),
                         Column('address', css_class='form-group col-6'),
                     ),
-                    'title',
                     ),
                     Tab('Personal',
                         'date_of_birth',
@@ -271,8 +270,6 @@ class EmployeeForm(forms.ModelForm, BootstrapMixin):
                         'gender',
                     ),
                     Tab('Conditions of service',
-                        'contract',
-                        'termination',
                         'pay_grade',
                         'leave_days',
                         'pin',
@@ -650,5 +647,70 @@ class TerminationForm(forms.ModelForm, BootstrapMixin):
             'contract',
             'date',
             'reason_for_termination'
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+class CreateMultipleEmployeesForm(forms.Form):
+    data = forms.CharField(widget=forms.HiddenInput)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'data',
+            HTML("""<div id='multiple-employees-list'></div>""")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+
+class ImportEmployeesForm(forms.Form):
+    file = forms.FileField()
+    sheet_name = forms.CharField()
+    first_name = forms.IntegerField()
+    last_name = forms.IntegerField()
+    address = forms.IntegerField()
+    email = forms.IntegerField()
+    phone = forms.IntegerField()
+    date_of_birth = forms.IntegerField()
+    start_row = forms.IntegerField()
+    end_row = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h4>File</h4>'),
+            Row(
+                Column('file', css_class='col-6'),
+                Column('sheet_name', css_class='col-6'),
+            ),
+            HTML("""
+            <h4>Columns</h4>
+            <p>State the columns that correspond to the required data to describe an employee .Convert alphabetic columns to numbers and insert below e.g. A=1, D=4 etc.</p>
+            <ul>
+                <li>First Name, Last Name - Employee's legal name</li>
+                <li>Address - Employee's current residential address</li>
+                <li>Email</li>
+                <li>Phone</li>
+                <li>Date of Birth - Date of birth DD/MM/YYYY</li>
+                
+            </ul>"""),
+            Row(
+                Column('first_name', css_class='col-2'),
+                Column('last_name', css_class='col-2'),
+                Column('address', css_class='col-2'),
+                Column('email', css_class='col-2'),
+                Column('phone', css_class='col-2'),
+                Column('date_of_birth', css_class='col-2'),
+            ),
+            HTML("""
+            <h4>Rows:</h4>
+            <p>State the rows the list starts and ends in, both are inclusive.</p>"""),
+            Row(
+                Column('start_row', css_class='col-6'),
+                Column('end_row', css_class='col-6'),
+            ),
         )
         self.helper.add_input(Submit('submit', 'Submit'))

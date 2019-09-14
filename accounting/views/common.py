@@ -7,6 +7,7 @@ import json
 import os
 import urllib
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
@@ -342,8 +343,19 @@ class JournalListView( ContextMixin, PaginationMixin, FilterView):
     paginate_by = 20
     extra_context = {
         "title": "Accounting Journals",
-        'new_link': reverse_lazy('accounting:create-journal')
-                }
+        'new_link': reverse_lazy('accounting:create-journal'),
+        'action_list': [
+            {
+                'link': reverse_lazy('accounting:import-entries-from-excel'),
+                'label': 'Import Entries from Excel',
+                'icon': 'file-excel'
+            },
+            {
+                'link': reverse_lazy('accounting:create-multiple-entries'),
+                'label': 'Create Multiple Journal Entries ',
+                'icon': 'file-alt'
+            }
+        ]}
 
     def get_queryset(self):
         return models.Journal.objects.all().order_by('name')
@@ -436,17 +448,29 @@ class ExpenseCreateView(ContextMixin,  CreateView):
 
 class ExpenseListView(ContextMixin,  PaginationMixin, 
         FilterView):
-    template_name = os.path.join('accounting', 'expense_list.html')
+    template_name = os.path.join('accounting', 'expense','list.html')
     model = models.Expense
     filterset_class = filters.ExpenseFilter
     extra_context = {
         'title': 'List of Expenses',
-        'new_link': reverse_lazy('accounting:expense-create')
+        'new_link': reverse_lazy('accounting:expense-create'),
+        'action_list': [
+            {
+                'link': reverse_lazy('accounting:import-expenses'),
+                'label': 'Import from Excel',
+                'icon': 'file-excel'
+            },
+            {
+                'link': reverse_lazy('accounting:create-multiple-expenses'),
+                'label': 'Create Multiple Expenses',
+                'icon': 'file-alt'
+            }
+        ]
     }
 
 
 class ExpenseDetailView( DetailView):
-    template_name = os.path.join('accounting', 'expense_detail.html')
+    template_name = os.path.join('accounting', 'expense','detail.html')
     model = models.Expense
 
 class ExpenseDeleteView( DeleteView):
@@ -474,7 +498,8 @@ class RecurringExpenseUpdateView(ContextMixin,
 
 class RecurringExpenseListView(ContextMixin,  
         PaginationMixin, FilterView):
-    template_name = os.path.join('accounting', 'recurring_expense_list.html')
+    template_name = os.path.join('accounting', 'expense',
+        'recurring','list.html')
     model = models.RecurringExpense
     filterset_class = filters.RecurringExpenseFilter
     extra_context = {
@@ -484,7 +509,8 @@ class RecurringExpenseListView(ContextMixin,
 
 
 class RecurringExpenseDetailView( DetailView):
-    template_name = os.path.join('accounting', 'recurring_expense_detail.html')
+    template_name = os.path.join('accounting', 'expense', 'recurring',
+        'detail.html')
     model = models.RecurringExpense
 
 class RecurringExpenseDeleteView( DeleteView):
@@ -723,8 +749,206 @@ class BulkAccountCreateView(FormView):
 
         return resp
 
-class ImportTransactionView(TemplateView):
-    pass
+class ImportTransactionView(ContextMixin, FormView):
+    form_class = forms.ImportJournalEntryForm
+    template_name = os.path.join('common_data','crispy_create_template.html')
+    success_url = reverse_lazy('accounting:journal-list')
 
-class BulkEntryCreateView(TemplateView):
-    pass
+    extra_context = {
+        'title': 'Import Journal Entries View'
+        }
+
+    def form_valid(self, form):
+        resp = super().form_valid(self)
+
+        fields = {
+            'acc': form.cleaned_data['account'] -1,
+            'date': form.cleaned_data['date'] -1,
+            'memo': form.cleaned_data['memo'] -1,
+            'entry_id': form.cleaned_data['entry_id'] -1,
+            'credit': form.cleaned_data['credit'] -1,
+            'debit': form.cleaned_data['debit'] -1
+        }
+
+        print(fields['acc'])
+        file = form.cleaned_data['file']
+        if file.name.endswith('.csv'):
+            #process csv 
+            pass
+        else:
+
+            cols = fields.values()
+            wb = openpyxl.load_workbook(file.file)
+            try:
+                ws = wb[form.cleaned_data['sheet_name']]
+            except:
+                ws = wb.active
+            for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
+                    max_row = form.cleaned_data['end_row'], 
+                    max_col=max(cols)+1):
+                entry = None
+                qs = models.JournalEntry.objects.filter(
+                    id=row[fields['entry_id']].value)
+                if qs.exists():
+                    entry = qs.first()
+                else:
+                    date = None
+                    if isinstance(row[fields['date']].value, str):
+                        date = datetime.datetime.strptime(
+                            row[fields['date']].value,
+                            '%Y-%m-%d')
+                    else: 
+                        date = row[fields['date']].value.strftime('%Y-%m-%d')
+
+                    entry= models.JournalEntry.objects.create(
+                        journal=models.Journal.objects.get(id=5),
+                        memo=row[fields['memo']].value,
+                        date=date,
+                        id=row[fields['entry_id']].value,
+                    )
+                
+                qs = models.Account.objects.filter(id=row[fields['acc']].value)
+                if not qs.exists():
+                    messages.info(self.request, 
+                        f'Account with ID {row[fields["acc"]].value} does not exist, entry skipped')
+                    continue
+                acc = qs.first()
+                print(entry)
+                if row[fields['credit']].value and \
+                        row[fields['credit']].value > 0:
+                    
+                    models.Credit.objects.create(
+                        amount=row[fields['credit']].value,
+                        account=acc,
+                        entry=entry
+                    )
+                if row[fields['debit']].value and \
+                        row[fields['debit']].value > 0:
+                    models.Credit.objects.create(
+                        amount=row[fields['debit']].value,
+                        account=acc,
+                        entry=entry
+                    )
+                
+
+        
+
+        return resp
+
+
+class CreateMultipleEntriesView(FormView):
+    template_name = os.path.join('accounting', 'journal', 
+        'multiple_create.html')
+    form_class = forms.MultipleEntriesForm
+    success_url = reverse_lazy('accounting:journal-list')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+
+        data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
+        for line in data:
+            entry = models.JournalEntry.objects.create(
+                date=line['date'],
+                journal=models.Journal.objects.get(pk=5),
+                memo=line['memo'],
+            )
+            if float(line['credit']) > 0:
+                models.Credit.objects.create(
+                    entry=entry,
+                    amount=line['credit'],
+                    account=models.Account.objects.get(
+                        pk=line['account'].split('-')[0])
+                )
+            
+            if float(line['debit']) > 0:
+                models.Debit.objects.create(
+                    entry=entry,
+                    amount=line['debit'],
+                    account=models.Account.objects.get(
+                        pk=line['account'].split('-')[0])
+                )
+        return resp
+
+
+class ImportExpensesView(ContextMixin, FormView):
+    form_class = forms.ImportExpensesForm
+    template_name = os.path.join('common_data','crispy_create_template.html')
+    success_url = reverse_lazy('accounting:expense-list')
+
+    extra_context = {
+        'title': 'Import Journal Entries View'
+        }
+
+    def form_valid(self, form):
+        resp = super().form_valid(self)
+
+        acc = form.cleaned_data['account_paid_from']
+        fields = {
+            'desc': form.cleaned_data['description'] -1,
+            'date': form.cleaned_data['date'] -1,
+            'category': form.cleaned_data['category'] -1,
+            'amt': form.cleaned_data['amount'] -1,
+        }
+
+        file = form.cleaned_data['file']
+        if file.name.endswith('.csv'):
+            #process csv 
+            pass
+        else:
+
+            cols = fields.values()
+            wb = openpyxl.load_workbook(file.file)
+            try:
+                ws = wb[form.cleaned_data['sheet_name']]
+            except:
+                ws = wb.active
+            for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
+                    max_row = form.cleaned_data['end_row'], 
+                    max_col=max(cols)+1):
+                cat_string = row[fields['category']].value
+                #invert keys
+                category = {i[1]: i[0] \
+                    for i in models.EXPENSE_CHOICES}.get(cat_string, 15)
+                date = row[fields['date']].value
+                if isinstance(date, str):
+                    date = datetime.datetime.strptime(date, '%d/%m/%Y')
+
+                exp = models.Expense.objects.create(
+                    debit_account=acc,
+                    date=date,
+                    description=row[fields['desc']].value,
+                    amount=row[fields['amt']].value,
+                    category=category
+                )
+                exp.create_entry()
+
+        return resp
+
+
+class CreateMultipleExpensesView(FormView):
+    template_name = os.path.join('accounting', 'expense', 
+        'create_multiple.html')
+    form_class = forms.MultipleExpensesForm
+    success_url = reverse_lazy('accounting:expense-list')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        acc = form.cleaned_data['account_paid_from']
+
+        data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
+        for line in data:
+            cat_string = line['category']
+            #invert keys
+            category = {i[1]: i[0] \
+                for i in models.EXPENSE_CHOICES}.get(cat_string)
+
+            exp = models.Expense.objects.create(
+                    debit_account=acc,
+                    date=datetime.datetime.strptime(
+                        line['date'], '%Y-%m-%d'),
+                    description=line['description'],
+                    amount=line['amount'],
+                    category=category
+                )
+            exp.create_entry()
+        return resp

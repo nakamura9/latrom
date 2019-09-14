@@ -22,6 +22,10 @@ from common_data.views import PaginationMixin
 from common_data.models import SingletonModel
 from collections import OrderedDict
 
+import openpyxl
+import csv
+
+
 from employees import filters, forms, models, serializers
 
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
@@ -83,7 +87,19 @@ class EmployeeListView( ContextMixin, PaginationMixin, FilterView):
     paginate_by = 20
     extra_context = {
         'title': 'List of Employees',
-        'new_link': reverse_lazy('employees:create-employee')
+        'new_link': reverse_lazy('employees:create-employee'),
+        "action_list": [
+            {
+                'label': 'Import Employees from Excel',
+                'icon': 'file-excel',
+                'link': reverse_lazy('employees:import-employees-from-excel')
+            },
+            {
+                'label': 'Create Multiple Employees',
+                'icon': 'file-alt',
+                'link': reverse_lazy('employees:create-multiple-employees')
+            },
+        ]
     }
     queryset = models.Employee.objects.filter(active=True).order_by('first_name')
 
@@ -280,3 +296,82 @@ class TerminationCreateView(ContextMixin ,CreateView):
         return {
             'contract': self.kwargs['pk']
             }
+
+class CreateMultipleEmployeesView(FormView):
+    template_name = os.path.join('employees', 'employee', 
+        'create_multiple.html')
+    form_class = forms.CreateMultipleEmployeesForm
+    success_url=reverse_lazy('employees:list-employees')
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
+        
+        
+        for line in data:
+            dob = line['date_of_birth']
+            models.Employee.objects.create(
+                first_name = line['first_name'],
+                last_name = line['last_name'],
+                phone = line['phone'],
+                address = line['address'],
+                email = line['email'],
+                date_of_birth = datetime.datetime.strptime(dob, '%Y-%m-%d')
+            )
+        return resp
+
+
+class ImportEmployeesView(ContextMixin, FormView):
+    extra_context = {
+        'title': 'Import Employees from Excel File'
+    }
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    form_class = forms.ImportEmployeesForm
+    success_url=reverse_lazy('employees:list-employees')
+
+    def form_valid(self, form):
+        #assumes all suppliers are organizations
+        resp = super().form_valid(form)
+        def null_buster(arg):
+            if not arg:
+                return ''
+            return arg
+
+
+        file = form.cleaned_data['file']
+        if file.name.endswith('.csv'):
+            #process csv 
+            pass
+        else:
+            cols = [
+                form.cleaned_data['first_name'],
+                form.cleaned_data['last_name'],
+                form.cleaned_data['phone'],
+                form.cleaned_data['address'],
+                form.cleaned_data['email'],
+                form.cleaned_data['date_of_birth'],
+            ]
+            wb = openpyxl.load_workbook(file.file)
+            try:
+                ws = wb[form.cleaned_data['sheet_name']]
+            except:
+                ws = wb.active
+
+        
+            for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
+                    max_row = form.cleaned_data['end_row'], 
+                    max_col=max(cols)):
+                dob = row[form.cleaned_data['date_of_birth']-1].value
+                if dob:
+                    dob = datetime.datetime.strptime(dob, '%d/%m/%Y')
+                models.Employee.objects.create(
+                    first_name=row[form.cleaned_data['first_name']-1].value,
+                    last_name=row[form.cleaned_data['last_name']-1].value,
+                    email=null_buster(row[form.cleaned_data['email']-1].value),
+                    phone=null_buster(row[form.cleaned_data['phone']-1].value),
+                    address=null_buster(
+                        row[form.cleaned_data['address']-1].value),
+                    date_of_birth=dob,
+                )
+                
+        return resp

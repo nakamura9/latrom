@@ -45,7 +45,6 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     
 
     employee_number = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=32)
     pay_grade = models.ForeignKey('employees.PayGrade', 
         on_delete=models.CASCADE, blank=True, null=True)
     leave_days = models.FloatField(default=0)

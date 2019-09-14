@@ -26,6 +26,10 @@ from inventory.forms import ShippingAndHandlingForm
 from common_data.forms import AuthenticateForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+import csv
+import openpyxl
+from services.models import Service
+from inventory.models import InventoryItem,ProductComponent, UnitOfMeasure
 
 
 def process_data(items, inv):
@@ -37,8 +41,17 @@ def process_data(items, inv):
 
 
 class InvoiceListView( ContextMixin, PaginationMixin, FilterView):
-    extra_context = {"title": "Quotation + Invoice List",
-                    "new_link": reverse_lazy("invoicing:create-invoice")}
+    extra_context = {
+        "title": "Quotation + Invoice List",
+        "new_link": reverse_lazy("invoicing:create-invoice"),
+        "action_list": [
+            {
+                'label': 'Import Invoice from Excel',
+                'icon': 'file-excel',
+                'link': reverse_lazy('invoicing:import-invoice-from-excel')
+            }
+        ]
+        }
     template_name = os.path.join("invoicing", "invoice","list.html")
     filterset_class = filters.InvoiceFilter
     paginate_by = 20
@@ -292,3 +305,123 @@ class ShippingExpenseListView(DetailView):
     model = Invoice
     template_name = os.path.join("invoicing", "invoice", 
         "shipping_list.html")
+
+
+class ImportInvoiceFromExcelView(FormView):
+    form_class = forms.ImportInvoiceForm
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    success_url = reverse_lazy('invoicing:invoices-list')
+    
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        def null_buster(arg):
+            return arg if arg else ''
+
+        file = form.cleaned_data['file']
+        if file.name.endswith('.csv'):
+            #process csv 
+            pass
+        else:
+
+            cols = [
+                form.cleaned_data['description'],
+                form.cleaned_data['unit_price'],
+                form.cleaned_data['unit'],
+                form.cleaned_data['quantity'],
+                form.cleaned_data['subtotal'],
+            ]
+            wb = openpyxl.load_workbook(file.file)
+            try:
+                ws = wb[form.cleaned_data['sheet_name']]
+            except:
+                ws = wb.active
+
+            inv = Invoice.objects.create(
+                date=form.cleaned_data['date'],
+                due=form.cleaned_data['due'],
+                status='invoice',
+                invoice_number=form.cleaned_data['invoice_number'],
+                draft=False,
+                customer=form.cleaned_data['customer'],
+                salesperson=form.cleaned_data['salesperson'],
+            )
+
+            
+            for row in ws.iter_rows(min_row=form.cleaned_data['start_row'],
+                    max_row = form.cleaned_data['end_row'], 
+                    max_col=max(cols)):
+
+                unit = None
+                line = None
+                item= None
+                component=None 
+
+                qs = UnitOfMeasure.objects.filter(name=null_buster(row[
+                    form.cleaned_data['unit'] -1].value))
+                if qs.exists():
+                    unit = qs.first()
+                else:
+                    unit = UnitOfMeasure.objects.create(
+                        name=null_buster(
+                            row[form.cleaned_data['unit'] -1].value))
+                desc = row[form.cleaned_data['description'] - 1].value
+                
+
+                if desc.startswith('*'):
+                    #if a sevice
+                    qs = Service.objects.filter(name=desc[1:])
+                    if qs.exists():
+                        service = qs.first()
+                    else:
+                        service = Service.objects.create(
+                            name=desc,
+                            description=desc,
+                            hourly_rate=0.0,
+                            flat_fee=row[
+                                form.cleaned_data['unit_price']-1].value,
+                            is_listed=True)
+                    
+                    component = ServiceLineComponent.objects.create(
+                        service=service,
+                        hours=row[
+                                form.cleaned_data['quantity']-1].value,
+                        flat_fee=row[
+                                form.cleaned_data['unit_price']-1].value
+                    )
+                    InvoiceLine.objects.create(
+                        service=component,
+                        tax=form.cleaned_data['sales_tax'],
+                        line_type=2,
+                        invoice=inv
+                    )
+                else:
+                    qs = InventoryItem.objects.filter(name=desc)
+                    if qs.exists():
+                        item = qs.first()
+                    else:
+                        item = InventoryItem.objects.create(
+                            name=desc,
+                            type=0,
+                            description=desc,
+                            unit=unit,
+                            product_component=ProductComponent.objects.create(
+                                pricing_method=0,
+                                direct_price=row[
+                                    form.cleaned_data['unit_price']-1].value,
+                                tax=form.cleaned_data['sales_tax']
+                            ))
+                    
+                    component = ProductLineComponent.objects.create(
+                        product=item,
+                        unit_price=row[form.cleaned_data['unit_price']-1].value,
+                        quantity=row[form.cleaned_data['quantity']-1].value,
+                    )
+                    InvoiceLine.objects.create(
+                        product=component,
+                        tax=form.cleaned_data['sales_tax'],
+                        line_type=1,
+                        invoice=inv
+                    )
+
+               
+        return resp

@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from invoicing import views
 from rest_framework.routers import DefaultRouter
 from .report_urls import report_urls
@@ -12,6 +12,12 @@ customer_urls = [
     re_path(r'^create-customer/?$', 
         views.CustomerCreateView.as_view(), 
         name='create-customer'),
+    path('create-multiple-customers/', 
+        views.CreateMultipleCustomersView.as_view(), 
+        name='create-multiple-customers'),
+    path('import-customers-from-excel/', 
+        views.ImportCustomersView.as_view(), 
+        name='import-customers-from-excel'),
     re_path(r'^update-customer/(?P<pk>[\w]+)/?$', 
         views.CustomerUpdateView.as_view(), 
         name='update-customer'),

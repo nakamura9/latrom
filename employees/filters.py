@@ -7,8 +7,8 @@ class EmployeeFilter(django_filters.FilterSet):
     class Meta:
         model = models.Employee
         fields = {
-            'title': ['icontains'],
             'first_name': ['icontains'],
+            'last_name': ['icontains'],
         }
 
 
