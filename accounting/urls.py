@@ -28,6 +28,18 @@ currency_conversion_table_router = routers.DefaultRouter()
 currency_conversion_table_router.register(r'^api/currency-conversion-table',
      views.CurrencyConversionTableAPIView)
 
+bill_urls = [
+    path('create-bill/', views.BillCreateView.as_view(), name='create-bill'),
+    path('update-bill/<int:pk>', 
+        views.BillUpdateView.as_view(), name='update-bill'),
+    path('list-bills/', views.BillListView.as_view(), name='list-bills'),
+    path('bill-details/<int:pk>', 
+        views.BillDetailView.as_view(), name='bill-details'),
+    path('create-bill-payment/<int:pk>', 
+        views.BillPaymentView.as_view(), name='create-bill-payment'),
+
+]
+
 expense_urls = [
     re_path(r'^expense/create/?$', views.ExpenseCreateView.as_view(), 
         name="expense-create"),
@@ -236,4 +248,5 @@ urlpatterns =[
     entry_urls  + account_router.urls  + expense_urls + report_urls + \
     expense_router.urls + recurring_expense_urls + asset_urls + \
     bookkeeper_urls + currency_urls + currency_router.urls + \
-    currency_conversion_line_router.urls + currency_conversion_table_router.urls + settings_router.urls
+    currency_conversion_line_router.urls + currency_conversion_table_router.urls + settings_router.urls + \
+    bill_urls

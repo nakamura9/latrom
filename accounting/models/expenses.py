@@ -203,13 +203,47 @@ class RecurringExpense(AbstractExpense):
         return reverse("accounting:recurring-expense-detail", kwargs={"pk": self.pk})
     
 
-'''class Bill(models.Model):
+class Bill(models.Model):
     vendor = models.ForeignKey('inventory.supplier', 
         on_delete=models.SET_NULL, null=True)
     date = models.DateField()
     reference = models.CharField(max_length=255, blank=True)
     due = models.DateField()
     memo = models.TextField(blank=True)
+    entry= models.ForeignKey('accounting.journalentry', 
+        on_delete=models.SET_NULL,
+        blank=True, 
+        null=True)
+
+    def get_absolute_url(self):
+        return reverse("accounting:bill-details", kwargs={"pk": self.pk})
+    
+    @property
+    def total(self):
+        return sum([i.expense.amount for i in self.billline_set.all()])
+
+    @property
+    def total_payments(self):
+        return sum([i.amount for i in self.billpayment_set.all()])
+
+    def create_entry(self):
+        settings = accounting.models.AccountingSettings.objects.first()
+        j = accounting.models.transactions.JournalEntry.objects.create(
+            date = self.date,
+            memo =  "Bill for %s" % self.vendor,
+            journal = accounting.models.books.Journal.objects.get(pk=2),# cash disbursements
+            created_by=settings.default_bookkeeper.employee.user,
+            draft= False
+        )
+        #credit vendor and debit expense account
+        j.credit(self.total, self.vendor.account)
+        
+        for line in self.billline_set.all():
+            j.debit(line.expense.amount, 
+                line.expense.expense_account)
+        
+        self.entry = j
+        self.save()
 
 
 class BillLine(models.Model):
@@ -225,4 +259,24 @@ class BillPayment(models.Model):
     bill = models.ForeignKey('accounting.bill', 
         on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    memo = models.TextField(blank=True)'''
+    memo = models.TextField(blank=True)
+    entry= models.ForeignKey('accounting.journalentry', 
+        on_delete=models.SET_NULL,
+        blank=True, 
+        null=True)
+
+    def get_absolute_url(self):
+        return reverse("accounting:bill-details", kwargs={"pk": self.bill.pk})
+    
+    def create_entry(self):
+        settings = accounting.models.AccountingSettings.objects.first()
+        j = accounting.models.transactions.JournalEntry.objects.create(
+            date = self.date,
+            memo =  "Bill payment for  Bill #%s" % self.bill.pk,
+            journal = accounting.models.books.Journal.objects.get(pk=2),# cash disbursements
+            created_by=settings.default_bookkeeper.employee.user,
+            draft= False
+        )
+
+        j.debit(self.amount, self.bill.vendor.account)
+        j.credit(self.amount, self.account)

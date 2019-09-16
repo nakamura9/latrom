@@ -10,6 +10,7 @@ const currency = document.getElementById('currency-converter');
 const accounts = document.getElementById('accounts-list');
 const entries = document.getElementById('entries-list');
 const expenses = document.getElementById('expenses-list');
+const bills = document.getElementById('bill-table');
 
 if(transactionTable){
     ReactDOM.render(<TransactionTable />, transactionTable);
@@ -232,5 +233,45 @@ if(transactionTable){
                 }
             ]}
             />, expenses)
+}else if(bills){
+    ReactDOM.render(<GenericTable 
+            fieldOrder={['category', 'description', 'amount']}
+            fieldDescriptions={['Expense Category', 'Memo', 'Amount']}
+            formInputID='id_data'
+            fields={[
+                {
+                    'name': 'category',
+                    'type': 'widget',
+                    'width': '30',
+                    'required': true,
+                    'widgetCreator': (comp) =>{
+                        const handler = (value) =>{
+                            let newData = {...comp.state.data};
+                            newData['category'] = value
+                            comp.setState({data: newData})
+                        }
+                        return(
+                            <SelectWidget
+                                handler={handler}
+                                options={[{'value': 'Advertising', 'label': 'Advertising'}, {'value': 'Bank Service Charges', 'label': 'Bank Service Charges'}, {'value': 'Dues and Subscriptions', 'label': 'Dues and Subscriptions'}, {'value': 'Equipment Rental', 'label': 'Equipment Rental'}, {'value': 'Telephone', 'label': 'Telephone'}, {'value': 'Vehicles', 'label': 'Vehicles'}, {'value': 'Travel and Expenses', 'label': 'Travel and Expenses'}, {'value': 'Supplies', 
+                                'label': 'Supplies'}, {'value': 'Salaries and Wages', 'label': 'Salaries and Wages'}, {'value': 'Rent', 'label': 'Rent'}, {'value': 'Payroll Taxes', 'label': 'Payroll Taxes'}, {'value': 'Legal and Accounting', 'label': 'Legal and Accounting'}, {'value': 'Insurance', 'label': 'Insurance'}, {'value': 'Office Expenses', 'label': 'Office Expenses'}, {'value': 'Carriage Outwards', 'label': 'Carriage Outwards'}, {'value': 'Other', 
+                                'label': 'Other'}]} />
+                        )
+                    }
+                },
+                {
+                    'name': 'description',
+                    'type': 'text',
+                    'width': '50',
+                    'required': true
+                },
+                {
+                    'name': 'amount',
+                    'type': 'number',
+                    'width': '20',
+                    'required': true
+                },
+            ]}
+            />, bills)
 }
 

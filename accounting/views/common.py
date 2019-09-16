@@ -34,6 +34,8 @@ import pygal
 #constants
 import openpyxl
 import csv
+
+
 CREATE_TEMPLATE = os.path.join('common_data', 'create_template.html')
 
 class Dashboard( TemplateView):
@@ -98,7 +100,7 @@ class JournalEntryIframeView(ListView):
     def get_queryset(self):
         return models.JournalEntry.objects.filter(
             journal= models.Journal.objects.get(pk=self.kwargs['pk'])
-        ).order_by('date')
+        ).order_by('date').reverse()
 
 
 class ComplexEntryView( ContextMixin, CreateView):
@@ -456,6 +458,11 @@ class ExpenseListView(ContextMixin,  PaginationMixin,
         'new_link': reverse_lazy('accounting:expense-create'),
         'action_list': [
             {
+                'link': reverse_lazy('accounting:recurring-expense-list'),
+                'label': 'Manage Recurring Expenses',
+                'icon': 'list-ul'
+            },
+            {
                 'link': reverse_lazy('accounting:import-expenses'),
                 'label': 'Import from Excel',
                 'icon': 'file-excel'
@@ -564,6 +571,85 @@ class BookkeeperDeleteView(ContextMixin,  DeleteView):
     extra_context = {
         'title': 'Delete Bookkeeper'
     }
+
+########################################################
+#                   Migration Views                    #
+########################################################
+
+class BillCreateView(ContextMixin, CreateView):
+    template_name =os.path.join('accounting', 'bill','create.html')
+    extra_context = {
+        'title': 'Create Bill',
+        'description': 'Record money owed vendors for goods or services'
+    }
+    form_class = forms.BillForm
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+
+        data = json.loads(urllib.parse.unquote(
+            form.cleaned_data['data']))
+        
+        
+        for line in data:
+            cat_string = line['category']
+            #invert keys
+            category = {i[1]: i[0] \
+                for i in models.EXPENSE_CHOICES}.get(cat_string)
+
+            models.BillLine.objects.create(
+                bill=self.object,
+                expense=models.Expense.objects.create(
+                    debit_account=self.object.vendor.account,
+                    date=self.object.date,
+                    description=line['description'],
+                    amount=line['amount'],
+                    category=category
+                )
+            )
+        self.object.create_entry()
+        return resp
+
+class BillUpdateView(ContextMixin, UpdateView):
+    template_name =os.path.join('accounting', 'bill','update.html')
+    form_class = forms.BillForm
+    model = models.Bill
+    
+
+class BillListView(ContextMixin, PaginationMixin, FilterView):
+    extra_context = {
+        'title': 'List of Bills',
+        'new_link': reverse_lazy('accounting:create-bill')
+    }
+    queryset = models.Bill.objects.all()
+    filterset_class = filters.BillFilter
+    paginate_by=20
+    template_name = os.path.join('accounting', 'bill', 'list.html')
+
+class BillDetailView(DetailView):
+    template_name = os.path.join('accounting', 'bill', 'detail.html')
+    model = models.Bill
+
+class BillPaymentView(ContextMixin, CreateView):
+    form_class = forms.BillPaymentForm
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    extra_context = {
+        'title': 'Pay Bill'
+    }
+
+    def get_initial(self):
+        return {
+            'bill': self.kwargs['pk']
+        }
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        self.object.create_entry()
+        return resp
+
+########################################################
+#                   Currency Views                     #
+########################################################
 
 
 class CurrencyConverterView( TemplateView):
@@ -676,6 +762,9 @@ class ConfigWizard(ConfigWizardBase):
     config_class = models.AccountingSettings
     success_url = reverse_lazy('accounting:dashboard')
 
+########################################################
+#                   Migration Views                    #
+########################################################
 
 class ImportAccountsView(ContextMixin, FormView):
     extra_context = {

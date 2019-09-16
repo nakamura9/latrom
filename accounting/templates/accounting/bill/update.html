@@ -1,0 +1,49 @@
+{% extends 'window.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+
+<div class="jumbotron">
+    <h1 class="display-3">Update Bill</h1>
+    <p class="lead">Make changes to an existing bill from this form</p>
+    
+</div>
+
+<div class="container">
+    <div class="row">
+        
+        <div class="col-sm-12 card shadow">
+            <div class="card-body">
+                {% crispy form%}
+                
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="bg-primary text white">
+                            <th>Expense Category</th>
+                            <th>Memo</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in object.billline_set.all %}
+                            <tr>
+                                <td>{{line.expense.category_string}}</td>
+                                <td>{{line.expense.description}}</td>
+                                <td>{{line.expense.amount}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan='2'>Total</td>
+                            <td>{{object.total}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}

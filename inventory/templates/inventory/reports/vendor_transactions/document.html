@@ -31,7 +31,7 @@
                                         <td>
                                             {% if 'payment' in t.entry.memo %}
                                                 Payment
-                                            {% elif 'Order' in t.entry.memo %}
+                                            {% elif 'Order' in t.entry.memo or 'Bill' in t.entry.memo %}
                                                 Bill
                                             {% endif %}
                                         </td>

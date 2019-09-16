@@ -4,6 +4,14 @@ import django_filters
 from . import models
 
 
+class BillFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Bill
+        fields = {
+            'vendor': ['exact'],
+            'date': ['exact']
+        }
+
 class JournalFilter(django_filters.FilterSet):
     class Meta:
         model = models.Journal

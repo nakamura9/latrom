@@ -70,7 +70,7 @@
                         </div>
                         <div class="card bg-primary text-white">
                             <div class="card-header">
-                                <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i> Expenses
+                                <h4 class="card-title"><i class=" fas fa-receipt" style=" font-size:28;"></i>Bills & Expenses
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -79,8 +79,7 @@
                                         <a href="{% url 'accounting:direct-payment-list' %}">Manage Direct Payments</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'accounting:recurring-expense-list' %}">Manage Recurring
-                                            Expenses</a>
+                                        <a href="{% url 'accounting:list-bills' %}">Manage Bills</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
                                         <a href="{% url 'accounting:expense-list' %}">Manage Expenses</a>
@@ -109,7 +108,28 @@
                                         <a href="{% url 'accounting:profit-and-loss-form' %}">Income Statement</a>
                                     </li>
                                     <li class="list-group-item hvr-grow">
-                                        <a href="{% url 'accounting:trial-balance' %}">Trial Balance</a>
+                                        
+                                        <div class="dropdown">
+                                            <span data-toggle="dropdown" class=" card-link"
+                                                style="color:blue;">More...</span>
+                                            <div class="dropdown-menu">
+                                                <a class='dropdown-item' href="{% url 'accounting:trial-balance' %}">Trial Balance</a>
+                                                <a class="dropdown-item"
+                                                    href="{% url 'invoicing:accounts-receivable-report' %}">Accounts
+                                                    Receivable Report</a> 
+                                                <a class="dropdown-item"
+                                            href="{% url 'invoicing:customer-statement-form' %}">Customer
+                                            Statement</a>
+                                            <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-balance-report' %}">
+                                                    Vendor Balance Report
+                                                </a>
+                                                 <a class='dropdown-item'
+                                                    href="{% url 'inventory:vendor-transactions-form' %}">
+                                                    Vendor Transactions Report
+                                                </a>
+                                            </div>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>

@@ -75,14 +75,15 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     
     @property
     def nps_insurable_earnings(self):
-        if self.pay_grade.salary < D(700.0):
+
+        if self.pay_grade and self.pay_grade.salary < D(700.0):
             return self.pay_grade.salary
 
         return D(700.0)
 
     @property
     def total_nps(self):
-        if self.pay_grade.salary < D(700.0):
+        if self.pay_grade and self.pay_grade.salary < D(700.0):
             return self.pay_grade.salary * 0.07
 
         return D(700.0) * D(0.07)

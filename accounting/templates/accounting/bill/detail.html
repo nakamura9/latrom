@@ -1,0 +1,95 @@
+{% extends 'window.html' %}
+{% block content %}
+
+
+<div class="jumbotron">
+    <h1 class="display-3">Bill</h1>
+    <p class="lead">Details that describe the expense categories of the money owed vendors</p>
+    
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class=" col-sm-3 ">
+            <div class="card shadow">
+                <div class="card-body">
+                <h4 class="card-title">Payments</h4>
+                <br>
+                <a href="{% url 'accounting:create-bill-payment' pk=object.pk %}" class="btn btn-primary btn-sm">Add Payment</a>
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pmt in object.billpayment_set.all %}
+                            <tr>
+                                <td>{{pmt.date}}</td>
+                                <td>{{pmt.amount}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-primary text-white">
+                            <td>Total</td>
+                            <td>{{object.total_payments}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-9 ">
+            <div class="card shadow">
+                <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <th>Vendor</th>
+                            <td>{{object.vendor}}</td>
+                            <th>Date: </th>
+                            <td>{{object.date}}</td>
+                        </tr>
+                        <tr>
+                            <th>Reference</th>
+                            <td>{{object.reference}}</td>
+                            <th>Due: </th>
+                            <td>{{object.due}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><b>Memo:</b> {{object.memo}}</p>
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="bg-primary text white">
+                            <th>Expense Category</th>
+                            <th style='width:60%;'>Memo</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in object.billline_set.all %}
+                            <tr>
+                                <td>{{line.expense.category_string}}</td>
+                                <td>{{line.expense.description}}</td>
+                                <td>{{line.expense.amount}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan='2'>Total</th>
+                            <td>{{object.total}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}

@@ -1,0 +1,38 @@
+{% extends 'common_data/list_template.html' %}
+
+{% block list_headings %}
+
+<tr>
+    <th>Date</th>
+    <th>Vendor</th>
+    <th>Reference</th>
+    <th>Total</th>
+    <th>Actions</th>
+</tr>
+
+{% endblock list_headings %}
+
+{% block list_content %}
+{% for bill in object_list %}
+
+<tr>
+    <td>{{bill.date}}</td>
+    <td>{{bill.vendor}}</td>
+    <td>{{bill.reference}}</td>
+    <td>{{bill.total}}</td>
+    <td><div class="dropdown">
+        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                    Actions
+                </button>
+        <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a class="dropdown-item" href="{% url 'accounting:bill-details' pk=bill.pk %}"><i class="fas fa-file"></i> Detail</a>
+            <a class="dropdown-item " href="{% url 'accounting:update-bill' pk=bill.pk %}"> <i class='fas fa-edit'></i> Update</a>        
+        </div>
+    </div></td>
+</tr>
+
+{% endfor %}
+
+
+{% endblock list_content %}

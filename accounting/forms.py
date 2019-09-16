@@ -340,6 +340,52 @@ class AccountReportForm(PeriodReportForm):
     account = forms.ModelChoiceField(models.Account.objects.all(), 
         widget=forms.HiddenInput)
 
+class BillForm(BootstrapMixin, forms.ModelForm):
+    data = forms.CharField(widget=forms.HiddenInput)
+    class Meta:
+        fields = '__all__'
+        model = models.Bill
+        widgets = {
+            'memo': forms.Textarea(attrs={'rows': 2})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'data',
+            Row(
+                Column('date', 'due', css_class='col-6'),
+                Column('vendor', 'reference', css_class='col-6'),
+            ),
+            'memo',
+            HTML("<div id='bill-table'></div>")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+class BillPaymentForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        fields = '__all__'
+        model = models.BillPayment
+        widgets = {
+            'bill': forms.HiddenInput,
+            'account': Select2Widget,
+            'memo': forms.Textarea(attrs={'rows': 6})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'bill',
+            Row(
+                Column('date', 'account', 'amount', css_class='col-6'),
+                Column('memo', css_class='col-6'),
+            ),
+            HTML("<div id='bill-table'></div>")
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 
 class AccountImportForm(forms.Form):
     file = forms.FileField()
