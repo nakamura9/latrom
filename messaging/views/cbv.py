@@ -67,9 +67,17 @@ class ComposeEmailView(LoginRequiredMixin,
     success_url = "/messaging/inbox/"
 
     def get_initial(self):
+        profile = models.UserProfile.objects.get(user=self.request.user)        
+        qs = models.EmailFolder.objects.filter(
+                owner=profile, label='Local Outbox')
+        if qs.exists():
+            pk = qs.first().pk
+        else:
+            pk = models.EmailFolder.objects.create(
+                owner=profile, label='Local Outbox', name='Local Outbox').pk
         return {
             'owner': self.request.user.pk,
-            'folder': 'sent'
+            'folder': pk
         }
 
     def form_valid(self, form):
@@ -100,13 +108,26 @@ class ComposeEmailView(LoginRequiredMixin,
         self.object.to = to
         self.object.copy.add(*cc)
         self.object.blind_copy.add(*bcc)
+        self.object.write_body(form.cleaned_data['body'])
         self.object.save()
+
 
         profile = models.UserProfile.objects.get(user=self.request.user)
         g = EmailSMTP(profile)
 
+        #create local drafts folder
+        
+        #create local sent folder
+
+
         if data['save_as_draft']:
-            self.object.folder = 'drafts'
+            qs = models.EmailFolder.objects.filter(
+                owner=profile, label='Local Drafts')
+            if qs.exists():
+                self.object.folder = qs.first()
+            else:
+                self.object.folder = models.EmailFolder.objects.create(
+                    owner=profile, label='Local Drafts', name='Local Drafts')
             self.object.save()
             return resp
 
@@ -193,6 +214,7 @@ class DraftEmailUpdateView(LoginRequiredMixin,
             self.object.blind_copy.remove(a)
 
         self.object.blind_copy.add(*bcc)
+        self.object.write_body(form.cleaned_data['body'])
 
         self.object.save()
 
@@ -200,7 +222,13 @@ class DraftEmailUpdateView(LoginRequiredMixin,
         g = EmailSMTP(profile)
 
         if data['save_as_draft']:
-            self.object.folder = 'drafts'
+            qs = models.EmailFolder.objects.filter(
+                owner=profile, label='Local Drafts')
+            if qs.exists():
+                self.object.folder = qs.first()
+            else:
+                self.object.folder = models.EmailFolder.objects.create(
+                    owner=profile, label='Local Drafts', name='Local Drafts')
             self.object.save()
             return resp
 

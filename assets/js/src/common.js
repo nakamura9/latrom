@@ -151,6 +151,12 @@ class ImgPreview extends Component{
     }
 
     componentDidMount(){
+        axios({
+            url: this.props.url,
+            method: 'GET'
+        }).then(res =>{
+            this.setState({url: res.data})
+        })
         const input = document.getElementById(this.props.inputID);
         input.addEventListener('change', () => this.renderImg(input))
         

@@ -73,10 +73,6 @@ var curURL = '';
         curURL = document.getElementById('popup-frame').contentWindow.location.href;
         curURL = '/' + curURL.replace(/^(?:\/\/|[^\/]+)*\//, "");
 
-        console.log(iframeURL)
-        console.log(curURL)
-        console.log(iframeURL != '')
-        console.log(curURL != iframeURL)
         
         if(iframeURL != '' && curURL != iframeURL){
             $("#id-my-modal").hide();

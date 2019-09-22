@@ -1,3 +1,5 @@
+{% load static %}
+
 <style>
     a.nav-link{
         background-color: "#07f"
@@ -19,7 +21,9 @@ $(document).ready(function(){
 <nav class="navbar navbar-expand-sm bg-light" id="navbar" >
         <ul class="navbar-nav ">
             <!--{% url 'base:workflow' %}-->
-            <a class="navbar-brand" href="/base/workflow"  >SBT</a>
+            <a class="navbar-brand" href="/base/workflow"  >
+                <img width='30' height='30' src="{% static 'common_data/images/logo.png' %}" alt="">
+            </a>
             {% if request.user %}
             <li class="nav-item" id="planner">
                 <a href="{% url 'planner:dashboard' %}" class="nav-link">

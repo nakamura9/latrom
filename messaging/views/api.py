@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, DetailView, ListView
 
 from rest_framework.response import Response
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -341,3 +341,9 @@ def sync_folders(request, profile_id=None):
         'status': 'ok',
         'emails': 0
     })
+
+def get_user_icon(request):
+    profile = models.UserProfile.objects.get(user=request.user)
+    if profile.avatar:
+        return HttpResponse(profile.avatar.url)
+    return HttpResponse('')

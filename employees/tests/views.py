@@ -149,7 +149,7 @@ class PayGradePageTests(TestCase):
 
 class PaySlipPageTests(TestCase):
     fixtures = ['common.json', 'accounts.json', 'journals.json', 
-        'employees.json', 'invoicing.json']
+        'employees.json', 'invoicing.json', 'payroll.json']
 
     @classmethod
     def setUpClass(cls):
@@ -192,7 +192,7 @@ class PaySlipPageTests(TestCase):
 
     def test_payslip_basic_pdf_view(self):
         kwargs = {'pk': 1}
-        req = RequestFactory().get(reverse('employees:pay-slip-basic-pdf', 
+        req = RequestFactory().get(reverse('employees:basic-pay-slip-pdf', 
             kwargs=kwargs))
         resp = PayslipPDFView.as_view()(req, **kwargs)
         self.assertEqual(resp.status_code, 200)
@@ -229,9 +229,13 @@ class PaySlipPageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_payslip_verify_status(self):
+        settings = EmployeesSettings.objects.get(pk=1)
+        settings.payroll_officer = self.officer
+        settings.save()
+        
         resp = self.client.get('/employees/pay-slip-verify-status/1')
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(Payslip.objects.get(pk=1).status, 'verified')
+        self.assertEqual(Payslip.objects.get(pk=1).status, 'paid')
 
     def test_execute_payroll(self):
         settings = EmployeesSettings.objects.first()
@@ -262,9 +266,7 @@ class EmployeePageTests(TestCase):
                 'address': 'some test place',
                 'email': 'test@mail.com',
                 'phone': '123456789',
-                'title': 'manager',
                 'pay_grade': cls.grade.pk,
-                'hire_date': TODAY,
                 'leave_days': 0,
                 'pin': 1000
                 }
@@ -335,8 +337,6 @@ class EmployeePageTests(TestCase):
             address = 'Model test address',
             email = 'test@mail.com',
             phone = '1234535234',
-            hire_date=TODAY,
-            title='test role',
             pay_grade = self.grade
         )
         resp = self.client.post('/employees/employee/create-user/' + str(obj.pk),
@@ -723,8 +723,6 @@ class PayrollOfficerViewTests(TestCase):
             address = 'Model test address',
             email = 'test@mail.com',
             phone = '1234535234',
-            hire_date=TODAY,
-            title='test role',
             pay_grade = self.grade
         )
         resp = self.client.post('/employees/payroll-officer/create',
@@ -961,8 +959,6 @@ class EmployeeWizardTests(TestCase):
         employee_data = {
             '2-first_name': 'name',
             '2-last_name': 'last',
-            '2-hire_date': datetime.date.today(),
-            '2-title': 'mr',
             '2-leave_days': 1,
             '2-pin': 2000,
             'config_wizard-current_step': 2
@@ -1124,7 +1120,7 @@ class DepartmentViewTests(TestCase):
 
 class EmployeesReportViewTests(TestCase):
     fixtures = ['common.json', 'accounts.json', 'journals.json', 
-        'employees.json']
+        'employees.json', 'payroll.json']
 
     @classmethod
     def setUpClass(cls):

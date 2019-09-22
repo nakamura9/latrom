@@ -71,8 +71,6 @@ def create_test_employees_models(cls):
                 address = 'Model test address',
                 email = 'test@mail.com',
                 phone = '1234535234',
-                hire_date=TODAY,
-                title='test role',
                 pay_grade = cls.grade
             )
 
@@ -199,8 +197,6 @@ class EmployeeModelTests(TestCase):
             address = 'Model test address',
             email = 'test@mail.com',
             phone = '1234535234',
-            hire_date=TODAY,
-            title='test role',
             pay_grade = self.grade
         )
         self.assertIsInstance(obj, Employee)

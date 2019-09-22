@@ -1,1 +1,1 @@
-{"id": 1, "document_theme": 1, "currency_id": null, "organization_id": 2, "payment_details": "", "application_version": "0.0.1", "use_backups": false, "backup_frequency": "D", "verification_task_id": "d612e7a4fff2dbefe3779b1d2131d8023ffb8ab6", "is_configured": true, "logo_aspect_ratio": 0}
+{"id": 1, "document_theme": 1, "currency_id": null, "organization_id": null, "payment_details": "", "application_version": "0.0.1", "use_backups": false, "backup_frequency": "D", "verification_task_id": "", "is_configured": false, "logo_aspect_ratio": 0}

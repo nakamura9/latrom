@@ -379,7 +379,6 @@ class SalesRepViewsTests(TestCase):
         Employee.objects.create(
             first_name="Test",
             last_name="Employee",
-            hire_date=TODAY
         )
         create_test_user(cls)
         create_test_common_entities(cls)
@@ -793,8 +792,6 @@ class ConfigWizardTests(TestCase):
         employee_data = {
             '2-first_name': 'first',
             '2-last_name': 'last',
-            '2-hire_date': datetime.date.today(),
-            '2-title': "title",
             '2-leave_days': 1,
             '2-pin': 1000,
             'config_wizard-current_step': 2,

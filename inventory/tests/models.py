@@ -816,8 +816,6 @@ class InventoryServiceTests(TestCase):
         InventoryModelCreator(cls).create_all()
         cls.usr = User.objects.create_user(username ='Testuser', password='123')
         cls.employee = Employee.objects.create(
-            hire_date=datetime.date.today(),
-            title='employee',
             first_name='name',
             last_name='name',
             user=cls.usr

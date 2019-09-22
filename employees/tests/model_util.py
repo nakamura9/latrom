@@ -31,8 +31,6 @@ class EmployeeModelCreator():
             address = 'Model test address',
             email = 'test@mail.com',
             phone = '1234535234',
-            hire_date=datetime.date.today(),
-            title='test role',
             pay_grade = self.cls.grade,
             user=self.cls.employee_user
         )

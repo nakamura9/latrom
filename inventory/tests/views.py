@@ -1111,8 +1111,6 @@ class ConfigWizardTests(TestCase):
         employee_data = {
             '1-first_name': 'first',
             '1-last_name': 'last',
-            '1-hire_date': datetime.date.today(),
-            '1-title': "title",
             '1-leave_days': 1,
             '1-pin': 1000,
             'config_wizard-current_step': 1,

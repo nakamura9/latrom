@@ -68,6 +68,7 @@ email_urls = [
 
 urlpatterns = [
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
+    path('user-icon/', views.get_user_icon, name='user-icon'),
     path('notification/<int:pk>', views.NotificationDetailView.as_view(), 
         name='notification'),    
     path('api/notifications', views.notification_service,

@@ -116,8 +116,10 @@ report_urls = [
     re_path(r'^pdf/journal-report/(?P<journal>[\d ]+)/(?P<start>[\w %]+)/'
         '(?P<end>[\w %]+)/?$', views.JournalReportPDFView.as_view(), 
             name='journal-report-pdf'),
-    re_path(r'^account-report-form/(?P<pk>[\d]+)/?$', views.AccountReportFormView.as_view(), name='account-report-form'),
-    re_path(r'^account-report/?$', views.AccountReport.as_view(), name='account-report'),
+    re_path(r'^account-report-form/(?P<pk>[\d]+)/?$', 
+        views.AccountReportFormView.as_view(), name='account-report-form'),
+    re_path(r'^account-report/?$', views.AccountReport.as_view(), 
+        name='account-report'),
     re_path(r'^csv/account-report/(?P<account>[\d ]+)/(?P<start>[\w %]+)/'
         '(?P<end>[\w %]+)/?$', views.account_csv_report, 
             name='account-report-csv'),

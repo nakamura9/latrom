@@ -24,15 +24,17 @@ class InboxView extends Component{
         current: null,
         profile: null,
         folder: null,
-        folderList: []
+        folderList: [],
+        currentMessage: ''
     }
 
     syncFolders = () =>{
+        this.setState({currentMessage: 'Syncing Email...'})
         axios({
             'url': '/messaging/api/sync-folders/' + this.state.profile,
             'method': 'GET'
         }).then(() =>{
-            alert('Emails Synchronized')
+            alert('Emails Synchronized successfully.')
         })
     }
 
@@ -63,14 +65,18 @@ class InboxView extends Component{
     render(){
         return(
             <Aux>
-                <div className="btn-group">
-                    <a href="/messaging/create-message" className="btn btn-primary  btn-sm"> <i className="fas fa-edit    "></i> Compose</a>
-                    <button 
-                        onClick={this.syncFolders}
-                        className="btn btn-primary btn-sm"> 
-                        <i className="fas fa-sync"></i> Sync
-                    </button>
+                <div style={{display:'flex', flexDirection:'row'}}>
+                    <div className="btn-group">
+                        <a href="/messaging/create-message" className="btn btn-primary "> <i className="fas fa-edit    "></i> </a>
+                        <button 
+                            onClick={this.syncFolders}
+                            className="btn btn-primary"> 
+                            <i className="fas fa-sync"></i> 
+                        </button>
+                    </div>
+                    <div>{this.state.currentMessage}</div>
                 </div>
+
                 <div className={styles.inboxContainer} >
                     
                     <div className={styles.inboxMenu}>

@@ -120,8 +120,6 @@ class ServicePersonnelViewTests(TestCase):
                 address = 'Model test address',
                 email = 'test@mail.com',
                 phone = '1234535234',
-                hire_date=TODAY,
-                title='test role',
                 pay_grade = self.grade
             )
         resp = self.client.post('/services/service-person-create', 
@@ -688,6 +686,8 @@ class WorkOrderViewTests(TestCase):
             'date': datetime.date.today(),
             'recorded_by': 1
         })
+        print('###errors')
+        print(resp.context['form'].errors)
         self.assertEqual(resp.status_code, 302)
 
 
@@ -723,8 +723,6 @@ class ConfigWizardTests(TestCase):
         employee_data = {
             '1-first_name': 'first',
             '1-last_name': 'last',
-            '1-hire_date': datetime.date.today(),
-            '1-title': "title",
             '1-leave_days': 1,
             '1-pin': 1000,
             'config_wizard-current_step': 1,

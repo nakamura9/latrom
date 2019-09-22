@@ -116,10 +116,14 @@ class EmailViewTests(TestCase):
             outgoing_server='localhost',
             outgoing_port=25)
         cls.email_address = EmailAddress.objects.create(address='test@gmail.com')
+        cls.folder = EmailFolder.objects.create(
+            name='inbox',
+            label='inbox'
+        )
         cls.email = Email.objects.create(
                 created_timestamp=datetime.datetime.now(),
                 body='hello', 
-                folder='inbox',
+                folder=cls.folder,
                 owner=cls.user,
                 to=cls.email_address)
 
@@ -165,17 +169,7 @@ class EmailViewTests(TestCase):
         })
         self.assertEqual(resp.status_code, 302)'''
 
-    def test_inbox_api(self):
-        resp = self.client.get('/messaging/api/inbox/')
-        self.assertEqual(resp.status_code, 200)
-
-    def test_drafts_api(self):
-        resp = self.client.get('/messaging/api/drafts/')
-        self.assertEqual(resp.status_code, 200)
-
-    def test_sent_api(self):
-        resp = self.client.get('/messaging/api/sent/')
-        self.assertEqual(resp.status_code, 200)
+    
 
     def test_api_send_draft(self):
         self.assertTrue(True)

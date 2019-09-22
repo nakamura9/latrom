@@ -74,8 +74,6 @@ class UserMiddlewareTest(TestCase):
             address = 'Model test address',
             email = 'test@mail.com',
             phone = '1234535234',
-            hire_date=datetime.date.today(),
-            title='test role',
             user=cls.user
         )
 

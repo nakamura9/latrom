@@ -15,7 +15,8 @@ from cryptography.fernet import Fernet
 
 class EmailForm(BootstrapMixin, forms.ModelForm):
     body = forms.CharField(widget=forms.HiddenInput, required=True)
-    folder = forms.CharField(widget=forms.HiddenInput)
+    folder = forms.ModelChoiceField(EmailFolder.objects.all(),
+        widget=forms.HiddenInput)
     owner = forms.ModelChoiceField(User.objects.all(),
                                     widget=forms.HiddenInput)
     save_as_draft = forms.BooleanField(required=False)

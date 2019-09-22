@@ -78,5 +78,7 @@ if(storageMedia){
         externalFormFieldName='parent_department'//not important
         dataMapper={dataMapper}/>, depts);
 }else if(avatar){
-    ReactDOM.render(<ImgPreview inputID='id_avatar' />, avatar);
+    ReactDOM.render(<ImgPreview 
+                        inputID='id_avatar'
+                        url='/messaging/user-icon/' />, avatar);
 }

@@ -10,7 +10,7 @@ from messaging.email_api.secrets import get_secret_key
 from cryptography.fernet import Fernet
 from django.core.files import File
 import imaplib
-
+import string
 
 class EmailAddress(models.Model):
     address = models.CharField(max_length=255)
@@ -68,6 +68,20 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
 
         return decrypted.decode()
 
+    def create_outbox(self):
+        EmailFolder.objects.create(
+            name='Local Outbox',
+            owner=self,
+            label='Local Outbox'
+        )
+
+    def create_local_drafts_folder(self):
+        EmailFolder.objects.create(
+            name='Local Drafts',
+            owner=self,
+            label='Local Drafts'
+        )
+
     @property
     def emails(self):
         return Email.objects.filter(owner=self.user).order_by('-server_id')
@@ -110,12 +124,13 @@ class UserProfile(common_data.utilities.mixins.ContactsMixin, models.Model):
         for i in mailbox.list()[1]:
             folder_string = i.decode() if isinstance(i, bytes) else i
             folder_name = folder_string.split(' "/" ')[-1]
+            folder_label = folder_name.string(string.punctuation)
             if not EmailFolder.objects.filter(
                     owner=self, name=folder_name).exists():
                 EmailFolder.objects.create(owner=self, 
                                             #in case
                                            name=folder_name.split('/')[-1],
-                                           label=folder_name)
+                                           label=folder_label)
 
     def __str__(self):
         return self.email_address

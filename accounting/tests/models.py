@@ -39,8 +39,7 @@ class SimpleModelTests(TestCase):
 
     def test_create_bookkeeper(self):
         employee = employee_models.Employee.objects.create(
-            hire_date=datetime.date.today(),
-            title='employee',
+            
             first_name='name',
             last_name='name',
         )
@@ -52,8 +51,7 @@ class SimpleModelTests(TestCase):
     def test_delete_bookkeeper(self):
         #create another employee
         employee = employee_models.Employee.objects.create(
-            hire_date=datetime.date.today(),
-            title='employee',
+            
             first_name='name',
             last_name='name',
         )
