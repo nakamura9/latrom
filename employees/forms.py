@@ -590,7 +590,7 @@ def get_tax_period_choices():
     today = datetime.date.today()
     year = today.year
     def get_strings(y):
-        return [datetime.date(y, i, 1).strftime("%B %Y") \
+        return [datetime.date(y, i, 1).strftime("%b %Y") \
             for i in range(1,13)]
     months_current = get_strings(year)
     months_previous = get_strings(year - 1)
@@ -598,6 +598,9 @@ def get_tax_period_choices():
     choices = [(i,i) for i in months_current + months_previous]
 
     return choices 
+class NSSAReportForm(BootstrapMixin, forms.Form):
+    period = forms.ChoiceField(choices=get_tax_period_choices)
+
 class ZimraReportForm(BootstrapMixin, forms.Form):
     tax_period = forms.ChoiceField(choices=get_tax_period_choices)
     postal_address = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))

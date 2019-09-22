@@ -181,14 +181,16 @@ class Email(models.Model):
 
     def write_body(self, body_string):
         filename = f'{self.owner.id}-{self.server_id}-' + \
-        f'{datetime.datetime.now().strftime("%d%m%y%H%M%S")}.txt'
-        with open(filename, 'w') as f:
-            f.write(body_string)
+            f'{datetime.datetime.now().strftime("%d%m%y%H%M%S")}.txt'
+        try:
+            with open(filename, 'w') as f:
+                f.write(body_string)
 
-        with open(filename, 'r') as sf:
-            self.body.save(filename, File(sf)) 
-
-        os.remove(filename)
+            with open(filename, 'r') as sf:
+                self.body.save(filename, File(sf)) 
+        finally:
+            if os.path.exists(filename):
+                os.remove(filename)
 
     def read_body(self):
         if self.body:

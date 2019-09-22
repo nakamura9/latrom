@@ -119,10 +119,9 @@ class CommonViewTests(TestCase):
                 'start_of_financial_year': TODAY,
                 'currency_exchange_table': self.currency_table.pk,
                 'default_accounting_period': 0,
-                'active_currency': 1
+                'active_currency': 1,
+                'equipment_capitalization_limit': 200
             })
-        print('###errors')
-        print(resp.context['form'].errors)
         self.assertEqual(resp.status_code, 302)
         
     def test_get_direct_payment_page(self):
@@ -699,6 +698,7 @@ class AccountingWizardTests(TestCase):
             '0-currency_exchange_table': 1,
             '0-active_currency': 1,
             'config_wizard-current_step': 0,
+            '0-equipment_capitalization_limit': 200
         }
 
         employee_data = {
@@ -728,8 +728,7 @@ class AccountingWizardTests(TestCase):
                 resp = self.client.post(reverse('accounting:config-wizard'), data=data)
                 if step == len(data_list):
                     self.assertEqual(resp.status_code, 302)
-                    print('###errors')
-                    print(resp.context['form'].erros)
+                    
                 else:
                     self.assertEqual(resp.status_code, 200)
 
@@ -844,8 +843,6 @@ class ExpesnseViewTests(TestCase):
             'debit_account': 1000,
             'recorded_by': self.user.pk
         })
-        print('###errors')
-        print(resp.context['form'].errors)
         self.assertEqual(resp.status_code, 302)
 
     def test_get_expense_list_view(self):

@@ -32,6 +32,23 @@
     }
 </style>
 
+{% block pre_page %}
+
+<div class="jumbotron">
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+                Actions
+            </button>
+    <div class="dropdown-menu" aria-labelledby="triggerId">
+        <a class="dropdown-item" href="/employees/nssa-p4-pdf-report/{{period}}"> <i class='fas fa-file-pdf'></i> Generate PDF</a>
+        
+    </div>
+</div>
+
+</div>
+{% endblock pre_page %}
+
 <table class='borderless' style='width:100%;'>
     <tbody>
         <tr>
@@ -107,28 +124,28 @@
             {% for entry in employees %}
             <tr>
                 <td></td>
-                <td>{{entry.employee_number}}</td>
-                <td>{{entry.social_security_number}}</td>
-                <td>{{entry.id_number}}</td>
-                <td>Jan 2019</td>
-                <td>{{entry.date_of_birth}}</td>
-                <td>{{entry.last_name}}</td>
-                <td>{{entry.first_name}}</td>
-                <td>{{entry.contract_set.first.start_date}}</td>
-                <td>{% if entry.contract_set.first.termination %}
-                {{entry.contract_set.first.termination.date}}
+                <td>{{entry.employee.employee_number}}</td>
+                <td>{{entry.employee.social_security_number}}</td>
+                <td>{{entry.employee.id_number}}</td>
+                <td>{{period}}</td>
+                <td>{{entry.employee.date_of_birth}}</td>
+                <td>{{entry.employee.last_name}}</td>
+                <td>{{entry.employee.first_name}}</td>
+                <td>{{entry.employee.contract_set.first.start_date}}</td>
+                <td>{% if entry.employee.contract_set.first.termination %}
+                {{entry.employee.contract_set.first.termination.date}}
                 {% else %}
                     -
                 {% endif %}</td>
-                <td>{% if entry.contract_set.first.termination %}
-                {{entry.contract_set.first.termination.reason_string}}
+                <td>{% if entry.employee.contract_set.first.termination %}
+                {{entry.employee.contract_set.first.termination.reason_string}}
                 {% else %}
                     -
                 {% endif %}</td>
-                <td>{{entry.contract_set.first.nature_of_employment}}</td>
+                <td>{{entry.employee.contract_set.first.nature_of_employment}}</td>
                 <td>{{entry.nps_insurable_earnings |accounting }}</td>
                 <td>{{entry.total_nps |accounting }}</td>
-                <td>{{entry.pay_grade.salary |accounting }}</td>
+                <td>{{entry.employee.pay_grade.salary |accounting }}</td><!--Might cause trouble later-->
             </tr>
             {% endfor %}
         </tbody>

@@ -676,7 +676,6 @@ class WorkOrderViewTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
 
-    #TODO fix
     def test_post_work_order_expense_view(self):
         resp = self.client.post("/services/work-order/1/expense-create", data={
             'description': 'description',
@@ -686,8 +685,6 @@ class WorkOrderViewTests(TestCase):
             'date': datetime.date.today(),
             'recorded_by': 1
         })
-        print('###errors')
-        print(resp.context['form'].errors)
         self.assertEqual(resp.status_code, 302)
 
 

@@ -193,9 +193,23 @@ class NSSAP4Report(TemplateView):
     template_name = os.path.join('employees', 'reports', 'p4',
         'report.html')
 
+    @staticmethod
+    def common_context(context, start):
+        context['employees'] = [{
+            'nps_insurable_earnings': i.get_nps_earnings(start),
+            'total_nps': i.total_nps(start),
+            'employee': i
+            
+        } for i in \
+             Employee.objects.filter(active=True)] 
+        
+        return context
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['employees'] = Employee.objects.filter(active=True)
+        start = datetime.datetime.strptime(self.request.GET['period'], '%b %Y')
+        NSSAP4Report.common_context(context, start)
+        context['period'] = self.request.GET['period']
         return context 
 
 
@@ -209,7 +223,20 @@ class ZIMRAP2ReportFormView(ContextMixin, FormView):
     def get_initial(self):
         today = datetime.date.today()
         return {
-            'tax_period': today.strftime('%B %Y')
+            'tax_period': today.strftime('%b %Y')
+        }
+
+class NSSAP4ReportFormView(ContextMixin, FormView):
+    form_class = forms.NSSAReportForm
+    template_name = os.path.join('common_data', 'reports', 
+        'report_template.html')
+    extra_context = {
+        'action': '/employees/nssa-p4-report/'
+    }
+    def get_initial(self):
+        today = datetime.date.today()
+        return {
+            'period': today.strftime('%b %Y')
         }
 
 class ZIMRAP2Report(ContextMixin, TemplateView):
@@ -222,7 +249,7 @@ class ZIMRAP2Report(ContextMixin, TemplateView):
     @staticmethod 
     def common_context(period, address, due):
         period_start = datetime.datetime.strptime(period, 
-            '%B %Y').date()
+            '%b %Y').date()
         period_end_date = calendar.monthrange(period_start.year, 
             period_start.month)[1]
         period_end = datetime.date(period_start.year, 
@@ -242,7 +269,6 @@ class ZIMRAP2Report(ContextMixin, TemplateView):
             'tax_period':period,
             'postal': address,
             'due_date': due,
-            
         }
         
         return context
@@ -263,3 +289,16 @@ class ZIMRAP2ReportPDF(PDFTemplateView):
         return ZIMRAP2Report.common_context( self.request.GET['tax_period'],
             self.request.GET['postal_address'],
             self.request.GET['due_date'])
+
+
+class NSSAP4ReportPDF(PDFTemplateView):
+    template_name = os.path.join('employees', 'reports', 'p4',
+        'report.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start = datetime.datetime.strptime(self.kwargs['period'], '%b %Y')
+        NSSAP4Report.common_context(context, start)
+        context['period'] = self.kwargs['period']
+
+        return context

@@ -70,7 +70,7 @@ class AssetForm(forms.ModelForm, BootstrapMixin):
 
 class ExpenseForm(forms.ModelForm, BootstrapMixin):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), 
-        widget=Select2Widget(attrs={'data-width': '20rem'}))
+        widget=Select2Widget(attrs={'data-width': '20rem'}), required=False)
     class Meta:
         exclude = "entry", 'debit_account',
         model = models.Expense

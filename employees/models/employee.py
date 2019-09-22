@@ -1,6 +1,7 @@
 
 import random
 import datetime
+import calendar
 from decimal import Decimal as D
 from functools import reduce
 from django.db import models
@@ -73,20 +74,32 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     def get_absolute_url(self):
         return reverse("employees:employee-detail", kwargs={"pk": self.pk})
     
-    @property
-    def nps_insurable_earnings(self):
+    def get_earnings_for_month(self, start):
+        earnings = 0
+        last_day = calendar.monthrange(start.year, start.month)
+        end = datetime.date(start.year, start.month, last_day[1])
+        #using end period for payslips
+        slips = Payslip.objects.filter(end_period__gte=start, 
+            end_period__lte=end, 
+            status__in=['verified', 'paid'])
+        earnings += sum([i.paygrade_['salary'] for i in slips])
 
-        if self.pay_grade and self.pay_grade.salary < D(700.0):
-            return self.pay_grade.salary
+        return earnings
+    
+    def get_nps_earnings(self, start):
+        #get total earnings in month
+        earnings = self.get_earnings_for_month(start)
+        
+        if earnings < D(700.0):
+            return earnings
 
         return D(700.0)
 
-    @property
-    def total_nps(self):
-        if self.pay_grade and self.pay_grade.salary < D(700.0):
-            return self.pay_grade.salary * 0.07
-
-        return D(700.0) * D(0.07)
+    
+    def total_nps(self, start):
+        insurable_earnings = self.get_nps_earnings(start)
+        
+        return insurable_earnings * D(0.07)
 
     def increment_leave_days(self, days):
         self.leave_days += days

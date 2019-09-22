@@ -76,6 +76,7 @@ class Payslip(models.Model):
     def __str__(self):
         return f'Payslip #{self.pk} for {self.employee}' 
     
+    
 
     @property
     def commission_pay(self):
