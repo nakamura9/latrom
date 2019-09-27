@@ -59,7 +59,7 @@ class InventorySettings(SingletonModel):
     use_equipment_inventory = models.BooleanField(default=True)
     use_consumables_inventory = models.BooleanField(default=True)
     use_raw_materials_inventory = models.BooleanField(default=True)
-    #TODO capitalization_limit = models.DecimalField(max_digits=6, decimal_places=2)
+    #TODO capitalization_limit = models.DecimalField(max_digits=16, decimal_places=2)
     is_configured = models.BooleanField(default=False)
     service_hash = models.CharField(max_length=255, default="", blank=True)
 

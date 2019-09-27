@@ -11,12 +11,16 @@ class inputLine extends Component{
         data: {},
         fetchField: null,
         selectedPk: null,
+        isReset: true
     }
     inputHandler = (evt) =>{
         let newData = {...this.state.data};
 
         newData[evt.target.name] = evt.target.value;
-        this.setState({data: newData});
+        this.setState({
+            data: newData,
+            isReset: false
+        });
     }
 
     resetFields =() =>{
@@ -27,8 +31,10 @@ class inputLine extends Component{
         }
         this.setState({
             data: newData,
-            selectedPk: null
+            selectedPk: null,
+            isReset: true
         });
+        //actually reset the fields
 
     }
 
@@ -61,6 +67,7 @@ class inputLine extends Component{
         }else{
             this.props.insertHandler(this.state.data);
         }
+
         this.resetFields();
     }
     searchHandler = (name, value) =>{
@@ -70,7 +77,8 @@ class inputLine extends Component{
         const pk = value.split('-')[0];
         this.setState({
             data: newData,
-            selectedPk: parseInt(pk)
+            selectedPk: parseInt(pk),
+            isReset: false
         });
     }
 
@@ -94,11 +102,13 @@ class inputLine extends Component{
                 break;
             case 'select':
                 return <AsyncSelect 
+                    resetFlag={this.state.isReset}
                     handler={(val) => this.searchHandler(field.name, val)}
                     resProcessor={this.asyncResProcessor}
                     dataURL={field.url}/>
                 break;
             case 'text':
+                //controlled without a reset flag
                 return <input 
                         type="text"
                         className="form-control"
@@ -108,6 +118,7 @@ class inputLine extends Component{
                         />;    
                     break;
             case 'date':
+                //controlled without a resetFlag
                 return <input 
                         type="date"
                         className="form-control"
@@ -117,6 +128,7 @@ class inputLine extends Component{
                         />;    
                     break;
             case 'number':
+                //controlled without a reset flag
                 return <input 
                     type="number"
                     className="form-control"
@@ -127,7 +139,7 @@ class inputLine extends Component{
                 break;
             case 'search': 
                 return <SearchableWidget 
-                    
+                    resetFlag={this.state.isReset}
                     list={this.props.lines}
                     dataURL={field.url}
                     idField={field.idField}
@@ -143,6 +155,7 @@ class inputLine extends Component{
             case 'widget':
                 // function that takes the component as 
                 // an argument so it can independantly set state etc.
+                //each widget must implement the reset flag
                 return field.widgetCreator(this);
                 break;
             default:

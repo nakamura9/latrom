@@ -4,11 +4,16 @@ import ReactDOM from 'react-dom';
 import TimeSheet from './employees/timesheet/container/root';
 import LeaveCalendar from './employees/leave/container/root';
 import GenericTable from './src/generic_list/containers/root';
+import MutableTable from './src/mutable_table/container/root';
+import SelectWidget from './src/components/select';
+
 
 const taxTable = document.getElementById('tax-brackets');
 const timeSheet = document.getElementById('timesheet-root');
 const leaveCalendarContainer = document.getElementById('leave-calendar');
 const employeesList = document.getElementById('multiple-employees-list');
+const outstandingSlips = document.getElementById('outstanding-payslips');
+console.log(outstandingSlips);
 
 if(taxTable){
     ReactDOM.render(<GenericTable
@@ -88,4 +93,58 @@ if(taxTable){
                 'required': true,
             }
         ]}/>, employeesList)
+}else if(outstandingSlips){
+    ReactDOM.render(<MutableTable 
+            dataURL='/employees/api/outstanding-payslips/'
+            formHiddenFieldName='data'
+            resProcessor={(res) =>{
+                return res.data.map((i) =>({
+                    'id': i.id,
+                    'employee': `${i.employee.last_name}, ${i.employee.first_name}`, 
+                    'gross': i.gross.toFixed(2), 
+                    'deductions': i.deductions.toFixed(2),
+                    'taxes': i.taxes.toFixed(2),
+                    'current': i.status,
+                    'status': i.status,
+                    'period': `${i.end_period} to ${i.start_period}` 
+                }))
+            }}
+            headings={['#', 'Employee', 'Period', 'Gross', 'Deductions', 'Taxes', 'Current Status','New Status']}
+            fields={[
+                {'name': 'id', 'mutable': false},
+                {'name': 'employee', 'mutable': false},
+                {'name': 'period', 'mutable': false},
+                {'name': 'gross', 'mutable': false},
+                {'name': 'deductions', 'mutable': false},
+                {'name': 'taxes', 'mutable': false},
+                {'name': 'current', 'mutable': false},
+                {'name': 'status', 'mutable': true, 'widget': true,
+                    'widgetCreator': (comp, rowID) =>{
+
+                        const handler = (val) =>{
+                            let newData = [...comp.state.data];
+                            let newRow = {...comp.state.data[rowID]};
+                            newRow['status'] = val;
+                            newData[rowID] = newRow;
+                            comp.setState({'data': newData}, comp.updateForm)
+                        }
+                        return <SelectWidget
+                                    handler={handler}
+                                    options={[
+                                        {
+                                            'label': 'Verified',
+                                            'value': "verified"
+                                        },
+                                        {
+                                            'label': 'Paid',
+                                            'value': "paid"
+                                        }
+                                    ]}
+                                    />
+
+                    }},
+            ]}
+
+            
+            />, outstandingSlips)
 }

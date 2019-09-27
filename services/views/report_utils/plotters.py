@@ -1,7 +1,13 @@
 import pygal
+from pygal.style import DefaultStyle
+
 
 def plot_expense_breakdown(work_order):
-    chart = pygal.Pie()
+    chart = pygal.Pie(print_values=True, style=DefaultStyle(
+        value_font_size=30, 
+        value_colors=('white', )
+        ) 
+    )
     chart.title = 'Work Order Expenses Breakdown'
     for exp in work_order.expenses:
         chart.add(exp.expense.category_string, exp.expense.amount)

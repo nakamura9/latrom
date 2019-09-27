@@ -5,6 +5,7 @@ import MultipleSelectWidget from '../js/src/multiple_select/containers/root';
 import GenericTable from './src/generic_list/containers/root';
 import TimeField from './src/components/time_field';
 import NotesWidget from './src/notes_widget/root';
+import SelectWidget from './src/components/select';
 
 const procedure = document.getElementById('procedure-widgets');
 const inventory = document.getElementById('inventory-widgets');
@@ -110,21 +111,31 @@ if (equipmentTable){
                 type: "widget",
                 widgetCreator: (comp) =>{
                     return(
-                        <select
-                            className="form-control"
-                            onChange={(evt) =>{
+                        <SelectWidget 
+                            resetFlag={comp.state.isReset}
+                            handler={(val) =>{
                                 let newData = {...comp.state.data};
-                                newData['condition'] = evt.target.value;
+                                newData['condition'] = val;
                                 comp.setState({data: newData});
-                            }}>
-                            <option value="">-------</option>
-                            {['excellent', 'good', 'poor', 'broken'].map(
-                                (el, i) =>{
-                                    return(<option 
-                                                key={i}
-                                                value={el}>{el}</option>)
-                            })}
-                        </select>
+                            }}
+                            options={[
+                                    
+                                {
+                                    'label': 'Excellent',
+                                    'value': 'excellent'
+                                },
+                                {
+                                    'label': 'Good',
+                                    'value': 'good'
+                                },
+                                {
+                                    'label': 'Poor',
+                                    'value': 'poor'
+                                },
+                                {
+                                    'label': 'Broken',
+                                    'value': 'broken'
+                                }]}/>
                     )
                 }
             },
@@ -144,18 +155,9 @@ if(serviceTime){
         fields={[
             {
                 'name': 'date',
-                'type': 'widget',
+                'type': 'date',
                 'width': 25,
                 'required': true,
-                'widgetCreator': (comp) =>{
-                    return <input type="date" 
-                                    className="form-control"
-                                    onChange={(evt) =>{
-                                        let newData = {...comp.state.data};
-                                        newData['date'] = evt.target.value;
-                                        comp.setState({data: newData}); 
-                                    }} />
-                }
             },
             {
             'name': 'employee',
@@ -172,7 +174,8 @@ if(serviceTime){
             'width': 25,
             'required': true,
             'widgetCreator': (comp) =>{
-                return <TimeField 
+                return <TimeField
+                    resetFlag={comp.state.isReset}
                     initial=""
                     name="normal_time"
                     handler={(data, name) =>{
@@ -192,6 +195,7 @@ if(serviceTime){
             'widgetCreator': (comp) =>{
                 return <TimeField 
                     initial=""
+                    resetFlag={comp.state.isReset}
                     name="overtime"
                     handler={(data, name) =>{
                         if(data.valid){

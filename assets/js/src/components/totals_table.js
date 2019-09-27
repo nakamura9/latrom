@@ -43,11 +43,22 @@ class Totals extends Component{
         });
     }
 
+    calculateTotal = () =>{
+        //for non tax tables
+        this.setState({total: this.props.list.reduce(this.props.subtotalReducer, 0)})
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(prevProps.list !== this.props.list){
             //update totals 
-           this.calculateTax(); 
-        }if(prevState.taxObj !== this.state.taxObj){
+            if(this.props.taxFormField != null){
+               this.calculateTax();
+            }else{
+                this.calculateTotal();
+            }
+        }
+        
+        if(prevState.taxObj !== this.state.taxObj){
             this.calculateTax();
         }
     }
@@ -57,12 +68,13 @@ class Totals extends Component{
         const cellStyle = {
             padding: '10px'
         }
-        if(this.state.tax === null){
+
+        if(this.props.taxFormField == null){
             contents = (
                 <tfoot>
                     <tr className="bg-primary text-white">
                         <th style={cellStyle} colSpan={this.props.span - 1}>Total</th>
-                        <td style={cellStyle}>{this.state.total}</td>
+                        <td style={cellStyle}>{this.state.total.toFixed(2)}</td>
                     </tr>
                 </tfoot>
             )
@@ -73,6 +85,7 @@ class Totals extends Component{
                         <th style={cellStyle} colSpan={this.props.span - 1}>Subtotal</th>
                         <td style={cellStyle}>{this.state.subtotal.toFixed(2)}</td>
                     </tr>
+                    
                     <tr className="bg-primary text-white">
                         <th style={cellStyle} colSpan={this.props.span - 2}>Tax</th>
                         <td>

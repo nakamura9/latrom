@@ -164,7 +164,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField()),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=6)),
+                ('amount', models.DecimalField(decimal_places=2, max_digits=16)),
                 ('comments', models.TextField()),
                 ('entry', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounting.JournalEntry')),
                 ('order', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='inventory.Order')),

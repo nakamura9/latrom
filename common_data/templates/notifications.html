@@ -15,9 +15,7 @@
 
 
     .notification {
-        border: 3px solid #007bff;
-        border-radius: 20px;
-        background-color: #ccc;
+        background-color: white;
         margin: 100px auto;
         padding: 20px;
         width: 40%;
@@ -35,13 +33,15 @@
 <div>
 <!-- The notification overlay -->
     <div class="notification-overlay">
-        <div class="notification">
-            <h4 id="notification-title">Notification Message</h4>
+        <div class="notification shadow">
+            
+            <h4 id="notification-title"> Notification </h4>
             <p  id="notification-timestamp">00:00</p>
             <hr class="my2">
-            <p id="notification-message">Message</p>
+            <pre id="notification-message">Message</pre>
             <div class="btn-group" role="group" style="float:right;">
                 <button type="button" id="notification-dismiss" class="btn btn-primary">Dismiss</button>
+                <a href='' type="button" id="notification-action" class="btn btn-primary">Take Action</a>
             </div>
         </div>    
     </div>
@@ -62,7 +62,10 @@ function updateNotifications(){
                 $('#notification-dismiss').attr({
                     'onclick': "$.get('/messaging/api/notifications/mark-read/" + data.latest.id + "')"
                 });
-
+                $('#notification-action').attr({
+                    'href': data.latest.action,
+                    'onclick': "$.get('/messaging/api/notifications/mark-read/" + data.latest.id + "')"
+                });
                  $('.notification-overlay').show(500);
 
             }

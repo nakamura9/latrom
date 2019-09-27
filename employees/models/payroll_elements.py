@@ -56,10 +56,16 @@ class Deduction(SoftDeletionModel):
     rate = models.FloatField(default=0)
     fixed_amount = models.FloatField(default=0)
     employer_contribution = models.FloatField(default=0.0)#percentage of deduction total
+    liability_account = models.ForeignKey(
+        'accounting.account',
+        on_delete=models.SET_DEFAULT,
+        default=2010,
+        related_name='liability_account')# salaries 
     account_paid_into = models.ForeignKey(
         'accounting.account',
         on_delete=models.SET_DEFAULT,
-        default=5008)# salaries 
+        default=5008,
+        related_name='expense_account')# salaries 
 
     def __str__(self):
         return self.name
@@ -186,10 +192,10 @@ class PayrollTax(models.Model):
 class TaxBracket(models.Model):
     payroll_tax = models.ForeignKey('employees.PayrollTax', 
         on_delete=models.SET_NULL, null=True)
-    lower_boundary = models.DecimalField(max_digits=9, decimal_places=2)
-    upper_boundary = models.DecimalField(max_digits=9, decimal_places=2)
-    rate = models.DecimalField(max_digits=5, decimal_places=2)
-    deduction = models.DecimalField(max_digits=9, decimal_places=2)
+    lower_boundary = models.DecimalField(max_digits=16, decimal_places=2)
+    upper_boundary = models.DecimalField(max_digits=16, decimal_places=2)
+    rate = models.DecimalField(max_digits=16, decimal_places=2)
+    deduction = models.DecimalField(max_digits=16, decimal_places=2)
 
 
 class PayrollSchedule(SingletonModel):

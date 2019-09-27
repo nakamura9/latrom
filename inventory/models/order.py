@@ -258,7 +258,7 @@ class OrderItem(models.Model):
     quantity = models.FloatField()
     unit = models.ForeignKey('inventory.UnitOfMeasure', 
         on_delete=models.SET_NULL, null=True, default=1)
-    order_price = models.DecimalField(max_digits=6, decimal_places=2)
+    order_price = models.DecimalField(max_digits=16, decimal_places=2)
     received = models.FloatField(default=0.0)
 
     @property

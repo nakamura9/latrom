@@ -23,7 +23,7 @@ class Payment(SoftDeletionModel):
     invoice = models.ForeignKey("invoicing.Invoice", 
         on_delete=models.SET_NULL, 
         null=True)
-    amount = models.DecimalField(max_digits=6,decimal_places=2)
+    amount = models.DecimalField(max_digits=16,decimal_places=2)
     date = models.DateField()
     method = models.CharField(
         max_length=32, 

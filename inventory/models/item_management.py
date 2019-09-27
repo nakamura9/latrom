@@ -18,7 +18,7 @@ from .warehouse_models import StorageMedia, WareHouseItem
 
 class OrderPayment(models.Model):
     date = models.DateField()
-    amount = models.DecimalField(max_digits=6,decimal_places=2)
+    amount = models.DecimalField(max_digits=16,decimal_places=2)
     order = models.ForeignKey('inventory.order', on_delete=models.SET_NULL, 
         null=True)
     comments = models.TextField()

@@ -55,7 +55,7 @@ class OptionsWidget extends Component{
             <div style={linkStyle} >
                 <button onClick={this.props.closeDropdown}
                         type="button"
-                        className="btn btn-sm btn-danger">
+                        className="btn btn-sm">
                             <i className="fas fa-times"></i>
                 </button>
             </div>

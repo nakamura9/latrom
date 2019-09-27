@@ -73,6 +73,7 @@ class MultipleSelectWidget extends Component{
                     nameField={this.props.nameField}
                     idField={this.props.idField}
                     dataURL={this.props.dataURL} 
+                    newLink={this.props.newLink}
                     addItem={this.addItem}/>
                 <SelectedItemsListWidget 
                     removeHandler={this.removeHandler}

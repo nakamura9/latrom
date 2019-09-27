@@ -45,8 +45,6 @@ class MutableTable extends Component{
 
         let form = document.forms[0];
 
-        
-
         axios({
             'url': this.props.dataURL,
             'method': 'GET'

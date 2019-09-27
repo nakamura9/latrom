@@ -17,6 +17,7 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView)
 from django_filters.views import FilterView
 from rest_framework import viewsets
+from rest_framework.generics import ListAPIView
 from django.db.models import Q
 
 from accounting.models import Tax
@@ -223,7 +224,14 @@ class PayslipListView(
     paginate_by = 20
     extra_context = {
         'title': 'List of Payslips',
-        'new_link': '/employees/manual-config'
+        'new_link': '/employees/manual-config',
+        'action_list': [
+            {
+                'icon': 'list-ol',
+                'label': 'View outstanding Payslips',
+                'link': '/employees/outstanding-payslips'
+            }
+        ]
     }
 
     def get_queryset(self):
@@ -261,6 +269,13 @@ def verify_payslip(request, pk=None):
     slip = get_object_or_404(models.Payslip, pk=pk)
     slip.status = 'verified'
     slip.save()
+    slip.create_verified_entry()
+
+    return HttpResponseRedirect('/employees/list-pay-slips')
+
+def process_payment(request, pk=None):
+    slip = get_object_or_404(models.Payslip, pk=pk)
+    
     slip.create_entry()
 
     return HttpResponseRedirect('/employees/list-pay-slips')
@@ -563,3 +578,32 @@ class CreatePayrollDateView(ContextMixin, CreateView):
         return {
             'schedule': 1
         }
+
+class OutstandingPayslipsView(ContextMixin, FormView):
+    form_class = forms.OutstandingPayslipsForm
+    success_url = reverse_lazy('employees:list-pay-slips')
+    template_name = os.path.join('common_data', 'crispy_create_template.html')
+    extra_context = {
+        'title': 'List of outstanding payslips'
+    }
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        
+        data = json.loads(urllib.parse.unquote(form.cleaned_data['data']))
+
+        for line in data:
+            print(line)
+            slip = models.Payslip.objects.get(pk=line['id'])
+            if line['status'] != '' and slip.status != 'paid' and \
+                    line['status'] != slip.status:
+                slip.status = line['status']
+                slip.save()
+                if line['status'] == 'paid':
+                    slip.create_entry()
+
+        return resp
+
+class OutstandingSlipsAPIView(ListAPIView):
+    serializer_class = serializers.PayslipSerializer
+    queryset = models.Payslip.objects.exclude(status='paid')

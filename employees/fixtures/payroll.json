@@ -66,9 +66,9 @@
         "model": "accounting.account",
         "pk": 2007, 
         "fields": {
-            "name": "NSSA",
+            "name": "NSSA Liability",
             "balance": 0,
-            "description": "Account representing money paid for social security",
+            "description": "Account representing money owed for social security",
             "type": "liability",
             "balance_sheet_category": "current-liabilities"
         }
@@ -90,9 +90,20 @@
         "fields": {
             "name": "AIDS Levy",
             "balance": 0,
-            "description": "Account representing money paid for AIDS Levy",
+            "description": "Account representing money paid for AIDS Levy. Expensed along with payroll taxes",
             "type": "liability",
             "balance_sheet_category": "current-liabilities"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 2010,
+        "fields": {
+            "name": "Salaries and Wages Liability",
+            "balance": 0,
+            "description": "Tracks money owed to employees as salaries and wages",
+            "type": "liability",
+            "balance_sheet_category": "non-current-liabilities"
         }
     },
     {
@@ -108,7 +119,8 @@
             "rate": 3.5,
             "fixed_amount": 0.0,
             "employer_contribution": 100.0,
-            "account_paid_into": 2007
+            "account_paid_into": 5021,
+            "liability_account": 2007
         }
     },
     {
@@ -124,7 +136,8 @@
             "rate": 2.0,
             "fixed_amount": 0.0,
             "employer_contribution": 100.0,
-            "account_paid_into": 2008
+            "account_paid_into": 5022,
+            "liability_account": 2008
         }
     },
     {
@@ -140,8 +153,31 @@
             "rate": 3.0,
             "fixed_amount": 0.0,
             "employer_contribution": 0.0,
-            "account_paid_into": 2009,
+            "account_paid_into": 5010,
+            "liability_account": 2009,
             "payroll_taxes": [1]
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5021,
+        "fields": {
+            "name": "NSSA Expense",
+            "balance": 0,
+            "description": "Tracks expenses incurred with NSSA contributions",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5022,
+        "fields": {
+            "name": "NEC Expense",
+            "balance": 0,
+            "description": "Tracks expenses incurred with NEC contributions",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
         }
     }
 ]

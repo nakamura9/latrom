@@ -111,7 +111,8 @@ Totals.propTypes = {
 
 class AsyncSelect extends Component{
     state = {
-        options: []
+        options: [],
+        selected: ""
     }
     componentDidMount(){
         axios({
@@ -123,12 +124,27 @@ class AsyncSelect extends Component{
         }
             )
     }
+
+    selectHandler = (evt) =>{
+        const val = evt.target.value
+        this.setState({
+            'selected': val
+        }, () =>this.props.handler(val));
+        
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props.resetFlag && this.props.resetFlag != prevProps.resetFlag){
+            this.setState({'selected': ''})
+        }
+    }
     render(){
         return(
-            <select 
-                onChange={(evt) => this.props.handler(evt.target.value)}
+            <select
+                selected={this.state.selected} 
+                onChange={this.selectHandler}
                 className="form-control">
-                <option value="">-------</option>
+                <option selected={this.state.selected==""} value="">-------</option>
                 {this.state.options.map((opt, i) =>{
                     return(<option 
                                 value={opt.value}

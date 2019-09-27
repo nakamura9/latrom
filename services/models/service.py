@@ -17,8 +17,8 @@ class Service(models.Model):
     # client and sales facing model
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    flat_fee = models.DecimalField(max_digits=6, decimal_places=2)
-    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
+    flat_fee = models.DecimalField(max_digits=16, decimal_places=2)
+    hourly_rate = models.DecimalField(max_digits=16, decimal_places=2)
     category = models.ForeignKey('services.ServiceCategory', 
         on_delete=models.SET_NULL, null=True,)
     procedure = models.ForeignKey('services.ServiceProcedure', 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% load render_bundle from webpack_loader %}
 {% block window %}
 
@@ -50,27 +51,29 @@
 {% render_bundle "widgets" %}
 
 <script>
-            function dynamicFormRenderer(){
-                var input = $("#id_id_vendor_type_0_1") //individual 
-                if(input[0].checked){
-                    $('#div_id_business_partner_number').hide();
-                    $('#div_id_organization').show();
-                }else{
-                    $('#div_id_business_partner_number').show();
-                    $('#div_id_organization').hide();
-                }
-                
+        function dynamicFormRenderer(){
+            var input = $("#id_id_vendor_type_0_1") //individual 
+            if(input[0].checked){
+                $('#div_id_business_partner_number').hide();
+                $('#div_id_organization').show();
+            }else{
+                $('#div_id_business_partner_number').show();
+                $('#div_id_organization').hide();
             }
-            $(document).ready(dynamicFormRenderer);
-            $("input[name='vendor_type']").on('change', function(evt){
-                var value = evt.target.value;
-                if(value === "individual"){
-                    $('#div_id_business_partner_number').hide();
-                    $('#div_id_organization').show();
-                }else{
-                    $('#div_id_business_partner_number').show();
-                    $('#div_id_organization').hide();
-                }
-            })
-    </script>
+            
+        }
+        $(document).ready(dynamicFormRenderer);
+        $("input[name='vendor_type']").on('change', function(evt){
+            var value = evt.target.value;
+            if(value === "individual"){
+                $('#div_id_business_partner_number').hide();
+                $('#div_id_organization').show();
+            }else{
+                $('#div_id_business_partner_number').show();
+                $('#div_id_organization').hide();
+            }
+        })
+</script>
+<script src='{% static "common_data/js/suave.js" %}'></script>
+
 {% endblock window %}

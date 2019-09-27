@@ -5,6 +5,8 @@ from dateutil import relativedelta
 from django.db.models import Q
 
 import pygal
+from pygal.style import DefaultStyle
+
 
 def plot_sales(start, end, filters=Q()):
     y = None
@@ -50,7 +52,11 @@ def plot_sales_by_customer(start, end):
         sbc.setdefault(str(i.customer), 0) 
         sbc[str(i.customer)] += i.subtotal
 
-    chart = pygal.Pie()
+    chart = pygal.Pie(print_values=True, style=DefaultStyle(
+        value_font_size=30, 
+        value_colors=('white', )
+        ) 
+    )
     chart.title = 'Sales By Customer'
     for key in sbc.keys():
         chart.add(key, sbc[key])
@@ -71,7 +77,11 @@ def plot_sales_by_products_and_services(start, end):
         sbps.setdefault(l.name, 0) 
         sbps[l.name] += l.subtotal
 
-    chart = pygal.Pie()
+    chart = pygal.Pie(print_values=True, style=DefaultStyle(
+        value_font_size=30, 
+        value_colors=('white', )
+        ) 
+    )
     chart.title = 'Sales By Products and Services'
     ordered = sorted([(key, sbps[key]) for key in sbps.keys()], 
         key=lambda x: x[1], reverse=True)
@@ -163,7 +173,11 @@ def pygal_date_formatter(start, end):
     return [d.strftime(formatter) for d in dates]
 
 def plot_ar_by_customer():
-    chart = pygal.Pie()
+    chart = pygal.Pie(print_values=True, style=DefaultStyle(
+        value_font_size=30, 
+        value_colors=('white', )
+        ) 
+    )
     chart.title = 'A/R By Customer'
     for cus in Customer.objects.filter(account__balance__gt=0):
         chart.add(str(cus), cus.total_accounts_receivable)
@@ -171,7 +185,11 @@ def plot_ar_by_customer():
     return chart.render(is_unicode=True)
 
 def plot_ar_by_aging():
-    chart = pygal.Pie()
+    chart = pygal.Pie(print_values=True, style=DefaultStyle(
+        value_font_size=30, 
+        value_colors=('white', )
+        ) 
+    )
     chart.title = 'A/R By Aging'
 
     invs = Invoice.objects.filter(status__in=['invoice', 'paid-partially'])

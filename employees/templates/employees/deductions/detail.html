@@ -25,7 +25,8 @@
                     {% else %} 
                     <p class="card-text">Fixed Amount: {{object.amount}}</p>
                     {% endif %}
-                    <p class="card-text">Account Paid Into: {{object.account_paid_into}}</p>
+                    <p class="card-text">Expense account: {{object.account_paid_into}}</p>
+                    <p class="card-text">Liability Account: {{object.liability_account}}</p>
                     <p class="card-text">Employer Contribution (% of deducted amount): {{object.employer_contribution}}</p>
                     <p class="card-text">Tax Deductable? : {{object.tax_deductable |yesno}}</p>
 

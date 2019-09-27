@@ -103,6 +103,17 @@ class EventUpdateView(LoginRequiredMixin, EventParticipantMixin, UpdateView):
     form_class = forms.EventForm
     model = models.Event
 
+    def get(self, *args, **kwargs):
+        resp = super().get(*args, **kwargs)
+        if self.request.user != self.object.owner:
+            messages.info(self.request, f'{self.request.user} is not the owner of this event and does not have permission to change it.')
+            return HttpResponseRedirect(reverse_lazy('planner:event-detail',
+                kwargs={
+                    'pk': self.object.pk
+                }))
+
+        return resp
+
 
 class EventListView(ContextMixin, 
         LoginRequiredMixin, 

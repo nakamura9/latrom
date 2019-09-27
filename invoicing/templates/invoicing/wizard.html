@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% load render_bundle from webpack_loader %}
 {% block window %}
 
@@ -74,4 +75,6 @@
                 }
             })
     </script>
+<script src='{% static "common_data/js/suave.js" %}'></script>
+
 {% endblock window %}

@@ -51,7 +51,7 @@
                 </a>
                 <h6 class="dropdown-header">Goods Receipts</h6>                
 
-                <a class="dropdown-item" href="{% url 'inventory:stock-receipt-create' pk=object.pk %}">
+                <a class="dropdown-item" href="{% url 'inventory:stock-receipt-create' pk=object.pk warehouse=object.ship_to.pk %}">
                     <i class="fas fa-share-square"></i> Receive order</a>
                 
                 {% if order.stockreceipt_set.all.count > 0 %}

@@ -9,11 +9,20 @@ class SelectWidget extends Component{
         this.setState({selected: evt.target.value});
         this.props.handler(evt.target.value);
     }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.resetFlag && this.props.resetFlag != prevProps.resetFlag){
+            this.setState({selected: ""})
+        }
+    }
+
     render(){
-        console.log(this.props.options)
         return(
-            <select className='form-control' selected={this.state.selected}
+            <select 
+                className='form-control' 
+                selected={this.state.selected}
                 onChange={this.handleChange}>
+                <option value='' selected={this.state.selected==""}>--------</option>
                 {this.props.options.map((option)=>(
                     <option value={option.value}>{option.label}</option>
                 ))}

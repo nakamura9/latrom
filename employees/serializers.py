@@ -9,9 +9,23 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PayslipSerializer(serializers.ModelSerializer):
+    gross = serializers.SerializerMethodField()
+    deductions = serializers.SerializerMethodField()
+    taxes = serializers.SerializerMethodField()
+    employee = EmployeeSerializer(many=False)
+    
     class Meta:
         model = models.Payslip
         fields = "__all__"
+
+    def get_gross(self, obj):
+        return obj.gross_pay
+
+    def get_deductions(self, obj):
+        return obj.non_tax_deductions
+
+    def get_taxes(self, obj):
+        return obj.total_payroll_taxes
 
 class AttendanceLineSerializer(serializers.ModelSerializer):
     working_hours = serializers.SerializerMethodField()

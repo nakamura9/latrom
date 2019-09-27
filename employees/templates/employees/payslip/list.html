@@ -35,6 +35,9 @@
                     {% if item.status == "draft" %}
                     <a class="dropdown-item" href="{% url 'employees:pay-slip-verify' pk=item.pk %}"><i class="fas fa-check"></i> Verify/Delete</a>
                     {% endif %}
+                    {% if item.status == "verified" %}
+                    <a class="dropdown-item" href="{% url 'employees:process-pay-slip' pk=item.pk %}"><i class="fas fa-money-check-alt"></i> Process Payment</a>
+                    {% endif %}
                 </div>
             </div>
             </td>

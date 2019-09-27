@@ -258,6 +258,7 @@ class ComplexEntryForm(forms.ModelForm, BootstrapMixin):
 
 
 class AccountForm(forms.ModelForm, BootstrapMixin):
+    #account_code = forms.IntegerField(required=False)
     class Meta:
         exclude="active",
         model = models.Account
@@ -274,6 +275,7 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
                 Tab('general',
                     'name',
                     'balance',
+                    
                     Row(
                         Column('balance_sheet_category', css_class='form-group col-6'),
                         Column('type', css_class='form-group col-6'),
@@ -281,8 +283,10 @@ class AccountForm(forms.ModelForm, BootstrapMixin):
                     'description',
                 ),
                 Tab('account',
+                    #'account_code',
                     'bank_account_number',
                     'parent_account',
+                    'pk',
                     Row(
                         Column('control_account', css_class='form-group col-6'),
                         Column('bank_account', css_class='form-group col-6'),
@@ -540,7 +544,7 @@ class ImportExpensesForm(BootstrapMixin, forms.Form):
             <ul>
                 <li>Date - in the format DD/MM/YYYY</li>
                 <li>Description - short description of the expense incurred</li>
-                <li>Category - The type of expense one of: Advertising, Bank And Service Charges, Dues and Subscriptions, Equipment Rental, Telephone, Vehicles, Travel and Expenses, Supplies, Salaries and Wages, Rent, Payroll Taxes, Legal and Accounting, Insurance, Office Expenses, Carriage Outwards. NB: Categories are case-sensitive and will default to other if not among those listed.</li>
+                <li>Category - The type of expense one of: Advertising, Bank And Service Charges, Dues and Subscriptions, Equipment Rental, Telephone, Vehicles, Travel and Expenses, Supplies, Salaries and Wages, Rent, Payroll Taxes, Legal and Accounting, Insurance, Office Expenses, Carriage Outwards, Training and Vendor Services. NB: Categories are case-sensitive and will default to other if not among those listed.</li>
                 <li>Amount - amount expensed</li>
             </ul>"""),
              Row(

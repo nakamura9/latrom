@@ -28,6 +28,12 @@ class SearchableWidget extends Component {
                 selectedValue: ""
             })
         }
+        if(this.props.resetFlag && this.props.resetFlag != prevProps.resetFlag){
+            this.setState({
+                currValue: "",
+                selectedValue: ""
+            })
+        }
     }
 
     componentDidMount(){

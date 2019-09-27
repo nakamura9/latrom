@@ -162,6 +162,9 @@ class AccountCreateView( ContextMixin, CreateView):
         "title": "Create New Account",
         'description': "Use accounts to manage income and expenses in an intuitive way. A default chart of expenses is already implemented."}
 
+    def form_valid(self):
+        pass
+
 class AccountUpdateView( ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE
     model = models.Account
@@ -997,7 +1000,7 @@ class ImportExpensesView(ContextMixin, FormView):
                 cat_string = row[fields['category']].value
                 #invert keys
                 category = {i[1]: i[0] \
-                    for i in models.EXPENSE_CHOICES}.get(cat_string, 15)
+                    for i in models.EXPENSE_CHOICES}.get(cat_string, 17)
                 date = row[fields['date']].value
                 if isinstance(date, str):
                     date = datetime.datetime.strptime(date, '%d/%m/%Y')

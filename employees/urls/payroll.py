@@ -53,6 +53,12 @@ pay_urls = [
         views.PayslipDeleteView.as_view(), name='pay-slip-delete'),
     re_path(r'^pay-slip-verify-status/(?P<pk>[\w]+)/?$', views.verify_payslip, 
         name='pay-slip-verify-status'),
+    re_path(r'^process-pay-slip/(?P<pk>[\w]+)/?$', views.process_payment, 
+        name='process-pay-slip'),
     re_path(r'^execute-payroll/?$', views.execute_payroll, 
         name='execute-payroll'),
+    path('api/outstanding-payslips/', views.OutstandingSlipsAPIView.as_view(), 
+        name='api-outstanding-payslips'),
+    path('outstanding-payslips/', views.OutstandingPayslipsView.as_view(), 
+        name='outstanding-payslips'),
 ] + pay_officer_urls + payslip_router.urls

@@ -163,8 +163,7 @@ def notification_service(request):
                 'id': latest.pk,            
                 'stamp': latest.timestamp.strftime("%d, %B, %Y")        },      'unread': unread.count()
                     }    
-        latest.read = True    
-        latest.save()    
+        
         return JsonResponse(data)
         
 def mark_notification_read(request, pk=None):

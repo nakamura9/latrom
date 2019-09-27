@@ -21,6 +21,14 @@ class TimeField extends Component{
       this.setState({valid: !(this.props.initial === "")});
     }
     
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.resetFlag && this.props.resetFlag != prevProps.resetFlag){
+            this.setState({
+                valid: false,
+                value: "HH:MM"
+            })
+        }
+    }
 
     handler = (evt) => {
 

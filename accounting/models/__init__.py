@@ -14,7 +14,7 @@ from .transactions import *
 from .accounts import *
 from accounting.schedules import run_accounting_service
 from background_task.models import Task
-
+from planner.models import Event
 class AccountingSettings(SingletonModel):
     ACCOUNTING_PERIODS = [
         (0, "Annually"),
@@ -37,7 +37,30 @@ class AccountingSettings(SingletonModel):
     active_currency = models.ForeignKey('accounting.currency', 
         on_delete=models.SET_NULL, null=True)
 
-    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.set_financial_year_reminder()
+
+    def set_financial_year_reminder(self):
+        if Event.objects.filter(
+                date=self.start_of_financial_year,
+                label__contains='financial year').exists():
+            return
+        evt = Event.objects.create(
+            label='Start of financial year',
+            description='Remember to close the books for the current financial' 
+                'year in preparation for the new year.',
+            date=self.start_of_financial_year,
+            repeat=4, 
+            repeat_active=True,
+            icon='calendar',
+            reminder=datetime.timedelta(days=30),
+            end_time="17:00:00"
+        )
+
+        if not self.default_bookkeeper:
+            return 
+        evt.add_participant('employee', self.default_bookkeeper.employee.pk)
 
 class Bookkeeper(SoftDeletionModel):
     '''

@@ -49,22 +49,24 @@ class SearchableTextInputWidget extends Component{
         });
     }
 
-    addItemToSelectedItems = () =>{
-        if(this.state.selectedValue !== ""){
-            this.props.addItem(this.state.selectedValue)
-            this.setState({
-                inputValue: "",
-                selectedValue: ""
-            })
-        }
-    }
-
     onSelectValue = (index) => {
         this.setState({
             selectedValue: this.state.filteredChoices[index],
             inputValue: this.state.filteredChoices[index],
             optionsHidden: true
+        }, () => {
+            this.props.addItem(this.state.selectedValue)
+            this.setState({
+                inputValue: "",
+                selectedValue: ""
+            })
         });
+    }
+
+    toggleOptions = () =>{
+        this.setState((prevState) =>({
+            optionsHidden: !prevState.optionsHidden
+        }))
     }
 
     render(){
@@ -96,12 +98,13 @@ class SearchableTextInputWidget extends Component{
             <button 
                 style={buttonStyle}
                 type="button"
-                onClick={this.addItemToSelectedItems}><i className="fas fa-plus"></i></button>
+                onClick={this.toggleOptions}><i className="fas fa-angle-down"></i></button>
             </div>
             <OptionsWidget 
                 closeDropdown={() =>this.setState({optionsHidden: true})}
                 choices={this.state.filteredChoices}
                 onSelectValue={this.onSelectValue}
+                newLink={this.props.newLink}
                 hidden={this.state.optionsHidden}/>
         </div>)
     }

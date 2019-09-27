@@ -78,9 +78,31 @@ class WareHouse(models.Model):
     def add_item(self, item, quantity, location=None):
         #check if record of item is already in warehouse
         #ignore location if present
-        if self.has_item(item):
+        if self.has_item(item) and not location:
             self.get_item(item).increment(quantity)
             
+        elif location: 
+            location = StorageMedia.objects.get(pk=location)
+            print('warehouse location: ', location)
+            qs = self.warehouseitem_set.filter(item=item, 
+                location=location)
+            
+            if qs.exists():
+                wi = qs.first()
+                wi.increment(quantity)
+                print('qs: Exists!')
+            else:
+                print('New Item')
+                print('location: ', location)
+                print('quantity: ', quantity)
+                print('warehouse: ', self)
+
+                WareHouseItem.objects.create(
+                    item=item, 
+                    location=location, 
+                    quantity=quantity,
+                    warehouse=self)
+
         else:
             self.warehouseitem_set.create(item=item, 
                     quantity=quantity, location=location)

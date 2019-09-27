@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Fieldset, 
                                 Layout, 
                                 Submit, 
+                                Div,
                                 Row, 
                                 Column,
                                 HTML)
@@ -61,21 +62,18 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
     account_paid_into = forms.ModelChoiceField(
         Account.objects.filter(Q(type="liability") | Q(
             type="expense"))) 
-    benefits = forms.ModelMultipleChoiceField(
-        models.Allowance.objects.all(),
-        widget=Select2MultipleWidget, required=False)
-    commission = forms.ModelMultipleChoiceField(
-        models.CommissionRule.objects.all(),
-        widget=Select2MultipleWidget, required=False)
-    payroll_taxes = forms.ModelMultipleChoiceField(
-        models.PayrollTax.objects.all(),
-        widget=Select2MultipleWidget, required=False)
     
     class Meta:
         exclude="active",
         model = models.Deduction
         widgets = {
-            'deduction_method': forms.RadioSelect
+            'payroll_taxes':Select2MultipleWidget(attrs={'data-width':'40rem'}),
+            'commission': Select2MultipleWidget(attrs={'data-width':'40rem'}),
+            'benefits': Select2MultipleWidget(attrs={'data-width':'40rem'})
+        }
+        labels = {
+            'fixed_amount': 'Fixed amount(paid by employee)',
+            'employer_contribution': 'Employer Contribution(% of employee contribution)'
         }
         
 
@@ -84,8 +82,11 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'name',
-            
             'deduction_method',
+            'employer_contribution',
+            'account_paid_into',
+            'liability_account',
+            Div(
             HTML("""<h5>Custom Income Deductions:</h5>"""),
             'basic_income',
             'hourly_income',
@@ -93,11 +94,11 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
             'benefits',
             'commission',
             'payroll_taxes',
-            'rate',
+            'rate', css_class='custom-options'),
+            Div(
             HTML("""<h5>Fixed Income Deductions:</h5>"""),
-            'fixed_amount',
-            'employer_contribution',
-            'account_paid_into'
+            'fixed_amount', css_class='fixed-options'),
+            
         )
         self.helper.add_input(Submit('submit', 'Submit'))
 class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
@@ -109,19 +110,15 @@ class DeductionUpdateForm(forms.ModelForm, BootstrapMixin):
 
 
 class PayGradeForm(forms.ModelForm, BootstrapMixin):
-    allowances = forms.ModelMultipleChoiceField(models.Allowance.objects.filter(active=True),
-        widget=forms.CheckboxSelectMultiple,
-        required=False)
-    deductions = forms.ModelMultipleChoiceField(models.Deduction.objects.filter(active=True),
-        widget=forms.CheckboxSelectMultiple,
-        required=False)
-    payroll_taxes = forms.ModelMultipleChoiceField(
-        models.PayrollTax.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False)
+    
     class Meta:
         fields = "__all__"
         model = models.PayGrade
+        widgets = {
+            'payroll_taxes':Select2MultipleWidget(attrs={'data-width':'40rem'}),
+            'deductions': Select2MultipleWidget(attrs={'data-width':'40rem'}),
+            'allowances': Select2MultipleWidget(attrs={'data-width':'40rem'})
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -149,13 +146,9 @@ class PayGradeForm(forms.ModelForm, BootstrapMixin):
                     ),
                     'subtract_lunch_time_from_working_hours',
                 ),
-                Tab('allowances',
+                Tab('Allowances, Deductions and Taxes',
                     'allowances',
-                ),
-                Tab('deductions',
                     'deductions',
-                ),
-                Tab('payroll taxes',
                     'payroll_taxes',
                 ),
             )
@@ -528,15 +521,15 @@ class PayrollDateForm(forms.ModelForm, BootstrapMixin):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             TabHolder(
-                Tab('(Employees)',
+                Tab('Employees',
                     'schedule',
                     'date',
                     'employees'
                 ),
-                Tab('(Departments)',
+                Tab('Departments',
                     'departments'
                 ),
-                Tab('(Pay Grades)',
+                Tab('Pay Grades',
                     'pay_grades'
                 ),
             )
@@ -717,3 +710,35 @@ class ImportEmployeesForm(forms.Form):
             ),
         )
         self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class OutstandingPayslipsForm(forms.Form):
+    data = forms.CharField(widget=forms.HiddenInput)
+    payroll_officer = forms.ModelChoiceField(
+            models.PayrollOfficer.objects.all())
+    password = forms.CharField(widget=forms.PasswordInput)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('payroll_officer', css_class='col-6'),
+                Column('password', css_class='col-6'),
+            ),
+            Submit('submit', 'Submit'),
+            HTML("""
+            <div id='outstanding-payslips'></div>
+            {% load render_bundle from webpack_loader %}
+            {% render_bundle 'employees' %}
+            """)
+        )
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+        usr = cleaned_data['payroll_officer'].employee.user
+        if not authenticate(username=usr.username, 
+                password=cleaned_data['password']):
+            raise ValidationError('The password supplied is incorrect')
+
+        return cleaned_data

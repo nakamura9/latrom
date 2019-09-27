@@ -13,6 +13,7 @@ const transferOrder = document.getElementById('transfer-items');
 const scrappingApp = document.getElementById('scrapping-table');
 const debitNoteTable = document.getElementById("debit-note-table");
 const receiveTable = document.getElementById('receive-table');
+const purchaseTable = document.getElementById('purchase-table');
 const multipleItemsTable = document.getElementById('multiple-item-list');
 const multipleSuppliersTable = document.getElementById('multiple-suppliers-list');
 
@@ -20,6 +21,9 @@ const multipleSuppliersTable = document.getElementById('multiple-suppliers-list'
 const URL = window.location.href;
 const  decomposed = URL.split('/');
 const tail = decomposed[decomposed.length - 1];
+const wh = decomposed[decomposed.length - 2];
+
+
 if(inventoryCheck){
     ReactDOM.render(<MutableTable 
         formHiddenFieldName="check-table"
@@ -85,7 +89,7 @@ if(inventoryCheck){
                     'model': 'inventoryitem',
                     'app': 'inventory',
                     'newLink': '/inventory/product-create',
-                    url: '/inventory/api/inventory-item/', 
+                    url: '/inventory/api/product/', 
                     idField: 'id',
                     displayField: 'name',
                     required: true,
@@ -142,14 +146,32 @@ if(inventoryCheck){
                 'name': 'receiving_location', 
                 'mutable': true,
                 'widget': true,
-                'widgetCreator': (component) =>{
+                'widgetCreator': (comp, rowID) =>{
+
+                    const handler = (val) =>{
+                        let newData = [...comp.state.data];
+                        let newRow = {...comp.state.data[rowID]};
+                        newRow['receiving_location'] = val;
+                        newData[rowID] = newRow;
+                        comp.setState({'data': newData}, comp.updateForm)
+                    }
+
+                    const clearHandler = () =>{
+                        let newData = [...comp.state.data];
+                        let newRow = {...comp.state.data[rowID]};
+                        newRow['receiving_location'] = '';
+                        newData[rowID] = newRow;
+                        comp.setState({'data': newData}, comp.updateForm)
+                    }
+
+                    
                     return(<SearchableWidget 
                         bordered
-                        dataURL="/inventory/api/storage-media/1"
+                        dataURL={`/inventory/api/storage-media/${wh}`}
                         idField="id"
                         displayField="name"
-                        onSelect={(val) => component.setState({})}
-                        onClear={() =>{}}/>)
+                        onSelect={handler}
+                        onClear={clearHandler}/>)
                 }
             } 
             
@@ -250,14 +272,29 @@ if(inventoryCheck){
                     'name': 'receiving_location', 
                     'mutable': true,
                     'widget': true,
-                    'widgetCreator': (component) =>{
+                    'widgetCreator': (comp, rowID) =>{
+                        const handler = (val) =>{
+                            let newData = [...comp.state.data];
+                            let newRow = {...comp.state.data[rowID]};
+                            newRow['receiving_location'] = val;
+                            newData[rowID] = newRow;
+                            comp.setState({'data': newData}, comp.updateForm)
+                        }
+    
+                        const clearHandler = () =>{
+                            let newData = [...comp.state.data];
+                            let newRow = {...comp.state.data[rowID]};
+                            newRow['receiving_location'] = '';
+                            newData[rowID] = newRow;
+                            comp.setState({'data': newData}, comp.updateForm)
+                        }
                         return(<SearchableWidget 
                             bordered
-                            dataURL="/inventory/api/storage-media/1"
+                            dataURL={`/inventory/api/storage-media/${wh}`}
                             idField="id"
                             displayField="name"
-                            onSelect={(val) => component.setState({})}
-                            onClear={() =>{}}/>)
+                            onSelect={handler}
+                            onClear={clearHandler}/>)
                     }
                 } 
                 
@@ -288,12 +325,10 @@ if(inventoryCheck){
                     }
                     return(
                         <SelectWidget
+                            
                             handler={handler}
+                            resetFlag={comp.state.isReset}
                             options={[
-                                {
-                                    'value': '',
-                                    'label': '------'
-                                },
                                 {
                                     'label': 'Product',
                                     'value': 0
@@ -376,4 +411,59 @@ if(inventoryCheck){
             }
         ]}
             />, multipleSuppliersTable)
+}else if(purchaseTable){
+
+    const calculateTotalFunc =(data) => {
+        return parseFloat(data.unit_price) * parseFloat(data.quantity)
+    }
+
+    
+
+    ReactDOM.render(<GenericTable
+        
+        hasLineTotal
+        hasTotal
+        fieldOrder={['item','unit', 'unit_price', 'quantity']}
+        fieldDescriptions={['Item', 'Unit', 'Unit Price', 'Quantity']}
+        formInputID='id_data'
+        calculateTotal={calculateTotalFunc}
+        fields={
+            [
+                {
+                    name: 'item',
+                    type: 'search',
+                    width: 35,
+                    'model': 'inventoryitem',
+                    'app': 'inventory',
+                    'newLink': '/inventory/product-create',
+                    url: '/inventory/api/items-excluding-products/', 
+                    idField: 'id',
+                    displayField: 'name',
+                    required: true,
+                },
+                {
+                    'name': 'unit',
+                    'type': 'select',
+                    'width': 15,
+                    'required': true,
+                    'url': '/inventory/api/unit/'
+                },
+                {
+                    'name': 'unit_price',
+                    'type': 'number',
+                    'width': 15,
+                    'required': true
+                },
+                {
+                    'name': 'quantity',
+                    'type': 'number',
+                    'width': 15,
+                    'required': true
+                },
+            
+            ]
+        }
+        />, purchaseTable);
+        
+        
 }

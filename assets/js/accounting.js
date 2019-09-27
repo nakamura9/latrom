@@ -60,12 +60,10 @@ if(transactionTable){
                         }
                         return(
                             <SelectWidget
+                                resetFlag={comp.state.isReset}
                                 handler={handler}
                                 options={[
-                                    {
-                                        'value': '',
-                                        'label': '------'
-                                    },
+                                    
                                     {
                                         'label': 'Asset',
                                         'value': 'asset'
@@ -108,11 +106,9 @@ if(transactionTable){
                         return(
                             <SelectWidget
                                 handler={handler}
+                                resetFlag={comp.state.isReset}
                                 options={[
-                                    {
-                                        'value': '',
-                                        'label': '------'
-                                    },
+                                    
                                     {
                                         'value':'current_assets',
                                         'label': 'Current Assets'
@@ -218,6 +214,7 @@ if(transactionTable){
                         }
                         return(
                             <SelectWidget
+                                resetFlag={comp.state.isReset}
                                 handler={handler}
                                 options={[{'value': 'Advertising', 'label': 'Advertising'}, {'value': 'Bank Service Charges', 'label': 'Bank Service Charges'}, {'value': 'Dues and Subscriptions', 'label': 'Dues and Subscriptions'}, {'value': 'Equipment Rental', 'label': 'Equipment Rental'}, {'value': 'Telephone', 'label': 'Telephone'}, {'value': 'Vehicles', 'label': 'Vehicles'}, {'value': 'Travel and Expenses', 'label': 'Travel and Expenses'}, {'value': 'Supplies', 
                                 'label': 'Supplies'}, {'value': 'Salaries and Wages', 'label': 'Salaries and Wages'}, {'value': 'Rent', 'label': 'Rent'}, {'value': 'Payroll Taxes', 'label': 'Payroll Taxes'}, {'value': 'Legal and Accounting', 'label': 'Legal and Accounting'}, {'value': 'Insurance', 'label': 'Insurance'}, {'value': 'Office Expenses', 'label': 'Office Expenses'}, {'value': 'Carriage Outwards', 'label': 'Carriage Outwards'}, {'value': 'Other', 
@@ -253,6 +250,7 @@ if(transactionTable){
                         return(
                             <SelectWidget
                                 handler={handler}
+                                resetFlag={comp.state.isReset}
                                 options={[{'value': 'Advertising', 'label': 'Advertising'}, {'value': 'Bank Service Charges', 'label': 'Bank Service Charges'}, {'value': 'Dues and Subscriptions', 'label': 'Dues and Subscriptions'}, {'value': 'Equipment Rental', 'label': 'Equipment Rental'}, {'value': 'Telephone', 'label': 'Telephone'}, {'value': 'Vehicles', 'label': 'Vehicles'}, {'value': 'Travel and Expenses', 'label': 'Travel and Expenses'}, {'value': 'Supplies', 
                                 'label': 'Supplies'}, {'value': 'Salaries and Wages', 'label': 'Salaries and Wages'}, {'value': 'Rent', 'label': 'Rent'}, {'value': 'Payroll Taxes', 'label': 'Payroll Taxes'}, {'value': 'Legal and Accounting', 'label': 'Legal and Accounting'}, {'value': 'Insurance', 'label': 'Insurance'}, {'value': 'Office Expenses', 'label': 'Office Expenses'}, {'value': 'Carriage Outwards', 'label': 'Carriage Outwards'}, {'value': 'Other', 
                                 'label': 'Other'}]} />

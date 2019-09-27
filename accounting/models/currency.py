@@ -25,7 +25,7 @@ class CurrencyConversionTable(models.Model):
 class CurrencyConversionLine(models.Model):
     currency = models.ForeignKey('accounting.Currency', 
         on_delete=models.SET_NULL, null=True, related_name="exchange_currency")
-    exchange_rate = models.DecimalField(max_digits=9, decimal_places=2)
+    exchange_rate = models.DecimalField(max_digits=16, decimal_places=2)
     conversion_table = models.ForeignKey('accounting.CurrencyConversionTable',
         on_delete=models.SET_NULL, null=True)
 

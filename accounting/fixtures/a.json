@@ -1,0 +1,24 @@
+[
+    {
+        "model": "accounting.account",
+        "pk": 5023,
+        "fields": {
+            "name": "Training",
+            "balance": 0,
+            "description": "Employee training programs",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5024,
+        "fields": {
+            "name": "Vendor Services",
+            "balance": 0,
+            "description": "Records expenses incurred from vendors such as consultancy and other services",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    }
+]

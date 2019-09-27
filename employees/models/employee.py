@@ -99,7 +99,7 @@ class Employee(ContactsMixin, Person, SoftDeletionModel):
     def total_nps(self, start):
         insurable_earnings = self.get_nps_earnings(start)
         
-        return insurable_earnings * D(0.07)
+        return D(insurable_earnings) * D(0.07)
 
     def increment_leave_days(self, days):
         self.leave_days += days

@@ -64,6 +64,7 @@ if(threadView){
                         resProcessor={(res) => res.data.copy}
                         inputField="copy"
                         dataURL="/messaging/api/email-address"
+                        newLink='/messaging/create-email-address'
                         nameField="address"
                         /*resProcessor={(res) =>{
                             return res.data.map((emailaddr) => )
@@ -76,6 +77,7 @@ if(threadView){
                         resProcessor={(res) => res.data.blind_copy}
                         dataURL="/messaging/api/email-address"
                         nameField="address"
+                        newLink='/messaging/create-email-address'
                          />, bccWidget)
     ReactDOM.render(<EmailEditor 
                         prePopulatedURL={prePopulatedURL}

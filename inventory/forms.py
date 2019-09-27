@@ -12,7 +12,13 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django_select2.forms import Select2Widget
 
-from accounting.models import Account, Expense, Tax, Asset,ASSET_CHOICES
+from accounting.models import (Account, 
+                               Expense, 
+                               Tax, 
+                               Bill,
+                               Asset,
+                               ASSET_CHOICES,
+                               AccountingSettings)
 from common_data.forms import BootstrapMixin
 from employees.models import Employee
 from common_data.models import Individual, Organization
@@ -350,6 +356,19 @@ class EquipmentForm(ItemInitialMixin, forms.ModelForm, BootstrapMixin):
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
+        cap_limit = \
+            AccountingSettings.objects.first().equipment_capitalization_limit
+        print(cap_limit)
+        print(cleaned_data['record_as_asset'])
+        print(cleaned_data['unit_purchase_price'])
+        if not cleaned_data['record_as_asset'] and \
+                cleaned_data['unit_purchase_price'] > cap_limit:
+            raise forms.ValidationError("""The purchase price for this equipment is above the capitalization limit, either adjust this limit in the accouting settings or record this equipment as an asset.""")
+        elif cleaned_data['record_as_asset'] and \
+                cleaned_data['unit_purchase_price'] < cap_limit:
+            raise forms.ValidationError("""The purchase price for this equipment is below the capitalization limit so it cannot be recorded as an asset.""")
+
+
         if cleaned_data['record_as_asset']:
             if cleaned_data['initial_value'] == "" or \
                     cleaned_data['depreciation_period'] == "" or \
@@ -944,5 +963,42 @@ class ImportSuppliersForm(forms.Form):
                 Column('start_row', css_class='col-6'),
                 Column('end_row', css_class='col-6'),
             ),
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
+class EquipmentandConsumablesPurchaseForm(forms.ModelForm, BootstrapMixin):
+    paid_in_full = forms.BooleanField(required=False)
+    data = forms.CharField(widget=forms.HiddenInput)
+    warehouse = forms.ModelChoiceField(models.WareHouse.objects.all())
+    class Meta:
+        model = Bill
+        exclude = 'entry', 
+        widgets = {
+            'vendor': Select2Widget,
+            'memo': forms.Textarea(attrs={'rows': 4})
+        }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    Row(
+                        Column('date', css_class='col-6'),
+                        Column('due', css_class='col-6'),
+                    ),  'vendor',css_class='col-6'),
+                Column('reference', 'warehouse', 'paid_in_full',
+                    css_class='col-6')
+                ),
+                'memo',
+                'data',
+                HTML("""
+                    <div id='purchase-table'></div>
+                    {% load render_bundle from webpack_loader %}
+                    {% render_bundle 'inventory' %}
+                    """)
+            
         )
         self.helper.add_input(Submit('submit', 'Submit'))

@@ -48,8 +48,13 @@ equipment_router = routers.DefaultRouter()
 equipment_router.register(r'^api/equipment', views.EquipmentAPIView)
 
 equipment_urls = [
-    re_path(r'^equipment-create/?$', views.EquipmentCreateView.as_view(), name="equipment-create"),
-    re_path(r'^equipment-list/?$', views.EquipmentListView.as_view(), name="equipment-list"),
+    re_path(r'^equipment-create/?$', views.EquipmentCreateView.as_view(), 
+        name="equipment-create"),
+    re_path(r'^equipment-and-consumables-purchase/?$', 
+        views.EquipmentandConsumablesPurchaseView.as_view(), 
+        name="equipment-and-consumables-purchase"),
+    re_path(r'^equipment-list/?$', views.EquipmentListView.as_view(), 
+        name="equipment-list"),
     re_path(r'^equipment-update/(?P<pk>[\w]+)/?$', 
         views.EquipmentUpdateView.as_view(), name="equipment-update"),
     re_path(r'^equipment-detail/(?P<pk>[\w]+)/?$', 
@@ -61,4 +66,7 @@ item_urls = [
         name='import-items-from-excel'),
     path('create-multiple-items/', views.BulkCreateItemsView.as_view(), 
         name='create-multiple-items'),
+    path('api/items-excluding-products/', 
+        views.ItemsExcludingProducts.as_view(),
+    )
 ] +product_urls + equipment_urls + consumable_urls + raw_material_urls

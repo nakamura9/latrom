@@ -68,6 +68,7 @@ if(sales){
                     }
                     return(
                         <SelectWidget
+                            resetFlag={comp.state.isReset}
                             handler={handler}
                             options={[
                                 {

@@ -503,7 +503,7 @@
         "fields": {
             "name": "Supplies",
             "balance": 0,
-            "description": "Supplies that do not fit in the office supplies account",
+            "description": "Supplies that do not fit in the office supplies account. Small equipment and consumables are recorded here.",
             "type": "expense",
             "balance_sheet_category": "not-included"
         }
@@ -639,8 +639,7 @@
             "type": "expense",
             "balance_sheet_category": "not-included"
         }
-        }
-        ,
+    },
     {
         "model": "accounting.account",
         "pk": 5020,
@@ -651,5 +650,27 @@
             "type": "expense",
             "balance_sheet_category": "not-included"
         }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5023,
+        "fields": {
+            "name": "Training",
+            "balance": 0,
+            "description": "Employee training programs",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
         }
+    },
+    {
+        "model": "accounting.account",
+        "pk": 5024,
+        "fields": {
+            "name": "Vendor Services",
+            "balance": 0,
+            "description": "Records expenses incurred from vendors such as consultancy and other services",
+            "type": "expense",
+            "balance_sheet_category": "not-included"
+        }
+    }
 ]

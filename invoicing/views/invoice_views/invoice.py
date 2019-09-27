@@ -31,7 +31,6 @@ import openpyxl
 from services.models import Service
 from inventory.models import InventoryItem,ProductComponent, UnitOfMeasure
 
-
 def process_data(items, inv):
     if items:
         items = json.loads(urllib.parse.unquote(items))
@@ -120,7 +119,10 @@ class InvoiceCreateView(ContextMixin, InvoiceCreateMixin, ConfigMixin, CreateVie
         inv = self.object
         items = request.POST.get("item_list", None)
         process_data(items, inv)
-            
+
+        self.object.verify_inventory()
+        
+
         return resp
 
 class InvoiceUpdateView(ContextMixin, UpdateView):
@@ -148,6 +150,7 @@ class InvoiceUpdateView(ContextMixin, UpdateView):
             for line in self.object.invoiceline_set.all():
                 line.delete()
         
+        self.object.verify_inventory()
         
         
         process_data(items, inv)

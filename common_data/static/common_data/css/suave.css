@@ -215,3 +215,7 @@ table tr{
     float:right;
     display: none;
 }
+
+.ui-datepicker {
+    z-index: 12000  !important;
+}

@@ -10,7 +10,6 @@ from common_data.models import SingletonModel
 from common_data.utilities import time_choices
 from employees.models import Employee
 import inventory
-from invoicing.models import Customer
 from django.shortcuts import reverse
 
 
@@ -63,8 +62,8 @@ class Event(models.Model):
         default=datetime.timedelta(seconds=0))
     completed = models.BooleanField(default=False, blank=True)
     completion_time = models.DateTimeField(null=True, blank=True)
-    start_time = models.TimeField(choices=TIME_CHOICES, default="06:00:00")
-    end_time = models.TimeField(choices=TIME_CHOICES, default="06:00:00")
+    start_time = models.TimeField(choices=TIME_CHOICES, default="08:00:00")
+    end_time = models.TimeField(choices=TIME_CHOICES, default="09:00:00")
     priority = models.CharField(max_length=8, choices=PRIORITY_CHOICES, 
         default='normal')
     description = models.TextField(blank=True)
@@ -99,6 +98,8 @@ class Event(models.Model):
                 employee=Employee.objects.get(pk=pk)
             )
         elif evt_type == 1:
+            from invoicing.models import Customer
+            
             participant = EventParticipant.objects.create(
                 event=self,
                 participant_type = evt_type,

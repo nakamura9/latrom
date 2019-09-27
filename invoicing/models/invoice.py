@@ -16,6 +16,8 @@ import inventory
 from services.models import WorkOrderRequest
 from invoicing.models.credit_note import CreditNoteLine
 from django.shortcuts import reverse 
+from messaging.models import Notification
+from inventory.models import InventoryController
 
 class Invoice(SoftDeletionModel):
     '''An invoice is a document that represents a sale. Because of the complexity of the object, both a quotation and an invoice are represented by the same model. The document starts as a quotation and then can move to a proforma invoice culminating in the creation of an invoice.
@@ -184,6 +186,20 @@ class Invoice(SoftDeletionModel):
             if shortage['quantity'] > 0:
                 shortages.append(shortage)
 
+
+        if len(shortages) > 0:
+            qs = InventoryController.objects.all()
+            if qs.exists():
+                usr = qs.first().employee.user
+                Notification.objects.create(
+                    user=usr,
+                    action='/inventory/order-create',
+                    title='Sales: Inventory deficit',
+                    message="""Invoice #{} requires the following inventory to be completed:
+                    {}
+                    """.format(self.pk, 
+                        '\n'.join([f'{shortage["product"]} ->{shortage["quantity"]}' for shortage in shortages]))
+                )
         return shortages
 
     @property 
@@ -426,7 +442,7 @@ class InvoiceLine(models.Model):
     line_type = models.PositiveSmallIntegerField(choices=LINE_CHOICES)
     tax = models.ForeignKey('accounting.tax', on_delete=models.SET_NULL, 
         null=True)
-    discount =models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    discount =models.DecimalField(max_digits=16, decimal_places=2, default=0.0)
 
     #what it is sold for
     
@@ -533,16 +549,16 @@ class ProductLineComponent(models.Model):
     product = models.ForeignKey('inventory.InventoryItem', null=True, 
         on_delete=models.SET_NULL)
     returned = models.BooleanField(default=False)
-    unit_price = models.DecimalField(max_digits=9, 
+    unit_price = models.DecimalField(max_digits=16, 
         decimal_places=2, 
         default=0.0)
 
     # value is calculated once when the invoice is generated to prevent 
     # distortions as prices change
     #what it is worth to the business
-    value = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
+    value = models.DecimalField(max_digits=16, decimal_places=2, default=0.0)
     quantity = models.DecimalField(
-        max_digits=9, 
+        max_digits=16, 
         decimal_places=2, 
         default=0.0)  
 
@@ -635,11 +651,11 @@ class ServiceLineComponent(models.Model):
     service = models.ForeignKey('services.service',
         on_delete=models.SET_NULL, null=True)
     hours = models.DecimalField(
-        max_digits=9, 
+        max_digits=16, 
         decimal_places=2, 
         default=0.0)
-    flat_fee = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
-    hourly_rate = models.DecimalField(max_digits=9, decimal_places=2, 
+    flat_fee = models.DecimalField(max_digits=16, decimal_places=2, default=0.0)
+    hourly_rate = models.DecimalField(max_digits=16, decimal_places=2, 
         default=0.0)
 
     def __str__(self):
@@ -695,7 +711,7 @@ class ExpenseLineComponent(models.Model):
     expense = models.ForeignKey('accounting.Expense', 
         on_delete=models.SET_NULL, 
         null=True)
-    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
+    price = models.DecimalField(max_digits=16, decimal_places=2, default=0.0)
 
     @property
     def line(self):

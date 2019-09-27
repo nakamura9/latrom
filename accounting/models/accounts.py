@@ -43,7 +43,7 @@ class AbstractAccount(SoftDeletionModel):
     ------------
     '''
     name = models.CharField(max_length=64)
-    balance = models.DecimalField(max_digits=9, decimal_places=2)
+    balance = models.DecimalField(max_digits=16, decimal_places=2)
     type = models.CharField(max_length=32, choices=TYPE_CHOICES)
     description = models.TextField()
     bank_account = models.BooleanField(default=False)
@@ -191,7 +191,7 @@ class InterestBearingAccount(AbstractAccount):
     '''
     mutable 
     '''
-    interest_rate = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    interest_rate = models.DecimalField(max_digits=16, decimal_places=2, default=0.0)
     interest_interval = models.IntegerField(choices = [(0, 'monthly'), (1, 'annually')], default=1)
     interest_method = models.IntegerField(choices = [(0, 'Simple')], default=0)
     date_account_opened = models.DateField(default=datetime.date.today)

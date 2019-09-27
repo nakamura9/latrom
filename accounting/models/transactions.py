@@ -22,7 +22,7 @@ class Transaction(models.Model):
     account = models.ForeignKey('accounting.Account', 
         on_delete=models.SET_NULL, 
         null=True)
-    amount =models.DecimalField(max_digits=9, 
+    amount =models.DecimalField(max_digits=16, 
         decimal_places=2)
     entry = models.ForeignKey('accounting.JournalEntry', 
         on_delete=models.CASCADE)

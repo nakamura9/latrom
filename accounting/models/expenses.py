@@ -25,6 +25,8 @@ expense_choices = [
     'Insurance', 
     'Office Expenses',
     'Carriage Outwards', 
+    'Training', 
+    'Vendor Services', 
     'Other']
 
 EXPENSE_CHOICES = [(expense_choices.index(i), i) for i in expense_choices]
@@ -40,7 +42,7 @@ class AbstractExpense(models.Model):
     '''vendor = models.ForeignKey('inventory.Supplier', null=True, 
         on_delete=models.SET_NULL)'''
     category = models.PositiveSmallIntegerField(choices=EXPENSE_CHOICES)
-    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    amount = models.DecimalField(max_digits=16, decimal_places=2)
     debit_account = models.ForeignKey('accounting.Account', 
         on_delete=models.SET_NULL, null=True, limit_choices_to=Q(type="asset"))
     recorded_by = models.ForeignKey('auth.user', default=1, 
@@ -76,7 +78,9 @@ class AbstractExpense(models.Model):
             12: 5012,
             13: 5013,
             14: 5014,
-            15: 5015
+            15: 5023,
+            16: 5024,
+            17: 5015,
        }
         return accounting.models.accounts.Account.objects.get(
             pk=mapping[self.category])
@@ -84,7 +88,7 @@ class AbstractExpense(models.Model):
 
 '''class Payment(models.Model):
     date = models.DateField()
-    amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0)
+    amount = models.DecimalField(decimal_places=2, max_digits=16, default=0.0)
     expense = models.ForeignKey('accounting.expense', null=True, 
         on_delete=models.SET_NULL)
     entry = models.ForeignKey('accounting.JournalEntry', null=True, 
@@ -258,7 +262,7 @@ class BillPayment(models.Model):
         null=True)
     bill = models.ForeignKey('accounting.bill', 
         on_delete=models.SET_NULL, null=True)
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    amount = models.DecimalField(max_digits=16, decimal_places=2)
     memo = models.TextField(blank=True)
     entry= models.ForeignKey('accounting.journalentry', 
         on_delete=models.SET_NULL,

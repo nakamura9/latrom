@@ -17,9 +17,11 @@ const row = (props) =>{
                     data={props.fieldData[field.name]}
                     field={props.fields[i]}
                     root={props.root}
+                    rowID={props.rowID}
                     columnID={`${props.rowID}__${field.name}`} />
             ))}
             <td><button 
+                    type='button'
                     onClick={() =>props.toggle(props.rowID)}
                     className={
                         `btn btn-${props.fieldData.verified ? 'success' : 'primary'}`}>

@@ -5,6 +5,7 @@ from invoicing.views.report_utils.plotters import (pygal_date_formatter,
                                                    get_queryset_list)
 import datetime
 import pygal
+from pygal.style import DefaultStyle
 from django.db.models import Q
 
 def expense_plot():
@@ -24,7 +25,11 @@ def expense_plot():
     for key in mapping.keys():
         total += mapping[key]
 
-    chart = pygal.Pie()
+    chart = pygal.Pie(print_values=True, style=DefaultStyle(
+        value_font_size=30, 
+        value_colors=('white', )
+        ) 
+    )
     chart.title = 'Expenses breakdown over the last 30 days'
     for key in mapping.keys():
         chart.add(expense_choices[key], mapping[key])

@@ -3,8 +3,9 @@ import React from 'react';
 const column = (props) => {
     if(props.field.mutable){
         if(props.field.widget){
+            console.log(props.rowID)
             return(<td>
-                {props.field.widgetCreator(props.root)}
+                {props.field.widgetCreator(props.root, props.rowID)}
             </td>)
         }else{
             return(

@@ -265,6 +265,56 @@ class Payslip(models.Model):
             self.pay_grade_version = revision_count
             self.save()
 
+    def create_verified_entry(self):
+        '''
+        A verified payslip sets up all the liabilites the company has towards its employees.
+        When the payslip, only the salaries liability is removed, the ones to 
+        ZIMRA NSSA etc remain.
+        Each is settled separately
+        '''
+        settings = EmployeesSettings.objects.first()
+        
+        
+        j = accounting.models.JournalEntry.objects.create(
+                memo= f'Auto generated entry to verify '
+                      f'payslip #{self.pk}.',
+                date=datetime.date.today(),
+                journal =accounting.models.Journal.objects.get(
+                    pk=5),#General
+                created_by = settings.payroll_officer.employee.user,
+                draft=False
+        )
+        
+        deduction_total = 0
+        total_employer_deductions = 0
+        total_employee_deductions = 0
+        for pk in self.paygrade_['deductions']:
+            deduction = Deduction.objects.get(pk=pk)
+            employer_deduction = deduction.employer_deduction(self)
+            employee_deduction = deduction.deduct(self)
+            amount = employee_deduction + employer_deduction
+            total_employee_deductions += employee_deduction
+            total_employer_deductions += employer_deduction
+            deduction_total += amount
+
+            j.debit(amount, deduction.account_paid_into)
+            j.credit(amount, deduction.liability_account)
+        
+        j.debit(self.net_pay, 
+            accounting.models.Account.objects.get(pk=5008))#salaries EXPENSE
+        j.credit(self.net_pay, 
+            accounting.models.Account.objects.get(pk=2010))#salaries Liability
+        j.debit(self.total_payroll_taxes, 
+            accounting.models.Account.objects.get(
+                pk=2002))#payroll taxes LIABILITY
+        j.credit(self.total_payroll_taxes, 
+            accounting.models.Account.objects.get(
+                pk=5010))#payroll taxes EXPENSE
+
+        self.entry = j
+        self.status = 'verified'
+        self.save()
+
     def create_entry(self):
         '''
         This method updates the accounting system for payroll actions
@@ -289,25 +339,11 @@ class Payslip(models.Model):
                 created_by = settings.payroll_officer.employee.user,
                 draft=False
         )
+            
+        j.debit(self.net_pay, 
+            accounting.models.Account.objects.get(pk=2010))#payroll taxes
         
-        deduction_total = 0
-        total_employer_deductions = 0
-        for pk in self.paygrade_['deductions']:
-            deduction = Deduction.objects.get(pk=pk)
-            employer_deduction = deduction.employer_deduction(self)
-            amount = deduction.deduct(self) + employer_deduction
-            deduction_total += amount
-            # create a NSSA account etc
-            j.debit(amount, deduction.account_paid_into)
-        
-        j.debit(D(self.gross_pay) - \
-                (self.total_payroll_taxes + D(deduction_total)), 
-            accounting.models.Account.objects.get(pk=5008))#salaries
-        j.debit(self.total_payroll_taxes, 
-            accounting.models.Account.objects.get(pk=5010))#payroll taxes
-        
-        j.credit(self.gross_pay + total_employer_deductions,
-            settings.payroll_account)#default cash account
+        j.credit(self.net_pay, settings.payroll_account)#default cash account
 
         self.entry = j
         self.status = 'paid'

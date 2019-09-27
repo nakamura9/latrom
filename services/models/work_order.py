@@ -186,9 +186,9 @@ class TimeLog(models.Model):
     normal_time = models.DurationField()
     overtime = models.DurationField()
     #using fields to perserve the cost in case the paygrade changes
-    normal_time_cost = models.DecimalField(max_digits=8, decimal_places=2, 
+    normal_time_cost = models.DecimalField(max_digits=16, decimal_places=2, 
         default=D(0.0))
-    overtime_cost = models.DecimalField(max_digits=8, decimal_places=2,
+    overtime_cost = models.DecimalField(max_digits=16, decimal_places=2,
         default=D(0.0))
 
     def __str__(self):

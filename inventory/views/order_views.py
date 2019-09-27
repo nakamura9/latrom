@@ -73,6 +73,8 @@ class OrderPOSTMixin(object):
             unit = models.UnitOfMeasure.objects.get(
                         pk=unit_id)
             item = models.InventoryItem.objects.get(pk=pk)
+            if item.type != 0:
+                continue #filter non products
             order.orderitem_set.create(
                 item=item,
                 quantity=data['quantity'],
@@ -105,7 +107,7 @@ class OrderCreateView( ContextMixin,
     template_name = os.path.join("inventory", "order", "create.html")
     extra_context = {
         "title": "Create Purchase Order",
-        "description": "Use this form to order inventory from suppliers. Afterwards inventory may be added to stock using the receive inventory form.",
+        "description": "Use this form to order inventory for sale from suppliers. Equipment and Consumables are purchased under 'Manage Equipment' or 'Manage Consumables' Forms.",
         "related_links": [
             {
                 'name': 'Add Vendor',
@@ -113,12 +115,6 @@ class OrderCreateView( ContextMixin,
             },{
                 'name': 'Add Product',
                 'url': '/inventory/product-create/'
-            },{
-                'name': 'Add Equipment',
-                'url': '/inventory/equipment-create/'
-            },{
-                'name': 'Add Consumable',
-                'url': '/inventory/consumable-create/'
             },
 
         ],

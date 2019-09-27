@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block head %}
     {% block head_extended %}{% endblock %}
 {% endblock %}
@@ -10,39 +11,5 @@
 </article>
 {% include "footer.html" %}
 
-<script>
-
-    //shrink jumbotrons on scroll
-
-var scrolling = false;
-$(document).scroll(function(){
-    scrolling = true;
-});
-
-function isScrollable(){
-    var windowHeight = $(window).height();
-    var pageHeight = $(document).height();
-    return pageHeight / windowHeight  > 1.5;
-}
-
-function inIframe () {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
-    }
-
-setInterval(function(){
-    if(scrolling){
-        scrolling = false;
-        if($(document).scrollTop() > 0  && isScrollable()){
-		  $(".jumbotron").addClass("shrink");
-		}
-        if($(document).scrollTop() === 0 && !inIframe()){
-		  $(".jumbotron").removeClass("shrink");
-		}
-    }
-}, 100)
-</script>
+<script src='{% static "common_data/js/suave.js" %}'></script>
 {% endblock %}

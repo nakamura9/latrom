@@ -131,16 +131,9 @@ class ParticipantEntry extends Component{
             type: this.state.selecting,
             pk: pk,
             name: name
-        }});
+        }}, () => this.props.addHandler(this.state.selected));
     }
 
-    insertHandler = () =>{
-        if(!this.state.selected.name){
-            alert('No valid participant has been selected.');
-            return;
-        }
-        this.props.addHandler(this.state.selected);
-    }
     render(){
             let widgetSelector = null;
             
@@ -221,12 +214,6 @@ class ParticipantEntry extends Component{
         </ul>
                 <div style={{display: "flex", width: '100%'}}>
                     <div style={{width: "100%"}}>{widgetSelector}</div>
-                    <div> <button 
-                    className="btn"
-                    type="button"
-                    onClick={this.insertHandler}>
-                        <i className="fas fa-plus"></i>
-                    </button></div>
                 </div>            
                 
             </div>

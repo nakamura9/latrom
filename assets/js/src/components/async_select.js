@@ -14,7 +14,8 @@ import axios from 'axios';
 
 class AsyncSelect extends Component{
     state = {
-        options: []
+        options: [],
+        currValue: ""
     }
     componentDidMount(){
         axios({
@@ -31,9 +32,17 @@ class AsyncSelect extends Component{
         }
             )
     }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.resetFlag && this.props.resetFlag != prevProps.resetFlag){
+            this.setState({currValue: ""})
+        }
+    }
+
     render(){
         return(
             <select 
+                value={this.state.currValue}
                 id={this.props.ID}
                 onChange={(evt) => this.props.handler(evt.target.value)}
                 className={this.props.noCSS ? "" : "form-control"}

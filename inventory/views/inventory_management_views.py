@@ -217,7 +217,7 @@ class StockReceiptCreateView(CreateView):
             n = line['quantity_to_move']
             if n == 0:
                 break
-
+            print('location: ', line['receiving_location'])
             if line['receiving_location'] != "":
                 medium = line['receiving_location'].split('-')[0]
                 item = models.OrderItem.objects.get(pk=pk)

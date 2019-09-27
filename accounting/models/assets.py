@@ -31,13 +31,13 @@ class Asset(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True)
     category = models.IntegerField(choices=ASSET_CHOICES)
-    initial_value  = models.DecimalField(max_digits=9, decimal_places=2)
+    initial_value  = models.DecimalField(max_digits=16, decimal_places=2)
     credit_account = models.ForeignKey('accounting.Account', 
         on_delete=models.SET_DEFAULT, default=1000)
     depreciation_period = models.IntegerField()#years
     init_date = models.DateField()
     depreciation_method = models.IntegerField(default=0, choices=DEPRECIATION_METHOD)
-    salvage_value = models.DecimalField(max_digits=9, decimal_places=2)
+    salvage_value = models.DecimalField(max_digits=16, decimal_places=2)
     created_by = models.ForeignKey('auth.user', default=1, on_delete=models.SET_NULL, null=True)
 
     def get_absolute_url(self):
