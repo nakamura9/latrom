@@ -162,8 +162,6 @@ class AccountCreateView( ContextMixin, CreateView):
         "title": "Create New Account",
         'description': "Use accounts to manage income and expenses in an intuitive way. A default chart of expenses is already implemented."}
 
-    def form_valid(self):
-        pass
 
 class AccountUpdateView( ContextMixin, UpdateView):
     template_name = CREATE_TEMPLATE

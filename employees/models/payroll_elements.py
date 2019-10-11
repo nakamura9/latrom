@@ -50,9 +50,9 @@ class Deduction(SoftDeletionModel):
     basic_income = models.BooleanField(default=False)
     hourly_income = models.BooleanField(default=False)
     overtime_income = models.BooleanField(default=False)
-    benefits = models.ManyToManyField('employees.allowance')
-    commission = models.ManyToManyField('employees.commissionrule')
-    payroll_taxes = models.ManyToManyField('employees.payrolltax')
+    benefits = models.ManyToManyField('employees.allowance', blank=True)
+    commission = models.ManyToManyField('employees.commissionrule', blank=True)
+    payroll_taxes = models.ManyToManyField('employees.payrolltax', blank=True)
     rate = models.FloatField(default=0)
     fixed_amount = models.FloatField(default=0)
     employer_contribution = models.FloatField(default=0.0)#percentage of deduction total

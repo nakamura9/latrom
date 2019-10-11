@@ -61,7 +61,8 @@ class DeductionForm(forms.ModelForm, BootstrapMixin):
     #only allow deduction accounts for 
     account_paid_into = forms.ModelChoiceField(
         Account.objects.filter(Q(type="liability") | Q(
-            type="expense"))) 
+            type="expense")))
+    
     
     class Meta:
         exclude="active",

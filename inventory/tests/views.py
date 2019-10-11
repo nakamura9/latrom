@@ -8,7 +8,7 @@ from django.test.client import RequestFactory
 from django.urls import reverse
 from django.utils import timezone
 
-from accounting.models import Account, JournalEntry, Tax
+from accounting.models import Account, JournalEntry, Tax, AccountingSettings
 from common_data.models import Organization
 from common_data.tests import create_account_models, create_test_user, create_test_common_entities
 from inventory import models
@@ -194,12 +194,18 @@ class InventoryManagementViewTests(TestCase):
 
     def test_get_stock_receipt_form(self):
         resp = self.client.get(reverse('inventory:stock-receipt-create',
-            kwargs={'pk': 1}))
+            kwargs={
+                'warehouse': 1,
+                'pk': 1
+                }))
         self.assertEqual(resp.status_code,  200)
 
     def test_post_stock_receipt_form(self):
         resp = self.client.post(reverse('inventory:stock-receipt-create',
-            kwargs={'pk': 1}),
+            kwargs={
+                'warehouse': 1,
+                'pk': 1
+                }),
             data={
                 'receive_date': TODAY,
                 'order': 1,
@@ -404,6 +410,7 @@ class ItemViewTests(TestCase):
         self.EQUIPMENT_DATA.update({
                 'record_as_asset': True,
                 'asset_category': 0,
+                'unit_purchase_price': 100,
                 'initial_value': 100,
                 'salvage_value': 0,
                 'date_purchased': datetime.date.today(),
@@ -413,6 +420,10 @@ class ItemViewTests(TestCase):
             data=self.EQUIPMENT_DATA)        
         
         self.assertEqual(resp.status_code,  302)
+
+        self.EQUIPMENT_DATA.update({
+            'unit_purchase_price': 8
+        })
 
     def test_get_equipment_list(self):
         resp = self.client.get(reverse('inventory:equipment-list'))
@@ -430,7 +441,6 @@ class ItemViewTests(TestCase):
             kwargs={
                 'pk': self.equipment.pk
             }), data=self.EQUIPMENT_DATA)
-        
         self.assertEqual(resp.status_code,  302)
 
     def test_post_equipment_with_asset_update_form(self):
@@ -438,16 +448,22 @@ class ItemViewTests(TestCase):
                 'record_as_asset': True,
                 'asset_category': 0,
                 'initial_value': 100,
+                'unit_purchase_price': 100,
                 'salvage_value': 0,
                 'date_purchased': datetime.date.today(),
                 'depreciation_period': 5
             })
+
         resp = self.client.post(reverse('inventory:equipment-update',
             kwargs={
                 'pk': self.equipment.pk
             }), data=self.EQUIPMENT_DATA)
         
         self.assertEqual(resp.status_code,  302)
+        
+        self.EQUIPMENT_DATA.update({
+            'unit_purchase_price': 8
+        })
     
     def test_get_equipment_detail(self):
         resp = self.client.get(reverse('inventory:equipment-detail',
@@ -1073,12 +1089,18 @@ class TransferViewTests(TestCase):
 
     def test_get_receive_transfer_order_page(self):
         resp = self.client.get(reverse('inventory:receive-transfer',
-            kwargs={'pk': 1}))
+            kwargs={
+                'warehouse': 1,
+                'pk': 1
+                }))
         self.assertEqual(resp.status_code, 200)
 
     def test_post_receive_transfer_order_page(self):
         resp = self.client.get(reverse('inventory:receive-transfer', 
-            kwargs={'pk': 1}), data=self.RECEIVE_DATA)
+            kwargs={
+                'warehouse': 1,
+                'pk': 1
+                }), data=self.RECEIVE_DATA)
         self.assertEqual(resp.status_code, 200)
 
 

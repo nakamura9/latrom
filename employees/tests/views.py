@@ -235,7 +235,7 @@ class PaySlipPageTests(TestCase):
         
         resp = self.client.get('/employees/pay-slip-verify-status/1')
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(Payslip.objects.get(pk=1).status, 'paid')
+        self.assertEqual(Payslip.objects.get(pk=1).status, 'verified')
 
     def test_execute_payroll(self):
         settings = EmployeesSettings.objects.first()
@@ -537,7 +537,7 @@ class CommissionPageTests(TestCase):
 
 
 class DeductionPageTests(TestCase):
-    fixtures = ['common.json','accounts.json', 'employees.json']
+    fixtures = ['common.json','accounts.json', 'employees.json', 'payroll.json']
 
     @classmethod
     def setUpClass(cls):
@@ -550,14 +550,15 @@ class DeductionPageTests(TestCase):
                 'fixed_amount': 10,
                 'rate': 0,
                 'account_paid_into': 5008,
-                'employer_contribution':0
+                'employer_contribution':0,
+                'liability_account': 2010
             }
         
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)
         common_data.tests.test_models.create_test_common_entities(cls)
-
+        return super().setUpTestData()
 
     def setUp(self):
         #wont work in setUpClass
@@ -574,7 +575,6 @@ class DeductionPageTests(TestCase):
     def test_post_deduction_page(self):
         resp = self.client.post(reverse('employees:create-deduction'),
             data=self.DEDUCTION_DATA)
-        
         self.assertEqual(resp.status_code, 302)
         
     def test_get_deduction_update_page(self):
@@ -609,6 +609,8 @@ class DeductionPageTests(TestCase):
         import copy 
         data = copy.deepcopy(self.DEDUCTION_DATA)
         data['account_paid_into'] = Account.objects.get(pk=5008)
+        data['liability_account'] = Account.objects.get(pk=5008)
+        
         Deduction.objects.create(**data)
         resp = self.client.post(reverse('employees:delete-deduction',
             kwargs={

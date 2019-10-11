@@ -41,7 +41,7 @@ import datetime
 TODAY = datetime.date.today()
 
 class ReportTests(TestCase):
-    fixtures = ['accounts.json', 'journals.json', 'settings.json', 'common.json', 'employees.json', 'inventory.json', 'invoicing.json', 'planner.json']
+    fixtures = ['accounts.json', 'journals.json', 'settings.json', 'common.json', 'employees.json', 'inventory.json', 'invoicing.json', 'planner.json', 'payroll.json']
     
     @classmethod
     def setUpTestData(cls):

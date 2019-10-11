@@ -321,7 +321,7 @@ class PayGradeModelTests(TestCase):
     
 class PaySlipModelTests(TestCase):
     fixtures = ['common.json', 'accounts.json', 'journals.json',
-         'employees.json','inventory.json', 'invoicing.json']
+         'employees.json','inventory.json', 'invoicing.json', 'payroll.json']
     @classmethod
     def setUpTestData(cls):
         create_test_employees_models(cls)

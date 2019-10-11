@@ -384,7 +384,6 @@ class InvoiceModelTests(TestCase):
         
 
     def test_service_cost_of_sale(self):
-        print("#errorlist")
         c = InvoiceLine.objects.create(
             service=self.service_line_component,
             invoice=self.invoice,
