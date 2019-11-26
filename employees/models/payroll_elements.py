@@ -96,8 +96,8 @@ class Deduction(SoftDeletionModel):
                 income += payslip.normal_pay
             for commission in self.commission.all():
                 if commission.pk == payslip.paygrade_['commission_id']:
-                    income += self.paygrade.commission_pay
-                    taxable += self.paygrade.commission_pay
+                    income += payslip.commission_pay
+                    taxable += payslip.commission_pay
 
             #all the above are taxable
             
@@ -113,11 +113,11 @@ class Deduction(SoftDeletionModel):
 
             if self.payroll_taxes.all().count() > 0:
                 for pk in payslip.paygrade_['payroll_taxes']:
+                    #skip  taxes not in pay slip
+                    if not int(pk) in [i.pk for i in self.payroll_taxes.all()]:
+                        continue
                     tax = PayrollTax.objects.get(pk=pk)
-                    
                     tax_total += tax.tax(taxable)
-
-            
             
             deduction = (income + float(tax_total)) * (self.rate / 100.0)
             

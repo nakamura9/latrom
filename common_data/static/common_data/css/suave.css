@@ -1,3 +1,11 @@
+.ui-nav {
+    width: 200px;
+    min-height: 80vh;
+}
+.ui-window {
+    display: flex;
+    flex-direction: row;
+}
 .bg-primary th {
     color:white;
 }
@@ -218,4 +226,14 @@ table tr{
 
 .ui-datepicker {
     z-index: 12000  !important;
+}
+
+.dropdown-item:hover {
+    color: white;
+    background-color: #007bff;
+}
+
+.dropdown-menu {
+    border: 1px solid grey;
+    box-shadow: 5px 10px 5px #bbb;
 }
