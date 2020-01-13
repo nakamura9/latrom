@@ -12,7 +12,6 @@ def get_current_database():
     global BASE_DIR
     with open(os.path.join(BASE_DIR, 'database', 'config.json'), 'r') as conf:
         config = json.load(conf)
-        print(f"Current Database: {config['current']}")
         return config['current']
 
 

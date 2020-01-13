@@ -1,6 +1,7 @@
 from .base import *
+import os 
 
-PRODUCTION = False
+PRODUCTION = os.path.exists('deploy.txt')
 
 if PRODUCTION:
     from latrom.settings.production import *

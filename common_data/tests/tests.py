@@ -373,18 +373,3 @@ class LicenseTaskTests(TestCase):
     def setUpTestData(cls):
         pass
 
-
-    def test_verification(self):
-        @responses.activate
-        def responses_action():
-            responses.add(responses.GET, 
-                'http://nakamura9.pythonanywhere.com/validate',
-                body=json.dumps({'status': 'valid'}))
-            
-            license = json.load(open('../license.json', 'r'))
-            license_verification_func(license, 
-                'http://nakamura9.pythonanywhere.com/validate')
-
-        responses_action()
-        settings = GlobalConfig.objects.first()
-        self.assertEqual(settings.last_license_check, datetime.date.today())

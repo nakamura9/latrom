@@ -30,4 +30,12 @@ build_counter.json
 */settings.json
 *.code-workspace
 /database/config.json
-database/gui/
+*.zip
+temp/
+build/extensions
+build/bin/
+build/python/
+service/build/
+service/dist/
+installer/build/
+installer/dist/

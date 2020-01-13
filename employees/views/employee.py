@@ -49,16 +49,6 @@ class EmployeeCreateView( ContextMixin, CreateView):
         ]
     }
 
-    def get(self, request, *args, **kwargs):
-        num_employees = models.Employee.objects.filter(active=True).count()
-
-        with open('../license.json') as f:
-            license = json.load(f)
-            if num_employees >= license['license']['number_employees'] :
-                return HttpResponseRedirect('/base/license-error/features')
-
-            
-        return super().get(request, *args, **kwargs)
     
 
 class EmployeeUpdateView( ContextMixin, UpdateView):
@@ -157,14 +147,7 @@ class EmployeeUserCreateView( FormView):
             'employee': self.kwargs['pk']
         }
 
-    def get(self, request, *args, **kwargs):
-        num_users = User.objects.filter(is_superuser=False).count()
-        with open('../license.json') as f:
-            license = json.load(f)
-            if num_users >= license['license']['number_users']:
-                return HttpResponseRedirect('/base/license-error/features')
-        
-        return super().get(request, *args, **kwargs)
+    
 
 class EmployeeUserPasswordChangeView( FormView):
     success_url = reverse_lazy('employees:dashboard')

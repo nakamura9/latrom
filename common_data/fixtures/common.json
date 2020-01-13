@@ -6,5 +6,16 @@
         "fields": {
             "document_theme": 1
         }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "username": "admin",
+            "password": "pbkdf2_sha256$120000$C23jbvTZwGrS$PlXjOf+gZ4CCYNw7zKv8WwhrrUkrxCRBWvJYC9PQz9c=",
+            "is_superuser": true,
+            "is_staff": true,
+            "is_active": true
+        }
     }
 ]
